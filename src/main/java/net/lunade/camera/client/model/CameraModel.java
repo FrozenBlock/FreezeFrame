@@ -9,7 +9,6 @@ import net.minecraft.client.model.geom.builders.LayerDefinition;
 import net.minecraft.client.model.geom.builders.MeshDefinition;
 import net.minecraft.client.model.geom.builders.PartDefinition;
 import net.minecraft.util.Mth;
-import org.jetbrains.annotations.NotNull;
 
 public class CameraModel extends EntityModel<CameraRenderState> {
 	private static final float HEIGHT_INCREMENT = 1.75F;
@@ -22,7 +21,7 @@ public class CameraModel extends EntityModel<CameraRenderState> {
 	private final ModelPart leg3;
 	private final ModelPart leg4;
 
-	public CameraModel(@NotNull ModelPart root) {
+	public CameraModel(ModelPart root) {
 		super(root);
 		this.leg1 = root.getChild("leg1");
 		this.leg2 = root.getChild("leg2");
@@ -31,22 +30,22 @@ public class CameraModel extends EntityModel<CameraRenderState> {
 		this.head = root.getChild("head");
 	}
 
-	@NotNull
 	public static LayerDefinition createBodyLayer() {
-		MeshDefinition modelData = new MeshDefinition();
-		PartDefinition partDefinition = modelData.getRoot();
+		final MeshDefinition mesh = new MeshDefinition();
+		final PartDefinition root = mesh.getRoot();
 
-		createHead(partDefinition, 2F);
-		CubeListBuilder cubeListBuilder = createLegCube();
-		createLeg(partDefinition, 1, cubeListBuilder, 0F, 1F);
-		createLeg(partDefinition, 2, cubeListBuilder, 0F, -1F);
-		createLeg(partDefinition, 3, cubeListBuilder, 1F, 0F);
-		createLeg(partDefinition, 4, cubeListBuilder, -1F, 0F);
+		createHead(root, 2F);
+		
+		CubeListBuilder legCube = createLegCube();
+		createLeg(root, 1, legCube, 0F, 1F);
+		createLeg(root, 2, legCube, 0F, -1F);
+		createLeg(root, 3, legCube, 1F, 0F);
+		createLeg(root, 4, legCube, -1F, 0F);
 
-		return LayerDefinition.create(modelData, 64, 32);
+		return LayerDefinition.create(mesh, 64, 32);
 	}
 
-	public static @NotNull PartDefinition createHead(@NotNull PartDefinition root, float verticalOffset) {
+	public static PartDefinition createHead(PartDefinition root, float verticalOffset) {
 		return root.addOrReplaceChild(
 			"head",
 			CubeListBuilder.create()
@@ -56,16 +55,16 @@ public class CameraModel extends EntityModel<CameraRenderState> {
 		);
 	}
 
-	public static @NotNull PartDefinition createLeg(@NotNull PartDefinition root, int index, CubeListBuilder cubeListBuilder, float xOffset, float zOffset) {
+	public static PartDefinition createLeg(PartDefinition root, int index, CubeListBuilder cubeListBuilder, float xOffset, float zOffset) {
 		return root.addOrReplaceChild("leg" + index, cubeListBuilder, PartPose.offset(xOffset, 0F, zOffset));
 	}
 
-	public static @NotNull CubeListBuilder createLegCube() {
+	public static CubeListBuilder createLegCube() {
 		return CubeListBuilder.create().texOffs(36, 0).addBox(-0.5F, 0F, -0.5F, 1F, 25F, 1F);
 	}
 
 	@Override
-	public void setupAnim(@NotNull CameraRenderState renderState) {
+	public void setupAnim(CameraRenderState renderState) {
 		super.setupAnim(renderState);
 
 		float inverseHeight = (HEIGHT_INCREMENT - renderState.trackedHeight) * HEIGHT_SCALE;

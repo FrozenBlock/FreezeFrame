@@ -12,8 +12,8 @@ public final class CameraPortBlockTags {
 		throw new UnsupportedOperationException("CameraPortBlockTags contains only static declarations.");
 	}
 
-	@NotNull
-	private static TagKey<Block> bind(@NotNull String path) {
+
+	private static TagKey<Block> bind(String path) {
 		return TagKey.create(Registries.BLOCK, CameraPortConstants.id(path));
 	}
 }

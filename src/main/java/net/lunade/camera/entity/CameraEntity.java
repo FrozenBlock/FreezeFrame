@@ -36,10 +36,10 @@ import net.minecraft.world.entity.ai.attributes.Attributes;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.Items;
-import net.minecraft.world.level.GameRules;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.gameevent.GameEvent;
+import net.minecraft.world.level.gamerules.GameRules;
 import net.minecraft.world.level.storage.ValueInput;
 import net.minecraft.world.level.storage.ValueOutput;
 import org.jetbrains.annotations.NotNull;
@@ -53,13 +53,12 @@ public class CameraEntity extends Mob {
 	public float timer;
 	private boolean goingUp = false;
 
-	public CameraEntity(EntityType<? extends Mob> entityType, Level world) {
-		super(entityType, world);
+	public CameraEntity(EntityType<? extends Mob> entityType, Level level) {
+		super(entityType, level);
 		this.setPersistenceRequired();
 		this.getNavigation().setCanFloat(false);
 	}
 
-	@NotNull
 	public static AttributeSupplier.Builder addAttributes() {
 		return LivingEntity.createLivingAttributes()
 			.add(Attributes.FOLLOW_RANGE, 80D)
@@ -70,22 +69,22 @@ public class CameraEntity extends Mob {
 	}
 
 	@Override
-	protected @NotNull EntityDimensions getDefaultDimensions(Pose pose) {
+	protected EntityDimensions getDefaultDimensions(Pose pose) {
 		return EntityDimensions.scalable(this.getBoundingBoxRadius() * 2F, this.getTrackedHeight()).scale(this.getAgeScale());
 	}
 
 	@Override
-	protected void defineSynchedData(SynchedEntityData.Builder builder) {
-		super.defineSynchedData(builder);
-		builder.define(TRACKED_HEIGHT, 1.75F);
-		builder.define(TIMER, 0);
+	protected void defineSynchedData(SynchedEntityData.Builder entityData) {
+		super.defineSynchedData(entityData);
+		entityData.define(TRACKED_HEIGHT, 1.75F);
+		entityData.define(TIMER, 0);
 	}
 
 	@Override
 	public void tick() {
 		super.tick();
 		this.prevTimer = this.getTimer();
-		if (!this.level().isClientSide && this.level() instanceof ServerLevel) {
+		if (!this.level().isClientSide() && this.level() instanceof ServerLevel) {
 			if (this.getTimer() > 0) {
 				this.setTimer(this.getTimer() - 1);
 				if (!this.queuedUUIDS.isEmpty()) {
@@ -133,8 +132,8 @@ public class CameraEntity extends Mob {
 	}
 
 	@Override
-	protected @NotNull InteractionResult mobInteract(@NotNull Player player, InteractionHand hand) {
-		if (this.level().isClientSide) return InteractionResult.SUCCESS;
+	protected InteractionResult mobInteract(Player player, InteractionHand hand) {
+		if (this.level().isClientSide()) return InteractionResult.SUCCESS;
 
 		if (player.isShiftKeyDown()) {
 			if (this.canBeAdjusted()) {
@@ -184,135 +183,136 @@ public class CameraEntity extends Mob {
 	}
 
 	@Override
-	public boolean hurtServer(ServerLevel serverLevel, DamageSource damageSource, float f) {
+	public boolean hurtServer(ServerLevel level, DamageSource source, float damage) {
 		if (this.isRemoved()) return false;
-		if (!serverLevel.getGameRules().getBoolean(GameRules.RULE_MOBGRIEFING) && damageSource.getEntity() instanceof Mob) return false;
-		if (damageSource.is(DamageTypeTags.BYPASSES_INVULNERABILITY)) {
-			this.kill(serverLevel);
+		if (!level.getGameRules().get(GameRules.MOB_GRIEFING) && source.getEntity() instanceof Mob) return false;
+		if (source.is(DamageTypeTags.BYPASSES_INVULNERABILITY)) {
+			this.kill(level);
 			return false;
 		}
-		if (this.isInvulnerableTo(serverLevel, damageSource)) return false;
-		if (damageSource.is(DamageTypeTags.IS_EXPLOSION)) {
-			this.brokenByAnything(serverLevel, damageSource);
-			this.kill(serverLevel);
+		if (this.isInvulnerableTo(level, source)) return false;
+		if (source.is(DamageTypeTags.IS_EXPLOSION)) {
+			this.brokenByAnything(level, source);
+			this.kill(level);
 			return false;
 		}
-		if (damageSource.is(DamageTypeTags.IGNITES_ARMOR_STANDS)) {
+		if (source.is(DamageTypeTags.IGNITES_ARMOR_STANDS)) {
 			if (this.isOnFire()) {
-				this.causeDamage(serverLevel, damageSource, 0.15F);
+				this.causeDamage(level, source, 0.15F);
 			} else {
 				this.igniteForSeconds(5F);
 			}
 			return false;
 		}
 
-		if (damageSource.is(DamageTypeTags.BURNS_ARMOR_STANDS) && this.getHealth() > 0.5F) {
-			this.causeDamage(serverLevel, damageSource, 4F);
+		if (source.is(DamageTypeTags.BURNS_ARMOR_STANDS) && this.getHealth() > 0.5F) {
+			this.causeDamage(level, source, 4F);
 			return false;
 		}
 
-		boolean canBreak = damageSource.is(DamageTypeTags.CAN_BREAK_ARMOR_STAND);
-		boolean alwaysKills = damageSource.is(DamageTypeTags.ALWAYS_KILLS_ARMOR_STANDS);
+		boolean canBreak = source.is(DamageTypeTags.CAN_BREAK_ARMOR_STAND);
+		boolean alwaysKills = source.is(DamageTypeTags.ALWAYS_KILLS_ARMOR_STANDS);
 		if (!canBreak && !alwaysKills) return false;
 
-		if (damageSource.getEntity() instanceof Player player && !player.getAbilities().mayBuild) return false;
+		if (source.getEntity() instanceof Player player && !player.getAbilities().mayBuild) return false;
 
-		if (damageSource.isCreativePlayer()) {
+		if (source.isCreativePlayer()) {
 			this.playBrokenSound();
 			this.showBreakingParticles();
-			this.kill(serverLevel);
+			this.kill(level);
 			return true;
 		}
 
-		long gameTime = serverLevel.getGameTime();
+		long gameTime = level.getGameTime();
 		if (gameTime - this.lastHit > 5L && !alwaysKills) {
-			serverLevel.broadcastEntityEvent(this, EntityEvent.ARMORSTAND_WOBBLE);
-			this.gameEvent(GameEvent.ENTITY_DAMAGE, damageSource.getEntity());
+			level.broadcastEntityEvent(this, EntityEvent.ARMORSTAND_WOBBLE);
+			this.gameEvent(GameEvent.ENTITY_DAMAGE, source.getEntity());
 			this.lastHit = gameTime;
 		} else {
-			this.brokenByPlayer(serverLevel, damageSource);
+			this.brokenByPlayer(level, source);
 			this.showBreakingParticles();
-			this.kill(serverLevel);
+			this.kill(level);
 		}
 
 		return true;
 	}
 
 	private void showBreakingParticles() {
-		if (this.level() instanceof ServerLevel serverLevel) {
-			serverLevel.sendParticles(
-				new ItemParticleOption(ParticleTypes.ITEM, new ItemStack(Items.STICK)),
-				this.getX(),
-				this.getY(0.6666666666666666D),
-				this.getZ(),
-				10,
-				this.getBbWidth() / 4.0F,
-				this.getBbHeight() / 4.0F,
-				this.getBbWidth() / 4.0F, 0.05D
-			);
-		}
+		if (!(this.level() instanceof ServerLevel level)) return;
+
+		level.sendParticles(
+			new ItemParticleOption(ParticleTypes.ITEM, Items.STICK),
+			this.getX(),
+			this.getY(0.6666666666666666D),
+			this.getZ(),
+			10,
+			this.getBbWidth() / 4F,
+			this.getBbHeight() / 4F,
+			this.getBbWidth() / 4F,
+			0.05D
+		);
 	}
 
-	private void causeDamage(ServerLevel serverLevel, DamageSource damageSource, float amount) {
-		float g = this.getHealth();
-		g -= amount;
-		if (g <= 0.5F) {
-			this.brokenByAnything(serverLevel, damageSource);
-			this.kill(serverLevel);
+	private void causeDamage(ServerLevel level, DamageSource source, float amount) {
+		float health = this.getHealth();
+		health -= amount;
+		if (health <= 0.5F) {
+			this.brokenByAnything(level, source);
+			this.kill(level);
 		} else {
-			this.setHealth(g);
-			this.gameEvent(GameEvent.ENTITY_DAMAGE, damageSource.getEntity());
+			this.setHealth(health);
+			this.gameEvent(GameEvent.ENTITY_DAMAGE, source.getEntity());
 		}
 	}
 
-	private void brokenByPlayer(ServerLevel serverLevel, DamageSource damageSource) {
+	private void brokenByPlayer(ServerLevel level, DamageSource source) {
 		ItemStack itemStack = this.getPickResult();
 		itemStack.set(DataComponents.CUSTOM_NAME, this.getCustomName());
 		Block.popResource(this.level(), this.blockPosition(), itemStack);
-		this.brokenByAnything(serverLevel, damageSource);
+		this.brokenByAnything(level, source);
 	}
 
-	private void brokenByAnything(ServerLevel serverLevel, DamageSource damageSource) {
+	private void brokenByAnything(ServerLevel level, DamageSource source) {
 		this.playBrokenSound();
-		this.dropAllDeathLoot(serverLevel, damageSource);
+		this.dropAllDeathLoot(level, source);
 	}
 
 	private void playBrokenSound() {
 		this.level().playSound(null, this.getX(), this.getY(), this.getZ(), CameraPortMain.CAMERA_BREAK, this.getSoundSource(), 1F, 1F);
 	}
 
-	public boolean addPlayerToQueue(@NotNull Player player) {
-		UUID playerUUID = player.getUUID();
-		if (!this.queuedUUIDS.contains(playerUUID)) {
-			this.queuedUUIDS.add(playerUUID);
-			return true;
-		}
-		return false;
+	public boolean addPlayerToQueue(Player player) {
+		final UUID playerUUID = player.getUUID();
+		if (this.queuedUUIDS.contains(playerUUID)) return false;
+
+		this.queuedUUIDS.add(playerUUID);
+		return true;
 	}
 
 	@Override
 	public void handleEntityEvent(byte id) {
-		if (id == EntityEvent.ARMORSTAND_WOBBLE) {
-			if (this.level().isClientSide) {
-				this.level().playLocalSound(
-					this.getX(),
-					this.getY(),
-					this.getZ(),
-					CameraPortMain.CAMERA_HIT,
-					this.getSoundSource(),
-					0.3F,
-					1F,
-					false
-				);
-				this.lastHit = this.level().getGameTime();
-			}
-		} else {
+		if (id != EntityEvent.ARMORSTAND_WOBBLE) {
 			super.handleEntityEvent(id);
+			return;
 		}
+
+		if (!this.level().isClientSide()) return;
+
+		this.level().playLocalSound(
+			this.getX(),
+			this.getY(),
+			this.getZ(),
+			CameraPortMain.CAMERA_HIT,
+			this.getSoundSource(),
+			0.3F,
+			1F,
+			false
+		);
+		this.lastHit = this.level().getGameTime();
 	}
 
 	@Override
-	public void kill(ServerLevel serverLevel) {
+	public void kill(ServerLevel level) {
 		this.remove(Entity.RemovalReason.KILLED);
 		this.gameEvent(GameEvent.ENTITY_DIE);
 	}
@@ -327,7 +327,7 @@ public class CameraEntity extends Mob {
 	}
 
 	@Override
-	public boolean canBeAffected(MobEffectInstance mobEffectInstance) {
+	public boolean canBeAffected(MobEffectInstance effect) {
 		return false;
 	}
 
@@ -338,7 +338,7 @@ public class CameraEntity extends Mob {
 	}
 
 	@Override
-	public SoundEvent getHurtSound(DamageSource damageSource) {
+	public SoundEvent getHurtSound(DamageSource source) {
 		return CameraPortMain.CAMERA_HIT;
 	}
 
@@ -358,45 +358,45 @@ public class CameraEntity extends Mob {
 	}
 
 	@Override
-	protected void customServerAiStep(ServerLevel serverLevel) {
-		super.customServerAiStep(serverLevel);
+	protected void customServerAiStep(ServerLevel level) {
+		super.customServerAiStep(level);
 	}
 
 	@Override
-	public void addAdditionalSaveData(ValueOutput valueOutput) {
-		super.addAdditionalSaveData(valueOutput);
-		valueOutput.putInt("ticksToPhoto", this.getTimer());
+	public void addAdditionalSaveData(ValueOutput output) {
+		super.addAdditionalSaveData(output);
+		output.putInt("ticksToPhoto", this.getTimer());
 		if (!this.queuedUUIDS.isEmpty()) {
 			for (UUID uuid : this.queuedUUIDS) {
 				int index = this.queuedUUIDS.indexOf(uuid);
 				String uuidTag = "queuedUUID" + index;
-				valueOutput.store(uuidTag, UUIDUtil.CODEC, uuid);
+				output.store(uuidTag, UUIDUtil.CODEC, uuid);
 			}
 		}
-		valueOutput.putFloat("currentHeight", this.getTrackedHeight());
-		valueOutput.putBoolean("goingUp", this.goingUp);
+		output.putFloat("currentHeight", this.getTrackedHeight());
+		output.putBoolean("goingUp", this.goingUp);
 	}
 
 	@Override
-	public void readAdditionalSaveData(ValueInput valueInput) {
-		super.readAdditionalSaveData(valueInput);
-		this.setTimer(valueInput.getIntOr("ticksToPhoto", 0));
+	public void readAdditionalSaveData(ValueInput input) {
+		super.readAdditionalSaveData(input);
+		this.setTimer(input.getIntOr("ticksToPhoto", 0));
 
 		for (int i = 0; true; i++) {
 			String uuidTag = "queuedUUID" + i;
-			Optional<UUID> optionalUUID = valueInput.read(uuidTag, UUIDUtil.CODEC);
+			Optional<UUID> optionalUUID = input.read(uuidTag, UUIDUtil.CODEC);
 			if (optionalUUID.isPresent()) {
 				this.queuedUUIDS.add(optionalUUID.get());
 			} else {
 				break;
 			}
 		}
-		this.setTrackedHeight(valueInput.getFloatOr("currentHeight", 1.75F));
-		this.goingUp = valueInput.getBooleanOr("goingUp", false);
+		this.setTrackedHeight(input.getFloatOr("currentHeight", 1.75F));
+		this.goingUp = input.getBooleanOr("goingUp", false);
 	}
 
-	public float getLerpedTimer(float tickDelta) {
-		return Mth.lerp(tickDelta, this.prevTimer, this.timer);
+	public float getLerpedTimer(float partialTicks) {
+		return Mth.lerp(partialTicks, this.prevTimer, this.timer);
 	}
 
 	public float getTrackedHeight() {

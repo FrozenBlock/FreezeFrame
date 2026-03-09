@@ -13,38 +13,37 @@ import net.fabricmc.api.Environment;
 import net.fabricmc.loader.api.FabricLoader;
 import net.frozenblock.lib.texture.client.api.ServerTextureDownloader;
 import net.lunade.camera.CameraPortConstants;
-import net.minecraft.resources.ResourceLocation;
-import org.jetbrains.annotations.NotNull;
+import net.minecraft.resources.Identifier;
 import org.jetbrains.annotations.Nullable;
 
 @Environment(EnvType.CLIENT)
 public class PhotographLoader {
-	private static final ResourceLocation FALLBACK = CameraPortConstants.id("textures/photographs/empty.png");
-	private static final ArrayList<Pair<ResourceLocation, Date>> LOCAL_PHOTOGRAPHS = new ArrayList<>();
+	private static final Identifier FALLBACK = CameraPortConstants.id("textures/photographs/empty.png");
+	private static final ArrayList<Pair<Identifier, Date>> LOCAL_PHOTOGRAPHS = new ArrayList<>();
 
 	public static boolean hasAnyLocalPhotographs() {
 		return !LOCAL_PHOTOGRAPHS.isEmpty();
 	}
 
-	public static ResourceLocation getPhotograph(int index) {
+	public static Identifier getPhotograph(int index) {
 		return LOCAL_PHOTOGRAPHS.get(index).getFirst();
 	}
 
-	public static @NotNull ResourceLocation getAndLoadPhotograph(String photographName, boolean local) {
+	public static Identifier getAndLoadPhotograph(String photographName, boolean local) {
 		return getAndLoadPhotograph(getPhotographLocation(photographName), local);
 	}
 
-	public static @NotNull ResourceLocation getAndLoadPhotograph(@NotNull ResourceLocation photographLocation, boolean local) {
-		String filename = photographLocation.getPath().replace("photographs/", "");
+	public static Identifier getAndLoadPhotograph(Identifier photographId, boolean local) {
+		String filename = photographId.getPath().replace("photographs/", "");
 		if (!filename.endsWith(".png")) filename += ".png";
 
-		ResourceLocation downloaderLocation = ServerTextureDownloader.getOrLoadServerTexture(
-			photographLocation,
+		Identifier downloaderLocation = ServerTextureDownloader.getOrLoadServerTexture(
+			photographId,
 			"photographs",
 			filename,
 			FALLBACK
 		);
-		if (local) return photographLocation;
+		if (local) return photographId;
 		return downloaderLocation;
 	}
 
@@ -52,14 +51,15 @@ public class PhotographLoader {
 		return LOCAL_PHOTOGRAPHS.size();
 	}
 
-	public static @Nullable ResourceLocation getInfiniteLocalPhotograph(int index) {
+	@Nullable
+	public static Identifier getInfiniteLocalPhotograph(int index) {
 		if (LOCAL_PHOTOGRAPHS.isEmpty()) return null;
 		int size = LOCAL_PHOTOGRAPHS.size();
 		int adjustedIndex = ((index % size) + size) % size;
 		return getPhotograph(adjustedIndex);
 	}
 
-	private static @NotNull ResourceLocation getPhotographLocation(@NotNull String name) {
+	private static Identifier getPhotographLocation(String name) {
 		return CameraPortConstants.id("photographs/" + name);
 	}
 
@@ -72,7 +72,7 @@ public class PhotographLoader {
 			.filter(file1 -> file1.getName().endsWith(".png"));
 		LOCAL_PHOTOGRAPHS.clear();
 
-		ArrayList<Pair<ResourceLocation, Date>> localPhotographs = new ArrayList<>();
+		ArrayList<Pair<Identifier, Date>> localPhotographs = new ArrayList<>();
 		for (String name : fileStream.map(File::getName).toList()) {
 			String strippedFileName = name.replace(".png", "");
 			parseDate(strippedFileName).ifPresent(date -> {
@@ -84,7 +84,7 @@ public class PhotographLoader {
 		return LOCAL_PHOTOGRAPHS.size();
 	}
 
-	public static Optional<Date> parseDate(@NotNull String fileName) {
+	public static Optional<Date> parseDate(String fileName) {
 		int lastIndex = fileName.lastIndexOf(".png");
 		lastIndex = lastIndex == -1 ? fileName.length() : lastIndex;
 		String strippedFileName = fileName.substring(Math.max(fileName.lastIndexOf("/"), 0), lastIndex);

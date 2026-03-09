@@ -8,8 +8,8 @@ import net.minecraft.network.RegistryFriendlyByteBuf;
 public class CameraNetworking {
 
 	public static void init() {
-		PayloadTypeRegistry<RegistryFriendlyByteBuf> registry = PayloadTypeRegistry.playS2C();
-		PayloadTypeRegistry<RegistryFriendlyByteBuf> c2sRegistry = PayloadTypeRegistry.playC2S();
+		PayloadTypeRegistry<RegistryFriendlyByteBuf> registry = PayloadTypeRegistry.clientboundPlay();
+		PayloadTypeRegistry<RegistryFriendlyByteBuf> c2sRegistry = PayloadTypeRegistry.serverboundPlay();
 
 		registry.register(CameraPossessPacket.PACKET_TYPE, CameraPossessPacket.CODEC);
 		c2sRegistry.register(PrinterAskForSlotsPacket.PACKET_TYPE, PrinterAskForSlotsPacket.CODEC);

@@ -12,25 +12,23 @@ import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 import net.lunade.camera.CameraPortConstants;
 import net.lunade.camera.CameraPortMain;
-import net.lunade.camera.config.CameraPortConfig;
+import net.minecraft.client.Camera;
 import net.minecraft.client.DeltaTracker;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.Screenshot;
 import net.minecraft.client.renderer.GameRenderer;
-import net.minecraft.client.server.IntegratedServer;
 import net.minecraft.core.particles.ParticleTypes;
 import net.minecraft.network.chat.ClickEvent;
 import net.minecraft.network.chat.Component;
 import net.minecraft.sounds.SoundSource;
+import net.minecraft.util.Util;
 import net.minecraft.world.entity.Entity;
-import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import net.minecraft.ChatFormatting;
-import net.minecraft.Util;
 
 @Environment(EnvType.CLIENT)
 public class CameraScreenshotManager {
-	private static final String PLAYER_UUID = Minecraft.getInstance().getGameProfile().getId().toString();
+	private static final String PLAYER_UUID = Minecraft.getInstance().getGameProfile().id().toString();
 
 	public static boolean wasGuiHidden = false;
 	public static boolean possessingCamera = false;
@@ -43,53 +41,54 @@ public class CameraScreenshotManager {
 	}
 
 	public static void executeScreenshot(@Nullable Entity entity, boolean handheld) {
-		Minecraft client = Minecraft.getInstance();
+		final Minecraft minecraft = Minecraft.getInstance();
 		isCameraHandheld = handheld;
-		previousCameraEntity = client.getCameraEntity();
-		if (entity != null) client.setCameraEntity(entity);
+		previousCameraEntity = minecraft.getCameraEntity();
+		if (entity != null) minecraft.setCameraEntity(entity);
 
-		wasGuiHidden = client.options.hideGui;
-		client.options.hideGui = true;
+		wasGuiHidden = minecraft.options.hideGui;
+		minecraft.options.hideGui = true;
 		possessingCamera = true;
 
-		if (client.level != null) {
-			Entity camEntity = client.getCameraEntity();
-			if (camEntity != null) client.level.playLocalSound(client.player, CameraPortMain.CAMERA_SNAP, SoundSource.PLAYERS, 0.5F, 1F);
+		if (minecraft.level != null) {
+			Entity camEntity = minecraft.getCameraEntity();
+			if (camEntity != null) minecraft.level.playLocalSound(minecraft.player, CameraPortMain.CAMERA_SNAP, SoundSource.PLAYERS, 0.5F, 1F);
 		}
 
-		grabCameraScreenshot(client.gameDirectory, 256, 256);
+		grabCameraScreenshot(minecraft.gameDirectory, 256, 256);
 
-		if (client.level != null) {
-			Entity camEntity = client.getCameraEntity();
+		if (minecraft.level != null) {
+			Entity camEntity = minecraft.getCameraEntity();
 			if (camEntity != null) {
-				int smokeCount = client.level.getRandom().nextInt(1, 5);
+				int smokeCount = minecraft.level.getRandom().nextInt(1, 5);
 				for (int i = 0; i < smokeCount; i++) {
-					client.level.addParticle(ParticleTypes.LARGE_SMOKE, camEntity.getX(), camEntity.getEyeY(), camEntity.getZ(), 0D, 0.15D, 0D);
+					minecraft.level.addParticle(ParticleTypes.LARGE_SMOKE, camEntity.getX(), camEntity.getEyeY(), camEntity.getZ(), 0D, 0.15D, 0D);
 				}
 			}
 		}
 
 		if (previousCameraEntity != null) {
-			client.setCameraEntity(previousCameraEntity);
+			minecraft.setCameraEntity(previousCameraEntity);
 			previousCameraEntity = null;
 		}
 
-		client.options.hideGui = wasGuiHidden;
+		minecraft.options.hideGui = wasGuiHidden;
 		possessingCamera = false;
 		isCameraHandheld = false;
 	}
 
 	public static void grabCameraScreenshot(File gameDirectory, int width, int height) {
-		Minecraft minecraft = Minecraft.getInstance();
-		Window window = minecraft.getWindow();
-		int prevWidth = window.getWidth();
-		int prevHeight = window.getHeight();
-		RenderTarget renderTarget = minecraft.getMainRenderTarget();
-		GameRenderer gameRenderer = minecraft.gameRenderer;
+		final Minecraft minecraft = Minecraft.getInstance();
+		final Window window = minecraft.getWindow();
+		final int prevWidth = window.getWidth();
+		final int prevHeight = window.getHeight();
+		final Camera camera = minecraft.gameRenderer.getMainCamera();
+		final RenderTarget renderTarget = minecraft.getMainRenderTarget();
+		final GameRenderer gameRenderer = minecraft.gameRenderer;
 		gameRenderer.setRenderBlockOutline(false);
 
 		try {
-			gameRenderer.setPanoramicMode(true);
+			camera.enablePanoramicMode();
 			window.setWidth(width);
 			window.setHeight(height);
 			renderTarget.resize(width, height);
@@ -100,18 +99,18 @@ public class CameraScreenshotManager {
 			} catch (InterruptedException ignored) {
 			}
 
-			grab(gameDirectory, renderTarget, (text) -> minecraft.execute(() -> minecraft.gui.getChat().addMessage(text)));
+			grab(gameDirectory, renderTarget, (text) -> minecraft.execute(() -> minecraft.gui.getChat().addClientSystemMessage(text)));
 		} catch (Exception ignored) {
 		} finally {
 			gameRenderer.setRenderBlockOutline(true);
 			window.setWidth(prevWidth);
 			window.setHeight(prevHeight);
 			renderTarget.resize(prevWidth, prevHeight);
-			gameRenderer.setPanoramicMode(false);
+			camera.disablePanoramicMode();
 		}
 	}
 
-	private static void grab(@NotNull File gameDirectory, RenderTarget renderTarget, Consumer<Component> messageReceiver) {
+	private static void grab(File gameDirectory, RenderTarget renderTarget, Consumer<Component> messageReceiver) {
 		Screenshot.takeScreenshot(renderTarget, 1, nativeImage -> {
 			File photographPath = gameDirectory.toPath()
 				.resolve("photographs")
@@ -121,6 +120,7 @@ public class CameraScreenshotManager {
 
 			Optional<Path> iconPath = Optional.empty();
 			Minecraft minecraft = Minecraft.getInstance();
+			/*
 			if (CameraPortConfig.get().useLatestPhotoAsWorldIcon && minecraft.isLocalServer()) {
 				IntegratedServer integratedServer = minecraft.getSingleplayerServer();
 				if (integratedServer != null) {
@@ -128,6 +128,7 @@ public class CameraScreenshotManager {
 					iconPath.ifPresent(path -> path.toFile().mkdirs());
 				}
 			}
+			 */
 
 			File photographFile = getPhotographFile(photographPath);
 			Optional<Path> finalIconPath = iconPath;
@@ -152,9 +153,9 @@ public class CameraScreenshotManager {
 		});
 	}
 
-	private static void copyPhotographToFileWithSize(@NotNull NativeImage nativeImage, Path path, int width, int height) {
-		int i = nativeImage.getWidth();
-		int j = nativeImage.getHeight();
+	private static void copyPhotographToFileWithSize(NativeImage image, Path path, int width, int height) {
+		int i = image.getWidth();
+		int j = image.getHeight();
 		int k = 0;
 		int l = 0;
 		if (i > j) {
@@ -166,16 +167,16 @@ public class CameraScreenshotManager {
 		}
 
 		try (NativeImage nativeImage2 = new NativeImage(64, 64, false)) {
-			nativeImage.resizeSubRectTo(k, l, i, j, nativeImage2);
+			image.resizeSubRectTo(k, l, i, j, nativeImage2);
 			nativeImage2.writeToFile(path);
 		} catch (IOException e) {
 			CameraPortConstants.LOGGER.warn("Couldn't save photograph to world icon", e);
 		} finally {
-			nativeImage.close();
+			image.close();
 		}
 	}
 
-	public static @NotNull File getPhotographFile(File directory) {
+	public static File getPhotographFile(File directory) {
 		String fileName = PLAYER_UUID + "_" + System.currentTimeMillis();
 		int fileIndex = 1;
 

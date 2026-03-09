@@ -1,6 +1,7 @@
 package net.lunade.camera.datagen.recipe;
 
-import net.fabricmc.fabric.api.datagen.v1.FabricDataOutput;
+import java.util.concurrent.CompletableFuture;
+import net.fabricmc.fabric.api.datagen.v1.FabricPackOutput;
 import net.fabricmc.fabric.api.datagen.v1.provider.FabricRecipeProvider;
 import net.fabricmc.fabric.api.tag.convention.v2.ConventionalItemTags;
 import net.frozenblock.lib.recipe.api.RecipeExportNamespaceFix;
@@ -16,17 +17,16 @@ import net.minecraft.world.item.Items;
 import net.minecraft.world.item.crafting.Ingredient;
 import org.jetbrains.annotations.Contract;
 import org.jetbrains.annotations.NotNull;
-import java.util.concurrent.CompletableFuture;
 
 public final class CameraPortRecipeProvider extends FabricRecipeProvider {
 
-	public CameraPortRecipeProvider(FabricDataOutput output, CompletableFuture<HolderLookup.Provider> registries) {
+	public CameraPortRecipeProvider(FabricPackOutput output, CompletableFuture<HolderLookup.Provider> registries) {
 		super(output, registries);
 	}
 
 	@Contract("_, _ -> new")
 	@Override
-	protected @NotNull RecipeProvider createRecipeProvider(HolderLookup.Provider registries, RecipeOutput exporter) {
+	protected RecipeProvider createRecipeProvider(HolderLookup.Provider registries, RecipeOutput exporter) {
 		return new RecipeProvider(registries, exporter) {
 			@Override
 			public void buildRecipes() {

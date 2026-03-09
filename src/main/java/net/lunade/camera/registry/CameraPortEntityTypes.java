@@ -11,7 +11,6 @@ import net.minecraft.resources.ResourceKey;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.EntityType;
 import net.minecraft.world.entity.MobCategory;
-import org.jetbrains.annotations.NotNull;
 
 public class CameraPortEntityTypes {
 	public static final EntityType<CameraEntity> CAMERA = register(
@@ -38,7 +37,7 @@ public class CameraPortEntityTypes {
 		FabricDefaultAttributeRegistry.register(DISC_CAMERA, DiscCameraEntity.addAttributes());
 	}
 
-	private static <T extends Entity> @NotNull EntityType<T> register(String string, EntityType.@NotNull Builder<T> builder) {
+	private static <T extends Entity> EntityType<T> register(String string, EntityType.Builder<T> builder) {
 		ResourceKey<EntityType<?>> resourceKey = ResourceKey.create(Registries.ENTITY_TYPE, CameraPortConstants.id(string));
 		return Registry.register(BuiltInRegistries.ENTITY_TYPE, resourceKey, builder.build(resourceKey));
 	}

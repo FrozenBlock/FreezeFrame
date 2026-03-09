@@ -2,14 +2,14 @@ package net.lunade.camera.registry;
 
 import java.util.function.BiFunction;
 import java.util.function.Function;
-import net.fabricmc.fabric.api.itemgroup.v1.ItemGroupEvents;
+import net.fabricmc.fabric.api.creativetab.v1.CreativeModeTabEvents;
 import net.lunade.camera.CameraPortConstants;
 import net.lunade.camera.block.PrinterBlock;
 import net.minecraft.core.Registry;
 import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.core.registries.Registries;
+import net.minecraft.resources.Identifier;
 import net.minecraft.resources.ResourceKey;
-import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.item.BlockItem;
 import net.minecraft.world.item.CreativeModeTabs;
 import net.minecraft.world.item.DoubleHighBlockItem;
@@ -29,11 +29,11 @@ public class CameraPortBlocks {
 	);
 
 	public static void register() {
-		ItemGroupEvents.modifyEntriesEvent(CreativeModeTabs.FUNCTIONAL_BLOCKS).register((entries) -> entries.addAfter(Items.LODESTONE, PRINTER));
+		CreativeModeTabEvents.modifyOutputEvent(CreativeModeTabs.FUNCTIONAL_BLOCKS).register((entries) -> entries.insertAfter(Items.LODESTONE, PRINTER));
 	}
 
 	private static <T extends Block> T registerWithoutItem(String path, Function<BlockBehaviour.Properties, T> block, BlockBehaviour.Properties properties) {
-		ResourceLocation id = CameraPortConstants.id(path);
+		Identifier id = CameraPortConstants.id(path);
 		return doRegister(id, makeBlock(block, properties, id));
 	}
 
@@ -43,14 +43,14 @@ public class CameraPortBlocks {
 		return registered;
 	}
 
-	private static <T extends Block> T doRegister(ResourceLocation id, T block) {
+	private static <T extends Block> T doRegister(Identifier id, T block) {
 		if (BuiltInRegistries.BLOCK.getOptional(id).isEmpty()) {
 			return Registry.register(BuiltInRegistries.BLOCK, id, block);
 		}
 		throw new IllegalArgumentException("Block with id " + id + " is already in the block registry.");
 	}
 
-	private static <T extends Block> T makeBlock(Function<BlockBehaviour.Properties, T> function, BlockBehaviour.Properties properties, ResourceLocation id) {
+	private static <T extends Block> T makeBlock(Function<BlockBehaviour.Properties, T> function, BlockBehaviour.Properties properties, Identifier id) {
 		return function.apply(properties.setId(ResourceKey.create(Registries.BLOCK, id)));
 	}
 

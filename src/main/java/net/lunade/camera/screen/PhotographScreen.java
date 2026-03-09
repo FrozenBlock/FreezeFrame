@@ -10,7 +10,7 @@ import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.client.gui.components.Button;
 import net.minecraft.client.gui.screens.Screen;
 import net.minecraft.client.renderer.RenderPipelines;
-import net.minecraft.resources.ResourceLocation;
+import net.minecraft.resources.Identifier;
 
 /**
  * UNUSED SCREEN
@@ -18,8 +18,8 @@ import net.minecraft.resources.ResourceLocation;
 
 @Environment(EnvType.CLIENT)
 public class PhotographScreen extends Screen {
-	private final ResourceLocation BASE_IMAGE = CameraPortConstants.id("textures/gui/picture_screen.png");
-	private final List<ResourceLocation> IMAGES = new ArrayList<>();
+	private final Identifier BASE_IMAGE = CameraPortConstants.id("textures/gui/picture_screen.png");
+	private final List<Identifier> IMAGES = new ArrayList<>();
 
 	private int leftPos;
 	private int topPos;

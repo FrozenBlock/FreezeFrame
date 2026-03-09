@@ -1,50 +1,57 @@
 package net.lunade.camera.client.photograph;
 
 import com.mojang.blaze3d.vertex.PoseStack;
-import com.mojang.blaze3d.vertex.VertexConsumer;
 import com.mojang.math.Axis;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 import net.lunade.camera.CameraPortConstants;
 import net.minecraft.client.gui.GuiGraphics;
-import net.minecraft.client.renderer.MultiBufferSource;
 import net.minecraft.client.renderer.RenderPipelines;
-import net.minecraft.client.renderer.RenderType;
-import net.minecraft.resources.ResourceLocation;
-import org.jetbrains.annotations.NotNull;
-import org.joml.Matrix4f;
+import net.minecraft.client.renderer.SubmitNodeCollector;
+import net.minecraft.client.renderer.rendertype.RenderType;
+import net.minecraft.client.renderer.rendertype.RenderTypes;
+import net.minecraft.resources.Identifier;
 
 @Environment(EnvType.CLIENT)
 public class PhotographRenderer {
-	private static final ResourceLocation FRAME = CameraPortConstants.id("textures/gui/sprites/photograph/frame.png");
-	private static final ResourceLocation GUI_FRAME = CameraPortConstants.id("photograph/frame");
+	private static final Identifier FRAME = CameraPortConstants.id("textures/gui/sprites/photograph/frame.png");
+	private static final RenderType FRAME_RENDER_TYPE = RenderTypes.text(FRAME);
+	private static final Identifier GUI_FRAME = CameraPortConstants.id("photograph/frame");
 
-	public static void render(
-		@NotNull PoseStack matrices, @NotNull MultiBufferSource vertexConsumers, ResourceLocation photoLocation, int light, boolean renderFrame
-	) {
-		Matrix4f matrix4f = matrices.last().pose();
-		matrices.mulPose(Axis.ZP.rotationDegrees(180F));
-		matrices.translate(-0.5F, -0.5F, 0F);
+	public static void submit(PoseStack poseStack, SubmitNodeCollector collector, Identifier photographId, int lightCoords, boolean renderFrame) {
+		poseStack.mulPose(Axis.ZP.rotationDegrees(180F));
+		poseStack.translate(-0.5F, -0.5F, 0F);
 
-		ResourceLocation loadedPhotoLocation = PhotographLoader.getAndLoadPhotograph(photoLocation, false);
 		if (renderFrame) {
-			VertexConsumer frameConsumer = vertexConsumers.getBuffer(RenderType.text(FRAME));
-			frameConsumer.addVertex(matrix4f, -0.0625F, 1.0625F, 0F).setColor(-1).setUv(0F, 1F).setLight(light);
-			frameConsumer.addVertex(matrix4f, 1.0625F, 1.0625F, 0F).setColor(-1).setUv(1F, 1F).setLight(light);
-			frameConsumer.addVertex(matrix4f, 1.0625F, -0.0625F, 0F).setColor(-1).setUv(1F, 0F).setLight(light);
-			frameConsumer.addVertex(matrix4f, -0.0625F, -0.0625F, 0F).setColor(-1).setUv(0F, 0F).setLight(light);
+			collector.submitCustomGeometry(
+				poseStack,
+				FRAME_RENDER_TYPE,
+				(pose, buffer) -> {
+					buffer.addVertex(pose, -0.0625F, 1.0625F, 0F).setColor(-1).setUv(0F, 1F).setLight(lightCoords);
+					buffer.addVertex(pose, 1.0625F, 1.0625F, 0F).setColor(-1).setUv(1F, 1F).setLight(lightCoords);
+					buffer.addVertex(pose, 1.0625F, -0.0625F, 0F).setColor(-1).setUv(1F, 0F).setLight(lightCoords);
+					buffer.addVertex(pose, -0.0625F, -0.0625F, 0F).setColor(-1).setUv(0F, 0F).setLight(lightCoords);
+				}
+			);
 		}
-		VertexConsumer vertexConsumer = vertexConsumers.getBuffer(RenderType.text(loadedPhotoLocation));
-		vertexConsumer.addVertex(matrix4f, 0F, 1F, -0.00007812F).setColor(-1).setUv(0F, 1F).setLight(light);
-		vertexConsumer.addVertex(matrix4f, 1F, 1F, -0.00007812F).setColor(-1).setUv(1F, 1F).setLight(light);
-		vertexConsumer.addVertex(matrix4f, 1F, 0F, -0.00007812F).setColor(-1).setUv(1F, 0F).setLight(light);
-		vertexConsumer.addVertex(matrix4f, 0F, 0F, -0.00007812F).setColor(-1).setUv(0F, 0F).setLight(light);
+
+		final Identifier loadedPhotoLocation = PhotographLoader.getAndLoadPhotograph(photographId, false);
+		collector.submitCustomGeometry(
+			poseStack,
+			RenderTypes.text(loadedPhotoLocation),
+			(pose, buffer) -> {
+				buffer.addVertex(pose, 0F, 1F, -0.00007812F).setColor(-1).setUv(0F, 1F).setLight(lightCoords);
+				buffer.addVertex(pose, 1F, 1F, -0.00007812F).setColor(-1).setUv(1F, 1F).setLight(lightCoords);
+				buffer.addVertex(pose, 1F, 0F, -0.00007812F).setColor(-1).setUv(1F, 0F).setLight(lightCoords);
+				buffer.addVertex(pose, 0F, 0F, -0.00007812F).setColor(-1).setUv(0F, 0F).setLight(lightCoords);
+			}
+		);
 	}
 
 	public static void render(
-		int x, int y, int xOffset, int yOffset, @NotNull GuiGraphics graphics, ResourceLocation photoLocation, int renderSize, boolean renderFrame
+		int x, int y, int xOffset, int yOffset, GuiGraphics graphics, Identifier photoLocation, int renderSize, boolean renderFrame
 	) {
-		ResourceLocation loadedPhotoLocation = PhotographLoader.getAndLoadPhotograph(photoLocation, false);
+		Identifier loadedPhotoLocation = PhotographLoader.getAndLoadPhotograph(photoLocation, false);
 		int renderX = x + xOffset;
 		int renderY = y + yOffset;
 		if (renderFrame) {

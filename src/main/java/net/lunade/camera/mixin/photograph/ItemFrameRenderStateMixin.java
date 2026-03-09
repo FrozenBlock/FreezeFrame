@@ -2,7 +2,7 @@ package net.lunade.camera.mixin.photograph;
 
 import net.lunade.camera.client.renderer.entity.state.impl.ItemFrameRenderStateInterface;
 import net.minecraft.client.renderer.entity.state.ItemFrameRenderState;
-import net.minecraft.resources.ResourceLocation;
+import net.minecraft.resources.Identifier;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Unique;
 
@@ -10,17 +10,17 @@ import org.spongepowered.asm.mixin.Unique;
 public class ItemFrameRenderStateMixin implements ItemFrameRenderStateInterface {
 
 	@Unique
-	private ResourceLocation cameraPort$photographLocation;
+	private Identifier cameraPort$photographLocation;
 
 	@Unique
 	@Override
-	public void cameraPort$addPhotographLocation(ResourceLocation location) {
+	public void cameraPort$addPhotographLocation(Identifier location) {
 		this.cameraPort$photographLocation = location;
 	}
 
 	@Unique
 	@Override
-	public ResourceLocation cameraPort$getPhotographLocation() {
+	public Identifier cameraPort$getPhotographLocation() {
 		return this.cameraPort$photographLocation;
 	}
 }

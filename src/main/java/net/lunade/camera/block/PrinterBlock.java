@@ -28,34 +28,35 @@ public class PrinterBlock extends HorizontalDirectionalBlock {
 	}
 
 	@Override
-	protected @NotNull MapCodec<? extends HorizontalDirectionalBlock> codec() {
+	protected MapCodec<? extends HorizontalDirectionalBlock> codec() {
 		return CODEC;
 	}
 
 	@Override
-	protected @NotNull InteractionResult useWithoutItem(BlockState state, @NotNull Level world, BlockPos pos, Player entity, BlockHitResult hitResult) {
-		if (world.isClientSide) {
-			return InteractionResult.SUCCESS;
-		} else {
-			entity.openMenu(state.getMenuProvider(world, pos));
-			//entity.awardStat(Stats.INTERACT_WITH_LOOM);
-			//TODO: Might want to add an award?
-			return InteractionResult.CONSUME;
-		}
+	protected InteractionResult useWithoutItem(BlockState state, Level level, BlockPos pos, Player entity, BlockHitResult hitResult) {
+		if (level.isClientSide()) return InteractionResult.SUCCESS;
+
+		entity.openMenu(state.getMenuProvider(level, pos));
+		//entity.awardStat(Stats.INTERACT_WITH_LOOM);
+		//TODO: Might want to add an award?
+		return InteractionResult.CONSUME;
 	}
 
 	@Override
-	protected @Nullable MenuProvider getMenuProvider(BlockState state, Level world, BlockPos pos) {
-		return new SimpleMenuProvider((id, inventory, player) -> new PrinterMenu(id, inventory, ContainerLevelAccess.create(world, pos)), CONTAINER_TITLE);
+	protected MenuProvider getMenuProvider(BlockState state, Level level, BlockPos pos) {
+		return new SimpleMenuProvider(
+			(id, inventory, player) -> new PrinterMenu(id, inventory, ContainerLevelAccess.create(level, pos)),
+			CONTAINER_TITLE
+		);
 	}
 
 	@Override
-	public @Nullable BlockState getStateForPlacement(@NotNull BlockPlaceContext ctx) {
-		return this.defaultBlockState().setValue(FACING, ctx.getHorizontalDirection().getOpposite());
+	public BlockState getStateForPlacement(BlockPlaceContext context) {
+		return this.defaultBlockState().setValue(FACING, context.getHorizontalDirection().getOpposite());
 	}
 
 	@Override
-	protected void createBlockStateDefinition(StateDefinition.@NotNull Builder<Block, BlockState> builder) {
+	protected void createBlockStateDefinition(StateDefinition.Builder<Block, BlockState> builder) {
 		builder.add(FACING);
 	}
 }

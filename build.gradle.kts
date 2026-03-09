@@ -18,7 +18,7 @@ buildscript {
 }
 
 plugins {
-    id("fabric-loom") version("+")
+    id("net.fabricmc.fabric-loom") version("1.15-SNAPSHOT")
     id("org.quiltmc.gradle.licenser") version("+")
     id("org.ajoberstar.grgit") version("+")
     id("com.modrinth.minotaur") version("+")
@@ -27,14 +27,13 @@ plugins {
     idea
     `java-library`
     java
+    checkstyle
 }
 
 val githubActions: Boolean = System.getenv("GITHUB_ACTIONS") == "true"
 val licenseChecks: Boolean = githubActions
 
 val minecraft_version: String by project
-val quilt_mappings: String by project
-val parchment_mappings: String by project
 val loader_version: String by project
 
 val mod_id: String by project
@@ -68,11 +67,7 @@ val datagen by sourceSets.registering {
 loom {
     runtimeOnlyLog4j.set(true)
 
-    mixin {
-        defaultRefmapName.set("mixins.$mod_id.refmap.json")
-    }
-
-    accessWidenerPath.set(file("src/main/resources/$mod_id.accesswidener"))
+    accessWidenerPath.set(file("src/main/resources/$mod_id.classtweaker"))
     interfaceInjection {
         // When enabled, injected interfaces from dependencies will be applied.
         enableDependencyInterfaceInjection.set(true)
@@ -111,19 +106,19 @@ loom {
     }
 }
 
-val includeModImplementation by configurations.creating
+checkstyle {
+    configFile = rootProject.file("checkstyle.xml")
+    toolVersion = "10.20.2"
+}
+
 val includeImplementation by configurations.creating
 
 configurations {
     include {
         extendsFrom(includeImplementation)
-        extendsFrom(includeModImplementation)
     }
     implementation {
         extendsFrom(includeImplementation)
-    }
-    modImplementation {
-        extendsFrom(includeModImplementation)
     }
 }
 
@@ -150,10 +145,6 @@ repositories {
     maven("https://maven.shedaniel.me/")
     maven("https://maven.blamejared.com")
     maven("https://maven.minecraftforge.net/")
-    maven("https://maven.parchmentmc.org")
-    maven("https://maven.quiltmc.org/repository/release") {
-        name = "Quilt"
-    }
     maven("https://maven.jamieswhiteshirt.com/libs-release") {
         content {
             includeGroup("com.jamieswhiteshirt")
@@ -161,6 +152,9 @@ repositories {
     }
     maven("https://maven.frozenblock.net/release") {
         name = "FrozenBlock"
+    }
+    maven("https://maven.frozenblock.net/snapshot") {
+        name = "FrozenBlock Snapshot"
     }
 
     flatDir {
@@ -172,31 +166,17 @@ repositories {
 dependencies {
     // To change the versions, see the gradle.properties file
     minecraft("com.mojang:minecraft:$minecraft_version")
-    mappings(loom.layered {
-        // please annoy treetrain if this doesnt work
-        //mappings("org.quiltmc:quilt-mappings:$quilt_mappings:intermediary-v2")
-        //parchment("org.parchmentmc.data:parchment-$parchment_mappings@zip")
-        officialMojangMappings {
-            nameSyntheticMembers = false
-        }
-        //parchment("org.parchmentmc.data:parchment-$parchment_mappings@zip")
-    })
-    modImplementation("net.fabricmc:fabric-loader:$loader_version")
-    modImplementation("net.fabricmc.fabric-api:fabric-api:$fabric_api_version")
+    implementation("net.fabricmc:fabric-loader:$loader_version")
+    implementation("net.fabricmc.fabric-api:fabric-api:$fabric_api_version")
 
     // FrozenLib
-    if (local_frozenlib) {
-        api(project(":FrozenLib", configuration = "namedElements"))
-        modCompileOnly(project(":FrozenLib"))?.let { include(it) }
-    } else
-        modApi("maven.modrinth:frozenlib:$frozenlib_version")?.let { include(it) }
+    api("maven.modrinth:frozenlib:${frozenlib_version}")
 
-    // Mod Menu
-    modImplementation("com.terraformersmc:modmenu:$modmenu_version")
-    modImplementation("maven.modrinth:placeholder-api:$placeholder_api_version")
+// Mod Menu
+    compileOnly("com.terraformersmc:modmenu:${modmenu_version}")
 
     // Cloth Config
-    modImplementation("me.shedaniel.cloth:cloth-config-fabric:$cloth_config_version") {
+    compileOnly("me.shedaniel.cloth:cloth-config-fabric:$cloth_config_version") {
         exclude(group = "net.fabricmc.fabric-api")
         exclude(group = "com.terraformersmc")
     }
@@ -210,7 +190,7 @@ tasks {
             "mod_id" to mod_id,
             "version" to version,
             "protocol_version" to protocol_version,
-            "minecraft_version" to "~1.21-",//minecraft_version,
+            "minecraft_version" to "~26.1-",//minecraft_version,
 
             "fabric_api_version" to ">=$fabric_api_version",
             "frozenlib_version" to ">=${frozenlib_version.split('-').firstOrNull()}-"
@@ -225,6 +205,7 @@ tasks {
                 "**/lang/*.json",
                 "**/.cache/*",
                 "**/*.accesswidener",
+                "**/*.classtweaker",
                 "**/*.nbt",
                 "**/*.png",
                 "**/*.ogg",
@@ -244,7 +225,6 @@ tasks {
         }
     }
 
-
     register("javadocJar", Jar::class) {
         dependsOn(javadoc)
         archiveClassifier.set("javadoc")
@@ -259,8 +239,8 @@ tasks {
 
     withType(JavaCompile::class) {
         options.encoding = "UTF-8"
-        // Minecraft 1.20.5 (24w14a) upwards uses Java 21.
-        options.release.set(21)
+        // Minecraft 26.1 (26.1-snapshot-1) upwards uses Java 25.
+        options.release.set(25)
         options.isFork = true
         options.isIncremental = true
     }
@@ -275,13 +255,13 @@ val test: Task by tasks
 val runClient: Task by tasks
 val runDatagen: Task by tasks
 
-val remapJar: Task by tasks
-val sourcesJar: Task by tasks
-val javadocJar: Task by tasks
+val jar: Jar by tasks
+val sourcesJar: Jar by tasks
+val javadocJar: Jar by tasks
 
 java {
-    sourceCompatibility = JavaVersion.VERSION_21
-    targetCompatibility = JavaVersion.VERSION_21
+    sourceCompatibility = JavaVersion.VERSION_25
+    targetCompatibility = JavaVersion.VERSION_25
 
     // Loom will automatically attach sourcesJar to a RemapSourcesJar task and to the "build" task
     // if it is present.
@@ -433,7 +413,7 @@ modrinth {
     versionName.set(display_name)
     versionType.set(release_type)
     changelog.set(changelog_text)
-    uploadFile.set(remapJar)
+    uploadFile.set(jar)
     gameVersions.set(listOf(minecraft_version))
     loaders.set(listOf("fabric", "quilt"))
     additionalFiles.set(
@@ -454,7 +434,7 @@ modrinth {
 
 
 val github by tasks.register("github") {
-    dependsOn(remapJar)
+    dependsOn(jar)
     dependsOn(sourcesJar)
     dependsOn(javadocJar)
 
@@ -476,8 +456,8 @@ val github by tasks.register("github") {
         releaseBuilder.prerelease(release_type != "release")
 
         val ghRelease = releaseBuilder.create()
-        ghRelease.uploadAsset(tasks.remapJar.get().archiveFile.get().asFile, "application/java-archive")
-        ghRelease.uploadAsset(tasks.remapSourcesJar.get().archiveFile.get().asFile, "application/java-archive")
+        ghRelease.uploadAsset(jar.archiveFile.get().asFile, "application/java-archive")
+        ghRelease.uploadAsset(sourcesJar.archiveFile.get().asFile, "application/java-archive")
         ghRelease.uploadAsset(javadocJar.outputs.files.singleFile, "application/java-archive")
     }
 }

@@ -10,6 +10,7 @@ import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.level.block.state.BlockState;
+import org.objectweb.asm.Opcodes;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
@@ -30,7 +31,8 @@ public class ScreenEffectRendererMixin {
 		method = "renderScreenEffect",
 		at = @At(
 			value = "FIELD",
-			target = "Lnet/minecraft/world/entity/player/Player;noPhysics:Z"
+			target = "Lnet/minecraft/world/entity/player/Player;noPhysics:Z",
+			opcode = Opcodes.GETFIELD
 		)
 	)
 	private static boolean cameraPort$fixNoPhysicsCheck(boolean original) {

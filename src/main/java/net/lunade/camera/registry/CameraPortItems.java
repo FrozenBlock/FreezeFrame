@@ -2,7 +2,7 @@ package net.lunade.camera.registry;
 
 import java.util.function.Function;
 import java.util.function.UnaryOperator;
-import net.fabricmc.fabric.api.itemgroup.v1.ItemGroupEvents;
+import net.fabricmc.fabric.api.creativetab.v1.CreativeModeTabEvents;
 import net.lunade.camera.CameraPortConstants;
 import net.lunade.camera.component.PhotographComponent;
 import net.lunade.camera.component.WritablePortfolioContent;
@@ -16,20 +16,21 @@ import net.minecraft.resources.ResourceKey;
 import net.minecraft.world.item.CreativeModeTabs;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.Items;
-import org.jetbrains.annotations.NotNull;
 
 public class CameraPortItems {
 	public static final CameraItem CAMERA = register(
 		"camera",
-		properties -> new CameraItem(CameraPortEntityTypes.CAMERA, properties),
+		CameraItem::new,
 		new Item.Properties()
 			.stacksTo(1)
+			.spawnEgg(CameraPortEntityTypes.CAMERA)
 	);
 	public static final CameraItem DISC_CAMERA = register(
 		"disc_camera",
-		properties -> new CameraItem(CameraPortEntityTypes.DISC_CAMERA, properties),
+		CameraItem::new,
 		new Item.Properties()
 			.stacksTo(1)
+			.spawnEgg(CameraPortEntityTypes.DISC_CAMERA)
 	);
 	public static final PhotographItem PHOTOGRAPH = register(
 		"photograph",
@@ -51,16 +52,16 @@ public class CameraPortItems {
 
 
 	public static void register() {
-		ItemGroupEvents.modifyEntriesEvent(CreativeModeTabs.FUNCTIONAL_BLOCKS).register((entries) -> entries.addAfter(Items.LODESTONE, DISC_CAMERA));
-		ItemGroupEvents.modifyEntriesEvent(CreativeModeTabs.FUNCTIONAL_BLOCKS).register((entries) -> entries.addAfter(Items.LODESTONE, CAMERA));
-		ItemGroupEvents.modifyEntriesEvent(CreativeModeTabs.FUNCTIONAL_BLOCKS).register((entries) -> entries.addAfter(Items.LODESTONE, PHOTOGRAPH));
+		CreativeModeTabEvents.modifyOutputEvent(CreativeModeTabs.FUNCTIONAL_BLOCKS).register((entries) -> entries.insertAfter(Items.LODESTONE, DISC_CAMERA));
+		CreativeModeTabEvents.modifyOutputEvent(CreativeModeTabs.FUNCTIONAL_BLOCKS).register((entries) -> entries.insertAfter(Items.LODESTONE, CAMERA));
+		CreativeModeTabEvents.modifyOutputEvent(CreativeModeTabs.FUNCTIONAL_BLOCKS).register((entries) -> entries.insertAfter(Items.LODESTONE, PHOTOGRAPH));
 	}
 
-	private static @NotNull <T extends Item> T register(String name, @NotNull Function<Item.Properties, Item> function, Item.@NotNull Properties properties) {
+	private static <T extends Item> T register(String name, Function<Item.Properties, Item> function, Item.Properties properties) {
 		return (T) Items.registerItem(ResourceKey.create(Registries.ITEM, CameraPortConstants.id(name)), function, properties);
 	}
 
-	private static <T> @NotNull DataComponentType<T> register(String id, @NotNull UnaryOperator<DataComponentType.Builder<T>> unaryOperator) {
+	private static <T> DataComponentType<T> register(String id, UnaryOperator<DataComponentType.Builder<T>> unaryOperator) {
 		return Registry.register(BuiltInRegistries.DATA_COMPONENT_TYPE, CameraPortConstants.id(id), unaryOperator.apply(DataComponentType.builder()).build());
 	}
 }
