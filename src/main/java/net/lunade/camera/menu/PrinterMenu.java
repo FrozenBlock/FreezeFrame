@@ -26,6 +26,7 @@ public class PrinterMenu extends AbstractContainerMenu {
 	private static final int USE_ROW_SLOT_START = 30;
 	private static final int USE_ROW_SLOT_END = 39;
 	protected final ContainerLevelAccess access;
+	private final Player player;
 	private final DataSlot pictureSlotsSize = DataSlot.standalone();
 	private ItemStack input = ItemStack.EMPTY;
 	protected String photoId;
@@ -51,6 +52,7 @@ public class PrinterMenu extends AbstractContainerMenu {
 	public PrinterMenu(int id, Inventory inventory, ContainerLevelAccess access) {
 		super(CameraPortMenuTypes.PRINTER, id);
 		this.access = access;
+		this.player = inventory.player;
 		this.filmSlot = addSlot(new PrinterFilmSlot(this.inputContainer, FILM_SLOT, 14, 15));
 		this.paperSlot = addSlot(new PrinterPaperSlot(this.inputContainer, PAPER_SLOT, 44, 109));
 		this.resultSlot = addSlot(new PrinterResultSlot(this, this.resultContainer, RESULT_SLOT, 116, 109));
@@ -73,11 +75,9 @@ public class PrinterMenu extends AbstractContainerMenu {
 
 	@Override
 	public void slotsChanged(Container container) {
-		final ItemStack inputStack = this.paperSlot.getItem();
-		if (!inputStack.is(this.input.getItem())) {
-			this.input = inputStack.copy();
-			this.resultSlot.set(ItemStack.EMPTY);
-		}
+		super.slotsChanged(container);
+		this.setupResultSlot(this.player);
+		this.broadcastChanges();
 	}
 
 	void setupResultSlot(Player player) {
@@ -139,8 +139,8 @@ public class PrinterMenu extends AbstractContainerMenu {
 		if (item.getCount() == clicked.getCount()) return ItemStack.EMPTY;
 
 		slot.onTake(player, item);
-		this.broadcastChanges();
 		this.setupResultSlot(player);
+		this.broadcastChanges();
 
 		return clicked;
 	}
