@@ -106,6 +106,6 @@ public abstract class ItemInHandRendererMixin {
 	private void cameraPort$renderPhotograph(PoseStack poseStack, SubmitNodeCollector collector, int lightCoords, PhotographComponent photographComponent) {
 		poseStack.mulPose(Axis.YP.rotationDegrees(180F));
 		poseStack.scale(0.38F, 0.38F, 0.38F);
-		PhotographRenderer.submit(poseStack, collector, photographComponent.identifier(), lightCoords, true);
+		PhotographRenderer.submit(poseStack, collector, photographComponent.identifier(), lightCoords, PhotographRenderer.FrameType.FRAME);
 	}
 }

@@ -68,14 +68,14 @@ public class PrinterScreen extends AbstractContainerScreen<PrinterMenu> {
 
 		final int size = PhotographLoader.getSize();
 		Identifier middle = PhotographLoader.getInfiniteLocalPhotograph(this.index);
-		if (middle != null) PhotographRenderer.blit(leftPos, topPos, 65, 43, graphics, middle, 48, true);
+		if (middle != null) PhotographRenderer.blit(leftPos, topPos, 65, 43, graphics, middle, 48, PhotographRenderer.FrameType.FILM_EMBED);
 
 		if (size == 1) return;
 
 		final Identifier right = PhotographLoader.getInfiniteLocalPhotograph(this.index + 1);
 		if (right != null) {
 			// Render right photograph
-			PhotographRenderer.blit(leftPos, topPos, 132, 51, graphics, right, ARROW_BOX_SIZE, true);
+			PhotographRenderer.blit(leftPos, topPos, 132, 51, graphics, right, ARROW_BOX_SIZE, PhotographRenderer.FrameType.FILM_EMBED);
 			// Render right arrow
 			boolean selected = checkButtonClicked(leftPos + 132, topPos + 51, ARROW_BOX_SIZE, ARROW_BOX_SIZE, mouseX, mouseY);
 			graphics.blitSprite(RenderPipelines.GUI_TEXTURED, selected ? MOVE_RIGHT_SELECTED : MOVE_RIGHT, leftPos + 132 + 12, topPos + 51 + 8, 12, 17);
@@ -84,7 +84,7 @@ public class PrinterScreen extends AbstractContainerScreen<PrinterMenu> {
 		final Identifier left = PhotographLoader.getInfiniteLocalPhotograph(this.index - 1);
 		if (left != null) {
 			// Render left photograph
-			PhotographRenderer.blit(leftPos, topPos, 14, 51, graphics, left, ARROW_BOX_SIZE, true);
+			PhotographRenderer.blit(leftPos, topPos, 14, 51, graphics, left, ARROW_BOX_SIZE, PhotographRenderer.FrameType.FILM_EMBED);
 			// Render left arrow
 			boolean selected = checkButtonClicked(leftPos + 14, topPos + 51, ARROW_BOX_SIZE, ARROW_BOX_SIZE, mouseX, mouseY);
 			graphics.blitSprite(RenderPipelines.GUI_TEXTURED, selected ? MOVE_LEFT_SELECTED : MOVE_LEFT, leftPos + 14 + 8, topPos + 51 + 8, 12, 17);

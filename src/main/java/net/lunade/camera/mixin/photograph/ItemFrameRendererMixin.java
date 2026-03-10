@@ -65,7 +65,7 @@ public class ItemFrameRendererMixin<T extends ItemFrame> {
 			// 0.625F
 			poseStack.scale(1.25F, 1.25F, 1.25F);
 			poseStack.translate(0F, 0F, 0.03125F);
-			PhotographRenderer.submit(poseStack, collector, photographLocation, lightVal, false);
+			PhotographRenderer.submit(poseStack, collector, photographLocation, lightVal, PhotographRenderer.FrameType.NONE);
 		} else {
 			original.call(instance, poseStack, collector, lightVal, overlay, outlineColor);
 		}
