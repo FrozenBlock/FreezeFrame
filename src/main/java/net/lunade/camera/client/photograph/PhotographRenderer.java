@@ -48,7 +48,7 @@ public class PhotographRenderer {
 		);
 	}
 
-	public static void render(int x, int y, int xOffset, int yOffset, GuiGraphics graphics, Identifier photoLocation, int renderSize, boolean renderFrame) {
+	public static void blit(int x, int y, int xOffset, int yOffset, GuiGraphics graphics, Identifier photoLocation, int renderSize, boolean renderFrame) {
 		final Identifier loadedPhotoId = PhotographLoader.getAndLoadPhotograph(photoLocation, false);
 		final int renderX = x + xOffset;
 		final int renderY = y + yOffset;

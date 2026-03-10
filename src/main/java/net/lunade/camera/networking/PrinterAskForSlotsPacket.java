@@ -8,7 +8,7 @@ import net.minecraft.network.codec.StreamCodec;
 import net.minecraft.network.protocol.common.custom.CustomPacketPayload;
 import net.minecraft.server.level.ServerPlayer;
 
-public record PrinterAskForSlotsPacket(int count, String id) implements CustomPacketPayload {
+public record PrinterAskForSlotsPacket(int count, String photoId) implements CustomPacketPayload {
 	public static final Type<PrinterAskForSlotsPacket> PACKET_TYPE = CustomPacketPayload.createType(CameraPortConstants.safeString("printer_ask_for_slots"));
 	public static final StreamCodec<FriendlyByteBuf, PrinterAskForSlotsPacket> CODEC = StreamCodec.ofMember(PrinterAskForSlotsPacket::write, PrinterAskForSlotsPacket::new);
 
@@ -17,8 +17,8 @@ public record PrinterAskForSlotsPacket(int count, String id) implements CustomPa
 	}
 
 	public void write(FriendlyByteBuf buf) {
-		buf.writeInt(count);
-		buf.writeUtf(id);
+		buf.writeInt(this.count);
+		buf.writeUtf(this.photoId);
 	}
 
 	@Override
@@ -29,6 +29,6 @@ public record PrinterAskForSlotsPacket(int count, String id) implements CustomPa
 	public static void handle(PrinterAskForSlotsPacket packet, ServerPlayNetworking.Context context) {
 		final ServerPlayer player = context.player();
 		if (player == null) return;
-		if (player.containerMenu instanceof PrinterMenu printer) printer.setupData(player, packet.count, packet.id);
+		if (player.containerMenu instanceof PrinterMenu printer) printer.setupDataAndResultSlot(player, packet.count, packet.photoId);
 	}
 }

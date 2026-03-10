@@ -18,6 +18,7 @@ import net.minecraft.network.chat.Component;
 import net.minecraft.resources.Identifier;
 import net.minecraft.sounds.SoundEvents;
 import net.minecraft.world.entity.player.Inventory;
+import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.Items;
 
 @Environment(EnvType.CLIENT)
@@ -28,17 +29,19 @@ public class PrinterScreen extends AbstractContainerScreen<PrinterMenu> {
 	private static final Identifier MOVE_RIGHT_SELECTED = CameraPortConstants.id("printer/move_right_highlighted");
 	private static final Identifier MOVE_LEFT = CameraPortConstants.id("printer/move_left");
 	private static final Identifier MOVE_LEFT_SELECTED = CameraPortConstants.id("printer/move_left_highlighted");
+	private final Player player;
 	int index = 0;
 	private boolean displayRecipes = false;
 
-	public PrinterScreen(PrinterMenu menu, Inventory playerInventory, Component title) {
-		super(menu, playerInventory, title);
+	public PrinterScreen(PrinterMenu menu, Inventory inventory, Component title) {
+		super(menu, inventory, title);
+		this.player = inventory.player;
 		final int size = PhotographLoader.loadLocalPhotographs();
 		if (PhotographLoader.hasAnyLocalPhotographs()) {
 			final String selected = PhotographLoader.getPhotograph(0).getPath();
-			this.send(size, selected);
+			this.setupDataAndResultSlot(size, selected);
 		} else {
-			this.send(0, "");
+			this.setupDataAndResultSlot(0, "");
 		}
 		menu.registerUpdateListener(this::containerChanged);
 		--this.titleLabelY;
@@ -46,40 +49,40 @@ public class PrinterScreen extends AbstractContainerScreen<PrinterMenu> {
 		this.imageHeight = 222;
 	}
 
-	private void send(int size, String selected) {
+	private void setupDataAndResultSlot(int size, String selected) {
 		ClientPlayNetworking.send(new PrinterAskForSlotsPacket(size, selected));
-		this.menu.onClient(selected);
+		this.menu.setupDataAndResultSlot(this.player, size, selected);
 	}
 
 	@Override
 	protected void renderBg(GuiGraphics graphics, float delta, int mouseX, int mouseY) {
-		int i = this.leftPos;
-		int j = this.topPos;
-		graphics.blit(RenderPipelines.GUI_TEXTURED, TEXTURE, i, j, 0F, 0F, this.imageWidth, this.imageHeight, 256, 256);
+		final int leftPos = this.leftPos;
+		final int topPos = this.topPos;
+		graphics.blit(RenderPipelines.GUI_TEXTURED, TEXTURE, leftPos, topPos, 0F, 0F, this.imageWidth, this.imageHeight, 256, 256);
 		if (!this.displayRecipes) return;
 
 		final int size = PhotographLoader.getSize();
 		Identifier middle = PhotographLoader.getInfiniteLocalPhotograph(this.index);
-		if (middle != null) PhotographRenderer.render(i, j, 64, 53, graphics, middle, 48, true);
+		if (middle != null) PhotographRenderer.blit(leftPos, topPos, 64, 53, graphics, middle, 48, true);
 
 		if (size == 1) return;
 
 		final Identifier right = PhotographLoader.getInfiniteLocalPhotograph(this.index + 1);
 		if (right != null) {
 			// Render right photograph
-			PhotographRenderer.render(i, j, 119, 61, graphics, right, ARROW_BOX_SIZE, true);
+			PhotographRenderer.blit(leftPos, topPos, 119, 61, graphics, right, ARROW_BOX_SIZE, true);
 			// Render right arrow
-			boolean selected = checkButtonClicked(i + 119, j + 61, ARROW_BOX_SIZE, ARROW_BOX_SIZE, mouseX, mouseY);
-			graphics.blitSprite(RenderPipelines.GUI_TEXTURED, selected ? MOVE_RIGHT_SELECTED : MOVE_RIGHT, i + 119, j + 61, ARROW_BOX_SIZE, ARROW_BOX_SIZE);
+			boolean selected = checkButtonClicked(leftPos + 119, topPos + 61, ARROW_BOX_SIZE, ARROW_BOX_SIZE, mouseX, mouseY);
+			graphics.blitSprite(RenderPipelines.GUI_TEXTURED, selected ? MOVE_RIGHT_SELECTED : MOVE_RIGHT, leftPos + 119, topPos + 61, ARROW_BOX_SIZE, ARROW_BOX_SIZE);
 		}
 
 		final Identifier left = PhotographLoader.getInfiniteLocalPhotograph(this.index - 1);
 		if (left != null) {
 			// Render left photograph
-			PhotographRenderer.render(i, j, 25, 61, graphics, left, ARROW_BOX_SIZE, true);
+			PhotographRenderer.blit(leftPos, topPos, 25, 61, graphics, left, ARROW_BOX_SIZE, true);
 			// Render left arrow
-			boolean selected = checkButtonClicked(i + 25, j + 61, ARROW_BOX_SIZE, ARROW_BOX_SIZE, mouseX, mouseY);
-			graphics.blitSprite(RenderPipelines.GUI_TEXTURED, selected ? MOVE_LEFT_SELECTED : MOVE_LEFT, i + 25, j + 61, ARROW_BOX_SIZE, ARROW_BOX_SIZE);
+			boolean selected = checkButtonClicked(leftPos + 25, topPos + 61, ARROW_BOX_SIZE, ARROW_BOX_SIZE, mouseX, mouseY);
+			graphics.blitSprite(RenderPipelines.GUI_TEXTURED, selected ? MOVE_LEFT_SELECTED : MOVE_LEFT, leftPos + 25, topPos + 61, ARROW_BOX_SIZE, ARROW_BOX_SIZE);
 		}
 	}
 
@@ -100,7 +103,7 @@ public class PrinterScreen extends AbstractContainerScreen<PrinterMenu> {
 				this.index++;
 			}
 
-			this.send(PhotographLoader.getSize(), PhotographLoader.getPhotograph(this.index).getPath());
+			this.setupDataAndResultSlot(PhotographLoader.getSize(), PhotographLoader.getPhotograph(this.index).getPath());
 			Minecraft.getInstance().getSoundManager().play(SimpleSoundInstance.forUI(SoundEvents.UI_BUTTON_CLICK, 1F));
 			return true;
 		} else if (checkButtonClicked(this.leftPos + 25, this.topPos + 61, ARROW_BOX_SIZE, ARROW_BOX_SIZE, mouseX, mouseY)) {
@@ -110,7 +113,7 @@ public class PrinterScreen extends AbstractContainerScreen<PrinterMenu> {
 				this.index--;
 			}
 
-			this.send(PhotographLoader.getSize(), PhotographLoader.getPhotograph(this.index).getPath());
+			this.setupDataAndResultSlot(PhotographLoader.getSize(), PhotographLoader.getPhotograph(this.index).getPath());
 			Minecraft.getInstance().getSoundManager().play(SimpleSoundInstance.forUI(SoundEvents.UI_BUTTON_CLICK, 1F));
 			return true;
 		}

@@ -53,7 +53,7 @@ public class ClientPhotographTooltipComponent implements ClientTooltipComponent 
 
 	@Override
 	public void renderImage(Font font, int x, int y, int k, int l, GuiGraphics graphics) {
-		PhotographRenderer.render(x, y, PHOTOGRAPH_RENDER_OFFSET_X, 0, graphics, this.photographId, PHOTOGRAPH_RENDER_SIZE, true);
+		PhotographRenderer.blit(x, y, PHOTOGRAPH_RENDER_OFFSET_X, 0, graphics, this.photographId, PHOTOGRAPH_RENDER_SIZE, true);
 	}
 
 	@Override
