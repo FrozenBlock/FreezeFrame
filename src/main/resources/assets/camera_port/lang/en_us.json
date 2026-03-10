@@ -5,7 +5,10 @@
   "item.camera_port.portfolio": "Portfolio",
   "entity.camera_port.small_camera": "Disc Camera",
   "item.camera_port.disc_camera": "Disc Camera",
-  "item.camera_port.photograph_tooltip": "Photograph ID: %s",
+
+  "photograph.photographer": "Photographer: %1$s",
+  "photograph.taken": "Taken at: %s",
+
   "subtitle.entity.camera.crack": "Camera cracks",
   "subtitle.entity.camera.adjust": "Tripod adjusts",
   "subtitle.entity.camera.snap": "Shutter clicks",

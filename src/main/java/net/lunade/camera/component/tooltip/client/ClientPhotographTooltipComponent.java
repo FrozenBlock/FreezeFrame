@@ -28,10 +28,14 @@ public class ClientPhotographTooltipComponent implements ClientTooltipComponent 
 
 	public ClientPhotographTooltipComponent(PhotographTooltipComponent component) {
 		this.photographId = component.identifier();
-		this.photographer = StringUtil.isNullOrEmpty(component.photographer()) ? null : Component.literal(component.photographer()).withStyle(ChatFormatting.GRAY);
+		this.photographer = StringUtil.isNullOrEmpty(component.photographer())
+			? null
+			: Component.translatable("photograph.photographer", component.photographer()).withStyle(ChatFormatting.GRAY);
 
 		final Optional<Date> optionalDate = PhotographLoader.parseDate(component.identifier().getPath());
-		this.dateAndTime = optionalDate.map(date -> Component.literal(date.toLocaleString()).withStyle(ChatFormatting.GRAY)).orElse(null);
+		this.dateAndTime = optionalDate
+			.map(date -> Component.translatable("photograph.taken", date.toLocaleString()).withStyle(ChatFormatting.GRAY))
+			.orElse(null);
 	}
 
 	@Override

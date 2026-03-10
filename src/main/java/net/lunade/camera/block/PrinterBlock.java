@@ -16,8 +16,6 @@ import net.minecraft.world.level.block.HorizontalDirectionalBlock;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.level.block.state.StateDefinition;
 import net.minecraft.world.phys.BlockHitResult;
-import org.jetbrains.annotations.NotNull;
-import org.jetbrains.annotations.Nullable;
 
 public class PrinterBlock extends HorizontalDirectionalBlock {
 	public static final MapCodec<PrinterBlock> CODEC = simpleCodec(PrinterBlock::new);
@@ -33,11 +31,11 @@ public class PrinterBlock extends HorizontalDirectionalBlock {
 	}
 
 	@Override
-	protected InteractionResult useWithoutItem(BlockState state, Level level, BlockPos pos, Player entity, BlockHitResult hitResult) {
+	protected InteractionResult useWithoutItem(BlockState state, Level level, BlockPos pos, Player player, BlockHitResult hitResult) {
 		if (level.isClientSide()) return InteractionResult.SUCCESS;
 
-		entity.openMenu(state.getMenuProvider(level, pos));
-		//entity.awardStat(Stats.INTERACT_WITH_LOOM);
+		player.openMenu(state.getMenuProvider(level, pos));
+		//player.awardStat(Stats.INTERACT_WITH_LOOM);
 		//TODO: Might want to add an award?
 		return InteractionResult.CONSUME;
 	}
