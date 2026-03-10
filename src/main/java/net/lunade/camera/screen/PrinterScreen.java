@@ -34,7 +34,7 @@ public class PrinterScreen extends AbstractContainerScreen<PrinterMenu> {
 	private boolean displayRecipes = false;
 
 	public PrinterScreen(PrinterMenu menu, Inventory inventory, Component title) {
-		super(menu, inventory, title);
+		super(menu, inventory, title, DEFAULT_IMAGE_WIDTH, 222);
 		this.player = inventory.player;
 		final int size = PhotographLoader.loadLocalPhotographs();
 		if (PhotographLoader.hasAnyLocalPhotographs()) {
@@ -45,8 +45,13 @@ public class PrinterScreen extends AbstractContainerScreen<PrinterMenu> {
 		}
 		menu.registerUpdateListener(this::containerChanged);
 		--this.titleLabelY;
-		this.inventoryLabelY += 37;
-		this.imageHeight = 203;
+		this.titleLabelX += 78;
+	}
+
+	@Override
+	protected void init() {
+		super.init();
+		this.titleLabelX = (this.imageWidth - this.font.width(this.title)) / 2;
 	}
 
 	private void setupDataAndResultSlot(int size, String selected) {
@@ -63,26 +68,26 @@ public class PrinterScreen extends AbstractContainerScreen<PrinterMenu> {
 
 		final int size = PhotographLoader.getSize();
 		Identifier middle = PhotographLoader.getInfiniteLocalPhotograph(this.index);
-		if (middle != null) PhotographRenderer.blit(leftPos, topPos, 64, 51, graphics, middle, 48, true);
+		if (middle != null) PhotographRenderer.blit(leftPos, topPos, 65, 43, graphics, middle, 48, true);
 
 		if (size == 1) return;
 
 		final Identifier right = PhotographLoader.getInfiniteLocalPhotograph(this.index + 1);
 		if (right != null) {
 			// Render right photograph
-			PhotographRenderer.blit(leftPos, topPos, 119, 59, graphics, right, ARROW_BOX_SIZE, true);
+			PhotographRenderer.blit(leftPos, topPos, 132, 51, graphics, right, ARROW_BOX_SIZE, true);
 			// Render right arrow
-			boolean selected = checkButtonClicked(leftPos + 119, topPos + 59, ARROW_BOX_SIZE, ARROW_BOX_SIZE, mouseX, mouseY);
-			graphics.blitSprite(RenderPipelines.GUI_TEXTURED, selected ? MOVE_RIGHT_SELECTED : MOVE_RIGHT, leftPos + 119 + 15, topPos + 59 + 8, 12, 17);
+			boolean selected = checkButtonClicked(leftPos + 132, topPos + 51, ARROW_BOX_SIZE, ARROW_BOX_SIZE, mouseX, mouseY);
+			graphics.blitSprite(RenderPipelines.GUI_TEXTURED, selected ? MOVE_RIGHT_SELECTED : MOVE_RIGHT, leftPos + 132 + 12, topPos + 51 + 8, 12, 17);
 		}
 
 		final Identifier left = PhotographLoader.getInfiniteLocalPhotograph(this.index - 1);
 		if (left != null) {
 			// Render left photograph
-			PhotographRenderer.blit(leftPos, topPos, 25, 59, graphics, left, ARROW_BOX_SIZE, true);
+			PhotographRenderer.blit(leftPos, topPos, 14, 51, graphics, left, ARROW_BOX_SIZE, true);
 			// Render left arrow
-			boolean selected = checkButtonClicked(leftPos + 25, topPos + 59, ARROW_BOX_SIZE, ARROW_BOX_SIZE, mouseX, mouseY);
-			graphics.blitSprite(RenderPipelines.GUI_TEXTURED, selected ? MOVE_LEFT_SELECTED : MOVE_LEFT, leftPos + 25 + 5, topPos + 59 + 8, 12, 17);
+			boolean selected = checkButtonClicked(leftPos + 14, topPos + 51, ARROW_BOX_SIZE, ARROW_BOX_SIZE, mouseX, mouseY);
+			graphics.blitSprite(RenderPipelines.GUI_TEXTURED, selected ? MOVE_LEFT_SELECTED : MOVE_LEFT, leftPos + 14 + 8, topPos + 51 + 8, 12, 17);
 		}
 	}
 

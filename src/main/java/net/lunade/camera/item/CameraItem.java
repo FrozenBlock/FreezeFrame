@@ -26,7 +26,7 @@ public class CameraItem extends SpawnEggItem {
 
 		player.getCooldowns().addCooldown(stack, 10);
 		if (level.isClientSide()) {
-			if (CameraScreenshotManager.possessingCamera) return InteractionResult.FAIL;
+			if (CameraScreenshotManager.isPossessingCamera()) return InteractionResult.FAIL;
 			CameraScreenshotManager.executeScreenshot(null, true);
 		}
 		level.playSound(player, player.getX(), player.getEyeY(), player.getZ(), CameraPortMain.CAMERA_SNAP, SoundSource.PLAYERS, 0.5F, 1F);

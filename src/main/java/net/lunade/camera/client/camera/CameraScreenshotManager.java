@@ -30,14 +30,22 @@ import net.minecraft.ChatFormatting;
 public class CameraScreenshotManager {
 	private static final String PLAYER_UUID = Minecraft.getInstance().getGameProfile().id().toString();
 
-	public static boolean wasGuiHidden = false;
-	public static boolean possessingCamera = false;
-	public static boolean isCameraHandheld = false;
+	private static boolean wasGuiHidden = false;
+	private static boolean possessingCamera = false;
+	private static boolean isCameraHandheld = false;
 	@Nullable
 	public static Entity previousCameraEntity = null;
 
+	public static boolean isPossessingCamera() {
+		return CameraScreenshotManager.possessingCamera;
+	}
+
 	public static boolean isUsingSelfRenderingCamera() {
-		return CameraScreenshotManager.possessingCamera && !CameraScreenshotManager.isCameraHandheld;
+		return isPossessingCamera() && !isCameraHandheld;
+	}
+
+	public static boolean isUsingHandheldCamera() {
+		return isPossessingCamera() && isCameraHandheld;
 	}
 
 	public static void executeScreenshot(@Nullable Entity entity, boolean handheld) {

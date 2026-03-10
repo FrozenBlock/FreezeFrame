@@ -26,7 +26,7 @@ public class PrinterResultSlot extends Slot {
 	@Override
 	public void onTake(Player player, ItemStack stack) {
 		stack.onCraftedBy(player, stack.getCount());
-		final ItemStack input = this.menu.inputSlot.remove(1);
+		final ItemStack input = this.menu.paperSlot.remove(1);
 		if (!input.isEmpty()) this.menu.setupResultSlot(player);
 
 		this.menu.access.execute((level, pos) -> {

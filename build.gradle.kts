@@ -172,7 +172,7 @@ dependencies {
     // FrozenLib
     api("maven.modrinth:frozenlib:${frozenlib_version}")
 
-// Mod Menu
+    // Mod Menu
     compileOnly("com.terraformersmc:modmenu:${modmenu_version}")
 
     // Cloth Config

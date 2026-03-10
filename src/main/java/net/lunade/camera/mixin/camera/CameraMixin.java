@@ -11,6 +11,7 @@ public class CameraMixin {
 
 	@ModifyReturnValue(method = "isDetached", at = @At("RETURN"))
 	public boolean cameraPort$isDetached(boolean original) {
+		if (CameraScreenshotManager.isUsingHandheldCamera()) return false;
 		return original && !CameraScreenshotManager.isUsingSelfRenderingCamera();
 	}
 
