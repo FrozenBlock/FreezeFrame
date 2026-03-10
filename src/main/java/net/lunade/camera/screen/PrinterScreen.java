@@ -24,11 +24,11 @@ import net.minecraft.world.item.Items;
 @Environment(EnvType.CLIENT)
 public class PrinterScreen extends AbstractContainerScreen<PrinterMenu> {
 	private static final int ARROW_BOX_SIZE = 32;
-	private static final Identifier TEXTURE = CameraPortConstants.id("textures/gui/printer.png");
-	private static final Identifier MOVE_RIGHT = CameraPortConstants.id("printer/move_right");
-	private static final Identifier MOVE_RIGHT_SELECTED = CameraPortConstants.id("printer/move_right_highlighted");
-	private static final Identifier MOVE_LEFT = CameraPortConstants.id("printer/move_left");
-	private static final Identifier MOVE_LEFT_SELECTED = CameraPortConstants.id("printer/move_left_highlighted");
+	private static final Identifier TEXTURE = CameraPortConstants.id("textures/gui/container/printer.png");
+	private static final Identifier MOVE_RIGHT = CameraPortConstants.id("container/printer/move_right");
+	private static final Identifier MOVE_RIGHT_SELECTED = CameraPortConstants.id("container/printer/move_right_highlighted");
+	private static final Identifier MOVE_LEFT = CameraPortConstants.id("container/printer/move_left");
+	private static final Identifier MOVE_LEFT_SELECTED = CameraPortConstants.id("container/printer/move_left_highlighted");
 	private final Player player;
 	int index = 0;
 	private boolean displayRecipes = false;
@@ -45,8 +45,8 @@ public class PrinterScreen extends AbstractContainerScreen<PrinterMenu> {
 		}
 		menu.registerUpdateListener(this::containerChanged);
 		--this.titleLabelY;
-		this.inventoryLabelY += 56;
-		this.imageHeight = 222;
+		this.inventoryLabelY += 37;
+		this.imageHeight = 203;
 	}
 
 	private void setupDataAndResultSlot(int size, String selected) {
@@ -63,26 +63,26 @@ public class PrinterScreen extends AbstractContainerScreen<PrinterMenu> {
 
 		final int size = PhotographLoader.getSize();
 		Identifier middle = PhotographLoader.getInfiniteLocalPhotograph(this.index);
-		if (middle != null) PhotographRenderer.blit(leftPos, topPos, 64, 53, graphics, middle, 48, true);
+		if (middle != null) PhotographRenderer.blit(leftPos, topPos, 64, 51, graphics, middle, 48, true);
 
 		if (size == 1) return;
 
 		final Identifier right = PhotographLoader.getInfiniteLocalPhotograph(this.index + 1);
 		if (right != null) {
 			// Render right photograph
-			PhotographRenderer.blit(leftPos, topPos, 119, 61, graphics, right, ARROW_BOX_SIZE, true);
+			PhotographRenderer.blit(leftPos, topPos, 119, 59, graphics, right, ARROW_BOX_SIZE, true);
 			// Render right arrow
-			boolean selected = checkButtonClicked(leftPos + 119, topPos + 61, ARROW_BOX_SIZE, ARROW_BOX_SIZE, mouseX, mouseY);
-			graphics.blitSprite(RenderPipelines.GUI_TEXTURED, selected ? MOVE_RIGHT_SELECTED : MOVE_RIGHT, leftPos + 119, topPos + 61, ARROW_BOX_SIZE, ARROW_BOX_SIZE);
+			boolean selected = checkButtonClicked(leftPos + 119, topPos + 59, ARROW_BOX_SIZE, ARROW_BOX_SIZE, mouseX, mouseY);
+			graphics.blitSprite(RenderPipelines.GUI_TEXTURED, selected ? MOVE_RIGHT_SELECTED : MOVE_RIGHT, leftPos + 119, topPos + 59, ARROW_BOX_SIZE, ARROW_BOX_SIZE);
 		}
 
 		final Identifier left = PhotographLoader.getInfiniteLocalPhotograph(this.index - 1);
 		if (left != null) {
 			// Render left photograph
-			PhotographRenderer.blit(leftPos, topPos, 25, 61, graphics, left, ARROW_BOX_SIZE, true);
+			PhotographRenderer.blit(leftPos, topPos, 25, 59, graphics, left, ARROW_BOX_SIZE, true);
 			// Render left arrow
-			boolean selected = checkButtonClicked(leftPos + 25, topPos + 61, ARROW_BOX_SIZE, ARROW_BOX_SIZE, mouseX, mouseY);
-			graphics.blitSprite(RenderPipelines.GUI_TEXTURED, selected ? MOVE_LEFT_SELECTED : MOVE_LEFT, leftPos + 25, topPos + 61, ARROW_BOX_SIZE, ARROW_BOX_SIZE);
+			boolean selected = checkButtonClicked(leftPos + 25, topPos + 59, ARROW_BOX_SIZE, ARROW_BOX_SIZE, mouseX, mouseY);
+			graphics.blitSprite(RenderPipelines.GUI_TEXTURED, selected ? MOVE_LEFT_SELECTED : MOVE_LEFT, leftPos + 25, topPos + 59, ARROW_BOX_SIZE, ARROW_BOX_SIZE);
 		}
 	}
 
@@ -96,7 +96,8 @@ public class PrinterScreen extends AbstractContainerScreen<PrinterMenu> {
 		final int mouseX = (int) event.x();
 		final int mouseY = (int) event.y();
 
-		if (checkButtonClicked(this.leftPos + 119, this.topPos + 61, ARROW_BOX_SIZE, ARROW_BOX_SIZE, mouseX, mouseY)) {
+		// Right arrow clicked
+		if (checkButtonClicked(this.leftPos + 119, this.topPos + 59, ARROW_BOX_SIZE, ARROW_BOX_SIZE, mouseX, mouseY)) {
 			if (this.index == PhotographLoader.getSize() - 1) {
 				this.index = 0;
 			} else {
@@ -106,7 +107,10 @@ public class PrinterScreen extends AbstractContainerScreen<PrinterMenu> {
 			this.setupDataAndResultSlot(PhotographLoader.getSize(), PhotographLoader.getPhotograph(this.index).getPath());
 			Minecraft.getInstance().getSoundManager().play(SimpleSoundInstance.forUI(SoundEvents.UI_BUTTON_CLICK, 1F));
 			return true;
-		} else if (checkButtonClicked(this.leftPos + 25, this.topPos + 61, ARROW_BOX_SIZE, ARROW_BOX_SIZE, mouseX, mouseY)) {
+		}
+
+		// Left arrow clicked
+		if (checkButtonClicked(this.leftPos + 25, this.topPos + 59, ARROW_BOX_SIZE, ARROW_BOX_SIZE, mouseX, mouseY)) {
 			if (this.index == 0) {
 				this.index = PhotographLoader.getSize() - 1;
 			} else {
