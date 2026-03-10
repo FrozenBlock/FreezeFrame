@@ -11,7 +11,7 @@ public class CameraMixin {
 
 	@ModifyReturnValue(method = "isDetached", at = @At("RETURN"))
 	public boolean cameraPort$isDetached(boolean original) {
-		return original && CameraScreenshotManager.isPossessingCamera();
+		return original && !CameraScreenshotManager.isPossessingCamera();
 	}
 
 }
