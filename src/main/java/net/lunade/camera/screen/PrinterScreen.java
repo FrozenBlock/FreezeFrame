@@ -19,17 +19,17 @@ import net.minecraft.resources.Identifier;
 import net.minecraft.sounds.SoundEvents;
 import net.minecraft.world.entity.player.Inventory;
 import net.minecraft.world.item.Items;
-import org.jetbrains.annotations.NotNull;
 
 @Environment(EnvType.CLIENT)
 public class PrinterScreen extends AbstractContainerScreen<PrinterMenu> {
-	int index = 0;
-	private boolean displayRecipes = false;
+	private static final int ARROW_BOX_SIZE = 32;
 	private static final Identifier TEXTURE = CameraPortConstants.id("textures/gui/printer.png");
 	private static final Identifier MOVE_RIGHT = CameraPortConstants.id("printer/move_right");
 	private static final Identifier MOVE_RIGHT_SELECTED = CameraPortConstants.id("printer/move_right_highlighted");
 	private static final Identifier MOVE_LEFT = CameraPortConstants.id("printer/move_left");
 	private static final Identifier MOVE_LEFT_SELECTED = CameraPortConstants.id("printer/move_left_highlighted");
+	int index = 0;
+	private boolean displayRecipes = false;
 
 	public PrinterScreen(PrinterMenu menu, Inventory playerInventory, Component title) {
 		super(menu, playerInventory, title);
@@ -67,26 +67,25 @@ public class PrinterScreen extends AbstractContainerScreen<PrinterMenu> {
 		final Identifier right = PhotographLoader.getInfiniteLocalPhotograph(this.index + 1);
 		if (right != null) {
 			// Render right photograph
-			PhotographRenderer.render(i, j, 119, 61, graphics, right, 32, true);
+			PhotographRenderer.render(i, j, 119, 61, graphics, right, ARROW_BOX_SIZE, true);
 			// Render right arrow
-			boolean selected = isIn(i + 119, j + 61, 32, 32, mouseX, mouseY);
-			graphics.blitSprite(RenderPipelines.GUI_TEXTURED, selected ? MOVE_RIGHT_SELECTED : MOVE_RIGHT, i + 119, j + 61, 32, 32);
+			boolean selected = checkButtonClicked(i + 119, j + 61, ARROW_BOX_SIZE, ARROW_BOX_SIZE, mouseX, mouseY);
+			graphics.blitSprite(RenderPipelines.GUI_TEXTURED, selected ? MOVE_RIGHT_SELECTED : MOVE_RIGHT, i + 119, j + 61, ARROW_BOX_SIZE, ARROW_BOX_SIZE);
 		}
 
 		final Identifier left = PhotographLoader.getInfiniteLocalPhotograph(this.index - 1);
 		if (left != null) {
 			// Render left photograph
-			PhotographRenderer.render(i, j, 25, 61, graphics, left, 32, true);
+			PhotographRenderer.render(i, j, 25, 61, graphics, left, ARROW_BOX_SIZE, true);
 			// Render left arrow
-			boolean selected = isIn(i + 25, j + 61, 32, 32, mouseX, mouseY);
-			graphics.blitSprite(RenderPipelines.GUI_TEXTURED, selected ? MOVE_LEFT_SELECTED : MOVE_LEFT, i + 25, j + 61, 32, 32);
+			boolean selected = checkButtonClicked(i + 25, j + 61, ARROW_BOX_SIZE, ARROW_BOX_SIZE, mouseX, mouseY);
+			graphics.blitSprite(RenderPipelines.GUI_TEXTURED, selected ? MOVE_LEFT_SELECTED : MOVE_LEFT, i + 25, j + 61, ARROW_BOX_SIZE, ARROW_BOX_SIZE);
 		}
 	}
 
 	@Override
-	public void render(GuiGraphics graphics, int mouseX, int mouseY, float delta) {
-		super.render(graphics, mouseX, mouseY, delta);
-		renderTooltip(graphics, mouseX, mouseY);
+	public void render(GuiGraphics graphics, int mouseX, int mouseY, float partialTicks) {
+		super.render(graphics, mouseX, mouseY, partialTicks);
 	}
 
 	@Override
@@ -94,7 +93,7 @@ public class PrinterScreen extends AbstractContainerScreen<PrinterMenu> {
 		final int mouseX = (int) event.x();
 		final int mouseY = (int) event.y();
 
-		if (isIn(this.leftPos + 119, this.topPos + 61, 32, 32, mouseX, mouseY)) {
+		if (checkButtonClicked(this.leftPos + 119, this.topPos + 61, ARROW_BOX_SIZE, ARROW_BOX_SIZE, mouseX, mouseY)) {
 			if (this.index == PhotographLoader.getSize() - 1) {
 				this.index = 0;
 			} else {
@@ -104,7 +103,7 @@ public class PrinterScreen extends AbstractContainerScreen<PrinterMenu> {
 			this.send(PhotographLoader.getSize(), PhotographLoader.getPhotograph(this.index).getPath());
 			Minecraft.getInstance().getSoundManager().play(SimpleSoundInstance.forUI(SoundEvents.UI_BUTTON_CLICK, 1F));
 			return true;
-		} else if (isIn(this.leftPos + 25, this.topPos + 61, 32, 32, mouseX, mouseY)) {
+		} else if (checkButtonClicked(this.leftPos + 25, this.topPos + 61, ARROW_BOX_SIZE, ARROW_BOX_SIZE, mouseX, mouseY)) {
 			if (this.index == 0) {
 				this.index = PhotographLoader.getSize() - 1;
 			} else {
@@ -119,9 +118,8 @@ public class PrinterScreen extends AbstractContainerScreen<PrinterMenu> {
 		return super.mouseClicked(event, doubleClick);
 	}
 
-	@SuppressWarnings("all")
-	private static boolean isIn(int minX, int minY, int w, int h, int x, int y) {
-		return x >= minX && x <= minX + w && y >= minY && y <= minY + h;
+	private static boolean checkButtonClicked(int minX, int minY, int buttonWidth, int buttonHeight, int mouseX, int mouseY) {
+		return mouseX >= minX && mouseX <= minX + buttonWidth && mouseY >= minY && mouseY <= minY + buttonHeight;
 	}
 
 	private void containerChanged() {

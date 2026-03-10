@@ -9,7 +9,7 @@ import net.minecraft.network.codec.ByteBufCodecs;
 import net.minecraft.network.codec.StreamCodec;
 import net.minecraft.world.item.ItemStack;
 
-public class WritablePortfolioContent implements PortfolioContent<ItemStack, WritablePortfolioContent> {
+public record WritablePortfolioContent(List<ItemStack> pages) implements PortfolioContent<ItemStack, WritablePortfolioContent> {
 	public static final WritablePortfolioContent EMPTY = new WritablePortfolioContent(List.of());
 	public static final int MAX_PAGES = 64;
 	private static final Codec<ItemStack> PAGE_CODEC = ItemStack.CODEC;
@@ -22,19 +22,9 @@ public class WritablePortfolioContent implements PortfolioContent<ItemStack, Wri
 		.apply(ByteBufCodecs.list(MAX_PAGES))
 		.map(WritablePortfolioContent::new, WritablePortfolioContent::pages);
 
-	private final List<ItemStack> pages;
-
-	public WritablePortfolioContent(List<ItemStack> pages) {
-		this.pages = pages;
-	}
 
 	@Override
-	public List<ItemStack> pages() {
-		return this.pages;
-	}
-
-	@Override
-	public WritablePortfolioContent withReplacedPages(List<ItemStack> pages) {
-		return new WritablePortfolioContent(pages);
+	public WritablePortfolioContent withReplacedPages(List<ItemStack> newPages) {
+		return new WritablePortfolioContent(newPages);
 	}
 }

@@ -19,7 +19,7 @@ public class PhotographItem extends Item {
 	}
 
 	public static Pair<Identifier, String> getPhotographInfo(ItemStack stack) {
-		PhotographComponent component = stack.get(CameraPortItems.PHOTO_COMPONENT);
+		final PhotographComponent component = stack.get(CameraPortItems.PHOTO_COMPONENT);
 		if (component != null) return Pair.of(component.identifier(), component.photographer());
 		return null;
 	}

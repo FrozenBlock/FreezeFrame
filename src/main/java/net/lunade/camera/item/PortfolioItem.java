@@ -7,18 +7,18 @@ import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.Level;
-import org.jetbrains.annotations.NotNull;
 
 public class PortfolioItem extends Item {
-	public PortfolioItem(Item.Properties properties) {
+
+	public PortfolioItem(Properties properties) {
 		super(properties);
 	}
 
 	@Override
-	public @NotNull InteractionResult use(@NotNull Level world, @NotNull Player user, InteractionHand hand) {
-		ItemStack itemStack = user.getItemInHand(hand);
-		user.openItemGui(itemStack, hand);
-		user.awardStat(Stats.ITEM_USED.get(this));
+	public InteractionResult use(Level level, Player player, InteractionHand hand) {
+		final ItemStack itemStack = player.getItemInHand(hand);
+		player.openItemGui(itemStack, hand);
+		player.awardStat(Stats.ITEM_USED.get(this));
 		return InteractionResult.SUCCESS;
 	}
 }
