@@ -103,12 +103,6 @@ public class CameraScreenshotManager {
 			gameRenderer.update(DeltaTracker.ONE, true);
 			gameRenderer.extract(DeltaTracker.ONE, true);
 			gameRenderer.renderLevel(DeltaTracker.ONE);
-
-			try {
-				Thread.sleep(10L);
-			} catch (InterruptedException ignored) {
-			}
-
 			grab(gameDirectory, renderTarget, (text) -> minecraft.execute(() -> minecraft.gui.getChat().addClientSystemMessage(text)));
 		} catch (Exception ignored) {
 		} finally {
