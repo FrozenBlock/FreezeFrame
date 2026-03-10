@@ -34,7 +34,7 @@ public class ClientPhotographTooltipComponent implements ClientTooltipComponent 
 
 		final Optional<Date> optionalDate = PhotographLoader.parseDate(component.identifier().getPath());
 		this.dateAndTime = optionalDate
-			.map(date -> Component.translatable("photograph.taken", date.toLocaleString()).withStyle(ChatFormatting.GRAY))
+			.map(date -> Component.translatable("photograph.date", date.toLocaleString()).withStyle(ChatFormatting.GRAY))
 			.orElse(null);
 	}
 

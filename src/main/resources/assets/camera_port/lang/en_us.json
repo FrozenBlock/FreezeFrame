@@ -7,7 +7,7 @@
   "item.camera_port.disc_camera": "Disc Camera",
 
   "photograph.photographer": "Photographer: %1$s",
-  "photograph.taken": "Taken at: %s",
+  "photograph.date": "%s",
 
   "subtitle.entity.camera.crack": "Camera cracks",
   "subtitle.entity.camera.adjust": "Tripod adjusts",
