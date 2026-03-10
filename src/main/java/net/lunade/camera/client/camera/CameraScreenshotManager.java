@@ -58,20 +58,18 @@ public class CameraScreenshotManager {
 		minecraft.options.hideGui = true;
 		possessingCamera = true;
 
-		if (minecraft.level != null) {
-			final Entity camEntity = minecraft.getCameraEntity();
-			if (camEntity != null) minecraft.level.playLocalSound(minecraft.player, CameraPortMain.CAMERA_SNAP, SoundSource.PLAYERS, 0.5F, 1F);
-		}
-
 		grabCameraScreenshot(minecraft.gameDirectory, 256, 256);
 
-		if (minecraft.level != null) {
-			Entity camEntity = minecraft.getCameraEntity();
-			if (camEntity != null) {
-				int smokeCount = minecraft.level.getRandom().nextInt(1, 5);
-				for (int i = 0; i < smokeCount; i++) {
-					minecraft.level.addParticle(ParticleTypes.LARGE_SMOKE, camEntity.getX(), camEntity.getEyeY(), camEntity.getZ(), 0D, 0.15D, 0D);
-				}
+		makeSnapSoundAndSmoke: {
+			if (minecraft.level == null) break makeSnapSoundAndSmoke;
+
+			final Entity camEntity = minecraft.getCameraEntity();
+			if (camEntity == null) break makeSnapSoundAndSmoke;
+
+			minecraft.level.playLocalSound(minecraft.player, CameraPortMain.CAMERA_SNAP, SoundSource.PLAYERS, 0.5F, 1F);
+			final int smokeCount = minecraft.level.getRandom().nextInt(1, 5);
+			for (int i = 0; i < smokeCount; i++) {
+				minecraft.level.addParticle(ParticleTypes.LARGE_SMOKE, camEntity.getX(), camEntity.getEyeY(), camEntity.getZ(), 0D, 0.15D, 0D);
 			}
 		}
 
