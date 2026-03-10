@@ -73,7 +73,7 @@ public class PrinterScreen extends AbstractContainerScreen<PrinterMenu> {
 			PhotographRenderer.blit(leftPos, topPos, 119, 59, graphics, right, ARROW_BOX_SIZE, true);
 			// Render right arrow
 			boolean selected = checkButtonClicked(leftPos + 119, topPos + 59, ARROW_BOX_SIZE, ARROW_BOX_SIZE, mouseX, mouseY);
-			graphics.blitSprite(RenderPipelines.GUI_TEXTURED, selected ? MOVE_RIGHT_SELECTED : MOVE_RIGHT, leftPos + 119, topPos + 59, ARROW_BOX_SIZE, ARROW_BOX_SIZE);
+			graphics.blitSprite(RenderPipelines.GUI_TEXTURED, selected ? MOVE_RIGHT_SELECTED : MOVE_RIGHT, leftPos + 119 + 15, topPos + 59 + 8, 12, 17);
 		}
 
 		final Identifier left = PhotographLoader.getInfiniteLocalPhotograph(this.index - 1);
@@ -82,7 +82,7 @@ public class PrinterScreen extends AbstractContainerScreen<PrinterMenu> {
 			PhotographRenderer.blit(leftPos, topPos, 25, 59, graphics, left, ARROW_BOX_SIZE, true);
 			// Render left arrow
 			boolean selected = checkButtonClicked(leftPos + 25, topPos + 59, ARROW_BOX_SIZE, ARROW_BOX_SIZE, mouseX, mouseY);
-			graphics.blitSprite(RenderPipelines.GUI_TEXTURED, selected ? MOVE_LEFT_SELECTED : MOVE_LEFT, leftPos + 25, topPos + 59, ARROW_BOX_SIZE, ARROW_BOX_SIZE);
+			graphics.blitSprite(RenderPipelines.GUI_TEXTURED, selected ? MOVE_LEFT_SELECTED : MOVE_LEFT, leftPos + 25 + 5, topPos + 59 + 8, 12, 17);
 		}
 	}
 

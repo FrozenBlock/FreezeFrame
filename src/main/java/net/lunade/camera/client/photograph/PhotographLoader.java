@@ -1,11 +1,14 @@
 package net.lunade.camera.client.photograph;
 
 import com.mojang.datafixers.util.Pair;
+import it.unimi.dsi.fastutil.objects.Object2ObjectOpenHashMap;
 import java.io.File;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Comparator;
 import java.util.Date;
+import java.util.List;
+import java.util.Map;
 import java.util.Optional;
 import java.util.stream.Stream;
 import net.fabricmc.api.EnvType;
@@ -101,5 +104,17 @@ public class PhotographLoader {
 		} catch (Exception ignored) {
 		}
 		return Optional.empty();
+	}
+
+	public static Map<Date, List<Identifier>> getPhotographsByDate() {
+		final Map<Date, List<Identifier>> photosByDate = new Object2ObjectOpenHashMap<>();
+		for (Pair<Identifier, Date> photoIdAndDate : LOCAL_PHOTOGRAPHS) {
+			final Date dateWithTime = photoIdAndDate.getSecond();
+			final Date dateWithoutTime = new Date(dateWithTime.getYear(), dateWithTime.getMonth(), dateWithTime.getDay());
+			final List<Identifier> destination = photosByDate.getOrDefault(dateWithoutTime, new ArrayList<>());
+			destination.add(photoIdAndDate.getFirst());
+			photosByDate.put(dateWithoutTime, destination);
+		}
+		return photosByDate;
 	}
 }
