@@ -102,7 +102,7 @@ public class PrinterScreen extends AbstractContainerScreen<PrinterMenu> {
 		final int mouseY = (int) event.y();
 
 		// Right arrow clicked
-		if (checkButtonClicked(this.leftPos + 119, this.topPos + 59, ARROW_BOX_SIZE, ARROW_BOX_SIZE, mouseX, mouseY)) {
+		if (checkButtonClicked(this.leftPos + 132, this.topPos + 51, ARROW_BOX_SIZE, ARROW_BOX_SIZE, mouseX, mouseY)) {
 			if (this.index == PhotographLoader.getSize() - 1) {
 				this.index = 0;
 			} else {
@@ -115,7 +115,7 @@ public class PrinterScreen extends AbstractContainerScreen<PrinterMenu> {
 		}
 
 		// Left arrow clicked
-		if (checkButtonClicked(this.leftPos + 25, this.topPos + 59, ARROW_BOX_SIZE, ARROW_BOX_SIZE, mouseX, mouseY)) {
+		if (checkButtonClicked(this.leftPos + 14, this.topPos + 51, ARROW_BOX_SIZE, ARROW_BOX_SIZE, mouseX, mouseY)) {
 			if (this.index == 0) {
 				this.index = PhotographLoader.getSize() - 1;
 			} else {
