@@ -8,10 +8,7 @@ import net.minecraft.world.InteractionResult;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.SpawnEggItem;
-import net.minecraft.world.level.ClipContext;
 import net.minecraft.world.level.Level;
-import net.minecraft.world.phys.BlockHitResult;
-import net.minecraft.world.phys.HitResult;
 
 public class CameraItem extends SpawnEggItem {
 
@@ -20,22 +17,20 @@ public class CameraItem extends SpawnEggItem {
 	}
 
 	@Override
-	public InteractionResult use(Level level, Player player, InteractionHand interactionHand) {
-		ItemStack itemStack = player.getItemInHand(interactionHand);
-		BlockHitResult blockHitResult = SpawnEggItem.getPlayerPOVHitResult(level, player, ClipContext.Fluid.SOURCE_ONLY);
-		if (blockHitResult.getType() != HitResult.Type.BLOCK) {
-			if (!player.getCooldowns().isOnCooldown(itemStack)) {
-				player.getCooldowns().addCooldown(itemStack, 10);
-				if (level.isClientSide()) {
-					if (CameraScreenshotManager.possessingCamera) return InteractionResult.FAIL;
-					CameraScreenshotManager.executeScreenshot(null, true);
-				}
-				level.playSound(player, player.getX(), player.getEyeY(), player.getZ(), CameraPortMain.CAMERA_SNAP, SoundSource.PLAYERS, 0.5F, 1F);
-				return InteractionResult.SUCCESS;
-			}
-			return InteractionResult.FAIL;
+	public InteractionResult use(Level level, Player player, InteractionHand hand) {
+		final InteractionResult interactionResult = super.use(level, player, hand);
+		if (interactionResult.consumesAction()) return interactionResult;
+
+		final ItemStack stack = player.getItemInHand(hand);
+		if (player.getCooldowns().isOnCooldown(stack)) return interactionResult;
+
+		player.getCooldowns().addCooldown(stack, 10);
+		if (level.isClientSide()) {
+			if (CameraScreenshotManager.possessingCamera) return InteractionResult.FAIL;
+			CameraScreenshotManager.executeScreenshot(null, true);
 		}
-		return super.use(level, player, interactionHand);
+		level.playSound(player, player.getX(), player.getEyeY(), player.getZ(), CameraPortMain.CAMERA_SNAP, SoundSource.PLAYERS, 0.5F, 1F);
+		return InteractionResult.SUCCESS;
 	}
 
 }

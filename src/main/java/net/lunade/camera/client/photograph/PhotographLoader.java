@@ -37,14 +37,14 @@ public class PhotographLoader {
 		String filename = photographId.getPath().replace("photographs/", "");
 		if (!filename.endsWith(".png")) filename += ".png";
 
-		Identifier downloaderLocation = ServerTextureDownloader.getOrLoadServerTexture(
+		Identifier downloaderId = ServerTextureDownloader.getOrLoadServerTexture(
 			photographId,
 			"photographs",
 			filename,
 			FALLBACK
 		);
 		if (local) return photographId;
-		return downloaderLocation;
+		return downloaderId;
 	}
 
 	public static int getSize() {
@@ -65,9 +65,10 @@ public class PhotographLoader {
 
 	public static int loadLocalPhotographs() {
 		final File file = FabricLoader.getInstance().getGameDir().resolve("photographs").resolve(ServerTextureDownloader.LOCAL_TEXTURE_SOURCE).toFile();
-		File[] fileList = file.listFiles();
+		final File[] fileList = file.listFiles();
 		if (fileList == null) return 0;
-		Stream<File> fileStream = Arrays.stream(fileList)
+
+		final Stream<File> fileStream = Arrays.stream(fileList)
 			.filter(File::isFile)
 			.filter(file1 -> file1.getName().endsWith(".png"));
 		LOCAL_PHOTOGRAPHS.clear();

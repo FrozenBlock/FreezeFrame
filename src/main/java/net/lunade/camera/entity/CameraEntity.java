@@ -84,46 +84,40 @@ public class CameraEntity extends Mob {
 	public void tick() {
 		super.tick();
 		this.prevTimer = this.getTimer();
-		if (!this.level().isClientSide() && this.level() instanceof ServerLevel) {
+		if (this.level() instanceof ServerLevel level) {
 			if (this.getTimer() > 0) {
 				this.setTimer(this.getTimer() - 1);
 				if (!this.queuedUUIDS.isEmpty()) {
 					Player chosen = this.level().getPlayerByUUID(this.queuedUUIDS.get(0));
 					if (chosen != null) this.getLookControl().setLookAt(chosen);
 				}
+
 				if (this.getTimer() == 1) {
-					if (this.level() instanceof ServerLevel serverLevel) {
-						ArrayList<ServerPlayer> queuedPlayers = new ArrayList<>();
-						for (UUID uuid : this.queuedUUIDS) {
-							Player player = this.level().getPlayerByUUID(uuid);
-							if (player instanceof ServerPlayer serverPlayer) {
-								queuedPlayers.add(serverPlayer);
-							}
-						}
-						ArrayList<ServerPlayer> nonQueuedPlayers = new ArrayList<>(serverLevel.getServer().getPlayerList().getPlayers());
-						nonQueuedPlayers.remove(queuedPlayers);
-						nonQueuedPlayers.removeIf(serverPlayer -> serverPlayer.level().dimension() != serverLevel.dimension());
-
-						for (ServerPlayer player : nonQueuedPlayers) {
-							player.connection.send(
-								new ClientboundSoundPacket(
-									BuiltInRegistries.SOUND_EVENT.wrapAsHolder(CameraPortMain.CAMERA_SNAP),
-									this.getSoundSource(),
-									this.getX(),
-									this.getY(),
-									this.getZ(),
-									0.5F,
-									1F,
-									this.random.nextLong()
-								)
-							);
-						}
-
-						for (ServerPlayer serverPlayer : queuedPlayers) {
-							CameraPossessPacket.sendTo(serverPlayer, this);
-						}
-						this.queuedUUIDS.removeIf(uuid -> true);
+					final ArrayList<ServerPlayer> queuedPlayers = new ArrayList<>();
+					for (UUID uuid : this.queuedUUIDS) {
+						if (level.getPlayerByUUID(uuid) instanceof ServerPlayer player) queuedPlayers.add(player);
 					}
+					final ArrayList<ServerPlayer> nonQueuedPlayers = new ArrayList<>(level.getServer().getPlayerList().getPlayers());
+					nonQueuedPlayers.remove(queuedPlayers);
+					nonQueuedPlayers.removeIf(serverPlayer -> serverPlayer.level().dimension() != level.dimension());
+
+					for (ServerPlayer player : nonQueuedPlayers) {
+						player.connection.send(
+							new ClientboundSoundPacket(
+								BuiltInRegistries.SOUND_EVENT.wrapAsHolder(CameraPortMain.CAMERA_SNAP),
+								this.getSoundSource(),
+								this.getX(),
+								this.getY(),
+								this.getZ(),
+								0.5F,
+								1F,
+								this.random.nextLong()
+							)
+						);
+					}
+
+					for (ServerPlayer player : queuedPlayers) CameraPossessPacket.sendTo(player, this);
+					this.queuedUUIDS.removeIf(uuid -> true);
 				}
 			}
 		}

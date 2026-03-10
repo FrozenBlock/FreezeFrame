@@ -48,37 +48,30 @@ public class PhotographRenderer {
 		);
 	}
 
-	public static void render(
-		int x, int y, int xOffset, int yOffset, GuiGraphics graphics, Identifier photoLocation, int renderSize, boolean renderFrame
-	) {
-		Identifier loadedPhotoLocation = PhotographLoader.getAndLoadPhotograph(photoLocation, false);
-		int renderX = x + xOffset;
-		int renderY = y + yOffset;
+	public static void render(int x, int y, int xOffset, int yOffset, GuiGraphics graphics, Identifier photoLocation, int renderSize, boolean renderFrame) {
+		final Identifier loadedPhotoId = PhotographLoader.getAndLoadPhotograph(photoLocation, false);
+		final int renderX = x + xOffset;
+		final int renderY = y + yOffset;
 		if (renderFrame) {
-			double frameOffsetScale = renderSize / 80D;
-			int posOffset = (int) (5 * frameOffsetScale);
-			int sizeOffset = (int) (10 * frameOffsetScale);
-			int frameRenderSize = renderSize + sizeOffset;
+			final double frameOffsetScale = renderSize / 80D;
+			final int posOffset = (int) (5 * frameOffsetScale);
+			final int sizeOffset = (int) (10 * frameOffsetScale);
+			final int frameRenderSize = renderSize + sizeOffset;
 			graphics.blitSprite(
 				RenderPipelines.GUI_TEXTURED,
 				GUI_FRAME,
 				renderX - posOffset,
 				renderY - posOffset,
-				frameRenderSize,
-				frameRenderSize
+				frameRenderSize, frameRenderSize
 			);
 		}
 		graphics.blit(
 			RenderPipelines.GUI_TEXTURED,
-			loadedPhotoLocation,
-			renderX,
-			renderY,
+			loadedPhotoId,
+			renderX, renderY,
 			0F,
 			0F,
-			renderSize,
-			renderSize,
-			renderSize,
-			renderSize
+			renderSize, renderSize, renderSize, renderSize
 		);
 	}
 }

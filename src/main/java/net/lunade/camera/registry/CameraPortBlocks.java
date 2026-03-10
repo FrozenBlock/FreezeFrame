@@ -47,7 +47,7 @@ public class CameraPortBlocks {
 		if (BuiltInRegistries.BLOCK.getOptional(id).isEmpty()) {
 			return Registry.register(BuiltInRegistries.BLOCK, id, block);
 		}
-		throw new IllegalArgumentException("Block with id " + id + " is already in the block registry.");
+		throw new IllegalArgumentException("Block with identifier " + id + " is already in the block registry.");
 	}
 
 	private static <T extends Block> T makeBlock(Function<BlockBehaviour.Properties, T> function, BlockBehaviour.Properties properties, Identifier id) {

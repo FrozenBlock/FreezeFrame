@@ -27,8 +27,8 @@ public record PrinterAskForSlotsPacket(int count, String id) implements CustomPa
 	}
 
 	public static void handle(PrinterAskForSlotsPacket packet, ServerPlayNetworking.Context context) {
-		ServerPlayer player = context.player();
+		final ServerPlayer player = context.player();
 		if (player == null) return;
-		if (player.containerMenu instanceof PrinterMenu printer) printer.setupData(packet.count, packet.id);
+		if (player.containerMenu instanceof PrinterMenu printer) printer.setupData(player, packet.count, packet.id);
 	}
 }

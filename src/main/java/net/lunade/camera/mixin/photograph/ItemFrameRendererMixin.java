@@ -56,8 +56,8 @@ public class ItemFrameRendererMixin<T extends ItemFrame> {
 			target = "Lnet/minecraft/client/renderer/item/ItemStackRenderState;submit(Lcom/mojang/blaze3d/vertex/PoseStack;Lnet/minecraft/client/renderer/SubmitNodeCollector;III)V"
 		)
 	)
-	public void cameraPort$render(
-		ItemStackRenderState instance, PoseStack poseStack, SubmitNodeCollector collector, int submitNodeCollector, int lightCoords, int overlayCoords, Operation<Void> original,
+	public void cameraPort$submit(
+		ItemStackRenderState instance, PoseStack poseStack, SubmitNodeCollector collector, int lightVal, int overlay, int outlineColor, Operation<Void> original,
 		@Share("cameraPort$photoLocation") LocalRef<Identifier> photoLocationRef
 	) {
 		final Identifier photographLocation = photoLocationRef.get();
@@ -65,9 +65,9 @@ public class ItemFrameRendererMixin<T extends ItemFrame> {
 			// 0.625F
 			poseStack.scale(1.25F, 1.25F, 1.25F);
 			poseStack.translate(0F, 0F, 0.03125F);
-			PhotographRenderer.submit(poseStack, collector, photographLocation, lightCoords, false);
+			PhotographRenderer.submit(poseStack, collector, photographLocation, lightVal, false);
 		} else {
-			original.call(instance, poseStack, collector, submitNodeCollector, lightCoords, overlayCoords);
+			original.call(instance, poseStack, collector, lightVal, overlay, outlineColor);
 		}
 	}
 

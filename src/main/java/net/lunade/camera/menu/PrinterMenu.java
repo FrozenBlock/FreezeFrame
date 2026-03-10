@@ -24,7 +24,6 @@ import net.minecraft.world.inventory.Slot;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.Items;
-import org.jetbrains.annotations.NotNull;
 
 public class PrinterMenu extends AbstractContainerMenu {
 	private final ContainerLevelAccess access;
@@ -56,11 +55,12 @@ public class PrinterMenu extends AbstractContainerMenu {
 		this.inputSlot = addSlot(
 			new Slot(this.container, 0, 8, 18) {
 				@Override
-				public boolean mayPlace(@NotNull ItemStack stack) {
+				public boolean mayPlace(ItemStack stack) {
 					return stack.is(Items.PAPER);
 				}
 			}
 		);
+
 		this.resultSlot = addSlot(
 			new Slot(this.resultContainer, 1, 152, 18) {
 
@@ -71,11 +71,9 @@ public class PrinterMenu extends AbstractContainerMenu {
 
 				@Override
 				public void onTake(Player player, ItemStack stack) {
-					stack.onCraftedBy( player, stack.getCount());
-					ItemStack itemStack = PrinterMenu.this.inputSlot.remove(1);
-					if (!itemStack.isEmpty()) {
-						PrinterMenu.this.setupResultSlot();
-					}
+					stack.onCraftedBy(player, stack.getCount());
+					final ItemStack input = PrinterMenu.this.inputSlot.remove(1);
+					if (!input.isEmpty()) PrinterMenu.this.setupResultSlot(player);
 
 					PrinterMenu.this.access.execute((level, blockPos) -> {
 						long l = level.getGameTime();
@@ -88,7 +86,8 @@ public class PrinterMenu extends AbstractContainerMenu {
 						serverPlayer.connection.send(
 							new ClientboundCustomPayloadPacket(
 								FileTransferPacket.createRequest(
-									"photographs", PrinterMenu.this.temp.replace("photographs/", "") + ".png"
+									"photographs",
+									PrinterMenu.this.temp.replace("photographs/", "") + ".png"
 								)
 							)
 						);
@@ -124,7 +123,7 @@ public class PrinterMenu extends AbstractContainerMenu {
 	}
 
 	@Override
-	public void slotsChanged(Container inventory) {
+	public void slotsChanged(Container container) {
 		ItemStack itemstack = this.inputSlot.getItem();
 		if (!itemstack.is(this.input.getItem())) {
 			this.input = itemstack.copy();
@@ -132,13 +131,16 @@ public class PrinterMenu extends AbstractContainerMenu {
 		}
 	}
 
-	void setupResultSlot() {
+	void setupResultSlot(Player player) {
 		if (this.pictureSlotsSize.get() != 0 && this.inputSlot.getItem().is(Items.PAPER)) {
-			ItemStack stack = new ItemStack(CameraPortItems.PHOTOGRAPH);
-			String photographName = this.temp.replace("photographs/", "");
+			final ItemStack stack = new ItemStack(CameraPortItems.PHOTOGRAPH);
+			final String photographName = this.temp.replace("photographs/", "");
 			stack.set(
 				CameraPortItems.PHOTO_COMPONENT,
-				new PhotographComponent(CameraPortConstants.id("photographs/" + photographName))
+				new PhotographComponent(
+					CameraPortConstants.id("photographs/" + photographName),
+					player.getPlainTextName()
+				)
 			);
 			this.resultSlot.set(stack);
 		} else {
@@ -152,12 +154,12 @@ public class PrinterMenu extends AbstractContainerMenu {
 	}
 
 	@Override
-	public boolean canTakeItemForPickAll(ItemStack stack, @NotNull Slot slot) {
+	public boolean canTakeItemForPickAll(ItemStack stack, Slot slot) {
 		return slot.container != this.resultContainer && super.canTakeItemForPickAll(stack, slot);
 	}
 
 	@Override
-	public @NotNull ItemStack quickMoveStack(Player player, int fromIndex) {
+	public ItemStack quickMoveStack(Player player, int fromIndex) {
 		Slot slot = this.slots.get(fromIndex);
 		ItemStack itemStack = ItemStack.EMPTY;
 		if (slot.hasItem()) {
@@ -184,7 +186,7 @@ public class PrinterMenu extends AbstractContainerMenu {
 
 			slot.onTake(player, itemStack1);
 			this.broadcastChanges();
-			this.setupResultSlot();
+			this.setupResultSlot(player);
 		}
 		return itemStack;
 	}
@@ -196,10 +198,10 @@ public class PrinterMenu extends AbstractContainerMenu {
 		this.access.execute((level, pos) -> this.clearContainer(player, this.container));
 	}
 
-	public void setupData(int size, String id) {
+	public void setupData(Player player, int size, String id) {
 		this.pictureSlotsSize.set(size);
 		this.temp = id;
-		this.setupResultSlot();
+		this.setupResultSlot(player);
 	}
 
 	@Environment(EnvType.CLIENT)

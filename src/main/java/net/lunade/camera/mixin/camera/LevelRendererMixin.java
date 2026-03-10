@@ -1,47 +1,42 @@
 package net.lunade.camera.mixin.camera;
 
+import com.llamalad7.mixinextras.injector.ModifyExpressionValue;
+import com.llamalad7.mixinextras.sugar.Local;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
+import net.lunade.camera.client.camera.CameraScreenshotManager;
+import net.minecraft.client.Minecraft;
 import net.minecraft.client.renderer.LevelRenderer;
+import net.minecraft.world.entity.Entity;
+import org.spongepowered.asm.mixin.Final;
 import org.spongepowered.asm.mixin.Mixin;
+import org.spongepowered.asm.mixin.Shadow;
+import org.spongepowered.asm.mixin.injection.At;
 
 @Environment(EnvType.CLIENT)
 @Mixin(LevelRenderer.class)
 public class LevelRendererMixin {
-	/*
 
 	@Shadow
 	@Final
 	private Minecraft minecraft;
 
-	@Shadow
-	@Final
-	private List<Entity> visibleEntities;
-
 	@ModifyExpressionValue(
-		method = "renderLevel",
+		method = "extractVisibleEntities",
 		at = @At(
 			value = "INVOKE",
-			target = "Lnet/minecraft/client/renderer/LevelRenderer;collectVisibleEntities(Lnet/minecraft/client/Camera;Lnet/minecraft/client/renderer/culling/Frustum;Ljava/util/List;)Z"
+			target = "Lnet/minecraft/client/Camera;entity()Lnet/minecraft/world/entity/Entity;",
+			ordinal = 3
 		)
 	)
-	public boolean cameraPort$renderPlayer(
-		boolean original,
-		@Share("cameraPort$playerRenderedSpecial") LocalBooleanRef playerRenderedSpecial,
-		@Share("cameraPort$alreadyRendered") LocalBooleanRef alreadyRendered,
-		@Share("cameraPort$tickRate") LocalFloatRef tickRate,
-		@Share("cameraPort$poseStack") LocalRef<PoseStack> poseStackRef
+	public Entity cameraPort$trickIntoRenderingPlayer(
+		Entity original,
+		@Local(name = "entity") Entity entity
 	) {
-		if (CameraScreenshotManager.possessingCamera
-			&& !CameraScreenshotManager.isCameraHandheld
-			&& this.minecraft.player != null
-			&& !this.visibleEntities.contains(this.minecraft.player)
-		) {
-			this.visibleEntities.add(this.minecraft.player);
-			return true;
-		}
-		return original;
+		if (this.minecraft.player == null) return original;
+		if (!CameraScreenshotManager.possessingCamera || CameraScreenshotManager.isCameraHandheld) return original;
+
+		return entity == this.minecraft.player ? entity : original;
 	}
-	 */
 
 }

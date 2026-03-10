@@ -51,7 +51,7 @@ public class ScreenEffectRendererMixin {
 		double original,
 		@Share("cameraPort$cameraEntity") LocalRef<Entity> entityLocalRef
 	) {
-		Entity cameraEntity = entityLocalRef.get();
+		final Entity cameraEntity = entityLocalRef.get();
 		if (cameraEntity != null) return cameraEntity.getX();
 		return original;
 	}
@@ -67,7 +67,7 @@ public class ScreenEffectRendererMixin {
 		double original,
 		@Share("cameraPort$cameraEntity") LocalRef<Entity> entityLocalRef
 	) {
-		Entity cameraEntity = entityLocalRef.get();
+		final Entity cameraEntity = entityLocalRef.get();
 		if (cameraEntity != null) return cameraEntity.getEyeY();
 		return original;
 	}
@@ -83,7 +83,7 @@ public class ScreenEffectRendererMixin {
 		double original,
 		@Share("cameraPort$cameraEntity") LocalRef<Entity> entityLocalRef
 	) {
-		Entity cameraEntity = entityLocalRef.get();
+		final Entity cameraEntity = entityLocalRef.get();
 		if (cameraEntity != null) return cameraEntity.getZ();
 		return original;
 	}
@@ -99,7 +99,7 @@ public class ScreenEffectRendererMixin {
 		float original,
 		@Share("cameraPort$cameraEntity") LocalRef<Entity> entityLocalRef
 	) {
-		Entity cameraEntity = entityLocalRef.get();
+		final Entity cameraEntity = entityLocalRef.get();
 		if (cameraEntity != null) return cameraEntity.getBbWidth();
 		return original;
 	}
@@ -115,7 +115,7 @@ public class ScreenEffectRendererMixin {
 		float original,
 		@Share("cameraPort$cameraEntity") LocalRef<Entity> entityLocalRef
 	) {
-		Entity cameraEntity = entityLocalRef.get();
+		final Entity cameraEntity = entityLocalRef.get();
 		if (cameraEntity != null) return (cameraEntity instanceof LivingEntity livingEntity) ? livingEntity.getScale() : 1F;
 		return original;
 	}

@@ -51,7 +51,7 @@ public class CameraScreenshotManager {
 		possessingCamera = true;
 
 		if (minecraft.level != null) {
-			Entity camEntity = minecraft.getCameraEntity();
+			final Entity camEntity = minecraft.getCameraEntity();
 			if (camEntity != null) minecraft.level.playLocalSound(minecraft.player, CameraPortMain.CAMERA_SNAP, SoundSource.PLAYERS, 0.5F, 1F);
 		}
 
@@ -82,9 +82,9 @@ public class CameraScreenshotManager {
 		final Window window = minecraft.getWindow();
 		final int prevWidth = window.getWidth();
 		final int prevHeight = window.getHeight();
-		final Camera camera = minecraft.gameRenderer.getMainCamera();
-		final RenderTarget renderTarget = minecraft.getMainRenderTarget();
 		final GameRenderer gameRenderer = minecraft.gameRenderer;
+		final Camera camera = gameRenderer.getMainCamera();
+		final RenderTarget renderTarget = minecraft.getMainRenderTarget();
 		gameRenderer.setRenderBlockOutline(false);
 
 		try {
@@ -92,7 +92,9 @@ public class CameraScreenshotManager {
 			window.setWidth(width);
 			window.setHeight(height);
 			renderTarget.resize(width, height);
-			minecraft.gameRenderer.renderLevel(DeltaTracker.ONE);
+			gameRenderer.update(DeltaTracker.ONE, true);
+			gameRenderer.extract(DeltaTracker.ONE, true);
+			gameRenderer.renderLevel(DeltaTracker.ONE);
 
 			try {
 				Thread.sleep(10L);
@@ -110,9 +112,9 @@ public class CameraScreenshotManager {
 		}
 	}
 
-	private static void grab(File gameDirectory, RenderTarget renderTarget, Consumer<Component> messageReceiver) {
-		Screenshot.takeScreenshot(renderTarget, 1, nativeImage -> {
-			File photographPath = gameDirectory.toPath()
+	private static void grab(File workDir, RenderTarget target, Consumer<Component> callback) {
+		Screenshot.takeScreenshot(target, 1, nativeImage -> {
+			final File photographPath = workDir.toPath()
 				.resolve("photographs")
 				.resolve(".local")
 				.toFile();
@@ -130,7 +132,7 @@ public class CameraScreenshotManager {
 			}
 			 */
 
-			File photographFile = getPhotographFile(photographPath);
+			final File photographFile = getPhotographFile(photographPath);
 			Optional<Path> finalIconPath = iconPath;
 
 			Util.ioPool().execute(() -> {
@@ -142,10 +144,10 @@ public class CameraScreenshotManager {
 						.withStyle(ChatFormatting.UNDERLINE)
 						.withStyle(style -> style.withClickEvent(new ClickEvent.OpenFile(photographFile.getAbsoluteFile())));
 
-					messageReceiver.accept(Component.translatable("screenshot.success", component));
+					callback.accept(Component.translatable("screenshot.success", component));
 				} catch (Exception e) {
 					CameraPortConstants.warn("Couldn't save screenshot " + e, true);
-					messageReceiver.accept(Component.translatable("screenshot.failure", e.getMessage()));
+					callback.accept(Component.translatable("screenshot.failure", e.getMessage()));
 				} finally {
 					nativeImage.close();
 				}

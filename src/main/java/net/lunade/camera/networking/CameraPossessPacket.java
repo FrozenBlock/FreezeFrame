@@ -23,9 +23,9 @@ public record CameraPossessPacket(int entityId) implements CustomPacketPayload {
 		ServerPlayNetworking.send(serverPlayer, new CameraPossessPacket(entityId));
 	}
 
-	public static void sendTo(ServerPlayer serverPlayer, CameraEntity cameraEntity) {
-		CameraPossessPacket cameraPossessPacket = new CameraPossessPacket(cameraEntity.getId());
-		ServerPlayNetworking.send(serverPlayer, cameraPossessPacket);
+	public static void sendTo(ServerPlayer player, CameraEntity cameraEntity) {
+		final CameraPossessPacket cameraPossessPacket = new CameraPossessPacket(cameraEntity.getId());
+		ServerPlayNetworking.send(player, cameraPossessPacket);
 	}
 
 	public void write(FriendlyByteBuf buf) {
