@@ -6,7 +6,7 @@ import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 import net.lunade.camera.client.photograph.PhotographLoader;
 import net.lunade.camera.client.photograph.PhotographRenderer;
-import net.lunade.camera.component.tooltip.PhotographTooltipComponent;
+import net.lunade.camera.component.tooltip.PhotographTooltip;
 import net.minecraft.client.gui.Font;
 import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.client.gui.screens.inventory.tooltip.ClientTooltipComponent;
@@ -17,13 +17,13 @@ import org.jetbrains.annotations.Nullable;
 import net.minecraft.ChatFormatting;
 
 @Environment(EnvType.CLIENT)
-public class ClientPhotographTooltipComponent implements ClientTooltipComponent {
+public class ClientPhotographTooltip implements ClientTooltipComponent {
 	private static final int PHOTOGRAPH_RENDER_SIZE = 32;
 	private static final int PHOTOGRAPH_RENDER_OFFSET_X = 3;
 	private static final int BELOW_PHOTOGRAPH_SPACING = 6;
 	private static final int TOOLTIP_HEIGHT = PHOTOGRAPH_RENDER_SIZE + BELOW_PHOTOGRAPH_SPACING;
 	private static final int TOOLTIP_WIDTH = PHOTOGRAPH_RENDER_SIZE + (PHOTOGRAPH_RENDER_OFFSET_X * 2);
-	private static final Component COPY_COMPONENT = Component.translatable("photograph.copy").withStyle(ChatFormatting.GRAY);
+	public static final Component COPY_COMPONENT = Component.translatable("photograph.copy").withStyle(ChatFormatting.GRAY);
 	private final Identifier photographId;
 	@Nullable
 	private final Component photographer;
@@ -32,7 +32,7 @@ public class ClientPhotographTooltipComponent implements ClientTooltipComponent 
 	@Nullable
 	private final Component copy;
 
-	public ClientPhotographTooltipComponent(PhotographTooltipComponent component) {
+	public ClientPhotographTooltip(PhotographTooltip component) {
 		this.photographId = component.identifier();
 		this.photographer = StringUtil.isNullOrEmpty(component.photographer())
 			? null

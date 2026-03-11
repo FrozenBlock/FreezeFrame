@@ -5,6 +5,7 @@ import net.fabricmc.fabric.api.networking.v1.ServerPlayNetworking;
 import net.frozenblock.lib.file.transfer.FileTransferFilter;
 import net.lunade.camera.networking.packet.CameraPossessPacket;
 import net.lunade.camera.networking.packet.PrinterAskForSlotsPacket;
+import net.lunade.camera.networking.packet.SelectFilmPhotographPacket;
 import net.minecraft.network.RegistryFriendlyByteBuf;
 
 public class CameraPortNetworking {
@@ -16,6 +17,8 @@ public class CameraPortNetworking {
 		registry.register(CameraPossessPacket.PACKET_TYPE, CameraPossessPacket.CODEC);
 		c2sRegistry.register(PrinterAskForSlotsPacket.PACKET_TYPE, PrinterAskForSlotsPacket.CODEC);
 		ServerPlayNetworking.registerGlobalReceiver(PrinterAskForSlotsPacket.PACKET_TYPE, PrinterAskForSlotsPacket::handle);
+		c2sRegistry.register(SelectFilmPhotographPacket.PACKET_TYPE, SelectFilmPhotographPacket.CODEC);
+		ServerPlayNetworking.registerGlobalReceiver(SelectFilmPhotographPacket.PACKET_TYPE, SelectFilmPhotographPacket::handle);
 
 		FileTransferFilter.whitelistDestinationPath("photographs", false);
 		FileTransferFilter.whitelistDestinationPath("photographs", true);

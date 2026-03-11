@@ -1,0 +1,33 @@
+package net.lunade.camera.networking.packet;
+
+import net.fabricmc.fabric.api.networking.v1.ServerPlayNetworking;
+import net.lunade.camera.CameraPortConstants;
+import net.minecraft.network.FriendlyByteBuf;
+import net.minecraft.network.codec.StreamCodec;
+import net.minecraft.network.protocol.common.custom.CustomPacketPayload;
+import net.minecraft.server.level.ServerPlayer;
+
+public record SelectFilmPhotographPacket(int slotId, int selectedPhotographIndex) implements CustomPacketPayload {
+	public static final Type<SelectFilmPhotographPacket> PACKET_TYPE = CustomPacketPayload.createType(CameraPortConstants.safeString("select_film_photograph"));
+	public static final StreamCodec<FriendlyByteBuf, SelectFilmPhotographPacket> CODEC = StreamCodec.ofMember(SelectFilmPhotographPacket::write, SelectFilmPhotographPacket::new);
+
+	public SelectFilmPhotographPacket(FriendlyByteBuf buf) {
+		this(buf.readVarInt(), buf.readVarInt());
+	}
+
+	public void write(FriendlyByteBuf buf) {
+		buf.writeVarInt(this.slotId);
+		buf.writeVarInt(this.selectedPhotographIndex);
+	}
+
+	@Override
+	public Type<? extends CustomPacketPayload> type() {
+		return PACKET_TYPE;
+	}
+
+	public static void handle(SelectFilmPhotographPacket packet, ServerPlayNetworking.Context context) {
+		final ServerPlayer player = context.player();
+		if (player == null) return;
+		player.containerMenu.cameraPort$setSelectedFilmPhotographIndex(packet.slotId, packet.selectedPhotographIndex);
+	}
+}

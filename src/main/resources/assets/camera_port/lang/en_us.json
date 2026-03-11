@@ -10,6 +10,12 @@
   "photograph.date": "%s",
   "photograph.copy": "Copy",
 
+  "item.camera_port.film": "Film Roll",
+  "item.camera_port.film.empty": "Blank",
+  "item.camera_port.film.empty.description": "Stores photographs",
+  "item.camera_port.film.full": "Full",
+  "item.camera_port.film.fullness": "%s/%s",
+
   "subtitle.entity.camera.crack": "Camera cracks",
   "subtitle.entity.camera.adjust": "Tripod adjusts",
   "subtitle.entity.camera.snap": "Shutter clicks",

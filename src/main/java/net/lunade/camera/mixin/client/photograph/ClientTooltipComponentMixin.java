@@ -2,8 +2,10 @@ package net.lunade.camera.mixin.client.photograph;
 
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
-import net.lunade.camera.component.tooltip.PhotographTooltipComponent;
-import net.lunade.camera.component.tooltip.client.ClientPhotographTooltipComponent;
+import net.lunade.camera.component.tooltip.FilmTooltip;
+import net.lunade.camera.component.tooltip.PhotographTooltip;
+import net.lunade.camera.component.tooltip.client.ClientFilmTooltip;
+import net.lunade.camera.component.tooltip.client.ClientPhotographTooltip;
 import net.minecraft.client.gui.screens.inventory.tooltip.ClientTooltipComponent;
 import net.minecraft.world.inventory.tooltip.TooltipComponent;
 import org.spongepowered.asm.mixin.Mixin;
@@ -20,7 +22,8 @@ public interface ClientTooltipComponentMixin {
 		method = "create(Lnet/minecraft/world/inventory/tooltip/TooltipComponent;)Lnet/minecraft/client/gui/screens/inventory/tooltip/ClientTooltipComponent;",
 		cancellable = true
 	)
-	private static void cameraPort$create(TooltipComponent data, CallbackInfoReturnable<ClientTooltipComponent> info) {
-		if (data instanceof PhotographTooltipComponent tooltip) info.setReturnValue(new ClientPhotographTooltipComponent(tooltip));
+	private static void cameraPort$create(TooltipComponent component, CallbackInfoReturnable<ClientTooltipComponent> info) {
+		if (component instanceof PhotographTooltip tooltip) info.setReturnValue(new ClientPhotographTooltip(tooltip));
+		if (component instanceof FilmTooltip tooltip) info.setReturnValue(new ClientFilmTooltip(tooltip.contents()));
 	}
 }

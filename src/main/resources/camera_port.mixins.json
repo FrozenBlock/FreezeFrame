@@ -4,15 +4,18 @@
   "package": "net.lunade.camera.mixin",
   "compatibilityLevel": "JAVA_21",
   "mixins": [
+    "film.AbstractContainerMenuMixin"
   ],
   "client": [
     "client.camera.CameraMixin",
-    "client.photograph.ClientTooltipComponentMixin",
     "client.camera.GuiMixin",
-    "client.photograph.ItemFrameRendererMixin",
-    "client.photograph.ItemInHandRendererMixin",
     "client.camera.LevelRendererMixin",
-    "client.camera.ScreenEffectRendererMixin"
+    "client.camera.ScreenEffectRendererMixin",
+    "client.film.AbstractContainerScreenMixin",
+    "client.film.RangeSelectItemModelPropertiesMixin",
+    "client.photograph.ClientTooltipComponentMixin",
+    "client.photograph.ItemFrameRendererMixin",
+    "client.photograph.ItemInHandRendererMixin"
   ],
   "injectors": {
     "defaultRequire": 1
