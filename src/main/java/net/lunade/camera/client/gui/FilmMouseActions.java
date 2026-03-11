@@ -12,7 +12,6 @@ import net.minecraft.client.multiplayer.ClientPacketListener;
 import net.minecraft.network.protocol.common.ServerboundCustomPayloadPacket;
 import net.minecraft.world.inventory.ContainerInput;
 import net.minecraft.world.inventory.Slot;
-import net.minecraft.world.item.BundleItem;
 import net.minecraft.world.item.ItemStack;
 import org.joml.Vector2i;
 
@@ -58,7 +57,7 @@ public class FilmMouseActions implements ItemSlotMouseAction {
 
 	private void toggledSelectedFilmPhotograph(ItemStack filmItem, int slotIndex, int selectedPhotograph) {
 		final ClientPacketListener connection = this.minecraft.getConnection();
-		if (connection == null || selectedPhotograph >= BundleItem.getNumberOfItemsToShow(filmItem)) return;
+		if (connection == null || selectedPhotograph >= FilmItem.getNumberOfPhotographs(filmItem)) return;
 
 		FilmItem.toggleSelectedPhotograph(filmItem, selectedPhotograph);
 		connection.send(new ServerboundCustomPayloadPacket(

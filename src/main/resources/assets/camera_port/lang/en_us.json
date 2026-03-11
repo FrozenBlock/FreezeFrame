@@ -1,10 +1,21 @@
 {
-  "entity.camera_port.camera": "Camera",
-  "item.camera_port.camera": "Camera",
   "item.camera_port.photograph": "Photograph",
   "item.camera_port.portfolio": "Portfolio",
+
+
+  "entity.camera_port.camera": "Camera",
+  "item.camera_port.camera": "Camera",
   "entity.camera_port.small_camera": "Disc Camera",
   "item.camera_port.disc_camera": "Disc Camera",
+
+  "item.camera_port.camera.empty": "Empty",
+  "item.camera_port.camera.empty.description": "Can hold up to 4 Film Rolls",
+  "item.camera_port.camera.full": "Full",
+  "item.camera_port.camera.fullness": "%s/%s",
+
+  "subtitles.item.camera.insert": "Film packed",
+  "subtitles.item.camera.insert_fail": "Camera full",
+  "subtitles.item.camera.remove_one": "Film unpacked",
 
   "photograph.photographer": "Photographer: %1$s",
   "photograph.date": "%s",
@@ -12,7 +23,7 @@
 
   "item.camera_port.film": "Film Roll",
   "item.camera_port.film.empty": "Blank",
-  "item.camera_port.film.empty.description": "Stores photographs",
+  "item.camera_port.film.empty.description": "Stores up to 16 photographs",
   "item.camera_port.film.full": "Full",
   "item.camera_port.film.fullness": "%s/%s",
 

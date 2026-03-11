@@ -1,0 +1,32 @@
+{
+  "parent": "minecraft:recipes/root",
+  "criteria": {
+    "has_camera": {
+      "conditions": {
+        "items": [
+          {
+            "items": "camera_port:camera"
+          }
+        ]
+      },
+      "trigger": "minecraft:inventory_changed"
+    },
+    "has_the_recipe": {
+      "conditions": {
+        "recipe": "camera_port:film"
+      },
+      "trigger": "minecraft:recipe_unlocked"
+    }
+  },
+  "requirements": [
+    [
+      "has_the_recipe",
+      "has_camera"
+    ]
+  ],
+  "rewards": {
+    "recipes": [
+      "camera_port:film"
+    ]
+  }
+}

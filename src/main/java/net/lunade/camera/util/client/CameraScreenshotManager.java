@@ -1,4 +1,4 @@
-package net.lunade.camera.client.camera;
+package net.lunade.camera.util.client;
 
 import com.mojang.blaze3d.pipeline.RenderTarget;
 import com.mojang.blaze3d.platform.NativeImage;
@@ -10,17 +10,22 @@ import java.util.Optional;
 import java.util.function.Consumer;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
+import net.frozenblock.lib.file.transfer.FileTransferPacket;
 import net.lunade.camera.CameraPortConstants;
 import net.lunade.camera.registry.CameraPortSounds;
+import net.lunade.camera.util.CameraScreenshotHelper;
 import net.minecraft.client.Camera;
 import net.minecraft.client.DeltaTracker;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.Screenshot;
+import net.minecraft.client.multiplayer.ClientPacketListener;
 import net.minecraft.client.renderer.GameRenderer;
 import net.minecraft.core.particles.ParticleTypes;
 import net.minecraft.network.chat.ClickEvent;
 import net.minecraft.network.chat.Component;
+import net.minecraft.network.protocol.common.ServerboundCustomPayloadPacket;
 import net.minecraft.sounds.SoundSource;
+import net.minecraft.util.StringUtil;
 import net.minecraft.util.Util;
 import net.minecraft.world.entity.Entity;
 import org.jetbrains.annotations.Nullable;
@@ -48,7 +53,7 @@ public class CameraScreenshotManager {
 		return isPossessingCamera() && isCameraHandheld;
 	}
 
-	public static void executeScreenshot(@Nullable Entity entity, boolean handheld) {
+	public static void executeScreenshot(@Nullable Entity entity, boolean handheld, @Nullable String fileName) {
 		final Minecraft minecraft = Minecraft.getInstance();
 		isCameraHandheld = handheld;
 		previousCameraEntity = minecraft.getCameraEntity();
@@ -58,7 +63,7 @@ public class CameraScreenshotManager {
 		minecraft.options.hideGui = true;
 		possessingCamera = true;
 
-		grabCameraScreenshot(minecraft.gameDirectory, 256, 256);
+		grabCameraScreenshot(minecraft.gameDirectory, 256, 256, fileName);
 
 		makeSnapSoundAndSmoke: {
 			if (minecraft.level == null) break makeSnapSoundAndSmoke;
@@ -83,7 +88,7 @@ public class CameraScreenshotManager {
 		isCameraHandheld = false;
 	}
 
-	public static void grabCameraScreenshot(File gameDirectory, int width, int height) {
+	public static void grabCameraScreenshot(File workDir, int width, int height, @Nullable String fileName) {
 		final Minecraft minecraft = Minecraft.getInstance();
 		final Window window = minecraft.getWindow();
 		final int prevWidth = window.getWidth();
@@ -101,7 +106,7 @@ public class CameraScreenshotManager {
 			gameRenderer.update(DeltaTracker.ONE, true);
 			gameRenderer.extract(DeltaTracker.ONE, true);
 			gameRenderer.renderLevel(DeltaTracker.ONE);
-			grab(gameDirectory, renderTarget, (text) -> minecraft.execute(() -> minecraft.gui.getChat().addClientSystemMessage(text)));
+			grab(workDir, fileName, renderTarget, (text) -> minecraft.execute(() -> minecraft.gui.getChat().addClientSystemMessage(text)));
 		} catch (Exception ignored) {
 		} finally {
 			gameRenderer.setRenderBlockOutline(true);
@@ -112,14 +117,8 @@ public class CameraScreenshotManager {
 		}
 	}
 
-	private static void grab(File workDir, RenderTarget target, Consumer<Component> callback) {
+	private static void grab(File workDir, @Nullable String fileName, RenderTarget target, Consumer<Component> callback) {
 		Screenshot.takeScreenshot(target, 1, nativeImage -> {
-			final File photographPath = workDir.toPath()
-				.resolve("photographs")
-				.resolve(".local")
-				.toFile();
-			photographPath.mkdirs();
-
 			Optional<Path> iconPath = Optional.empty();
 			Minecraft minecraft = Minecraft.getInstance();
 			/*
@@ -132,7 +131,7 @@ public class CameraScreenshotManager {
 			}
 			 */
 
-			final File photographFile = getPhotographFile(photographPath);
+			final File photographFile = resolvePhotographFile(workDir, fileName);
 			Optional<Path> finalIconPath = iconPath;
 
 			Util.ioPool().execute(() -> {
@@ -140,11 +139,25 @@ public class CameraScreenshotManager {
 					nativeImage.writeToFile(photographFile);
 					finalIconPath.ifPresent(path -> copyPhotographToFileWithSize(nativeImage, path, 64, 64));
 
-					Component component = Component.literal(photographFile.getName())
+					final Component component = Component.literal(photographFile.getName())
 						.withStyle(ChatFormatting.UNDERLINE)
 						.withStyle(style -> style.withClickEvent(new ClickEvent.OpenFile(photographFile.getAbsoluteFile())));
 
 					callback.accept(Component.translatable("screenshot.success", component));
+					sendToServer:{
+						if (StringUtil.isNullOrEmpty(fileName)) break sendToServer;
+
+						final ClientPacketListener connection = minecraft.getConnection();
+						if (connection == null) break sendToServer;
+
+						try {
+							FileTransferPacket.create("photographs", photographFile).forEach(
+								packet -> connection.send(new ServerboundCustomPayloadPacket(packet))
+							);
+						} catch (Exception e) {
+							CameraPortConstants.error("Unable to send photograph to server", e);
+						}
+					}
 				} catch (Exception e) {
 					CameraPortConstants.warn("Couldn't save screenshot " + e, true);
 					callback.accept(Component.translatable("screenshot.failure", e.getMessage()));
@@ -156,37 +169,37 @@ public class CameraScreenshotManager {
 	}
 
 	private static void copyPhotographToFileWithSize(NativeImage image, Path path, int width, int height) {
-		int i = image.getWidth();
-		int j = image.getHeight();
-		int k = 0;
-		int l = 0;
-		if (i > j) {
-			k = (i - j) / 2;
-			i = j;
+		int sourceWidth = image.getWidth();
+		int sourceHeight = image.getHeight();
+		int newX = 0;
+		int newY = 0;
+		if (sourceWidth > sourceHeight) {
+			newX = (sourceWidth - sourceHeight) / 2;
+			sourceWidth = sourceHeight;
 		} else {
-			l = (j - i) / 2;
-			j = i;
+			newY = (sourceHeight - sourceWidth) / 2;
+			sourceHeight = sourceWidth;
 		}
 
-		try (NativeImage nativeImage2 = new NativeImage(64, 64, false)) {
-			image.resizeSubRectTo(k, l, i, j, nativeImage2);
+		try (NativeImage nativeImage2 = new NativeImage(width, height, false)) {
+			image.resizeSubRectTo(newX, newY, sourceWidth, sourceHeight, nativeImage2);
 			nativeImage2.writeToFile(path);
 		} catch (IOException e) {
-			CameraPortConstants.LOGGER.warn("Couldn't save photograph to world icon", e);
+			CameraPortConstants.LOGGER.warn("Couldn't save photograph as icon", e);
 		} finally {
 			image.close();
 		}
 	}
 
-	public static File getPhotographFile(File directory) {
-		String fileName = PLAYER_UUID + "_" + System.currentTimeMillis();
-		int fileIndex = 1;
+	private static File resolvePhotographFile(File workDir, @Nullable String fileName) {
+		final File photographPath = workDir.toPath()
+			.resolve("photographs")
+			.resolve(".local")
+			.toFile();
+		photographPath.mkdirs();
 
-		while (true) {
-			File file = new File(directory, fileName + (fileIndex == 1 ? "" : "_" + fileIndex) + ".png");
-			if (!file.exists()) return file;
-			++fileIndex;
-		}
+	 	return StringUtil.isNullOrEmpty(fileName)
+			? CameraScreenshotHelper.getPhotographFile(PLAYER_UUID, photographPath)
+			: CameraScreenshotHelper.getPhotographFile(fileName, photographPath);
 	}
-
 }

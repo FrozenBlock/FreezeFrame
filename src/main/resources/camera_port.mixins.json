@@ -4,9 +4,13 @@
   "package": "net.lunade.camera.mixin",
   "compatibilityLevel": "JAVA_21",
   "mixins": [
+    "camera.AbstractContainerMenuMixin",
+    "camera.ContainerComponentManipulatorsMixin",
+    "camera.ItemStackMixin",
     "film.AbstractContainerMenuMixin"
   ],
   "client": [
+    "client.camera.AbstractContainerScreenMixin",
     "client.camera.CameraMixin",
     "client.camera.GuiMixin",
     "client.camera.LevelRendererMixin",

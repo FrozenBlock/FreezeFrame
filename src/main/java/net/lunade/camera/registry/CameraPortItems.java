@@ -3,6 +3,7 @@ package net.lunade.camera.registry;
 import java.util.function.Function;
 import net.fabricmc.fabric.api.creativetab.v1.CreativeModeTabEvents;
 import net.lunade.camera.CameraPortConstants;
+import net.lunade.camera.component.CameraContents;
 import net.lunade.camera.component.FilmContents;
 import net.lunade.camera.item.CameraItem;
 import net.lunade.camera.item.FilmItem;
@@ -20,6 +21,7 @@ public class CameraPortItems {
 		new Item.Properties()
 			.stacksTo(1)
 			.spawnEgg(CameraPortEntityTypes.CAMERA)
+			.component(CameraPortDataComponents.CAMERA_CONTENTS, CameraContents.EMPTY)
 	);
 	public static final CameraItem DISC_CAMERA = register(
 		"disc_camera",
@@ -27,6 +29,7 @@ public class CameraPortItems {
 		new Item.Properties()
 			.stacksTo(1)
 			.spawnEgg(CameraPortEntityTypes.DISC_CAMERA)
+			.component(CameraPortDataComponents.CAMERA_CONTENTS, CameraContents.EMPTY)
 	);
 	public static final FilmItem FILM = register(
 		"film",

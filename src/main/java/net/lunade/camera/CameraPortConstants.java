@@ -34,6 +34,10 @@ public final class CameraPortConstants {
 		if (shouldLog) LOGGER.error(message);
 	}
 
+	public static void error(String message, Throwable throwable) {
+		LOGGER.error(message, throwable);
+	}
+
 	public static void printStackTrace(String message, boolean shouldPrint) {
 		if (shouldPrint) LOGGER.error(message, new Throwable(message).fillInStackTrace());
 	}

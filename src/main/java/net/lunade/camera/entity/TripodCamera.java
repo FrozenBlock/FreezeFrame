@@ -3,7 +3,7 @@ package net.lunade.camera.entity;
 import java.util.ArrayList;
 import java.util.Optional;
 import java.util.UUID;
-import net.lunade.camera.networking.packet.CameraPossessPacket;
+import net.lunade.camera.networking.packet.CameraTakeScreenshotPacket;
 import net.lunade.camera.registry.CameraPortSounds;
 import net.minecraft.core.UUIDUtil;
 import net.minecraft.core.component.DataComponents;
@@ -116,7 +116,8 @@ public class TripodCamera extends Mob {
 						);
 					}
 
-					for (ServerPlayer player : queuedPlayers) CameraPossessPacket.sendTo(player, this);
+					// TODO: film
+					for (ServerPlayer player : queuedPlayers) CameraTakeScreenshotPacket.sendTo(player, this, "");
 					this.queuedUUIDS.removeIf(uuid -> true);
 				}
 			}

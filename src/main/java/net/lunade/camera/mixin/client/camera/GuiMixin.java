@@ -2,7 +2,7 @@ package net.lunade.camera.mixin.client.camera;
 
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
-import net.lunade.camera.client.camera.CameraScreenshotManager;
+import net.lunade.camera.util.client.CameraScreenshotManager;
 import net.minecraft.client.DeltaTracker;
 import net.minecraft.client.gui.Gui;
 import net.minecraft.client.gui.GuiGraphics;

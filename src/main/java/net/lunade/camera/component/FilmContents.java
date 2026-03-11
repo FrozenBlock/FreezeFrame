@@ -109,7 +109,7 @@ public final class FilmContents {
 		public boolean tryInsert(PhotographComponent photograph) {
 			if (!this.hasRemainingSpace()) return false;
 			this.weight = this.weight.add(PHOTOGRAPH_WEIGHT);
-			this.photographs.add(0, photograph);
+			this.photographs.addFirst(photograph);
 			return true;
 		}
 

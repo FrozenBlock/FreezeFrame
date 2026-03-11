@@ -5,3 +5,4 @@ mutable field net/minecraft/client/gui/screens/inventory/AbstractContainerScreen
 accessible field net/minecraft/client/gui/screens/Screen minecraft Lnet/minecraft/client/Minecraft;
 
 transitive-inject-interface net/minecraft/world/inventory/AbstractContainerMenu net/lunade/camera/menu/impl/ContainerMenuFilmInterface
+transitive-inject-interface net/minecraft/world/inventory/AbstractContainerMenu net/lunade/camera/menu/impl/ContainerMenuCameraInterface

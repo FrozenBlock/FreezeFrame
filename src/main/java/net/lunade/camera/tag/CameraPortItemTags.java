@@ -6,6 +6,7 @@ import net.minecraft.tags.TagKey;
 import net.minecraft.world.item.Item;
 
 public final class CameraPortItemTags {
+	public static final TagKey<Item> CAMERAS = bind("cameras");
 
 	private CameraPortItemTags() {
 		throw new UnsupportedOperationException("CameraPortItemTags contains only static declarations.");

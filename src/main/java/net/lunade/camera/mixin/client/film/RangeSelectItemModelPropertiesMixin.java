@@ -4,6 +4,7 @@ import com.mojang.serialization.MapCodec;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 import net.lunade.camera.CameraPortConstants;
+import net.lunade.camera.client.renderer.item.properties.numeric.CameraFullness;
 import net.lunade.camera.client.renderer.item.properties.numeric.FilmFullness;
 import net.minecraft.client.renderer.item.properties.numeric.RangeSelectItemModelProperties;
 import net.minecraft.client.renderer.item.properties.numeric.RangeSelectItemModelProperty;
@@ -26,6 +27,7 @@ public class RangeSelectItemModelPropertiesMixin {
 
 	@Inject(method = "bootstrap", at = @At("TAIL"))
 	private static void cameraPort$bootstrap(CallbackInfo info) {
+		ID_MAPPER.put(CameraPortConstants.id("camera_fullness"), CameraFullness.MAP_CODEC);
 		ID_MAPPER.put(CameraPortConstants.id("film_fullness"), FilmFullness.MAP_CODEC);
 	}
 }

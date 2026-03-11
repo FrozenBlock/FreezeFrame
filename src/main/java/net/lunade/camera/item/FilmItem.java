@@ -24,7 +24,7 @@ public class FilmItem extends Item {
 		super(properties);
 	}
 
-	private static Fraction getWeightSafe(FilmContents contents) {
+	public static Fraction getWeightSafe(FilmContents contents) {
 		return switch (contents.weight()) {
 			case DataResult.Success<Fraction> success -> success.value();
 			case DataResult.Error<?> error -> Fraction.ONE;

@@ -2,6 +2,7 @@ package net.lunade.camera.registry;
 
 import java.util.function.UnaryOperator;
 import net.lunade.camera.CameraPortConstants;
+import net.lunade.camera.component.CameraContents;
 import net.lunade.camera.component.FilmContents;
 import net.lunade.camera.component.PhotographComponent;
 import net.lunade.camera.component.WritablePortfolioContent;
@@ -13,6 +14,10 @@ public class CameraPortDataComponents {
 	public static final DataComponentType<PhotographComponent> PHOTOGRAPH = register(
 		"photograph",
 		builder -> builder.persistent(PhotographComponent.CODEC).networkSynchronized(PhotographComponent.STREAM_CODEC)
+	);
+	public static final DataComponentType<CameraContents> CAMERA_CONTENTS = register(
+		"camera_contents",
+		builder -> builder.persistent(CameraContents.CODEC).networkSynchronized(CameraContents.STREAM_CODEC)
 	);
 	public static final DataComponentType<FilmContents> FILM_CONTENTS = register(
 		"film_contents",

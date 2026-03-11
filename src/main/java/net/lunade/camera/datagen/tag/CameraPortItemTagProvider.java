@@ -3,6 +3,8 @@ package net.lunade.camera.datagen.tag;
 import java.util.concurrent.CompletableFuture;
 import net.fabricmc.fabric.api.datagen.v1.FabricPackOutput;
 import net.fabricmc.fabric.api.datagen.v1.provider.FabricTagsProvider;
+import net.lunade.camera.registry.CameraPortItems;
+import net.lunade.camera.tag.CameraPortItemTags;
 import net.minecraft.core.HolderLookup;
 import net.minecraft.resources.Identifier;
 import net.minecraft.resources.ResourceKey;
@@ -25,6 +27,7 @@ public final class CameraPortItemTagProvider extends FabricTagsProvider.ItemTags
 
 	@Override
 	protected void addTags(HolderLookup.Provider arg) {
-
+		this.valueLookupBuilder(CameraPortItemTags.CAMERAS)
+			.add(CameraPortItems.CAMERA, CameraPortItems.DISC_CAMERA);
 	}
 }

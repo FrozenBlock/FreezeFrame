@@ -25,9 +25,10 @@ public final class CameraPortModelProvider extends FabricModelProvider {
 
 	@Override
 	public void generateItemModels(ItemModelGenerators generator) {
-		generator.generateFlatItem(CameraPortItems.PHOTOGRAPH.asItem(), ModelTemplates.FLAT_ITEM);
-
 		generator.declareCustomModelItem(CameraPortItems.CAMERA.asItem());
 		generator.declareCustomModelItem(CameraPortItems.DISC_CAMERA.asItem());
+
+		generator.generateFlatItem(CameraPortItems.FILM.asItem(), ModelTemplates.FLAT_ITEM);
+		generator.generateFlatItem(CameraPortItems.PHOTOGRAPH.asItem(), ModelTemplates.FLAT_ITEM);
 	}
 }

@@ -32,10 +32,15 @@ public final class CameraPortRecipeProvider extends FabricRecipeProvider {
 			public void buildRecipes() {
 				RecipeExportNamespaceFix.setCurrentGeneratingModId(CameraPortConstants.MOD_ID);
 
+				this.shapeless(RecipeCategory.TOOLS, CameraPortItems.FILM)
+					.requires(Items.PAPER, 3)
+					.requires(Items.COPPER_INGOT)
+					.unlockedBy("has_camera", this.has(CameraPortItems.CAMERA))
+					.save(this.output);
+
 				this.shaped(RecipeCategory.TOOLS, CameraPortItems.CAMERA)
-					.group("camera")
 					.define('S', Ingredient.of(Items.STICK))
-					.define('#', Ingredient.of(registries.lookupOrThrow(Registries.ITEM).getOrThrow(ItemTags.PLANKS)))
+					.define('#', Ingredient.of(this.registries.lookupOrThrow(Registries.ITEM).getOrThrow(ItemTags.PLANKS)))
 					.define('A', Ingredient.of(Items.AMETHYST_SHARD))
 					.pattern("S#S")
 					.pattern("#A#")
@@ -44,9 +49,8 @@ public final class CameraPortRecipeProvider extends FabricRecipeProvider {
 					.save(exporter);
 
 				this.shaped(RecipeCategory.TOOLS, CameraPortItems.DISC_CAMERA)
-					.group("camera")
 					.define('#', Ingredient.of(CameraPortItems.CAMERA))
-					.define('X', Ingredient.of(registries.lookupOrThrow(Registries.ITEM).getOrThrow(ConventionalItemTags.MUSIC_DISCS)))
+					.define('X', Ingredient.of(this.registries.lookupOrThrow(Registries.ITEM).getOrThrow(ConventionalItemTags.MUSIC_DISCS)))
 					.pattern("#")
 					.pattern("X")
 					.unlockedBy(RecipeProvider.getHasName(CameraPortItems.DISC_CAMERA), this.has(CameraPortItems.DISC_CAMERA))
