@@ -11,6 +11,7 @@ import java.util.function.Consumer;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 import net.frozenblock.lib.file.transfer.FileTransferPacket;
+import net.frozenblock.lib.networking.FrozenNetworking;
 import net.lunade.camera.CameraPortConstants;
 import net.lunade.camera.registry.CameraPortSounds;
 import net.lunade.camera.util.CameraScreenshotHelper;
@@ -145,7 +146,7 @@ public class CameraScreenshotManager {
 
 					callback.accept(Component.translatable("screenshot.success", component));
 					sendToServer:{
-						if (StringUtil.isNullOrEmpty(fileName)) break sendToServer;
+						if (StringUtil.isNullOrEmpty(fileName) || FrozenNetworking.connectedToIntegratedServer()) break sendToServer;
 
 						final ClientPacketListener connection = minecraft.getConnection();
 						if (connection == null) break sendToServer;
