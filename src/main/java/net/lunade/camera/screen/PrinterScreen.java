@@ -101,7 +101,7 @@ public class PrinterScreen extends AbstractContainerScreen<PrinterMenu> {
 
 		renderPhotographCopy: {
 			if (this.photographCopyId == null) break renderPhotographCopy;
-			PhotographRenderer.blit(leftPos, topPos, 48, 20, graphics, this.photographCopyId, 80, PhotographRenderer.FrameType.FRAME);
+			PhotographRenderer.blit(leftPos, topPos, 52, 20, graphics, this.photographCopyId, 72, PhotographRenderer.FrameType.FRAME);
 		}
 	}
 
