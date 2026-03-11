@@ -28,7 +28,7 @@ pluginManagement {
 rootProject.name = "Camera Java Port"
 
 localRepository("cloth-config", "me.shedaniel.cloth:cloth-config-fabric", true, true)
-localRepository("FrozenLib", "maven.modrinth:frozenlib", true, false)
+localRepository("FrozenLib", "maven.modrinth:frozenlib", true, true)
 
 fun localRepository(repo: String, dependencySub: String, kotlin: Boolean, enabled: Boolean) {
     if (!enabled) return
