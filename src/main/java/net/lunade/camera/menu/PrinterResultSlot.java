@@ -1,9 +1,6 @@
 package net.lunade.camera.menu;
 
-import net.frozenblock.lib.file.transfer.FileTransferPacket;
 import net.lunade.camera.registry.CameraPortSounds;
-import net.minecraft.network.protocol.common.ClientboundCustomPayloadPacket;
-import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.sounds.SoundSource;
 import net.minecraft.world.Container;
 import net.minecraft.world.entity.player.Player;
@@ -27,7 +24,7 @@ public class PrinterResultSlot extends Slot {
 	public void onTake(Player player, ItemStack stack) {
 		stack.onCraftedBy(player, stack.getCount());
 		final ItemStack input = this.menu.paperSlot.remove(1);
-		if (!input.isEmpty()) this.menu.setupResultSlot(player);
+		if (!input.isEmpty()) this.menu.setupResultSlot();
 
 		this.menu.access.execute((level, pos) -> {
 			final long gameTime = level.getGameTime();
@@ -36,17 +33,6 @@ public class PrinterResultSlot extends Slot {
 			level.playSound(null, pos, CameraPortSounds.CAMERA_SNAP, SoundSource.BLOCKS, 1F, 1F);
 			this.menu.lastSoundTime = gameTime;
 		});
-
-		if (player instanceof ServerPlayer serverPlayer) {
-			serverPlayer.connection.send(
-				new ClientboundCustomPayloadPacket(
-					FileTransferPacket.createRequest(
-						"photographs",
-						this.menu.photoId.replace("photographs/", "") + ".png"
-					)
-				)
-			);
-		}
 
 		super.onTake(player, stack);
 	}

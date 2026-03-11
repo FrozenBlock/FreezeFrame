@@ -66,6 +66,12 @@ public final class FilmContents {
 		return this.photographs.get(this.selectedPhotograph);
 	}
 
+	@Nullable
+	public PhotographComponent getPhotographAtIndex(int index) {
+		if (index < 0 || index >= this.size()) return null;
+		return this.photographs.get(index);
+	}
+
 	@Override
 	public boolean equals(Object obj) {
 		if (this == obj) return true;

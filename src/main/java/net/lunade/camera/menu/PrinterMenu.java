@@ -1,6 +1,5 @@
 package net.lunade.camera.menu;
 
-import net.lunade.camera.CameraPortConstants;
 import net.lunade.camera.component.PhotographComponent;
 import net.lunade.camera.registry.CameraPortBlocks;
 import net.lunade.camera.registry.CameraPortDataComponents;
@@ -30,8 +29,7 @@ public class PrinterMenu extends AbstractContainerMenu {
 	private static final int USE_ROW_SLOT_END = 39;
 	private static final ItemStackTemplate PHOTOGRAPH_COPY_TEMPLATE = new ItemStackTemplate(CameraPortItems.PHOTOGRAPH, 1);
 	protected final ContainerLevelAccess access;
-	private final Player player;
-	private final DataSlot pictureSlotsSize = DataSlot.standalone();
+	public final DataSlot photographIndex = DataSlot.standalone();
 	protected String photoId;
 	long lastSoundTime;
 	final Slot sourceSlot;
@@ -55,12 +53,11 @@ public class PrinterMenu extends AbstractContainerMenu {
 	public PrinterMenu(int id, Inventory inventory, ContainerLevelAccess access) {
 		super(CameraPortMenuTypes.PRINTER, id);
 		this.access = access;
-		this.player = inventory.player;
 		this.sourceSlot = addSlot(new PrinterSourceSlot(this.inputContainer, SOURCE_SLOT, 14, 15));
 		this.paperSlot = addSlot(new PrinterPaperSlot(this.inputContainer, PAPER_SLOT, 40, 109));
 		this.resultSlot = addSlot(new PrinterResultSlot(this, this.resultContainer, RESULT_SLOT, 120, 109));
 		this.addStandardInventorySlots(inventory, 8, 140);
-		this.addDataSlot(this.pictureSlotsSize);
+		this.addDataSlot(this.photographIndex);
 	}
 
 	public boolean hasSourceItem() {
@@ -75,10 +72,6 @@ public class PrinterMenu extends AbstractContainerMenu {
 		return this.paperSlot.hasItem() && this.paperSlot.getItem().is(Items.PAPER);
 	}
 
-	public boolean hasPhotographSlots() {
-		return this.pictureSlotsSize.get() != 0;
-	}
-
 	@Override
 	public boolean stillValid(Player player) {
 		return stillValid(this.access, player, CameraPortBlocks.PRINTER);
@@ -87,11 +80,11 @@ public class PrinterMenu extends AbstractContainerMenu {
 	@Override
 	public void slotsChanged(Container container) {
 		super.slotsChanged(container);
-		this.setupResultSlot(this.player);
+		this.setupResultSlot();
 		this.broadcastChanges();
 	}
 
-	void setupResultSlot(Player player) {
+	void setupResultSlot() {
 		if (!this.hasPaper() || !this.hasSourceItem()) {
 			this.resultSlot.set(ItemStack.EMPTY);
 			this.broadcastChanges();
@@ -104,16 +97,12 @@ public class PrinterMenu extends AbstractContainerMenu {
 			final PhotographComponent photographComponent = sourceStack.get(CameraPortDataComponents.PHOTOGRAPH);
 			stack = TransmuteRecipe.createWithOriginalComponents(PHOTOGRAPH_COPY_TEMPLATE, sourceStack);
 			stack.set(CameraPortDataComponents.PHOTOGRAPH, photographComponent.asCopy());
-		} else if (this.hasPhotographSlots() && sourceStack.is(CameraPortItems.CAMERA)) {
-			stack = new ItemStack(CameraPortItems.PHOTOGRAPH);
-			final String photographName = this.photoId.replace("photographs/", "");
-			stack.set(
-				CameraPortDataComponents.PHOTOGRAPH,
-				new PhotographComponent(
-					CameraPortConstants.id("photographs/" + photographName),
-					player.getPlainTextName()
-				)
-			);
+		} else if (sourceStack.is(CameraPortItems.FILM) && sourceStack.has(CameraPortDataComponents.FILM_CONTENTS)) {
+			final PhotographComponent photographComponent = sourceStack.get(CameraPortDataComponents.FILM_CONTENTS).getPhotographAtIndex(this.photographIndex.get());
+			if (photographComponent != null) {
+				stack = new ItemStack(CameraPortItems.PHOTOGRAPH);
+				stack.set(CameraPortDataComponents.PHOTOGRAPH, photographComponent);
+			}
 		}
 
 		this.resultSlot.set(stack);
@@ -159,7 +148,7 @@ public class PrinterMenu extends AbstractContainerMenu {
 		if (item.getCount() == clicked.getCount()) return ItemStack.EMPTY;
 
 		slot.onTake(player, item);
-		this.setupResultSlot(player);
+		this.setupResultSlot();
 		this.broadcastChanges();
 
 		return clicked;
@@ -172,9 +161,8 @@ public class PrinterMenu extends AbstractContainerMenu {
 		this.access.execute((level, pos) -> this.clearContainer(player, this.inputContainer));
 	}
 
-	public void setupDataAndResultSlot(Player player, int size, String photoId) {
-		this.pictureSlotsSize.set(size);
-		this.photoId = photoId;
-		this.setupResultSlot(player);
+	public void setupDataAndResultSlot(int photographIndex) {
+		this.photographIndex.set(photographIndex);
+		this.setupResultSlot();
 	}
 }
