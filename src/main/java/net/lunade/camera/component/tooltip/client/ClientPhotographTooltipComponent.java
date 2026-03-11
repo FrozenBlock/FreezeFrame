@@ -20,11 +20,14 @@ public class ClientPhotographTooltipComponent implements ClientTooltipComponent 
 	private static final int BELOW_PHOTOGRAPH_SPACING = 6;
 	private static final int TOOLTIP_HEIGHT = PHOTOGRAPH_RENDER_SIZE + BELOW_PHOTOGRAPH_SPACING;
 	private static final int TOOLTIP_WIDTH = PHOTOGRAPH_RENDER_SIZE + (PHOTOGRAPH_RENDER_OFFSET_X * 2);
+	private static final Component COPY_COMPONENT = Component.translatable("photograph.copy").withStyle(ChatFormatting.GRAY);
 	private final Identifier photographId;
 	@Nullable
 	private final Component photographer;
 	@Nullable
 	private final Component dateAndTime;
+	@Nullable
+	private final Component copy;
 
 	public ClientPhotographTooltipComponent(PhotographTooltipComponent component) {
 		this.photographId = component.identifier();
@@ -36,6 +39,10 @@ public class ClientPhotographTooltipComponent implements ClientTooltipComponent 
 		this.dateAndTime = optionalDate
 			.map(date -> Component.translatable("photograph.date", date.toLocaleString()).withStyle(ChatFormatting.GRAY))
 			.orElse(null);
+
+		this.copy = !component.isCopy()
+			? null
+			: COPY_COMPONENT;
 	}
 
 	@Override
@@ -43,14 +50,18 @@ public class ClientPhotographTooltipComponent implements ClientTooltipComponent 
 		int extension = 0;
 		if (this.photographer != null) extension += font.lineHeight;
 		if (this.dateAndTime != null) extension += font.lineHeight;
+		if (this.copy != null) extension += font.lineHeight;
 		return TOOLTIP_HEIGHT + extension;
 	}
 
 	@Override
 	public int getWidth(Font font) {
 		final int textWidth = Math.max(
-			this.photographer != null ? font.width(this.photographer) : 0,
-			this.dateAndTime != null ? font.width(this.dateAndTime) : 0
+			Math.max(
+				this.photographer != null ? font.width(this.photographer) : 0,
+				this.dateAndTime != null ? font.width(this.dateAndTime) : 0
+			),
+			this.copy != null ? font.width(this.copy) : 0
 		);
 		return Math.max(TOOLTIP_WIDTH, textWidth);
 	}
@@ -71,6 +82,12 @@ public class ClientPhotographTooltipComponent implements ClientTooltipComponent 
 
 		if (this.dateAndTime != null) {
 			graphics.drawString(font, this.dateAndTime, x, y, -1, true);
+			y += font.lineHeight;
+		}
+
+		if (this.copy != null) {
+			graphics.drawString(font, this.copy, x, y, -1, true);
+			y += font.lineHeight;
 		}
 	}
 }

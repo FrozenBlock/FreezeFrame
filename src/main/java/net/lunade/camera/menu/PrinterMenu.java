@@ -15,23 +15,25 @@ import net.minecraft.world.inventory.DataSlot;
 import net.minecraft.world.inventory.ResultContainer;
 import net.minecraft.world.inventory.Slot;
 import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.item.ItemStackTemplate;
 import net.minecraft.world.item.Items;
+import net.minecraft.world.item.crafting.TransmuteRecipe;
 
 public class PrinterMenu extends AbstractContainerMenu {
-	public static final int FILM_SLOT = 0;
+	public static final int SOURCE_SLOT = 0;
 	public static final int PAPER_SLOT = 1;
 	public static final int RESULT_SLOT = 2;
 	private static final int INV_SLOT_START = 3;
 	private static final int INV_SLOT_END = 30;
 	private static final int USE_ROW_SLOT_START = 30;
 	private static final int USE_ROW_SLOT_END = 39;
+	private static final ItemStackTemplate PHOTOGRAPH_COPY_TEMPLATE = new ItemStackTemplate(CameraPortItems.PHOTOGRAPH, 1);
 	protected final ContainerLevelAccess access;
 	private final Player player;
 	private final DataSlot pictureSlotsSize = DataSlot.standalone();
-	private ItemStack input = ItemStack.EMPTY;
 	protected String photoId;
 	long lastSoundTime;
-	final Slot filmSlot;
+	final Slot sourceSlot;
 	final Slot paperSlot;
 	final Slot resultSlot;
 	Runnable slotUpdateListener = () -> {};
@@ -53,19 +55,27 @@ public class PrinterMenu extends AbstractContainerMenu {
 		super(CameraPortMenuTypes.PRINTER, id);
 		this.access = access;
 		this.player = inventory.player;
-		this.filmSlot = addSlot(new PrinterFilmSlot(this.inputContainer, FILM_SLOT, 14, 15));
+		this.sourceSlot = addSlot(new PrinterSourceSlot(this.inputContainer, SOURCE_SLOT, 14, 15));
 		this.paperSlot = addSlot(new PrinterPaperSlot(this.inputContainer, PAPER_SLOT, 44, 109));
 		this.resultSlot = addSlot(new PrinterResultSlot(this, this.resultContainer, RESULT_SLOT, 116, 109));
 		this.addStandardInventorySlots(inventory, 8, 140);
 		this.addDataSlot(this.pictureSlotsSize);
 	}
 
-	public boolean hasInputItem() {
-		return this.paperSlot.hasItem() && pictureSlotsSize.get() != 0;
+	public boolean hasSourceItem() {
+		return this.sourceSlot.hasItem();
 	}
 
-	public ItemStack getInputItem() {
-		return this.paperSlot.getItem();
+	public ItemStack getSourceItem() {
+		return this.sourceSlot.getItem();
+	}
+
+	public boolean hasPaper() {
+		return this.paperSlot.hasItem() && this.paperSlot.getItem().is(Items.PAPER);
+	}
+
+	public boolean hasPhotographSlots() {
+		return this.pictureSlotsSize.get() != 0;
 	}
 
 	@Override
@@ -81,8 +91,20 @@ public class PrinterMenu extends AbstractContainerMenu {
 	}
 
 	void setupResultSlot(Player player) {
-		if (this.pictureSlotsSize.get() != 0 && this.paperSlot.getItem().is(Items.PAPER)) {
-			final ItemStack stack = new ItemStack(CameraPortItems.PHOTOGRAPH);
+		if (!this.hasPaper() || !this.hasSourceItem()) {
+			this.resultSlot.set(ItemStack.EMPTY);
+			this.broadcastChanges();
+			return;
+		}
+
+		final ItemStack sourceStack = this.getSourceItem();
+		ItemStack stack = ItemStack.EMPTY;
+		if (sourceStack.is(CameraPortItems.PHOTOGRAPH)) {
+			final PhotographComponent photographComponent = sourceStack.get(CameraPortItems.PHOTO_COMPONENT);
+			stack = TransmuteRecipe.createWithOriginalComponents(PHOTOGRAPH_COPY_TEMPLATE, sourceStack);
+			stack.set(CameraPortItems.PHOTO_COMPONENT, photographComponent.asCopy());
+		} else if (this.hasPhotographSlots() && sourceStack.is(CameraPortItems.CAMERA)) {
+			stack = new ItemStack(CameraPortItems.PHOTOGRAPH);
 			final String photographName = this.photoId.replace("photographs/", "");
 			stack.set(
 				CameraPortItems.PHOTO_COMPONENT,
@@ -91,10 +113,9 @@ public class PrinterMenu extends AbstractContainerMenu {
 					player.getPlainTextName()
 				)
 			);
-			this.resultSlot.set(stack);
-		} else {
-			this.resultSlot.set(ItemStack.EMPTY);
 		}
+
+		this.resultSlot.set(stack);
 		this.broadcastChanges();
 	}
 
@@ -119,10 +140,12 @@ public class PrinterMenu extends AbstractContainerMenu {
 			item.onCraftedBy(player, 1);
 			if (!this.moveItemStackTo(item, INV_SLOT_START, USE_ROW_SLOT_END, true)) return ItemStack.EMPTY;
 			slot.onQuickCraft(item, clicked);
-		} else if (fromIndex == FILM_SLOT) {
+		} else if (fromIndex == SOURCE_SLOT) {
 			if (!this.moveItemStackTo(item, INV_SLOT_START, USE_ROW_SLOT_END, false)) return ItemStack.EMPTY;
 		} else if (item.is(CameraPortItems.CAMERA)) {
-			if (!this.moveItemStackTo(item, FILM_SLOT, FILM_SLOT + 1, false)) return ItemStack.EMPTY;
+			if (!this.moveItemStackTo(item, SOURCE_SLOT, SOURCE_SLOT + 1, false)) return ItemStack.EMPTY;
+		} else if (item.is(CameraPortItems.PHOTOGRAPH) && item.has(CameraPortItems.PHOTO_COMPONENT) && !item.get(CameraPortItems.PHOTO_COMPONENT).isCopy()) {
+			if (!this.moveItemStackTo(item, SOURCE_SLOT, SOURCE_SLOT + 1, false)) return ItemStack.EMPTY;
 		} else if (fromIndex == PAPER_SLOT) {
 			if (!this.moveItemStackTo(item, INV_SLOT_START, USE_ROW_SLOT_END, false)) return ItemStack.EMPTY;
 		} else if (item.is(Items.PAPER)) {
