@@ -1,5 +1,7 @@
-package net.lunade.camera.mixin.camera;
+package net.lunade.camera.mixin.client.camera;
 
+import net.fabricmc.api.EnvType;
+import net.fabricmc.api.Environment;
 import net.lunade.camera.client.camera.CameraScreenshotManager;
 import net.minecraft.client.DeltaTracker;
 import net.minecraft.client.gui.Gui;
@@ -9,6 +11,7 @@ import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 
+@Environment(EnvType.CLIENT)
 @Mixin(Gui.class)
 public class GuiMixin {
 

@@ -1,5 +1,6 @@
 package net.lunade.camera.menu;
 
+import net.lunade.camera.registry.CameraPortDataComponents;
 import net.lunade.camera.registry.CameraPortItems;
 import net.minecraft.world.Container;
 import net.minecraft.world.inventory.Slot;
@@ -13,7 +14,18 @@ public class PrinterSourceSlot extends Slot {
 
 	@Override
 	public boolean mayPlace(ItemStack stack) {
-		return stack.is(CameraPortItems.CAMERA)
-			|| (stack.is(CameraPortItems.PHOTOGRAPH) && stack.has(CameraPortItems.PHOTO_COMPONENT) && !stack.get(CameraPortItems.PHOTO_COMPONENT).isCopy());
+		return isValidAsSource(stack);
+	}
+
+	public static boolean isValidAsSource(ItemStack stack) {
+		return isValidFilmForPrinting(stack) || isValidPhotographForCopying(stack);
+	}
+
+	public static boolean isValidFilmForPrinting(ItemStack stack) {
+		return stack.is(CameraPortItems.CAMERA);
+	}
+
+	public static boolean isValidPhotographForCopying(ItemStack stack) {
+		return stack.is(CameraPortItems.PHOTOGRAPH) && stack.has(CameraPortDataComponents.PHOTOGRAPH) && !stack.get(CameraPortDataComponents.PHOTOGRAPH).isCopy();
 	}
 }

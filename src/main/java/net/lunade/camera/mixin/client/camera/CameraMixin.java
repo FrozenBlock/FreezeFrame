@@ -1,11 +1,14 @@
-package net.lunade.camera.mixin.camera;
+package net.lunade.camera.mixin.client.camera;
 
 import com.llamalad7.mixinextras.injector.ModifyReturnValue;
+import net.fabricmc.api.EnvType;
+import net.fabricmc.api.Environment;
 import net.lunade.camera.client.camera.CameraScreenshotManager;
 import net.minecraft.client.Camera;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.injection.At;
 
+@Environment(EnvType.CLIENT)
 @Mixin(Camera.class)
 public class CameraMixin {
 

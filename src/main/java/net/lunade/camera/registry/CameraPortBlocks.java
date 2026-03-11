@@ -16,16 +16,23 @@ import net.minecraft.world.item.DoubleHighBlockItem;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.Items;
 import net.minecraft.world.level.block.Block;
-import net.minecraft.world.level.block.Blocks;
 import net.minecraft.world.level.block.DoorBlock;
+import net.minecraft.world.level.block.SoundType;
 import net.minecraft.world.level.block.TallFlowerBlock;
 import net.minecraft.world.level.block.state.BlockBehaviour;
+import net.minecraft.world.level.block.state.properties.NoteBlockInstrument;
+import net.minecraft.world.level.material.MapColor;
 
 public class CameraPortBlocks {
 
 	public static final PrinterBlock PRINTER = register("printer",
 		PrinterBlock::new,
-		BlockBehaviour.Properties.ofFullCopy(Blocks.LOOM)
+		BlockBehaviour.Properties.of()
+			.mapColor(MapColor.WOOD)
+			.instrument(NoteBlockInstrument.BASS)
+			.strength(2.5F)
+			.sound(SoundType.WOOD)
+			.ignitedByLava()
 	);
 
 	public static void register() {

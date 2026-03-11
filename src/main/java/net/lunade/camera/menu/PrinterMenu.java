@@ -3,6 +3,7 @@ package net.lunade.camera.menu;
 import net.lunade.camera.CameraPortConstants;
 import net.lunade.camera.component.PhotographComponent;
 import net.lunade.camera.registry.CameraPortBlocks;
+import net.lunade.camera.registry.CameraPortDataComponents;
 import net.lunade.camera.registry.CameraPortItems;
 import net.lunade.camera.registry.CameraPortMenuTypes;
 import net.minecraft.world.Container;
@@ -100,14 +101,14 @@ public class PrinterMenu extends AbstractContainerMenu {
 		final ItemStack sourceStack = this.getSourceItem();
 		ItemStack stack = ItemStack.EMPTY;
 		if (sourceStack.is(CameraPortItems.PHOTOGRAPH)) {
-			final PhotographComponent photographComponent = sourceStack.get(CameraPortItems.PHOTO_COMPONENT);
+			final PhotographComponent photographComponent = sourceStack.get(CameraPortDataComponents.PHOTOGRAPH);
 			stack = TransmuteRecipe.createWithOriginalComponents(PHOTOGRAPH_COPY_TEMPLATE, sourceStack);
-			stack.set(CameraPortItems.PHOTO_COMPONENT, photographComponent.asCopy());
+			stack.set(CameraPortDataComponents.PHOTOGRAPH, photographComponent.asCopy());
 		} else if (this.hasPhotographSlots() && sourceStack.is(CameraPortItems.CAMERA)) {
 			stack = new ItemStack(CameraPortItems.PHOTOGRAPH);
 			final String photographName = this.photoId.replace("photographs/", "");
 			stack.set(
-				CameraPortItems.PHOTO_COMPONENT,
+				CameraPortDataComponents.PHOTOGRAPH,
 				new PhotographComponent(
 					CameraPortConstants.id("photographs/" + photographName),
 					player.getPlainTextName()
@@ -140,14 +141,10 @@ public class PrinterMenu extends AbstractContainerMenu {
 			item.onCraftedBy(player, 1);
 			if (!this.moveItemStackTo(item, INV_SLOT_START, USE_ROW_SLOT_END, true)) return ItemStack.EMPTY;
 			slot.onQuickCraft(item, clicked);
-		} else if (fromIndex == SOURCE_SLOT) {
+		} else if (fromIndex == SOURCE_SLOT || fromIndex == PAPER_SLOT) {
 			if (!this.moveItemStackTo(item, INV_SLOT_START, USE_ROW_SLOT_END, false)) return ItemStack.EMPTY;
-		} else if (item.is(CameraPortItems.CAMERA)) {
+		} else if (PrinterSourceSlot.isValidAsSource(item)) {
 			if (!this.moveItemStackTo(item, SOURCE_SLOT, SOURCE_SLOT + 1, false)) return ItemStack.EMPTY;
-		} else if (item.is(CameraPortItems.PHOTOGRAPH) && item.has(CameraPortItems.PHOTO_COMPONENT) && !item.get(CameraPortItems.PHOTO_COMPONENT).isCopy()) {
-			if (!this.moveItemStackTo(item, SOURCE_SLOT, SOURCE_SLOT + 1, false)) return ItemStack.EMPTY;
-		} else if (fromIndex == PAPER_SLOT) {
-			if (!this.moveItemStackTo(item, INV_SLOT_START, USE_ROW_SLOT_END, false)) return ItemStack.EMPTY;
 		} else if (item.is(Items.PAPER)) {
 			if (!this.moveItemStackTo(item, PAPER_SLOT, PAPER_SLOT + 1, false)) return ItemStack.EMPTY;
 		} else if (fromIndex >= INV_SLOT_START && fromIndex < INV_SLOT_END) {

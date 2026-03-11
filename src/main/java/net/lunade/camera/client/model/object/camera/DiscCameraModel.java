@@ -1,6 +1,6 @@
-package net.lunade.camera.client.model;
+package net.lunade.camera.client.model.object.camera;
 
-import net.lunade.camera.client.renderer.entity.state.CameraRenderState;
+import net.lunade.camera.client.renderer.entity.state.TripodCameraRenderState;
 import net.minecraft.client.model.EntityModel;
 import net.minecraft.client.model.geom.ModelPart;
 import net.minecraft.client.model.geom.PartPose;
@@ -10,7 +10,7 @@ import net.minecraft.client.model.geom.builders.MeshDefinition;
 import net.minecraft.client.model.geom.builders.PartDefinition;
 import net.minecraft.util.Mth;
 
-public class DiscCameraModel extends EntityModel<CameraRenderState> {
+public class DiscCameraModel extends EntityModel<TripodCameraRenderState> {
 	final ModelPart head;
 	final ModelPart disc;
 	final ModelPart disc2;
@@ -44,7 +44,7 @@ public class DiscCameraModel extends EntityModel<CameraRenderState> {
 	}
 
 	@Override
-	public void setupAnim(CameraRenderState renderState) {
+	public void setupAnim(TripodCameraRenderState renderState) {
 		super.setupAnim(renderState);
 		this.disc.yRot = 45F * Mth.DEG_TO_RAD;
 		this.disc2.yRot = -45F * Mth.DEG_TO_RAD;

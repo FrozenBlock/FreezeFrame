@@ -3,10 +3,10 @@ package net.lunade.camera.entity;
 import net.minecraft.world.entity.EntityType;
 import net.minecraft.world.level.Level;
 
-public class DiscCameraEntity extends CameraEntity {
+public class DiscCamera extends TripodCamera {
 
-	public DiscCameraEntity(EntityType<? extends DiscCameraEntity> entityType, Level world) {
-		super(entityType, world);
+	public DiscCamera(EntityType<? extends DiscCamera> type, Level level) {
+		super(type, level);
 		this.setTrackedHeight(0.9F);
 	}
 

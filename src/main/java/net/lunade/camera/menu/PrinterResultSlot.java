@@ -1,7 +1,7 @@
 package net.lunade.camera.menu;
 
 import net.frozenblock.lib.file.transfer.FileTransferPacket;
-import net.lunade.camera.CameraPortMain;
+import net.lunade.camera.registry.CameraPortSounds;
 import net.minecraft.network.protocol.common.ClientboundCustomPayloadPacket;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.sounds.SoundSource;
@@ -33,7 +33,7 @@ public class PrinterResultSlot extends Slot {
 			final long gameTime = level.getGameTime();
 			if (this.menu.lastSoundTime == gameTime) return;
 
-			level.playSound(null, pos, CameraPortMain.CAMERA_SNAP, SoundSource.BLOCKS, 1F, 1F);
+			level.playSound(null, pos, CameraPortSounds.CAMERA_SNAP, SoundSource.BLOCKS, 1F, 1F);
 			this.menu.lastSoundTime = gameTime;
 		});
 

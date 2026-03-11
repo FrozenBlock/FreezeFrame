@@ -1,8 +1,8 @@
-package net.lunade.camera.networking;
+package net.lunade.camera.networking.packet;
 
 import net.fabricmc.fabric.api.networking.v1.ServerPlayNetworking;
 import net.lunade.camera.CameraPortConstants;
-import net.lunade.camera.entity.CameraEntity;
+import net.lunade.camera.entity.TripodCamera;
 import net.minecraft.network.FriendlyByteBuf;
 import net.minecraft.network.codec.ByteBufCodecs;
 import net.minecraft.network.codec.StreamCodec;
@@ -23,8 +23,8 @@ public record CameraPossessPacket(int entityId) implements CustomPacketPayload {
 		ServerPlayNetworking.send(serverPlayer, new CameraPossessPacket(entityId));
 	}
 
-	public static void sendTo(ServerPlayer player, CameraEntity cameraEntity) {
-		final CameraPossessPacket cameraPossessPacket = new CameraPossessPacket(cameraEntity.getId());
+	public static void sendTo(ServerPlayer player, TripodCamera tripodCamera) {
+		final CameraPossessPacket cameraPossessPacket = new CameraPossessPacket(tripodCamera.getId());
 		ServerPlayNetworking.send(player, cameraPossessPacket);
 	}
 

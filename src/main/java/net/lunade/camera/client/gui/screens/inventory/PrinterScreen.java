@@ -1,4 +1,4 @@
-package net.lunade.camera.screen;
+package net.lunade.camera.client.gui.screens.inventory;
 
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
@@ -8,7 +8,8 @@ import net.lunade.camera.client.photograph.PhotographLoader;
 import net.lunade.camera.client.photograph.PhotographRenderer;
 import net.lunade.camera.component.PhotographComponent;
 import net.lunade.camera.menu.PrinterMenu;
-import net.lunade.camera.networking.PrinterAskForSlotsPacket;
+import net.lunade.camera.networking.packet.PrinterAskForSlotsPacket;
+import net.lunade.camera.registry.CameraPortDataComponents;
 import net.lunade.camera.registry.CameraPortItems;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.GuiGraphics;
@@ -163,7 +164,7 @@ public class PrinterScreen extends AbstractContainerScreen<PrinterMenu> {
 		if (!this.displayFilm) this.photographIndex = 0;
 
 		if (sourceItem.is(CameraPortItems.PHOTOGRAPH)) {
-			final PhotographComponent photographComponent = sourceItem.get(CameraPortItems.PHOTO_COMPONENT);
+			final PhotographComponent photographComponent = sourceItem.get(CameraPortDataComponents.PHOTOGRAPH);
 			this.photographCopyId = (photographComponent == null || photographComponent.isCopy()) ? null : photographComponent.identifier();
 		} else {
 			this.photographCopyId = null;

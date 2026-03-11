@@ -1,5 +1,7 @@
-package net.lunade.camera.mixin.photograph;
+package net.lunade.camera.mixin.client.photograph;
 
+import net.fabricmc.api.EnvType;
+import net.fabricmc.api.Environment;
 import net.lunade.camera.component.tooltip.PhotographTooltipComponent;
 import net.lunade.camera.component.tooltip.client.ClientPhotographTooltipComponent;
 import net.minecraft.client.gui.screens.inventory.tooltip.ClientTooltipComponent;
@@ -9,6 +11,7 @@ import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
 
+@Environment(EnvType.CLIENT)
 @Mixin(ClientTooltipComponent.class)
 public interface ClientTooltipComponentMixin {
 

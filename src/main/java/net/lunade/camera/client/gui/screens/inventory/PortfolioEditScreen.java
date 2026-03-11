@@ -1,4 +1,4 @@
-package net.lunade.camera.screen;
+package net.lunade.camera.client.gui.screens.inventory;
 
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;

@@ -1,4 +1,4 @@
-package net.lunade.camera.screen;
+package net.lunade.camera.client.gui.screens.inventory;
 
 import java.util.ArrayList;
 import java.util.List;

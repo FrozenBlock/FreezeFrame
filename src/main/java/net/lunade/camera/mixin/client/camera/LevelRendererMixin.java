@@ -1,4 +1,4 @@
-package net.lunade.camera.mixin.camera;
+package net.lunade.camera.mixin.client.camera;
 
 import com.llamalad7.mixinextras.injector.ModifyExpressionValue;
 import com.llamalad7.mixinextras.sugar.Local;

@@ -1,4 +1,4 @@
-package net.lunade.camera.mixin.photograph;
+package net.lunade.camera.mixin.client.photograph;
 
 import com.llamalad7.mixinextras.injector.ModifyExpressionValue;
 import com.llamalad7.mixinextras.injector.wrapoperation.Operation;
@@ -7,10 +7,12 @@ import com.llamalad7.mixinextras.sugar.Local;
 import com.llamalad7.mixinextras.sugar.Share;
 import com.llamalad7.mixinextras.sugar.ref.LocalRef;
 import com.mojang.blaze3d.vertex.PoseStack;
+import net.fabricmc.api.EnvType;
+import net.fabricmc.api.Environment;
 import net.lunade.camera.client.photograph.PhotographRenderer;
-import net.lunade.camera.client.renderer.entity.state.impl.ItemFrameRenderStateInterface;
+import net.lunade.camera.client.renderer.entity.state.impl.CameraPortRenderStateDataKeys;
 import net.lunade.camera.component.PhotographComponent;
-import net.lunade.camera.registry.CameraPortItems;
+import net.lunade.camera.registry.CameraPortDataComponents;
 import net.minecraft.client.renderer.SubmitNodeCollector;
 import net.minecraft.client.renderer.entity.ItemFrameRenderer;
 import net.minecraft.client.renderer.entity.state.ItemFrameRenderState;
@@ -23,8 +25,21 @@ import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 
+@Environment(EnvType.CLIENT)
 @Mixin(ItemFrameRenderer.class)
 public class ItemFrameRendererMixin<T extends ItemFrame> {
+
+	@Inject(
+		method = "extractRenderState(Lnet/minecraft/world/entity/decoration/ItemFrame;Lnet/minecraft/client/renderer/entity/state/ItemFrameRenderState;F)V",
+		at = @At("TAIL")
+	)
+	public void cameraPort$addPhotoToRenderState(T itemFrame, ItemFrameRenderState renderState, float partialTicks, CallbackInfo info) {
+		final PhotographComponent photographComponent = itemFrame.getItem().get(CameraPortDataComponents.PHOTOGRAPH);
+		renderState.setData(
+			CameraPortRenderStateDataKeys.PHOTOGRAPH_ID,
+			photographComponent == null ? null : photographComponent.identifier()
+		);
+	}
 
 	@ModifyExpressionValue(
 		method = "submit(Lnet/minecraft/client/renderer/entity/state/ItemFrameRenderState;Lcom/mojang/blaze3d/vertex/PoseStack;Lnet/minecraft/client/renderer/SubmitNodeCollector;Lnet/minecraft/client/renderer/state/level/CameraRenderState;)V",
@@ -38,14 +53,12 @@ public class ItemFrameRendererMixin<T extends ItemFrame> {
 	public int cameraPort$fixRotationAndCapturePhotographComponent(
 		int original,
 		@Local(argsOnly = true) ItemFrameRenderState renderState,
-		@Share("cameraPort$photoLocation") LocalRef<Identifier> photoLocationRef
+		@Share("cameraPort$photographId") LocalRef<Identifier> photographIdRef
 	) {
-		if (!(renderState instanceof ItemFrameRenderStateInterface renderStateInterface)) return original;
+		final Identifier photoId = renderState.getData(CameraPortRenderStateDataKeys.PHOTOGRAPH_ID);
+		if (photoId == null) return original;
 
-		final Identifier photographLocation = renderStateInterface.cameraPort$getPhotographLocation();
-		if (photographLocation == null) return original;
-
-		photoLocationRef.set(photographLocation);
+		photographIdRef.set(photoId);
 		return original % 4 * 2;
 	}
 
@@ -58,31 +71,16 @@ public class ItemFrameRendererMixin<T extends ItemFrame> {
 	)
 	public void cameraPort$submit(
 		ItemStackRenderState instance, PoseStack poseStack, SubmitNodeCollector collector, int lightVal, int overlay, int outlineColor, Operation<Void> original,
-		@Share("cameraPort$photoLocation") LocalRef<Identifier> photoLocationRef
+		@Share("cameraPort$photographId") LocalRef<Identifier> photographIdRef
 	) {
-		final Identifier photographLocation = photoLocationRef.get();
-		if (photographLocation != null) {
+		final Identifier photographId = photographIdRef.get();
+		if (photographId != null) {
 			// 0.625F
 			poseStack.scale(1.25F, 1.25F, 1.25F);
 			poseStack.translate(0F, 0F, 0.03125F);
-			PhotographRenderer.submit(poseStack, collector, photographLocation, lightVal, PhotographRenderer.FrameType.NONE);
-		} else {
-			original.call(instance, poseStack, collector, lightVal, overlay, outlineColor);
+			PhotographRenderer.submit(poseStack, collector, photographId, lightVal, PhotographRenderer.FrameType.NONE);
+			return;
 		}
-	}
-
-	@Inject(
-		method = "extractRenderState(Lnet/minecraft/world/entity/decoration/ItemFrame;Lnet/minecraft/client/renderer/entity/state/ItemFrameRenderState;F)V",
-		at = @At("TAIL")
-	)
-	public void cameraPort$addPhotoToRenderState(T itemFrame, ItemFrameRenderState renderState, float partialTicks, CallbackInfo info) {
-		if (!(renderState instanceof ItemFrameRenderStateInterface renderStateInterface)) return;
-
-		final PhotographComponent photographComponent = itemFrame.getItem().get(CameraPortItems.PHOTO_COMPONENT);
-		if (photographComponent != null) {
-			renderStateInterface.cameraPort$addPhotographLocation(photographComponent.identifier());
-		} else {
-			renderStateInterface.cameraPort$addPhotographLocation(null);
-		}
+		original.call(instance, poseStack, collector, lightVal, overlay, outlineColor);
 	}
 }

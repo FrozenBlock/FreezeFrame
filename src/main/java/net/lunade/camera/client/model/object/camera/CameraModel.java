@@ -1,6 +1,6 @@
-package net.lunade.camera.client.model;
+package net.lunade.camera.client.model.object.camera;
 
-import net.lunade.camera.client.renderer.entity.state.CameraRenderState;
+import net.lunade.camera.client.renderer.entity.state.TripodCameraRenderState;
 import net.minecraft.client.model.EntityModel;
 import net.minecraft.client.model.geom.ModelPart;
 import net.minecraft.client.model.geom.PartPose;
@@ -10,7 +10,7 @@ import net.minecraft.client.model.geom.builders.MeshDefinition;
 import net.minecraft.client.model.geom.builders.PartDefinition;
 import net.minecraft.util.Mth;
 
-public class CameraModel extends EntityModel<CameraRenderState> {
+public class CameraModel extends EntityModel<TripodCameraRenderState> {
 	private static final float HEIGHT_INCREMENT = 1.75F;
 	private static final float HEIGHT_SCALE = 15F / HEIGHT_INCREMENT;
 	private static final float LEG_ANGLE_MULTIPLIER = 6.7F;
@@ -35,7 +35,7 @@ public class CameraModel extends EntityModel<CameraRenderState> {
 		final PartDefinition root = mesh.getRoot();
 
 		createHead(root, 2F);
-		
+
 		CubeListBuilder legCube = createLegCube();
 		createLeg(root, 1, legCube, 0F, 1F);
 		createLeg(root, 2, legCube, 0F, -1F);
@@ -64,7 +64,7 @@ public class CameraModel extends EntityModel<CameraRenderState> {
 	}
 
 	@Override
-	public void setupAnim(CameraRenderState renderState) {
+	public void setupAnim(TripodCameraRenderState renderState) {
 		super.setupAnim(renderState);
 
 		float inverseHeight = (HEIGHT_INCREMENT - renderState.trackedHeight) * HEIGHT_SCALE;

@@ -4,11 +4,11 @@ import net.fabricmc.api.ClientModInitializer;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 import net.fabricmc.fabric.api.client.rendering.v1.ModelLayerRegistry;
-import net.lunade.camera.client.model.CameraModel;
-import net.lunade.camera.client.model.DiscCameraModel;
-import net.lunade.camera.client.renderer.entity.CameraRenderer;
+import net.lunade.camera.client.model.object.camera.CameraModel;
+import net.lunade.camera.client.model.object.camera.DiscCameraModel;
+import net.lunade.camera.client.renderer.entity.TripodCameraRenderer;
 import net.lunade.camera.client.renderer.entity.DiscCameraRenderer;
-import net.lunade.camera.networking.CameraClientNetworking;
+import net.lunade.camera.networking.CameraPortClientNetworking;
 import net.lunade.camera.registry.CameraPortEntityTypes;
 import net.lunade.camera.registry.CameraPortScreens;
 import net.minecraft.client.model.geom.ModelLayerLocation;
@@ -21,13 +21,13 @@ public class CameraPortClient implements ClientModInitializer {
 
 	@Override
 	public void onInitializeClient() {
-		EntityRenderers.register(CameraPortEntityTypes.CAMERA, CameraRenderer::new);
+		EntityRenderers.register(CameraPortEntityTypes.CAMERA, TripodCameraRenderer::new);
 		ModelLayerRegistry.registerModelLayer(CAMERA_MODEL_LAYER, CameraModel::createBodyLayer);
 		EntityRenderers.register(CameraPortEntityTypes.DISC_CAMERA, DiscCameraRenderer::new);
 		ModelLayerRegistry.registerModelLayer(DISC_CAMERA_MODEL_LAYER, DiscCameraModel::getTexturedModelData);
 
 		CameraPortScreens.init();
 
-		CameraClientNetworking.init();
+		CameraPortClientNetworking.init();
 	}
 }

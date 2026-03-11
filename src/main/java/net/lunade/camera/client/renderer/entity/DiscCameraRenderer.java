@@ -4,15 +4,15 @@ import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 import net.lunade.camera.CameraPortClient;
 import net.lunade.camera.CameraPortConstants;
-import net.lunade.camera.client.model.DiscCameraModel;
-import net.lunade.camera.client.renderer.entity.state.CameraRenderState;
-import net.lunade.camera.entity.DiscCameraEntity;
+import net.lunade.camera.client.model.object.camera.DiscCameraModel;
+import net.lunade.camera.client.renderer.entity.state.TripodCameraRenderState;
+import net.lunade.camera.entity.DiscCamera;
 import net.minecraft.client.renderer.entity.EntityRendererProvider;
 import net.minecraft.client.renderer.entity.MobRenderer;
 import net.minecraft.resources.Identifier;
 
 @Environment(EnvType.CLIENT)
-public class DiscCameraRenderer extends MobRenderer<DiscCameraEntity, CameraRenderState, DiscCameraModel> {
+public class DiscCameraRenderer extends MobRenderer<DiscCamera, TripodCameraRenderState, DiscCameraModel> {
 	private static final Identifier TEXTURE = CameraPortConstants.id("textures/entity/camera.png");
 
 	public DiscCameraRenderer(EntityRendererProvider.Context context) {
@@ -20,19 +20,19 @@ public class DiscCameraRenderer extends MobRenderer<DiscCameraEntity, CameraRend
 	}
 
 	@Override
-	public CameraRenderState createRenderState() {
-		return new CameraRenderState();
+	public TripodCameraRenderState createRenderState() {
+		return new TripodCameraRenderState();
 	}
 
 	@Override
-	public void extractRenderState(DiscCameraEntity entity, CameraRenderState renderState, float partialTicks) {
+	public void extractRenderState(DiscCamera entity, TripodCameraRenderState renderState, float partialTicks) {
 		super.extractRenderState(entity, renderState, partialTicks);
 		renderState.trackedHeight = entity.getTrackedHeight();
 		renderState.lerpedTimer = entity.getLerpedTimer(partialTicks);
 	}
 
 	@Override
-	protected float getWhiteOverlayProgress(CameraRenderState renderState) {
+	protected float getWhiteOverlayProgress(TripodCameraRenderState renderState) {
 		float timer = renderState.lerpedTimer;
 		float timedTimer = (timer * (float) Math.PI) * 0.1F;
 		float sin = (float) (Math.sin(timedTimer - (float) Math.PI * 0.5F) + 1F) * 0.5F;
@@ -40,7 +40,7 @@ public class DiscCameraRenderer extends MobRenderer<DiscCameraEntity, CameraRend
 	}
 
 	@Override
-	public Identifier getTextureLocation(CameraRenderState renderState) {
+	public Identifier getTextureLocation(TripodCameraRenderState renderState) {
 		return TEXTURE;
 	}
 }

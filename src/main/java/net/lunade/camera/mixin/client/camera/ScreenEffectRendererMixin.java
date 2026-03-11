@@ -1,8 +1,10 @@
-package net.lunade.camera.mixin.camera;
+package net.lunade.camera.mixin.client.camera;
 
 import com.llamalad7.mixinextras.injector.ModifyExpressionValue;
 import com.llamalad7.mixinextras.sugar.Share;
 import com.llamalad7.mixinextras.sugar.ref.LocalRef;
+import net.fabricmc.api.EnvType;
+import net.fabricmc.api.Environment;
 import net.lunade.camera.client.camera.CameraScreenshotManager;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.renderer.ScreenEffectRenderer;
@@ -16,6 +18,7 @@ import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
 
+@Environment(EnvType.CLIENT)
 @Mixin(ScreenEffectRenderer.class)
 public class ScreenEffectRendererMixin {
 

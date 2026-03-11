@@ -3,8 +3,8 @@ package net.lunade.camera.entity;
 import java.util.ArrayList;
 import java.util.Optional;
 import java.util.UUID;
-import net.lunade.camera.CameraPortMain;
-import net.lunade.camera.networking.CameraPossessPacket;
+import net.lunade.camera.networking.packet.CameraPossessPacket;
+import net.lunade.camera.registry.CameraPortSounds;
 import net.minecraft.core.UUIDUtil;
 import net.minecraft.core.component.DataComponents;
 import net.minecraft.core.particles.ItemParticleOption;
@@ -44,22 +44,22 @@ import net.minecraft.world.level.storage.ValueInput;
 import net.minecraft.world.level.storage.ValueOutput;
 import org.jetbrains.annotations.NotNull;
 
-public class CameraEntity extends Mob {
-	private static final EntityDataAccessor<Float> TRACKED_HEIGHT = SynchedEntityData.defineId(CameraEntity.class, EntityDataSerializers.FLOAT);
-	private static final EntityDataAccessor<Integer> TIMER = SynchedEntityData.defineId(CameraEntity.class, EntityDataSerializers.INT);
+public class TripodCamera extends Mob {
+	private static final EntityDataAccessor<Float> TRACKED_HEIGHT = SynchedEntityData.defineId(TripodCamera.class, EntityDataSerializers.FLOAT);
+	private static final EntityDataAccessor<Integer> TIMER = SynchedEntityData.defineId(TripodCamera.class, EntityDataSerializers.INT);
 	public ArrayList<UUID> queuedUUIDS = new ArrayList<>();
 	public long lastHit;
 	public float prevTimer;
 	public float timer;
 	private boolean goingUp = false;
 
-	public CameraEntity(EntityType<? extends Mob> entityType, Level level) {
-		super(entityType, level);
+	public TripodCamera(EntityType<? extends Mob> type, Level level) {
+		super(type, level);
 		this.setPersistenceRequired();
 		this.getNavigation().setCanFloat(false);
 	}
 
-	public static AttributeSupplier.Builder addAttributes() {
+	public static AttributeSupplier.Builder createTripodCameraAttributes() {
 		return LivingEntity.createLivingAttributes()
 			.add(Attributes.FOLLOW_RANGE, 80D)
 			.add(Attributes.ATTACK_KNOCKBACK)
@@ -104,7 +104,7 @@ public class CameraEntity extends Mob {
 					for (ServerPlayer player : nonQueuedPlayers) {
 						player.connection.send(
 							new ClientboundSoundPacket(
-								BuiltInRegistries.SOUND_EVENT.wrapAsHolder(CameraPortMain.CAMERA_SNAP),
+								BuiltInRegistries.SOUND_EVENT.wrapAsHolder(CameraPortSounds.CAMERA_SNAP),
 								this.getSoundSource(),
 								this.getX(),
 								this.getY(),
@@ -141,18 +141,18 @@ public class CameraEntity extends Mob {
 					newHeight = this.getMinHeight();
 				}
 				this.setTrackedHeight(newHeight);
-				this.level().playSound(null, getX(), getEyeY(), getZ(), CameraPortMain.CAMERA_ADJUST, SoundSource.NEUTRAL, this.getSoundVolume(), this.getTrackedHeight());
+				this.level().playSound(null, getX(), getEyeY(), getZ(), CameraPortSounds.CAMERA_ADJUST, SoundSource.NEUTRAL, this.getSoundVolume(), this.getTrackedHeight());
 				return InteractionResult.SUCCESS;
 			}
 		} else {
 			if (this.getTimer() > 1) {
 				if (this.addPlayerToQueue(player)) {
-					this.playSound(CameraPortMain.CAMERA_PRIME, this.getSoundVolume(), this.getVoicePitch());
+					this.playSound(CameraPortSounds.CAMERA_PRIME, this.getSoundVolume(), this.getVoicePitch());
 				}
 			} else {
 				if (this.addPlayerToQueue(player)) {
 					this.setTimer(60);
-					this.playSound(CameraPortMain.CAMERA_PRIME, this.getSoundVolume(), this.getVoicePitch());
+					this.playSound(CameraPortSounds.CAMERA_PRIME, this.getSoundVolume(), this.getVoicePitch());
 					return InteractionResult.SUCCESS;
 				}
 			}
@@ -272,7 +272,7 @@ public class CameraEntity extends Mob {
 	}
 
 	private void playBrokenSound() {
-		this.level().playSound(null, this.getX(), this.getY(), this.getZ(), CameraPortMain.CAMERA_BREAK, this.getSoundSource(), 1F, 1F);
+		this.level().playSound(null, this.getX(), this.getY(), this.getZ(), CameraPortSounds.CAMERA_BREAK, this.getSoundSource(), 1F, 1F);
 	}
 
 	public boolean addPlayerToQueue(Player player) {
@@ -296,7 +296,7 @@ public class CameraEntity extends Mob {
 			this.getX(),
 			this.getY(),
 			this.getZ(),
-			CameraPortMain.CAMERA_HIT,
+			CameraPortSounds.CAMERA_HIT,
 			this.getSoundSource(),
 			0.3F,
 			1F,
@@ -328,17 +328,17 @@ public class CameraEntity extends Mob {
 	@NotNull
 	@Override
 	public Fallsounds getFallSounds() {
-		return new Fallsounds(CameraPortMain.CAMERA_FALL, CameraPortMain.CAMERA_FALL);
+		return new Fallsounds(CameraPortSounds.CAMERA_FALL, CameraPortSounds.CAMERA_FALL);
 	}
 
 	@Override
 	public SoundEvent getHurtSound(DamageSource source) {
-		return CameraPortMain.CAMERA_HIT;
+		return CameraPortSounds.CAMERA_HIT;
 	}
 
 	@Override
 	public SoundEvent getDeathSound() {
-		return CameraPortMain.CAMERA_BREAK;
+		return CameraPortSounds.CAMERA_BREAK;
 	}
 
 	@Override

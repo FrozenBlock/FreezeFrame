@@ -3,9 +3,11 @@ package net.lunade.camera.networking;
 import net.fabricmc.fabric.api.networking.v1.PayloadTypeRegistry;
 import net.fabricmc.fabric.api.networking.v1.ServerPlayNetworking;
 import net.frozenblock.lib.file.transfer.FileTransferFilter;
+import net.lunade.camera.networking.packet.CameraPossessPacket;
+import net.lunade.camera.networking.packet.PrinterAskForSlotsPacket;
 import net.minecraft.network.RegistryFriendlyByteBuf;
 
-public class CameraNetworking {
+public class CameraPortNetworking {
 
 	public static void init() {
 		PayloadTypeRegistry<RegistryFriendlyByteBuf> registry = PayloadTypeRegistry.clientboundPlay();

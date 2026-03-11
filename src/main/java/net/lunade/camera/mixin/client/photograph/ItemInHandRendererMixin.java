@@ -1,10 +1,13 @@
-package net.lunade.camera.mixin.photograph;
+package net.lunade.camera.mixin.client.photograph;
 
 import com.llamalad7.mixinextras.sugar.Local;
 import com.mojang.blaze3d.vertex.PoseStack;
 import com.mojang.math.Axis;
+import net.fabricmc.api.EnvType;
+import net.fabricmc.api.Environment;
 import net.lunade.camera.client.photograph.PhotographRenderer;
 import net.lunade.camera.component.PhotographComponent;
+import net.lunade.camera.registry.CameraPortDataComponents;
 import net.lunade.camera.registry.CameraPortItems;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.player.AbstractClientPlayer;
@@ -22,6 +25,7 @@ import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 
+@Environment(EnvType.CLIENT)
 @Mixin(ItemInHandRenderer.class)
 public abstract class ItemInHandRendererMixin {
 
@@ -58,7 +62,7 @@ public abstract class ItemInHandRendererMixin {
 	) {
 		if (!stack.is(CameraPortItems.PHOTOGRAPH)) return;
 
-		final PhotographComponent photographComponent = stack.get(CameraPortItems.PHOTO_COMPONENT);
+		final PhotographComponent photographComponent = stack.get(CameraPortDataComponents.PHOTOGRAPH);
 		if (photographComponent == null) return;
 
 		this.cameraPort$submitPhotographInHand(poseStack, collector, lightCoords, inverseArmHeight, attackValue, arm, photographComponent);

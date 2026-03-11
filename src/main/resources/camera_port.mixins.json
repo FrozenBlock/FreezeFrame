@@ -6,14 +6,13 @@
   "mixins": [
   ],
   "client": [
-    "camera.CameraMixin",
-    "photograph.ClientTooltipComponentMixin",
-    "camera.GuiMixin",
-    "photograph.ItemFrameRendererMixin",
-    "photograph.ItemFrameRenderStateMixin",
-    "photograph.ItemInHandRendererMixin",
-    "camera.LevelRendererMixin",
-    "camera.ScreenEffectRendererMixin"
+    "client.camera.CameraMixin",
+    "client.photograph.ClientTooltipComponentMixin",
+    "client.camera.GuiMixin",
+    "client.photograph.ItemFrameRendererMixin",
+    "client.photograph.ItemInHandRendererMixin",
+    "client.camera.LevelRendererMixin",
+    "client.camera.ScreenEffectRendererMixin"
   ],
   "injectors": {
     "defaultRequire": 1

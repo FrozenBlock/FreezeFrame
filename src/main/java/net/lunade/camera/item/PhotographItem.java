@@ -3,7 +3,7 @@ package net.lunade.camera.item;
 import java.util.Optional;
 import net.lunade.camera.component.PhotographComponent;
 import net.lunade.camera.component.tooltip.PhotographTooltipComponent;
-import net.lunade.camera.registry.CameraPortItems;
+import net.lunade.camera.registry.CameraPortDataComponents;
 import net.minecraft.core.component.DataComponents;
 import net.minecraft.world.inventory.tooltip.TooltipComponent;
 import net.minecraft.world.item.Item;
@@ -19,9 +19,9 @@ public class PhotographItem extends Item {
 	@Override
 	public Optional<TooltipComponent> getTooltipImage(ItemStack stack) {
 		final TooltipDisplay tooltipDisplay = stack.getOrDefault(DataComponents.TOOLTIP_DISPLAY, TooltipDisplay.DEFAULT);
-		if (!tooltipDisplay.shows(CameraPortItems.PHOTO_COMPONENT)) return Optional.empty();
+		if (!tooltipDisplay.shows(CameraPortDataComponents.PHOTOGRAPH)) return Optional.empty();
 
-		final PhotographComponent component = stack.get(CameraPortItems.PHOTO_COMPONENT);
+		final PhotographComponent component = stack.get(CameraPortDataComponents.PHOTOGRAPH);
 		if (component != null) return Optional.of(new PhotographTooltipComponent(component.identifier(), component.photographer(), component.isCopy()));
 		return Optional.empty();
 	}

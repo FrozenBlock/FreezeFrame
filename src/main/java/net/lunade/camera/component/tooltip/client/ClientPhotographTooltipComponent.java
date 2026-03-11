@@ -2,6 +2,8 @@ package net.lunade.camera.component.tooltip.client;
 
 import java.util.Date;
 import java.util.Optional;
+import net.fabricmc.api.EnvType;
+import net.fabricmc.api.Environment;
 import net.lunade.camera.client.photograph.PhotographLoader;
 import net.lunade.camera.client.photograph.PhotographRenderer;
 import net.lunade.camera.component.tooltip.PhotographTooltipComponent;
@@ -14,6 +16,7 @@ import net.minecraft.util.StringUtil;
 import org.jetbrains.annotations.Nullable;
 import net.minecraft.ChatFormatting;
 
+@Environment(EnvType.CLIENT)
 public class ClientPhotographTooltipComponent implements ClientTooltipComponent {
 	private static final int PHOTOGRAPH_RENDER_SIZE = 32;
 	private static final int PHOTOGRAPH_RENDER_OFFSET_X = 3;

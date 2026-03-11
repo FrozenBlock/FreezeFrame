@@ -1,4 +1,4 @@
-package net.lunade.camera.networking;
+package net.lunade.camera.networking.packet;
 
 import net.fabricmc.fabric.api.networking.v1.ServerPlayNetworking;
 import net.lunade.camera.CameraPortConstants;
