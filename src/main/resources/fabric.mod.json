@@ -5,13 +5,15 @@
   "name": "Camera Port",
   "description": "Ports Bedrock/Education Edition's Camera entity to Java Edition.",
   "authors": [
-    "Luna",
-    "Liukrast"
+    "Luna"
+  ],
+  "contributors": [
+    "Lufurrius",
   ],
   "contact": {
     "homepage": "https://modrinth.com/mod/camera-port"
   },
-  "license": "MIT",
+  "license": "FrozenBlock Modding Oasis License v1.0",
   "icon": "assets/camera_port/camera_icon.png",
   "environment": "*",
   "entrypoints": {
@@ -32,7 +34,7 @@
     "frozenlib": "${frozenlib_version}",
     "fabric-api": "*",
     "minecraft": "${minecraft_version}",
-    "java": ">=21"
+    "java": ">=25"
   },
   "suggests": {
     "cloth-config": "*",
