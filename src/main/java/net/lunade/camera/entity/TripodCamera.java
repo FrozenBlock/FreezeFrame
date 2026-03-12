@@ -17,17 +17,12 @@
 
 package net.lunade.camera.entity;
 
-import java.util.ArrayList;
-import java.util.Optional;
-import java.util.UUID;
 import net.lunade.camera.networking.packet.CameraTakeScreenshotPacket;
 import net.lunade.camera.registry.CameraPortSounds;
 import net.minecraft.core.UUIDUtil;
 import net.minecraft.core.component.DataComponents;
 import net.minecraft.core.particles.ItemParticleOption;
 import net.minecraft.core.particles.ParticleTypes;
-import net.minecraft.core.registries.BuiltInRegistries;
-import net.minecraft.network.protocol.game.ClientboundSoundPacket;
 import net.minecraft.network.syncher.EntityDataAccessor;
 import net.minecraft.network.syncher.EntityDataSerializers;
 import net.minecraft.network.syncher.SynchedEntityData;
@@ -44,6 +39,7 @@ import net.minecraft.world.effect.MobEffectInstance;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.EntityDimensions;
 import net.minecraft.world.entity.EntityEvent;
+import net.minecraft.world.entity.EntityReference;
 import net.minecraft.world.entity.EntityType;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.Mob;
@@ -64,7 +60,7 @@ import org.jetbrains.annotations.NotNull;
 public class TripodCamera extends Mob {
 	private static final EntityDataAccessor<Float> TRACKED_HEIGHT = SynchedEntityData.defineId(TripodCamera.class, EntityDataSerializers.FLOAT);
 	private static final EntityDataAccessor<Integer> TIMER = SynchedEntityData.defineId(TripodCamera.class, EntityDataSerializers.INT);
-	public ArrayList<UUID> queuedUUIDS = new ArrayList<>();
+	private EntityReference<Player> photographer = null;
 	public long lastHit;
 	public float prevTimer;
 	public float timer;
@@ -98,49 +94,36 @@ public class TripodCamera extends Mob {
 	}
 
 	@Override
+	public void onSyncedDataUpdated(EntityDataAccessor<?> accessor) {
+		super.onSyncedDataUpdated(accessor);
+		if (accessor == TRACKED_HEIGHT) this.refreshDimensions();
+	}
+
+	@Override
 	public void tick() {
 		super.tick();
 		this.prevTimer = this.getTimer();
-		if (this.level() instanceof ServerLevel level) {
-			if (this.getTimer() > 0) {
-				this.setTimer(this.getTimer() - 1);
-				if (!this.queuedUUIDS.isEmpty()) {
-					Player chosen = this.level().getPlayerByUUID(this.queuedUUIDS.get(0));
-					if (chosen != null) this.getLookControl().setLookAt(chosen);
-				}
 
-				if (this.getTimer() == 1) {
-					final ArrayList<ServerPlayer> queuedPlayers = new ArrayList<>();
-					for (UUID uuid : this.queuedUUIDS) {
-						if (level.getPlayerByUUID(uuid) instanceof ServerPlayer player) queuedPlayers.add(player);
-					}
-					final ArrayList<ServerPlayer> nonQueuedPlayers = new ArrayList<>(level.getServer().getPlayerList().getPlayers());
-					nonQueuedPlayers.remove(queuedPlayers);
-					nonQueuedPlayers.removeIf(serverPlayer -> serverPlayer.level().dimension() != level.dimension());
+		handlePhotograph: {
+			if (!(this.level() instanceof ServerLevel level) || this.getTimer() <= 0) break handlePhotograph;
 
-					for (ServerPlayer player : nonQueuedPlayers) {
-						player.connection.send(
-							new ClientboundSoundPacket(
-								BuiltInRegistries.SOUND_EVENT.wrapAsHolder(CameraPortSounds.CAMERA_SNAP),
-								this.getSoundSource(),
-								this.getX(),
-								this.getY(),
-								this.getZ(),
-								0.5F,
-								1F,
-								this.random.nextLong()
-							)
-						);
-					}
-
-					// TODO: film
-					for (ServerPlayer player : queuedPlayers) CameraTakeScreenshotPacket.sendTo(player, this, "");
-					this.queuedUUIDS.removeIf(uuid -> true);
-				}
+			this.setTimer(this.getTimer() - 1);
+			if (!(EntityReference.getPlayer(this.photographer, this.level()) instanceof ServerPlayer photographer)) {
+				this.setTimer(0);
+				this.photographer = null;
+				break handlePhotograph;
 			}
+
+			this.getLookControl().setLookAt(photographer);
+			if (this.getTimer() != 1) break handlePhotograph;
+
+			this.photographer = null;
+			level.playSound(photographer, this.getX(), this.getY(), this.getZ(), CameraPortSounds.CAMERA_SNAP, this.getSoundSource(), 0.5F, 1F);
+			// TODO: film & photographer
+			CameraTakeScreenshotPacket.sendTo(photographer, this, "");
 		}
+
 		this.timer = Math.max(0, this.prevTimer -= 1);
-		this.refreshDimensions();
 	}
 
 	@Override
@@ -162,18 +145,11 @@ public class TripodCamera extends Mob {
 				this.level().playSound(null, getX(), getEyeY(), getZ(), CameraPortSounds.CAMERA_ADJUST, SoundSource.NEUTRAL, this.getSoundVolume(), this.getTrackedHeight());
 				return InteractionResult.SUCCESS;
 			}
-		} else {
-			if (this.getTimer() > 1) {
-				if (this.addPlayerToQueue(player)) {
-					this.playSound(CameraPortSounds.CAMERA_PRIME, this.getSoundVolume(), this.getVoicePitch());
-				}
-			} else {
-				if (this.addPlayerToQueue(player)) {
-					this.setTimer(60);
-					this.playSound(CameraPortSounds.CAMERA_PRIME, this.getSoundVolume(), this.getVoicePitch());
-					return InteractionResult.SUCCESS;
-				}
-			}
+		} else if (this.getTimer() <= 0) {
+			this.setTimer(60);
+			this.photographer = EntityReference.of(player);
+			this.playSound(CameraPortSounds.CAMERA_PRIME, this.getSoundVolume(), this.getVoicePitch());
+			return InteractionResult.SUCCESS;
 		}
 		return InteractionResult.PASS;
 	}
@@ -293,14 +269,6 @@ public class TripodCamera extends Mob {
 		this.level().playSound(null, this.getX(), this.getY(), this.getZ(), CameraPortSounds.CAMERA_BREAK, this.getSoundSource(), 1F, 1F);
 	}
 
-	public boolean addPlayerToQueue(Player player) {
-		final UUID playerUUID = player.getUUID();
-		if (this.queuedUUIDS.contains(playerUUID)) return false;
-
-		this.queuedUUIDS.add(playerUUID);
-		return true;
-	}
-
 	@Override
 	public void handleEntityEvent(byte id) {
 		if (id != EntityEvent.ARMORSTAND_WOBBLE) {
@@ -378,13 +346,7 @@ public class TripodCamera extends Mob {
 	public void addAdditionalSaveData(ValueOutput output) {
 		super.addAdditionalSaveData(output);
 		output.putInt("ticksToPhoto", this.getTimer());
-		if (!this.queuedUUIDS.isEmpty()) {
-			for (UUID uuid : this.queuedUUIDS) {
-				int index = this.queuedUUIDS.indexOf(uuid);
-				String uuidTag = "queuedUUID" + index;
-				output.store(uuidTag, UUIDUtil.CODEC, uuid);
-			}
-		}
+		if (this.photographer != null) output.store("photographer", UUIDUtil.CODEC, this.photographer.getUUID());
 		output.putFloat("currentHeight", this.getTrackedHeight());
 		output.putBoolean("goingUp", this.goingUp);
 	}
@@ -393,16 +355,7 @@ public class TripodCamera extends Mob {
 	public void readAdditionalSaveData(ValueInput input) {
 		super.readAdditionalSaveData(input);
 		this.setTimer(input.getIntOr("ticksToPhoto", 0));
-
-		for (int i = 0; true; i++) {
-			String uuidTag = "queuedUUID" + i;
-			Optional<UUID> optionalUUID = input.read(uuidTag, UUIDUtil.CODEC);
-			if (optionalUUID.isPresent()) {
-				this.queuedUUIDS.add(optionalUUID.get());
-			} else {
-				break;
-			}
-		}
+		this.photographer = EntityReference.read(input, "photographer");
 		this.setTrackedHeight(input.getFloatOr("currentHeight", 1.75F));
 		this.goingUp = input.getBooleanOr("goingUp", false);
 	}
