@@ -12,6 +12,7 @@ import net.lunade.camera.networking.packet.PrinterSyncSelectPhotographIndexPacke
 import net.lunade.camera.registry.CameraPortDataComponents;
 import net.lunade.camera.registry.CameraPortItems;
 import net.minecraft.client.Minecraft;
+import net.minecraft.client.ScrollWheelHandler;
 import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.client.gui.screens.inventory.AbstractContainerScreen;
 import net.minecraft.client.input.MouseButtonEvent;
@@ -23,6 +24,7 @@ import net.minecraft.sounds.SoundEvents;
 import net.minecraft.world.entity.player.Inventory;
 import net.minecraft.world.item.ItemStack;
 import org.jetbrains.annotations.Nullable;
+import org.joml.Vector2i;
 
 @Environment(EnvType.CLIENT)
 public class PrinterScreen extends AbstractContainerScreen<PrinterMenu> {
@@ -33,6 +35,7 @@ public class PrinterScreen extends AbstractContainerScreen<PrinterMenu> {
 	private static final Identifier MOVE_RIGHT_SELECTED = CameraPortConstants.id("container/printer/move_right_highlighted");
 	private static final Identifier MOVE_LEFT = CameraPortConstants.id("container/printer/move_left");
 	private static final Identifier MOVE_LEFT_SELECTED = CameraPortConstants.id("container/printer/move_left_highlighted");
+	private final ScrollWheelHandler scrollWheelHandler;
 	@Nullable
 	private FilmContents filmContents;
 	@Nullable
@@ -47,6 +50,7 @@ public class PrinterScreen extends AbstractContainerScreen<PrinterMenu> {
 
 	public PrinterScreen(PrinterMenu menu, Inventory inventory, Component title) {
 		super(menu, inventory, title, DEFAULT_IMAGE_WIDTH, 222);
+		this.scrollWheelHandler = new ScrollWheelHandler();
 		menu.registerUpdateListener(this::containerChanged);
 		--this.titleLabelY;
 		this.titleLabelX += 78;
@@ -125,26 +129,14 @@ public class PrinterScreen extends AbstractContainerScreen<PrinterMenu> {
 
 		// Right arrow clicked
 		if (this.rightPhotograph != null && checkButtonClicked(this.leftPos + 132, this.topPos + 51, ARROW_BOX_SIZE, ARROW_BOX_SIZE, mouseX, mouseY)) {
-			if (this.photographIndex == this.filmContents.size() - 1) {
-				this.photographIndex = 0;
-			} else {
-				this.photographIndex++;
-			}
-
-			this.setupDataAndResultSlot(this.photographIndex);
+			this.incrementPhotographIndex(false);
 			Minecraft.getInstance().getSoundManager().play(SimpleSoundInstance.forUI(SoundEvents.UI_BUTTON_CLICK, 1F));
 			return true;
 		}
 
 		// Left arrow clicked
 		if (this.leftPhotograph != null && checkButtonClicked(this.leftPos + 14, this.topPos + 51, ARROW_BOX_SIZE, ARROW_BOX_SIZE, mouseX, mouseY)) {
-			if (this.photographIndex == 0) {
-				this.photographIndex = this.filmContents.size() - 1;
-			} else {
-				this.photographIndex--;
-			}
-
-			this.setupDataAndResultSlot(this.photographIndex);
+			this.incrementPhotographIndex(true);
 			Minecraft.getInstance().getSoundManager().play(SimpleSoundInstance.forUI(SoundEvents.UI_BUTTON_CLICK, 1F));
 			return true;
 		}
@@ -152,8 +144,43 @@ public class PrinterScreen extends AbstractContainerScreen<PrinterMenu> {
 		return super.mouseClicked(event, doubleClick);
 	}
 
+	private void incrementPhotographIndex(boolean left) {
+		if (this.photographIndex == 0) {
+			this.photographIndex = this.filmContents.size() - 1;
+		} else {
+			if (left) {
+				this.photographIndex--;
+			} else {
+				this.photographIndex++;
+			}
+		}
+
+		this.setupDataAndResultSlot(this.photographIndex);
+		Minecraft.getInstance().getSoundManager().play(SimpleSoundInstance.forUI(SoundEvents.UI_BUTTON_CLICK, 1F));
+	}
+
 	private static boolean checkButtonClicked(int minX, int minY, int buttonWidth, int buttonHeight, int mouseX, int mouseY) {
 		return mouseX >= minX && mouseX <= minX + buttonWidth && mouseY >= minY && mouseY <= minY + buttonHeight;
+	}
+
+	@Override
+	public boolean mouseScrolled(double x, double y, double scrollX, double scrollY) {
+		if (super.mouseScrolled(x, y, scrollX, scrollY)) return true;
+		if (this.filmContents == null || !this.displayFilm || this.filmContents.isEmpty()) return false;
+
+		final Vector2i wheelXY = this.scrollWheelHandler.onMouseScroll(scrollX, scrollY);
+		final int wheel = wheelXY.y == 0 ? -wheelXY.x : wheelXY.y;
+		if (wheel != 0) {
+			final int currentIndex = this.photographIndex;
+			final int updatedIndex = ScrollWheelHandler.getNextScrollWheelSelection(wheel, currentIndex, this.filmContents.size());
+			if (currentIndex != updatedIndex) {
+				this.photographIndex = updatedIndex;
+				this.setupDataAndResultSlot(this.photographIndex);
+				this.setupOrClearFilmPhotographDisplays();
+			}
+		}
+
+		return true;
 	}
 
 	private void containerChanged() {

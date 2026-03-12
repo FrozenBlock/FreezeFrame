@@ -41,7 +41,6 @@ public class CameraMouseActions implements ItemSlotMouseAction {
 			final int selectedItem = CameraItem.getSelectedItemIndex(itemStack);
 			final int updatedSelectedItem = ScrollWheelHandler.getNextScrollWheelSelection(wheel, selectedItem, amountOfShownItems);
 			if (selectedItem != updatedSelectedItem) this.toggleSelectedCameraItem(itemStack, slotIndex, updatedSelectedItem);
-
 		}
 
 		return true;
