@@ -54,9 +54,9 @@ public class PrinterMenu extends AbstractContainerMenu {
 		super(CameraPortMenuTypes.PRINTER, id);
 		this.access = access;
 		this.sourceSlot = addSlot(new PrinterSourceSlot(this.inputContainer, SOURCE_SLOT, 14, 15));
-		this.paperSlot = addSlot(new PrinterPaperSlot(this.inputContainer, PAPER_SLOT, 40, 109));
-		this.resultSlot = addSlot(new PrinterResultSlot(this, this.resultContainer, RESULT_SLOT, 120, 109));
-		this.addStandardInventorySlots(inventory, 8, 140);
+		this.paperSlot = addSlot(new PrinterPaperSlot(this.inputContainer, PAPER_SLOT, 40, 113));
+		this.resultSlot = addSlot(new PrinterResultSlot(this, this.resultContainer, RESULT_SLOT, 120, 113));
+		this.addStandardInventorySlots(inventory, 8, 142);
 		this.addDataSlot(this.photographIndex);
 	}
 

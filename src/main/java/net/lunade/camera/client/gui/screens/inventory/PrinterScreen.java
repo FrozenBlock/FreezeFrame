@@ -15,6 +15,7 @@ import net.minecraft.client.Minecraft;
 import net.minecraft.client.ScrollWheelHandler;
 import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.client.gui.screens.inventory.AbstractContainerScreen;
+import net.minecraft.client.gui.screens.inventory.CyclingSlotBackground;
 import net.minecraft.client.input.MouseButtonEvent;
 import net.minecraft.client.renderer.RenderPipelines;
 import net.minecraft.client.resources.sounds.SimpleSoundInstance;
@@ -26,16 +27,34 @@ import net.minecraft.world.item.ItemStack;
 import org.jetbrains.annotations.Nullable;
 import org.joml.Vector2i;
 
+import java.util.List;
+
 @Environment(EnvType.CLIENT)
 public class PrinterScreen extends AbstractContainerScreen<PrinterMenu> {
-	private static final int ARROW_BOX_SIZE = 32;
+	private static final int ARROW_BOX_SIZE = 52;
+	private static final int FILM_PHOTOGRAPH_SIZE = 52;
+	private static final int FILM_PHOTOGRAPH_Y = 39;
+	private static final int FILM_LEFT_PHOTOGRAPH_X = 5;
+	private static final int FILM_MIDDLE_PHOTOGRAPH_X = 62;
+	private static final int FILM_RIGHT_PHOTOGRAPH_X = 119;
+	private static final int ARROW_WIDTH = 12;
+	private static final int ARROW_HEIGHT = 17;
+	private static final int ARROW_X_OFFSET = (ARROW_BOX_SIZE - ARROW_WIDTH) / 2;
+	private static final int ARROW_Y_OFFSET = (ARROW_BOX_SIZE - ARROW_HEIGHT) / 2;
 	private static final Identifier TEXTURE = CameraPortConstants.id("textures/gui/container/printer.png");
 	private static final Identifier TEXTURE_FILM = CameraPortConstants.id("textures/gui/container/printer_film.png");
 	private static final Identifier MOVE_RIGHT = CameraPortConstants.id("container/printer/move_right");
 	private static final Identifier MOVE_RIGHT_SELECTED = CameraPortConstants.id("container/printer/move_right_highlighted");
 	private static final Identifier MOVE_LEFT = CameraPortConstants.id("container/printer/move_left");
 	private static final Identifier MOVE_LEFT_SELECTED = CameraPortConstants.id("container/printer/move_left_highlighted");
+	private static final List<Identifier> SOURCE_SLOT_ICONS = List.of(
+			CameraPortConstants.id("container/slot/film"),
+			CameraPortConstants.id("container/slot/photograph")
+	);
+	private static final List<Identifier> PAPER_SLOT_ICONS = List.of(CameraPortConstants.id("container/slot/paper"));
 	private final ScrollWheelHandler scrollWheelHandler;
+	private final CyclingSlotBackground sourceSlotBackground = new CyclingSlotBackground(PrinterMenu.SOURCE_SLOT);
+	private final CyclingSlotBackground paperSlotBackground = new CyclingSlotBackground(PrinterMenu.PAPER_SLOT);
 	@Nullable
 	private FilmContents filmContents;
 	@Nullable
@@ -49,11 +68,12 @@ public class PrinterScreen extends AbstractContainerScreen<PrinterMenu> {
 	private Identifier photographCopyId;
 
 	public PrinterScreen(PrinterMenu menu, Inventory inventory, Component title) {
-		super(menu, inventory, title, DEFAULT_IMAGE_WIDTH, 222);
+		super(menu, inventory, title, DEFAULT_IMAGE_WIDTH, 224);
 		this.scrollWheelHandler = new ScrollWheelHandler();
 		menu.registerUpdateListener(this::containerChanged);
 		--this.titleLabelY;
 		this.titleLabelX += 78;
+		this.inventoryLabelY += 2;
 	}
 
 	@Override
@@ -61,6 +81,13 @@ public class PrinterScreen extends AbstractContainerScreen<PrinterMenu> {
 		super.init();
 		this.titleLabelX = (this.imageWidth - this.font.width(this.title)) / 2;
 		this.containerChanged();
+	}
+
+	@Override
+	protected void containerTick() {
+		super.containerTick();
+		this.sourceSlotBackground.tick(SOURCE_SLOT_ICONS);
+		this.paperSlotBackground.tick(PAPER_SLOT_ICONS);
 	}
 
 	private void setupDataAndResultSlot(int photographIndex) {
@@ -74,30 +101,34 @@ public class PrinterScreen extends AbstractContainerScreen<PrinterMenu> {
 		final int leftPos = this.leftPos;
 		final int topPos = this.topPos;
 
-		final Identifier bgTexture = this.photographCopyId == null ? TEXTURE_FILM : TEXTURE;
+		final Identifier bgTexture = this.displayFilm ? TEXTURE_FILM : TEXTURE;
 		graphics.blit(RenderPipelines.GUI_TEXTURED, bgTexture, leftPos, topPos, 0F, 0F, this.imageWidth, this.imageHeight, 256, 256);
+		this.sourceSlotBackground.render(this.menu, graphics, delta, leftPos, topPos);
+		this.paperSlotBackground.render(this.menu, graphics, delta, leftPos, topPos);
 
 		renderFilmPhotographs: {
 			if (!this.displayFilm) break renderFilmPhotographs;
 
-			if (this.middlePhotograph != null) PhotographRenderer.blit(leftPos, topPos, 65, 43, graphics, this.middlePhotograph, 48, PhotographRenderer.FrameType.FILM_EMBED);
+			if (this.middlePhotograph != null) {
+				PhotographRenderer.blit(leftPos, topPos, FILM_MIDDLE_PHOTOGRAPH_X, FILM_PHOTOGRAPH_Y, graphics, this.middlePhotograph, FILM_PHOTOGRAPH_SIZE, PhotographRenderer.FrameType.FILM_EMBED);
+			}
 
 			if (this.filmContents.size() == 1) return;
 
 			if (this.rightPhotograph != null) {
 				// Render right photograph
-				PhotographRenderer.blit(leftPos, topPos, 132, 51, graphics, this.rightPhotograph, ARROW_BOX_SIZE, PhotographRenderer.FrameType.FILM_EMBED);
+				PhotographRenderer.blit(leftPos, topPos, FILM_RIGHT_PHOTOGRAPH_X, FILM_PHOTOGRAPH_Y, graphics, this.rightPhotograph, FILM_PHOTOGRAPH_SIZE, PhotographRenderer.FrameType.FILM_EMBED);
 				// Render right arrow
-				boolean selected = checkButtonClicked(leftPos + 132, topPos + 51, ARROW_BOX_SIZE, ARROW_BOX_SIZE, mouseX, mouseY);
-				graphics.blitSprite(RenderPipelines.GUI_TEXTURED, selected ? MOVE_RIGHT_SELECTED : MOVE_RIGHT, leftPos + 132 + 12, topPos + 51 + 8, 12, 17);
+				boolean selected = checkButtonClicked(leftPos + FILM_RIGHT_PHOTOGRAPH_X, topPos + FILM_PHOTOGRAPH_Y, ARROW_BOX_SIZE, ARROW_BOX_SIZE, mouseX, mouseY);
+				graphics.blitSprite(RenderPipelines.GUI_TEXTURED, selected ? MOVE_RIGHT_SELECTED : MOVE_RIGHT, leftPos + FILM_RIGHT_PHOTOGRAPH_X + ARROW_X_OFFSET, topPos + FILM_PHOTOGRAPH_Y + ARROW_Y_OFFSET, ARROW_WIDTH, ARROW_HEIGHT);
 			}
 
 			if (this.leftPhotograph != null) {
 				// Render left photograph
-				PhotographRenderer.blit(leftPos, topPos, 14, 51, graphics, this.leftPhotograph, ARROW_BOX_SIZE, PhotographRenderer.FrameType.FILM_EMBED);
+				PhotographRenderer.blit(leftPos, topPos, FILM_LEFT_PHOTOGRAPH_X, FILM_PHOTOGRAPH_Y, graphics, this.leftPhotograph, FILM_PHOTOGRAPH_SIZE, PhotographRenderer.FrameType.FILM_EMBED);
 				// Render left arrow
-				boolean selected = checkButtonClicked(leftPos + 14, topPos + 51, ARROW_BOX_SIZE, ARROW_BOX_SIZE, mouseX, mouseY);
-				graphics.blitSprite(RenderPipelines.GUI_TEXTURED, selected ? MOVE_LEFT_SELECTED : MOVE_LEFT, leftPos + 14 + 8, topPos + 51 + 8, 12, 17);
+				boolean selected = checkButtonClicked(leftPos + FILM_LEFT_PHOTOGRAPH_X, topPos + FILM_PHOTOGRAPH_Y, ARROW_BOX_SIZE, ARROW_BOX_SIZE, mouseX, mouseY);
+				graphics.blitSprite(RenderPipelines.GUI_TEXTURED, selected ? MOVE_LEFT_SELECTED : MOVE_LEFT, leftPos + FILM_LEFT_PHOTOGRAPH_X + ARROW_X_OFFSET, topPos + FILM_PHOTOGRAPH_Y + ARROW_Y_OFFSET, ARROW_WIDTH, ARROW_HEIGHT);
 			}
 		}
 
@@ -106,6 +137,7 @@ public class PrinterScreen extends AbstractContainerScreen<PrinterMenu> {
 			PhotographRenderer.blit(leftPos, topPos, 52, 20, graphics, this.photographCopyId, 72, PhotographRenderer.FrameType.FRAME);
 		}
 	}
+
 
 	@Nullable
 	private Identifier getInfiniteFilmPhotograph(int index) {
@@ -128,14 +160,14 @@ public class PrinterScreen extends AbstractContainerScreen<PrinterMenu> {
 		final int mouseY = (int) event.y();
 
 		// Right arrow clicked
-		if (this.rightPhotograph != null && checkButtonClicked(this.leftPos + 132, this.topPos + 51, ARROW_BOX_SIZE, ARROW_BOX_SIZE, mouseX, mouseY)) {
+		if (this.rightPhotograph != null && checkButtonClicked(this.leftPos + FILM_RIGHT_PHOTOGRAPH_X, this.topPos + FILM_PHOTOGRAPH_Y, ARROW_BOX_SIZE, ARROW_BOX_SIZE, mouseX, mouseY)) {
 			this.incrementPhotographIndex(false);
 			Minecraft.getInstance().getSoundManager().play(SimpleSoundInstance.forUI(SoundEvents.UI_BUTTON_CLICK, 1F));
 			return true;
 		}
 
 		// Left arrow clicked
-		if (this.leftPhotograph != null && checkButtonClicked(this.leftPos + 14, this.topPos + 51, ARROW_BOX_SIZE, ARROW_BOX_SIZE, mouseX, mouseY)) {
+		if (this.leftPhotograph != null && checkButtonClicked(this.leftPos + FILM_LEFT_PHOTOGRAPH_X, this.topPos + FILM_PHOTOGRAPH_Y, ARROW_BOX_SIZE, ARROW_BOX_SIZE, mouseX, mouseY)) {
 			this.incrementPhotographIndex(true);
 			Minecraft.getInstance().getSoundManager().play(SimpleSoundInstance.forUI(SoundEvents.UI_BUTTON_CLICK, 1F));
 			return true;
