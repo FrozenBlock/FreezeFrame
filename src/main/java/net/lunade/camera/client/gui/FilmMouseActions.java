@@ -53,7 +53,7 @@ public class FilmMouseActions implements ItemSlotMouseAction {
 		if (amountOfShownPhotographs == 0) return false;
 
 		final Vector2i wheelXY = this.scrollWheelHandler.onMouseScroll(scrollX, scrollY);
-		final int wheel = wheelXY.y == 0 ? -wheelXY.x : wheelXY.y;
+		final int wheel = wheelXY.y == 0 ? wheelXY.x : -wheelXY.y;
 		if (wheel != 0) {
 			final int selectedPhotograph = FilmItem.getSelectedPhotographIndex(stack);
 			final int updatedSelectedPhotograph = ScrollWheelHandler.getNextScrollWheelSelection(wheel, selectedPhotograph, amountOfShownPhotographs);

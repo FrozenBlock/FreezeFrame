@@ -17,6 +17,7 @@
 
 package net.lunade.camera.client.gui.screens.inventory;
 
+import java.util.List;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 import net.fabricmc.fabric.api.client.networking.v1.ClientPlayNetworking;
@@ -44,29 +45,23 @@ import net.minecraft.world.item.ItemStack;
 import org.jetbrains.annotations.Nullable;
 import org.joml.Vector2i;
 
-import java.util.List;
-
 @Environment(EnvType.CLIENT)
 public class PrinterScreen extends AbstractContainerScreen<PrinterMenu> {
+	private static final boolean DEBUG_PRINTER_INFO = false && CameraPortConstants.UNSTABLE_LOGGING;
 	private static final int ARROW_BOX_SIZE = 52;
 	private static final int FILM_PHOTOGRAPH_SIZE = 52;
 	private static final int FILM_PHOTOGRAPH_Y = 39;
 	private static final int FILM_LEFT_PHOTOGRAPH_X = 5;
 	private static final int FILM_MIDDLE_PHOTOGRAPH_X = 62;
 	private static final int FILM_RIGHT_PHOTOGRAPH_X = 119;
-	private static final int ARROW_WIDTH = 12;
-	private static final int ARROW_HEIGHT = 17;
-	private static final int ARROW_X_OFFSET = (ARROW_BOX_SIZE - ARROW_WIDTH) / 2;
-	private static final int ARROW_Y_OFFSET = (ARROW_BOX_SIZE - ARROW_HEIGHT) / 2;
+	private static final int COPY_PHOTOGRAPH_SIZE = 67;
+	private static final int COPY_PHOTOGRAPH_Y = 31;
+	private static final int COPY_PHOTOGRAPH_X = 55;
 	private static final Identifier TEXTURE = CameraPortConstants.id("textures/gui/container/printer.png");
 	private static final Identifier TEXTURE_FILM = CameraPortConstants.id("textures/gui/container/printer_film.png");
-	private static final Identifier MOVE_RIGHT = CameraPortConstants.id("container/printer/move_right");
-	private static final Identifier MOVE_RIGHT_SELECTED = CameraPortConstants.id("container/printer/move_right_highlighted");
-	private static final Identifier MOVE_LEFT = CameraPortConstants.id("container/printer/move_left");
-	private static final Identifier MOVE_LEFT_SELECTED = CameraPortConstants.id("container/printer/move_left_highlighted");
 	private static final List<Identifier> SOURCE_SLOT_ICONS = List.of(
-			CameraPortConstants.id("container/slot/film"),
-			CameraPortConstants.id("container/slot/photograph")
+		CameraPortConstants.id("container/slot/film"),
+		CameraPortConstants.id("container/slot/photograph")
 	);
 	private static final List<Identifier> PAPER_SLOT_ICONS = List.of(CameraPortConstants.id("container/slot/paper"));
 	private final ScrollWheelHandler scrollWheelHandler;
@@ -85,12 +80,11 @@ public class PrinterScreen extends AbstractContainerScreen<PrinterMenu> {
 	private Identifier photographCopyId;
 
 	public PrinterScreen(PrinterMenu menu, Inventory inventory, Component title) {
-		super(menu, inventory, title, DEFAULT_IMAGE_WIDTH, 224);
+		super(menu, inventory, title, DEFAULT_IMAGE_WIDTH, 226);
 		this.scrollWheelHandler = new ScrollWheelHandler();
 		menu.registerUpdateListener(this::containerChanged);
 		--this.titleLabelY;
 		this.titleLabelX += 78;
-		this.inventoryLabelY += 2;
 	}
 
 	@Override
@@ -115,58 +109,91 @@ public class PrinterScreen extends AbstractContainerScreen<PrinterMenu> {
 
 	@Override
 	protected void renderBg(GuiGraphics graphics, float delta, int mouseX, int mouseY) {
-		final int leftPos = this.leftPos;
-		final int topPos = this.topPos;
-
 		final Identifier bgTexture = this.displayFilm ? TEXTURE_FILM : TEXTURE;
-		graphics.blit(RenderPipelines.GUI_TEXTURED, bgTexture, leftPos, topPos, 0F, 0F, this.imageWidth, this.imageHeight, 256, 256);
-		this.sourceSlotBackground.render(this.menu, graphics, delta, leftPos, topPos);
-		this.paperSlotBackground.render(this.menu, graphics, delta, leftPos, topPos);
+		graphics.blit(RenderPipelines.GUI_TEXTURED, bgTexture, this.leftPos, this.topPos, 0F, 0F, this.imageWidth, this.imageHeight, BACKGROUND_TEXTURE_WIDTH, BACKGROUND_TEXTURE_HEIGHT);
+		this.sourceSlotBackground.render(this.menu, graphics, delta, this.leftPos, this.topPos);
+		this.paperSlotBackground.render(this.menu, graphics, delta, this.leftPos, this.topPos);
+	}
 
-		renderFilmPhotographs: {
-			if (!this.displayFilm) break renderFilmPhotographs;
+	@Override
+	public void render(GuiGraphics graphics, int mouseX, int mouseY, float partialTicks) {
+		super.render(graphics, mouseX, mouseY, partialTicks);
 
+		if (this.displayFilm) {
 			if (this.middlePhotograph != null) {
-				PhotographRenderer.blit(leftPos, topPos, FILM_MIDDLE_PHOTOGRAPH_X, FILM_PHOTOGRAPH_Y, graphics, this.middlePhotograph, FILM_PHOTOGRAPH_SIZE, PhotographRenderer.FrameType.FILM_EMBED);
+				PhotographRenderer.blit(
+					this.leftPos,
+					this.topPos,
+					FILM_MIDDLE_PHOTOGRAPH_X,
+					FILM_PHOTOGRAPH_Y,
+					graphics,
+					this.middlePhotograph,
+					FILM_PHOTOGRAPH_SIZE,
+					PhotographRenderer.FrameType.FILM_EMBED
+				);
+				// Render Index
+				if (DEBUG_PRINTER_INFO) {
+					graphics.drawString(
+						this.font,
+						Component.literal("Client Index:" + this.photographIndex),
+						this.leftPos + FILM_MIDDLE_PHOTOGRAPH_X,
+						this.topPos + FILM_PHOTOGRAPH_Y - this.font.lineHeight,
+						-1,
+						false
+					);
+					graphics.drawString(
+						this.font,
+						Component.literal("Server Index:" + this.menu.photographIndex.get()),
+						this.leftPos + FILM_MIDDLE_PHOTOGRAPH_X,
+						this.topPos + FILM_PHOTOGRAPH_Y - this.font.lineHeight - this.font.lineHeight,
+						-1,
+						false
+					);
+				}
 			}
 
 			if (this.filmContents.size() == 1) return;
 
 			if (this.rightPhotograph != null) {
 				// Render right photograph
-				PhotographRenderer.blit(leftPos, topPos, FILM_RIGHT_PHOTOGRAPH_X, FILM_PHOTOGRAPH_Y, graphics, this.rightPhotograph, FILM_PHOTOGRAPH_SIZE, PhotographRenderer.FrameType.FILM_EMBED);
-				// Render right arrow
-				boolean selected = checkButtonClicked(leftPos + FILM_RIGHT_PHOTOGRAPH_X, topPos + FILM_PHOTOGRAPH_Y, ARROW_BOX_SIZE, ARROW_BOX_SIZE, mouseX, mouseY);
-				graphics.blitSprite(RenderPipelines.GUI_TEXTURED, selected ? MOVE_RIGHT_SELECTED : MOVE_RIGHT, leftPos + FILM_RIGHT_PHOTOGRAPH_X + ARROW_X_OFFSET, topPos + FILM_PHOTOGRAPH_Y + ARROW_Y_OFFSET, ARROW_WIDTH, ARROW_HEIGHT);
+				PhotographRenderer.blit(
+					this.leftPos,
+					this.topPos,
+					FILM_RIGHT_PHOTOGRAPH_X,
+					FILM_PHOTOGRAPH_Y,
+					graphics,
+					this.rightPhotograph,
+					FILM_PHOTOGRAPH_SIZE, PhotographRenderer.FrameType.FILM_EMBED
+				);
 			}
 
 			if (this.leftPhotograph != null) {
 				// Render left photograph
-				PhotographRenderer.blit(leftPos, topPos, FILM_LEFT_PHOTOGRAPH_X, FILM_PHOTOGRAPH_Y, graphics, this.leftPhotograph, FILM_PHOTOGRAPH_SIZE, PhotographRenderer.FrameType.FILM_EMBED);
-				// Render left arrow
-				boolean selected = checkButtonClicked(leftPos + FILM_LEFT_PHOTOGRAPH_X, topPos + FILM_PHOTOGRAPH_Y, ARROW_BOX_SIZE, ARROW_BOX_SIZE, mouseX, mouseY);
-				graphics.blitSprite(RenderPipelines.GUI_TEXTURED, selected ? MOVE_LEFT_SELECTED : MOVE_LEFT, leftPos + FILM_LEFT_PHOTOGRAPH_X + ARROW_X_OFFSET, topPos + FILM_PHOTOGRAPH_Y + ARROW_Y_OFFSET, ARROW_WIDTH, ARROW_HEIGHT);
+				PhotographRenderer.blit(
+					this.leftPos,
+					this.topPos,
+					FILM_LEFT_PHOTOGRAPH_X,
+					FILM_PHOTOGRAPH_Y,
+					graphics,
+					this.leftPhotograph,
+					FILM_PHOTOGRAPH_SIZE,
+					PhotographRenderer.FrameType.FILM_EMBED
+				);
 			}
 		}
 
-		renderPhotographCopy: {
-			if (this.photographCopyId == null) break renderPhotographCopy;
-			PhotographRenderer.blit(leftPos, topPos, 52, 20, graphics, this.photographCopyId, 72, PhotographRenderer.FrameType.FRAME);
+		if (this.photographCopyId != null) {
+			PhotographRenderer.blit(
+				this.leftPos,
+				this.topPos,
+				COPY_PHOTOGRAPH_X,
+				COPY_PHOTOGRAPH_Y,
+				graphics,
+				this.photographCopyId,
+				COPY_PHOTOGRAPH_SIZE,
+				PhotographRenderer.FrameType.FRAME
+			);
 		}
-	}
-
-
-	@Nullable
-	private Identifier getInfiniteFilmPhotograph(int index) {
-		if (this.filmContents == null || this.filmContents.isEmpty()) return null;
-		int size = this.filmContents.size();
-		int adjustedIndex = ((index % size) + size) % size;
-		return this.filmContents.getPhotographAtIndex(adjustedIndex).identifier();
-	}
-
-	@Override
-	public void render(GuiGraphics graphics, int mouseX, int mouseY, float partialTicks) {
-		super.render(graphics, mouseX, mouseY, partialTicks);
 	}
 
 	@Override
@@ -177,14 +204,14 @@ public class PrinterScreen extends AbstractContainerScreen<PrinterMenu> {
 		final int mouseY = (int) event.y();
 
 		// Right arrow clicked
-		if (this.rightPhotograph != null && checkButtonClicked(this.leftPos + FILM_RIGHT_PHOTOGRAPH_X, this.topPos + FILM_PHOTOGRAPH_Y, ARROW_BOX_SIZE, ARROW_BOX_SIZE, mouseX, mouseY)) {
+		if (this.rightPhotograph != null && this.isHovering(FILM_RIGHT_PHOTOGRAPH_X, FILM_PHOTOGRAPH_Y, FILM_PHOTOGRAPH_SIZE, FILM_PHOTOGRAPH_SIZE, mouseX, mouseY)) {
 			this.incrementPhotographIndex(false);
 			Minecraft.getInstance().getSoundManager().play(SimpleSoundInstance.forUI(SoundEvents.UI_BUTTON_CLICK, 1F));
 			return true;
 		}
 
 		// Left arrow clicked
-		if (this.leftPhotograph != null && checkButtonClicked(this.leftPos + FILM_LEFT_PHOTOGRAPH_X, this.topPos + FILM_PHOTOGRAPH_Y, ARROW_BOX_SIZE, ARROW_BOX_SIZE, mouseX, mouseY)) {
+		if (this.leftPhotograph != null && this.isHovering(FILM_LEFT_PHOTOGRAPH_X, FILM_PHOTOGRAPH_Y, FILM_PHOTOGRAPH_SIZE, FILM_PHOTOGRAPH_SIZE, mouseX, mouseY)) {
 			this.incrementPhotographIndex(true);
 			Minecraft.getInstance().getSoundManager().play(SimpleSoundInstance.forUI(SoundEvents.UI_BUTTON_CLICK, 1F));
 			return true;
@@ -194,8 +221,10 @@ public class PrinterScreen extends AbstractContainerScreen<PrinterMenu> {
 	}
 
 	private void incrementPhotographIndex(boolean left) {
-		if (this.photographIndex == 0) {
+		if (this.photographIndex == 0 && left) {
 			this.photographIndex = this.filmContents.size() - 1;
+		} else if (this.photographIndex == this.filmContents.size() - 1 && !left) {
+			this.photographIndex = 0;
 		} else {
 			if (left) {
 				this.photographIndex--;
@@ -206,10 +235,6 @@ public class PrinterScreen extends AbstractContainerScreen<PrinterMenu> {
 
 		this.setupDataAndResultSlot(this.photographIndex);
 		Minecraft.getInstance().getSoundManager().play(SimpleSoundInstance.forUI(SoundEvents.UI_BUTTON_CLICK, 1F));
-	}
-
-	private static boolean checkButtonClicked(int minX, int minY, int buttonWidth, int buttonHeight, int mouseX, int mouseY) {
-		return mouseX >= minX && mouseX <= minX + buttonWidth && mouseY >= minY && mouseY <= minY + buttonHeight;
 	}
 
 	@Override
@@ -230,6 +255,14 @@ public class PrinterScreen extends AbstractContainerScreen<PrinterMenu> {
 		}
 
 		return true;
+	}
+
+	@Nullable
+	private Identifier getInfiniteFilmPhotograph(int index) {
+		if (this.filmContents == null || this.filmContents.isEmpty()) return null;
+		int size = this.filmContents.size();
+		int adjustedIndex = ((index % size) + size) % size;
+		return this.filmContents.getPhotographAtIndex(adjustedIndex).identifier();
 	}
 
 	private void containerChanged() {
