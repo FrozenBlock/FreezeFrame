@@ -22,6 +22,7 @@ import net.fabricmc.fabric.api.networking.v1.ServerPlayNetworking;
 import net.frozenblock.lib.file.transfer.FileTransferFilter;
 import net.lunade.camera.networking.packet.CameraTakeScreenshotPacket;
 import net.lunade.camera.networking.packet.PrinterSyncSelectPhotographIndexPacket;
+import net.lunade.camera.networking.packet.QuickCameraPhotographPacket;
 import net.lunade.camera.networking.packet.SelectCameraFilmPacket;
 import net.lunade.camera.networking.packet.SelectFilmPhotographPacket;
 import net.minecraft.network.RegistryFriendlyByteBuf;
@@ -42,6 +43,9 @@ public class CameraPortNetworking {
 
 		c2sRegistry.register(SelectCameraFilmPacket.PACKET_TYPE, SelectCameraFilmPacket.CODEC);
 		ServerPlayNetworking.registerGlobalReceiver(SelectCameraFilmPacket.PACKET_TYPE, SelectCameraFilmPacket::handle);
+
+		c2sRegistry.register(QuickCameraPhotographPacket.PACKET_TYPE, QuickCameraPhotographPacket.CODEC);
+		ServerPlayNetworking.registerGlobalReceiver(QuickCameraPhotographPacket.PACKET_TYPE, QuickCameraPhotographPacket::handle);
 
 		FileTransferFilter.whitelistDestinationPath("photographs", false);
 		FileTransferFilter.whitelistDestinationPath("photographs", true);

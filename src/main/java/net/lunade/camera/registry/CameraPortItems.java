@@ -25,6 +25,7 @@ import net.lunade.camera.component.FilmContents;
 import net.lunade.camera.item.CameraItem;
 import net.lunade.camera.item.FilmItem;
 import net.lunade.camera.item.PhotographItem;
+import net.lunade.camera.util.ScopeZoomHelper;
 import net.minecraft.core.registries.Registries;
 import net.minecraft.resources.ResourceKey;
 import net.minecraft.world.item.CreativeModeTabs;
@@ -38,7 +39,10 @@ public class CameraPortItems {
 		new Item.Properties()
 			.stacksTo(1)
 			.spawnEgg(CameraPortEntityTypes.CAMERA)
+			.component(CameraPortDataComponents.CAMERA_CAPABLE, true)
 			.component(CameraPortDataComponents.CAMERA_CONTENTS, CameraContents.EMPTY)
+			.component(CameraPortDataComponents.CAMERA_ZOOM, ScopeZoomHelper.CAMERA_DEFAULTS.defaultZoom())
+			.component(CameraPortDataComponents.SCOPE_ZOOM_CONFIG, ScopeZoomHelper.CAMERA_DEFAULTS)
 	);
 	public static final CameraItem DISC_CAMERA = register(
 		"disc_camera",
@@ -46,7 +50,10 @@ public class CameraPortItems {
 		new Item.Properties()
 			.stacksTo(1)
 			.spawnEgg(CameraPortEntityTypes.DISC_CAMERA)
+			.component(CameraPortDataComponents.CAMERA_CAPABLE, true)
 			.component(CameraPortDataComponents.CAMERA_CONTENTS, CameraContents.EMPTY)
+			.component(CameraPortDataComponents.CAMERA_ZOOM, ScopeZoomHelper.CAMERA_DEFAULTS.defaultZoom())
+			.component(CameraPortDataComponents.SCOPE_ZOOM_CONFIG, ScopeZoomHelper.CAMERA_DEFAULTS)
 	);
 	public static final FilmItem FILM = register(
 		"film",

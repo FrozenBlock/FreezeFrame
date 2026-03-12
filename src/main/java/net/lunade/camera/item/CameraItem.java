@@ -28,6 +28,8 @@ import net.lunade.camera.networking.packet.CameraTakeScreenshotPacket;
 import net.lunade.camera.registry.CameraPortDataComponents;
 import net.lunade.camera.registry.CameraPortSounds;
 import net.lunade.camera.util.CameraScreenshotHelper;
+import net.lunade.camera.util.ScopeItemHelper;
+import net.lunade.camera.util.ScopeZoomHelper;
 import net.minecraft.core.component.DataComponents;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.sounds.SoundEvents;
@@ -37,6 +39,7 @@ import net.minecraft.util.Mth;
 import net.minecraft.world.InteractionHand;
 import net.minecraft.world.InteractionResult;
 import net.minecraft.world.entity.Entity;
+import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.SlotAccess;
 import net.minecraft.world.entity.item.ItemEntity;
 import net.minecraft.world.entity.player.Player;
@@ -46,10 +49,12 @@ import net.minecraft.world.inventory.Slot;
 import net.minecraft.world.inventory.tooltip.TooltipComponent;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.ItemStackTemplate;
+import net.minecraft.world.item.ItemUseAnimation;
 import net.minecraft.world.item.ItemUtils;
 import net.minecraft.world.item.SpawnEggItem;
 import net.minecraft.world.item.component.TooltipDisplay;
 import net.minecraft.world.level.Level;
+import net.minecraft.world.item.context.UseOnContext;
 import org.apache.commons.lang3.math.Fraction;
 import org.jspecify.annotations.Nullable;
 
@@ -63,14 +68,49 @@ public class CameraItem extends SpawnEggItem {
 
 	@Override
 	public InteractionResult use(Level level, Player player, InteractionHand hand) {
-		final InteractionResult interactionResult = super.use(level, player, hand);
-		if (interactionResult.consumesAction()) return interactionResult;
-
 		final ItemStack stack = player.getItemInHand(hand);
-		if (player.getCooldowns().isOnCooldown(stack)) return interactionResult;
+		if (player.isUsingItem() && ItemStack.isSameItemSameComponents(player.getUseItem(), stack)) {
+			return takePhotograph(level, player, stack);
+		}
+
+		if (player.isShiftKeyDown()) return super.use(level, player, hand);
+
+		player.startUsingItem(hand);
+		return InteractionResult.CONSUME;
+	}
+
+	@Override
+	public InteractionResult useOn(UseOnContext useOnContext) {
+		final Player player = useOnContext.getPlayer();
+		if (player != null && !player.isShiftKeyDown()) return InteractionResult.PASS;
+		return super.useOn(useOnContext);
+	}
+
+	@Override
+	public int getUseDuration(ItemStack stack, LivingEntity entity) {
+		return 72000;
+	}
+
+	@Override
+	public ItemUseAnimation getUseAnimation(ItemStack stack) {
+		return ItemUseAnimation.SPYGLASS;
+	}
+
+	public static boolean tryTakeInstantPhotograph(ServerPlayer player) {
+		final ItemStack stack = player.getMainHandItem();
+		if (!ScopeItemHelper.isCameraItem(stack)) return false;
+		return takePhotograph(player.level(), player, stack, ScopeZoomHelper.getDefaultZoomFor(stack)) == InteractionResult.SUCCESS;
+	}
+
+	private static InteractionResult takePhotograph(Level level, Player player, ItemStack stack) {
+		return takePhotograph(level, player, stack, ScopeZoomHelper.getStoredZoom(stack));
+	}
+
+	private static InteractionResult takePhotograph(Level level, Player player, ItemStack stack, float captureZoom) {
+		if (player.getCooldowns().isOnCooldown(stack)) return InteractionResult.FAIL;
 
 		final CameraContents initialContents = stack.get(CameraPortDataComponents.CAMERA_CONTENTS);
-		if (initialContents == null) return InteractionResult.PASS;
+		if (initialContents == null) return InteractionResult.FAIL;
 
 		if (!initialContents.hasSpaceForPhotograph()) {
 			// TODO: Fail sound
@@ -80,8 +120,8 @@ public class CameraItem extends SpawnEggItem {
 		player.getCooldowns().addCooldown(stack, 20);
 		if (player instanceof ServerPlayer serverPlayer) {
 			final String fileName = CameraScreenshotHelper.makeFileName(serverPlayer);
-			CameraTakeScreenshotPacket.sendToAsHandheld(serverPlayer, fileName);
-			this.addPhotograph(stack, player, fileName);
+			CameraTakeScreenshotPacket.sendToAsHandheld(serverPlayer, fileName, captureZoom);
+			addPhotograph(stack, player, fileName);
 		}
 
 		level.playSound(player, player.getX(), player.getEyeY(), player.getZ(), CameraPortSounds.CAMERA_SNAP, SoundSource.PLAYERS, 0.5F, 1F);
@@ -115,7 +155,7 @@ public class CameraItem extends SpawnEggItem {
 			}
 
 			self.set(CameraPortDataComponents.CAMERA_CONTENTS, contents.toImmutable());
-			this.broadcastChangesOnContainerMenu(player);
+			broadcastChangesOnContainerMenu(player);
 			return true;
 		} else if (clickAction == ClickAction.SECONDARY && other.isEmpty()) {
 			final ItemStack removed = contents.removeOne();
@@ -129,7 +169,7 @@ public class CameraItem extends SpawnEggItem {
 			}
 
 			self.set(CameraPortDataComponents.CAMERA_CONTENTS, contents.toImmutable());
-			this.broadcastChangesOnContainerMenu(player);
+			broadcastChangesOnContainerMenu(player);
 			return true;
 		}
 
@@ -155,7 +195,7 @@ public class CameraItem extends SpawnEggItem {
 			}
 
 			self.set(CameraPortDataComponents.CAMERA_CONTENTS, contents.toImmutable());
-			this.broadcastChangesOnContainerMenu(player);
+			broadcastChangesOnContainerMenu(player);
 			return true;
 		} else if (clickAction == ClickAction.SECONDARY && other.isEmpty()) {
 			if (slot.allowModification(player)) {
@@ -167,7 +207,7 @@ public class CameraItem extends SpawnEggItem {
 			}
 
 			self.set(CameraPortDataComponents.CAMERA_CONTENTS, contents.toImmutable());
-			this.broadcastChangesOnContainerMenu(player);
+			broadcastChangesOnContainerMenu(player);
 			return true;
 		}
 
@@ -216,16 +256,6 @@ public class CameraItem extends SpawnEggItem {
 		return contents.getNumberOfItemsToShow();
 	}
 
-	private static Optional<ItemStack> removeOneItemFromCamera(ItemStack self, Player player, CameraContents initialContents) {
-		final CameraContents.Mutable contents = new CameraContents.Mutable(initialContents);
-		final ItemStack removed = contents.removeOne();
-		if (removed == null) return Optional.empty();
-
-		playRemoveOneSound(player);
-		self.set(CameraPortDataComponents.CAMERA_CONTENTS, contents.toImmutable());
-		return Optional.of(removed);
-	}
-
 	@Override
 	public Optional<TooltipComponent> getTooltipImage(ItemStack camera) {
 		final TooltipDisplay display = camera.getOrDefault(DataComponents.TOOLTIP_DISPLAY, TooltipDisplay.DEFAULT);
@@ -242,7 +272,7 @@ public class CameraItem extends SpawnEggItem {
 		ItemUtils.onContainerDestroyed(entity, contents.itemCopyStream());
 	}
 
-	public void addPhotograph(ItemStack stack, Player player, String fileName) {
+	public static void addPhotograph(ItemStack stack, Player player, String fileName) {
 		final CameraContents initialCameraContents = stack.get(CameraPortDataComponents.CAMERA_CONTENTS);
 		if (initialCameraContents == null) return;
 
@@ -257,7 +287,7 @@ public class CameraItem extends SpawnEggItem {
 
 		film.set(CameraPortDataComponents.FILM_CONTENTS, filmContents.toImmutable());
 		stack.set(CameraPortDataComponents.CAMERA_CONTENTS, cameraContents.toImmutable());
-		this.broadcastChangesOnContainerMenu(player);
+		broadcastChangesOnContainerMenu(player);
 	}
 
 	// TODO: Sounds
@@ -273,7 +303,7 @@ public class CameraItem extends SpawnEggItem {
 		entity.playSound(SoundEvents.BUNDLE_INSERT_FAIL, 1F, 1F);
 	}
 
-	private void broadcastChangesOnContainerMenu(Player player) {
+	private static void broadcastChangesOnContainerMenu(Player player) {
 		final AbstractContainerMenu containerMenu = player.containerMenu;
 		if (containerMenu != null) containerMenu.slotsChanged(player.getInventory());
 	}

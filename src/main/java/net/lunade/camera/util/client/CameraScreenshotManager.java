@@ -46,8 +46,8 @@ import net.minecraft.sounds.SoundSource;
 import net.minecraft.util.StringUtil;
 import net.minecraft.util.Util;
 import net.minecraft.world.entity.Entity;
-import org.jetbrains.annotations.Nullable;
 import net.minecraft.ChatFormatting;
+import org.jetbrains.annotations.Nullable;
 
 @Environment(EnvType.CLIENT)
 public class CameraScreenshotManager {
@@ -71,9 +71,12 @@ public class CameraScreenshotManager {
 		return isPossessingCamera() && isCameraHandheld;
 	}
 
-	public static void executeScreenshot(@Nullable Entity entity, boolean handheld, @Nullable String fileName) {
+	public static void executeScreenshot(@Nullable Entity entity, boolean handheldCapture, @Nullable String fileName, float zoom) {
 		final Minecraft minecraft = Minecraft.getInstance();
-		isCameraHandheld = handheld;
+		isCameraHandheld = handheldCapture;
+		if (handheldCapture) {
+			CameraZoomManager.pushForcedZoom(zoom);
+		}
 		previousCameraEntity = minecraft.getCameraEntity();
 		if (entity != null) minecraft.setCameraEntity(entity);
 
@@ -81,7 +84,7 @@ public class CameraScreenshotManager {
 		minecraft.options.hideGui = true;
 		possessingCamera = true;
 
-		grabCameraScreenshot(minecraft.gameDirectory, 256, 256, fileName);
+		grabCameraScreenshot(minecraft.gameDirectory, 256, 256, fileName, !handheldCapture);
 
 		makeSnapSoundAndSmoke: {
 			if (minecraft.level == null) break makeSnapSoundAndSmoke;
@@ -104,9 +107,10 @@ public class CameraScreenshotManager {
 		minecraft.options.hideGui = wasGuiHidden;
 		possessingCamera = false;
 		isCameraHandheld = false;
+		if (handheldCapture) CameraZoomManager.clearForcedZoom();
 	}
 
-	public static void grabCameraScreenshot(File workDir, int width, int height, @Nullable String fileName) {
+	public static void grabCameraScreenshot(File workDir, int width, int height, @Nullable String fileName, boolean usePanoramicMode) {
 		final Minecraft minecraft = Minecraft.getInstance();
 		final Window window = minecraft.getWindow();
 		final int prevWidth = window.getWidth();
@@ -117,7 +121,7 @@ public class CameraScreenshotManager {
 		gameRenderer.setRenderBlockOutline(false);
 
 		try {
-			camera.enablePanoramicMode();
+			if (usePanoramicMode) camera.enablePanoramicMode();
 			window.setWidth(width);
 			window.setHeight(height);
 			renderTarget.resize(width, height);
@@ -131,7 +135,7 @@ public class CameraScreenshotManager {
 			window.setWidth(prevWidth);
 			window.setHeight(prevHeight);
 			renderTarget.resize(prevWidth, prevHeight);
-			camera.disablePanoramicMode();
+			if (usePanoramicMode) camera.disablePanoramicMode();
 		}
 	}
 
@@ -204,8 +208,6 @@ public class CameraScreenshotManager {
 			nativeImage2.writeToFile(path);
 		} catch (IOException e) {
 			CameraPortConstants.LOGGER.warn("Couldn't save photograph as icon", e);
-		} finally {
-			image.close();
 		}
 	}
 

@@ -7,13 +7,17 @@
     "camera.AbstractContainerMenuMixin",
     "camera.ContainerComponentManipulatorsMixin",
     "camera.ItemStackMixin",
+    "camera.LivingEntityMixin",
     "film.AbstractContainerMenuMixin"
   ],
   "client": [
+    "client.camera.AbstractClientPlayerMixin",
     "client.camera.AbstractContainerScreenMixin",
     "client.camera.CameraMixin",
     "client.camera.GuiMixin",
+    "client.camera.InventoryMixin",
     "client.camera.LevelRendererMixin",
+    "client.camera.MinecraftMixin",
     "client.camera.ScreenEffectRendererMixin",
     "client.film.AbstractContainerScreenMixin",
     "client.film.RangeSelectItemModelPropertiesMixin",

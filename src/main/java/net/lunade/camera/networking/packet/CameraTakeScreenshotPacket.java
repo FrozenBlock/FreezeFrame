@@ -27,25 +27,25 @@ import net.minecraft.network.protocol.common.custom.CustomPacketPayload;
 import net.minecraft.server.level.ServerPlayer;
 import java.util.OptionalInt;
 
-public record CameraTakeScreenshotPacket(OptionalInt entityId, boolean isHandheld, String fileName) implements CustomPacketPayload {
+public record CameraTakeScreenshotPacket(OptionalInt entityId, boolean handheldCapture, float zoom, String fileName) implements CustomPacketPayload {
 	public static final Type<CameraTakeScreenshotPacket> PACKET_TYPE = CustomPacketPayload.createType(CameraPortConstants.safeString("camera_take_screenshot"));
 	public static final StreamCodec<FriendlyByteBuf, CameraTakeScreenshotPacket> CODEC = StreamCodec.ofMember(CameraTakeScreenshotPacket::write, CameraTakeScreenshotPacket::new);
 
 	public CameraTakeScreenshotPacket(FriendlyByteBuf buf) {
-		this(ByteBufCodecs.OPTIONAL_VAR_INT.decode(buf), buf.readBoolean(), buf.readUtf());
+		this(ByteBufCodecs.OPTIONAL_VAR_INT.decode(buf), buf.readBoolean(), buf.readFloat(), buf.readUtf());
 	}
 
 	public static void sendToAsCamera(ServerPlayer player, int entityId, String fileName) {
 		ServerPlayNetworking.send(
 			player,
-			new CameraTakeScreenshotPacket(OptionalInt.of(entityId), false, fileName)
+			new CameraTakeScreenshotPacket(OptionalInt.of(entityId), false, 0.04F, fileName)
 		);
 	}
 
-	public static void sendToAsHandheld(ServerPlayer player, String fileName) {
+	public static void sendToAsHandheld(ServerPlayer player, String fileName, float zoom) {
 		ServerPlayNetworking.send(
 			player,
-			new CameraTakeScreenshotPacket(OptionalInt.empty(), true, fileName)
+			new CameraTakeScreenshotPacket(OptionalInt.empty(), true, zoom, fileName)
 		);
 	}
 
@@ -55,7 +55,8 @@ public record CameraTakeScreenshotPacket(OptionalInt entityId, boolean isHandhel
 
 	public void write(FriendlyByteBuf buf) {
 		ByteBufCodecs.OPTIONAL_VAR_INT.encode(buf, this.entityId);
-		buf.writeBoolean(this.isHandheld);
+		buf.writeBoolean(this.handheldCapture);
+		buf.writeFloat(this.zoom);
 		buf.writeUtf(this.fileName);
 	}
 
