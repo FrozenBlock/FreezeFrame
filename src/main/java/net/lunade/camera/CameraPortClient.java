@@ -20,12 +20,19 @@ package net.lunade.camera;
 import net.fabricmc.api.ClientModInitializer;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
+import net.fabricmc.fabric.api.client.rendering.v1.ClientTooltipComponentCallback;
 import net.fabricmc.fabric.api.client.rendering.v1.ModelLayerRegistry;
 import net.lunade.camera.client.CameraUseController;
 import net.lunade.camera.client.model.object.camera.CameraModel;
 import net.lunade.camera.client.model.object.camera.DiscCameraModel;
 import net.lunade.camera.client.renderer.entity.TripodCameraRenderer;
 import net.lunade.camera.client.renderer.entity.DiscCameraRenderer;
+import net.lunade.camera.component.tooltip.CameraTooltip;
+import net.lunade.camera.component.tooltip.FilmTooltip;
+import net.lunade.camera.component.tooltip.PhotographTooltip;
+import net.lunade.camera.component.tooltip.client.ClientCameraTooltip;
+import net.lunade.camera.component.tooltip.client.ClientFilmTooltip;
+import net.lunade.camera.component.tooltip.client.ClientPhotographTooltip;
 import net.lunade.camera.networking.CameraPortClientNetworking;
 import net.lunade.camera.registry.CameraPortEntityTypes;
 import net.lunade.camera.registry.CameraPortScreens;
@@ -48,5 +55,12 @@ public class CameraPortClient implements ClientModInitializer {
 		CameraUseController.init();
 
 		CameraPortClientNetworking.init();
+
+		ClientTooltipComponentCallback.EVENT.register(component -> {
+			if (component instanceof PhotographTooltip tooltip) return new ClientPhotographTooltip(tooltip);
+			if (component instanceof FilmTooltip tooltip) return new ClientFilmTooltip(tooltip.contents());
+			if (component instanceof CameraTooltip tooltip) return new ClientCameraTooltip(tooltip.contents());
+			return null;
+		});
 	}
 }

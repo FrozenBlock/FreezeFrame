@@ -21,7 +21,6 @@
     "client.camera.ScreenEffectRendererMixin",
     "client.film.AbstractContainerScreenMixin",
     "client.film.RangeSelectItemModelPropertiesMixin",
-    "client.photograph.ClientTooltipComponentMixin",
     "client.photograph.ItemFrameRendererMixin",
     "client.photograph.ItemInHandRendererMixin"
   ],
