@@ -251,7 +251,7 @@ public class PrinterScreen extends AbstractContainerScreen<PrinterMenu> {
 		}
 
 		// Middle photograph clicked
-		if (this.rightPhotograph != null && this.isHovering(FILM_MIDDLE_PHOTOGRAPH_X, FILM_PHOTOGRAPH_Y, FILM_PHOTOGRAPH_SIZE, FILM_PHOTOGRAPH_SIZE, mouseX, mouseY)) {
+		if (this.isHovering(FILM_MIDDLE_PHOTOGRAPH_X, FILM_PHOTOGRAPH_Y, FILM_PHOTOGRAPH_SIZE, FILM_PHOTOGRAPH_SIZE, mouseX, mouseY)) {
 			this.incrementPhotographIndex(0);
 			return true;
 		}
@@ -294,7 +294,7 @@ public class PrinterScreen extends AbstractContainerScreen<PrinterMenu> {
 	private void incrementPhotographIndex(int amount) {
 		if (this.filmContents == null || this.filmContents.isEmpty()) return;
 
-		final int updatedIndex = Math.max(0, Math.min(this.photographIndex + amount, this.getMaxPhotographIndex()));
+		final int updatedIndex = amount == 0 ? this.photographIndex : Math.max(0, Math.min(this.photographIndex + amount, this.getMaxPhotographIndex()));
 		if (updatedIndex != this.photographIndex) this.setupDataAndResultSlot(updatedIndex);
 		this.photographIndex = updatedIndex;
 		Minecraft.getInstance().getSoundManager().play(SimpleSoundInstance.forUI(SoundEvents.UI_BUTTON_CLICK, 1F));
@@ -369,7 +369,7 @@ public class PrinterScreen extends AbstractContainerScreen<PrinterMenu> {
 		}
 
 		final float progress = this.photographIndex / (float) this.getMaxPhotographIndex();
-		this.scrollerX = SCROLLER_TRACK_X + Math.round(progress * travel);;
+		this.scrollerX = SCROLLER_TRACK_X + Math.round(progress * travel);
 	}
 
 	private void containerChanged() {
