@@ -35,14 +35,14 @@ public class MinecraftMixin {
 	@Inject(method = "startAttack", at = @At("HEAD"), cancellable = true)
 	private void cameraPort$cancelAttackWhileUsingCamera(CallbackInfoReturnable<Boolean> info) {
 		final LocalPlayer player = Minecraft.class.cast(this).player;
-		if (player == null || !ScopeItemHelper.isPlayerHoldingCamera(player)) return;
+		if (player == null || !ScopeItemHelper.isPlayerHoldingPhotoTakingCamera(player)) return;
 		info.setReturnValue(false);
 	}
 
 	@Inject(method = "continueAttack", at = @At("HEAD"), cancellable = true)
 	private void cameraPort$blockBreakWhileUsingCamera(boolean down, CallbackInfo info) {
 		final LocalPlayer player = Minecraft.class.cast(this).player;
-		if (player == null || !ScopeItemHelper.isPlayerHoldingCamera(player)) return;
+		if (player == null || !ScopeItemHelper.isPlayerHoldingPhotoTakingCamera(player)) return;
 		info.cancel();
 	}
 }

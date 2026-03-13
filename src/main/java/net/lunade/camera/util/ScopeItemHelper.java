@@ -17,6 +17,7 @@
 
 package net.lunade.camera.util;
 
+import net.lunade.camera.item.CameraItem;
 import net.lunade.camera.tag.CameraPortItemTags;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.ItemStack;
@@ -44,5 +45,10 @@ public final class ScopeItemHelper {
 
 	public static boolean isPlayerHoldingCamera(Player player) {
 		return isCameraItem(player.getMainHandItem());
+	}
+
+	public static boolean isPlayerHoldingPhotoTakingCamera(Player player) {
+		final ItemStack stack = player.getMainHandItem();
+		return isCameraItem(stack) && !player.getCooldowns().isOnCooldown(stack) && CameraItem.isCapableOfTakingPhotos(stack);
 	}
 }
