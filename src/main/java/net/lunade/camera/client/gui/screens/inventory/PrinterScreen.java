@@ -18,6 +18,7 @@
 package net.lunade.camera.client.gui.screens.inventory;
 
 import java.util.List;
+import com.mojang.blaze3d.platform.cursor.CursorTypes;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 import net.fabricmc.fabric.api.client.networking.v1.ClientPlayNetworking;
@@ -44,6 +45,7 @@ import net.minecraft.world.entity.player.Inventory;
 import net.minecraft.world.item.ItemStack;
 import org.jetbrains.annotations.Nullable;
 import org.joml.Vector2i;
+import org.lwjgl.glfw.GLFW;
 
 @Environment(EnvType.CLIENT)
 public class PrinterScreen extends AbstractContainerScreen<PrinterMenu> {
@@ -120,6 +122,10 @@ public class PrinterScreen extends AbstractContainerScreen<PrinterMenu> {
 		graphics.blit(RenderPipelines.GUI_TEXTURED, bgTexture, this.leftPos, this.topPos, 0F, 0F, this.imageWidth, this.imageHeight, BACKGROUND_TEXTURE_WIDTH, BACKGROUND_TEXTURE_HEIGHT);
 		this.sourceSlotBackground.render(this.menu, graphics, delta, this.leftPos, this.topPos);
 		this.paperSlotBackground.render(this.menu, graphics, delta, this.leftPos, this.topPos);
+
+		if (this.isHovering(SCROLLER_TRACK_X, SCROLLER_TRACK_Y, SCROLLER_TRACK_WIDTH, SCROLLER_HEIGHT, mouseX, mouseY) && this.hasMultipleFilmPhotographs()) {
+			graphics.requestCursor(this.draggingScroller ? CursorTypes.RESIZE_EW : CursorTypes.POINTING_HAND);
+		}
 	}
 
 	@Override
@@ -244,7 +250,7 @@ public class PrinterScreen extends AbstractContainerScreen<PrinterMenu> {
 
 	@Override
 	public boolean mouseReleased(MouseButtonEvent event) {
-		if (this.draggingScroller && event.button() == 0) {
+		if (this.draggingScroller && event.button() == GLFW.GLFW_RELEASE) {
 			this.draggingScroller = false;
 			return true;
 		}
