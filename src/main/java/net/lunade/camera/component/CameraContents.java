@@ -46,7 +46,7 @@ public final class CameraContents {
 	public static final StreamCodec<RegistryFriendlyByteBuf, CameraContents> STREAM_CODEC = ItemStackTemplate.STREAM_CODEC
 		.apply(ByteBufCodecs.list())
 		.map(CameraContents::new, contents -> contents.items);
-	private static final Fraction FILM_WEIGHT = Fraction.getFraction(1, 4);
+	private static final Fraction FILM_WEIGHT = Fraction.ONE;
 	private static final int NO_STACK_INDEX = -1;
 	public static final int NO_SELECTED_ITEM_INDEX = -1;
 	private final List<ItemStackTemplate> items;

@@ -47,8 +47,8 @@ public class ClientFilmTooltip implements ClientTooltipComponent {
 	private static final int TOOLTIP_HEIGHT = PHOTOGRAPH_RENDER_SIZE + BELOW_PHOTOGRAPH_SPACING;
 	private static final int GRID_WIDTH = 96;
 	private static final Identifier PROGRESSBAR_BORDER_SPRITE = CameraPortConstants.id("container/film/film_progressbar_border");
-	private static final Identifier PROGRESSBAR_FILL_SPRITE = CameraPortConstants.id("container/film/film_progressbar_fill");
 	private static final Identifier PROGRESSBAR_FULL_SPRITE = CameraPortConstants.id("container/film/film_progressbar_full");
+	private static final int PROGRESSBAR_FILL_COLOR = 0xFFB8895F;
 	private static final Component FILM_FULL_TEXT = Component.translatable("item." + CameraPortConstants.MOD_ID + ".film.full");
 	private static final Component FILM_EMPTY_TEXT = Component.translatable("item." + CameraPortConstants.MOD_ID + ".film.empty");
 	private static final Component FILM_EMPTY_DESCRIPTION = Component.translatable("item." + CameraPortConstants.MOD_ID + ".film.empty.description");
@@ -170,7 +170,12 @@ public class ClientFilmTooltip implements ClientTooltipComponent {
 	}
 
 	private static void drawProgressbar(int x, int y, Font font, GuiGraphics graphics, Fraction weight) {
-		graphics.blitSprite(RenderPipelines.GUI_TEXTURED, getProgressBarTexture(weight), x + 1, y, getProgressBarFill(weight), 13);
+		final int progressBarFill = getProgressBarFill(weight);
+		if (weight.compareTo(Fraction.ONE) >= 0) {
+			graphics.blitSprite(RenderPipelines.GUI_TEXTURED, PROGRESSBAR_FULL_SPRITE, x + 1, y, progressBarFill, 13);
+		} else if (progressBarFill > 0) {
+			graphics.fill(x + 1, y, x + 1 + progressBarFill, y + 13, PROGRESSBAR_FILL_COLOR);
+		}
 		graphics.blitSprite(RenderPipelines.GUI_TEXTURED, PROGRESSBAR_BORDER_SPRITE, x, y, 96, 13);
 
 		final Component progressBarFillText = getProgressBarFillText(weight);
@@ -208,10 +213,6 @@ public class ClientFilmTooltip implements ClientTooltipComponent {
 
 	private static int getProgressBarFill(Fraction weight) {
 		return Mth.clamp(Mth.mulAndTruncate(weight, 94), 0, 94);
-	}
-
-	private static Identifier getProgressBarTexture(Fraction weight) {
-		return weight.compareTo(Fraction.ONE) >= 0 ? PROGRESSBAR_FULL_SPRITE : PROGRESSBAR_FILL_SPRITE;
 	}
 
 	@Nullable

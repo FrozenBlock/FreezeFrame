@@ -17,8 +17,8 @@
 
 package net.lunade.camera.item;
 
-import com.mojang.serialization.DataResult;
 import java.util.Optional;
+import java.util.Objects;
 import net.lunade.camera.CameraPortConstants;
 import net.lunade.camera.component.CameraContents;
 import net.lunade.camera.component.FilmContents;
@@ -60,7 +60,7 @@ import org.jspecify.annotations.Nullable;
 
 public class CameraItem extends SpawnEggItem {
 	private static final int FULL_BAR_COLOR = ARGB.colorFromFloat(1F, 1F, 0.33F, 0.33F);
-	private static final int BAR_COLOR = ARGB.colorFromFloat(1F, 0.44F, 0.53F, 1F);
+	private static final int BAR_COLOR = 0xFFB8895F;
 
 	public CameraItem(Properties properties) {
 		super(properties);
@@ -131,16 +131,17 @@ public class CameraItem extends SpawnEggItem {
 		return InteractionResult.SUCCESS;
 	}
 
-	private static Fraction getWeightSafe(CameraContents contents) {
-		return switch (contents.weight()) {
-			case DataResult.Success<Fraction> success -> success.value();
-			case DataResult.Error<?> error -> Fraction.ONE;
-		};
+	private static Fraction getInsertedFilmWeightSafe(CameraContents contents) {
+		if (contents.isEmpty()) return Fraction.ZERO;
+
+		final ItemStackTemplate filmStack = contents.items().get(0);
+		final FilmContents filmContents = Objects.requireNonNullElse(filmStack.get(CameraPortDataComponents.FILM_CONTENTS), FilmContents.EMPTY);
+		return FilmItem.getWeightSafe(filmContents);
 	}
 
 	public static float getFullnessDisplay(ItemStack stack) {
 		final CameraContents contents = stack.getOrDefault(CameraPortDataComponents.CAMERA_CONTENTS, CameraContents.EMPTY);
-		return getWeightSafe(contents).floatValue();
+		return getInsertedFilmWeightSafe(contents).floatValue();
 	}
 
 	@Override
@@ -221,19 +222,21 @@ public class CameraItem extends SpawnEggItem {
 	@Override
 	public boolean isBarVisible(ItemStack stack) {
 		final CameraContents contents = stack.getOrDefault(CameraPortDataComponents.CAMERA_CONTENTS, CameraContents.EMPTY);
-		return getWeightSafe(contents).compareTo(Fraction.ZERO) > 0;
+		return !contents.isEmpty();
 	}
 
 	@Override
 	public int getBarWidth(ItemStack stack) {
 		final CameraContents contents = stack.getOrDefault(CameraPortDataComponents.CAMERA_CONTENTS, CameraContents.EMPTY);
-		return Math.min(1 + Mth.mulAndTruncate(getWeightSafe(contents), 12), 12 + 1);
+		final Fraction insertedFilmWeight = getInsertedFilmWeightSafe(contents);
+		if (insertedFilmWeight.compareTo(Fraction.ZERO) <= 0) return 0;
+		return Math.min(1 + Mth.mulAndTruncate(insertedFilmWeight, 12), 13);
 	}
 
 	@Override
 	public int getBarColor(ItemStack stack) {
 		final CameraContents contents = stack.getOrDefault(CameraPortDataComponents.CAMERA_CONTENTS, CameraContents.EMPTY);
-		return getWeightSafe(contents).compareTo(Fraction.ONE) >= 0 ? FULL_BAR_COLOR : BAR_COLOR;
+		return getInsertedFilmWeightSafe(contents).compareTo(Fraction.ONE) >= 0 ? FULL_BAR_COLOR : BAR_COLOR;
 	}
 
 	public static void toggleSelectedItem(ItemStack stack, int selectedItem) {

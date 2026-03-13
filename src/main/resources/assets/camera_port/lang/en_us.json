@@ -8,8 +8,10 @@
   "entity.camera_port.small_camera": "Disc Camera",
   "item.camera_port.disc_camera": "Disc Camera",
 
-  "item.camera_port.camera.empty": "Empty",
-  "item.camera_port.camera.empty.description": "Can hold up to 4 Film Rolls",
+  "item.camera_port.camera.empty": "Insert Film",
+  "item.camera_port.camera.empty.description": "Can hold a Film Roll",
+  "item.camera_port.camera.contains.description": "Contains a Film Roll",
+  "item.camera_port.camera.film.empty": "Empty",
   "item.camera_port.camera.full": "Full",
   "item.camera_port.camera.fullness": "%s/%s",
 

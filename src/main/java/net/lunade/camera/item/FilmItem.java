@@ -35,7 +35,7 @@ import org.jspecify.annotations.Nullable;
 
 public class FilmItem extends Item {
 	private static final int FULL_BAR_COLOR = ARGB.colorFromFloat(1F, 1F, 0.33F, 0.33F);
-	private static final int BAR_COLOR = ARGB.colorFromFloat(1F, 0.44F, 0.53F, 1F);
+	private static final int BAR_COLOR = 0xFFB8895F;
 
 	public FilmItem(Properties properties) {
 		super(properties);
