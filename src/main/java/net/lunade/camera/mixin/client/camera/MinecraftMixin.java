@@ -70,6 +70,6 @@ public class MinecraftMixin {
 		@Local(name = "hand") InteractionHand hand
 	) {
 		if (!original.call(instance, enabledFeatures)) return false;
-		return this.player == null || hand != InteractionHand.OFF_HAND || !ScopeItemHelper.isPlayerHoldingPhotoTakingCamera(this.player, false);
+		return this.player == null || hand != InteractionHand.OFF_HAND || !ScopeItemHelper.isPlayerHoldingPhotoTakingCamera(this.player, true);
 	}
 }

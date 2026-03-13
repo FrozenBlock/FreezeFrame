@@ -17,25 +17,41 @@
 
 package net.lunade.camera.mixin.camera;
 
-import com.llamalad7.mixinextras.injector.wrapoperation.Operation;
-import com.llamalad7.mixinextras.injector.wrapoperation.WrapOperation;
 import net.lunade.camera.util.ScopeItemHelper;
+import net.minecraft.world.InteractionHand;
+import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.player.Player;
-import net.minecraft.world.item.ItemStack;
 import org.spongepowered.asm.mixin.Mixin;
+import org.spongepowered.asm.mixin.Shadow;
 import org.spongepowered.asm.mixin.injection.At;
+import org.spongepowered.asm.mixin.injection.Inject;
+import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 
-@Mixin(Player.class)
-public class LivingEntityMixin {
+@Mixin(LivingEntity.class)
+public abstract class LivingEntityMixin {
 
-	@WrapOperation(
-		method = "isScoping",
+	@Shadow
+	public abstract InteractionHand getUsedItemHand();
+
+	@Shadow
+	public abstract void stopUsingItem();
+
+	@Inject(
+		method = "updatingUsingItem",
 		at = @At(
 			value = "INVOKE",
-			target = "Lnet/minecraft/world/item/ItemStack;is(Ljava/lang/Object;)Z"
-		)
+			target = "Lnet/minecraft/world/item/ItemStack;isSameItem(Lnet/minecraft/world/item/ItemStack;Lnet/minecraft/world/item/ItemStack;)Z"
+		),
+		cancellable = true
 	)
-	private boolean cameraPort$enableScopingForCamera(ItemStack instance, Object o, Operation<Boolean> original) {
-		return original.call(instance, o) || ScopeItemHelper.isScopeItem(instance);
+	private void cameraPort$stopUsingItemWhenHoldingCamera(CallbackInfo info) {
+		if (!(LivingEntity.class.cast(this) instanceof Player player)) return;
+		final InteractionHand usedItemHand = this.getUsedItemHand();
+		if (usedItemHand == InteractionHand.MAIN_HAND) return;
+		if (ScopeItemHelper.isPlayerHoldingPhotoTakingCamera(player, true)) {
+			this.stopUsingItem();
+			info.cancel();
+		}
 	}
+
 }
