@@ -47,8 +47,8 @@ public final class ScopeItemHelper {
 		return isCameraItem(player.getMainHandItem());
 	}
 
-	public static boolean isPlayerHoldingPhotoTakingCamera(Player player) {
+	public static boolean isPlayerHoldingPhotoTakingCamera(Player player, boolean checkCooldown) {
 		final ItemStack stack = player.getMainHandItem();
-		return isCameraItem(stack) && !player.getCooldowns().isOnCooldown(stack) && CameraItem.isCapableOfTakingPhotos(stack);
+		return isCameraItem(stack) && (!checkCooldown || !player.getCooldowns().isOnCooldown(stack)) && CameraItem.isCapableOfTakingPhotos(stack);
 	}
 }
