@@ -23,12 +23,13 @@ import net.minecraft.network.RegistryFriendlyByteBuf;
 import net.minecraft.network.codec.ByteBufCodecs;
 import net.minecraft.network.codec.StreamCodec;
 
-public record ScopeZoomConfig(float minZoom, float maxZoom, float zoomIncrement, float defaultZoom) {
+public record ScopeZoomConfig(float minZoom, float maxZoom, float zoomIncrement, float defaultZoom, boolean offhandEnabled) {
 	public static final Codec<ScopeZoomConfig> CODEC = RecordCodecBuilder.create(instance -> instance.group(
 		Codec.FLOAT.fieldOf("min_zoom").forGetter(ScopeZoomConfig::minZoom),
 		Codec.FLOAT.fieldOf("max_zoom").forGetter(ScopeZoomConfig::maxZoom),
 		Codec.FLOAT.fieldOf("zoom_increment").forGetter(ScopeZoomConfig::zoomIncrement),
-		Codec.FLOAT.fieldOf("default_zoom").forGetter(ScopeZoomConfig::defaultZoom)
+		Codec.FLOAT.fieldOf("default_zoom").forGetter(ScopeZoomConfig::defaultZoom),
+		Codec.BOOL.fieldOf("offhand_enabled").forGetter(ScopeZoomConfig::offhandEnabled)
 	).apply(instance, ScopeZoomConfig::new));
 
 	public static final StreamCodec<RegistryFriendlyByteBuf, ScopeZoomConfig> STREAM_CODEC = StreamCodec.composite(
@@ -36,6 +37,7 @@ public record ScopeZoomConfig(float minZoom, float maxZoom, float zoomIncrement,
 		ByteBufCodecs.FLOAT, ScopeZoomConfig::maxZoom,
 		ByteBufCodecs.FLOAT, ScopeZoomConfig::zoomIncrement,
 		ByteBufCodecs.FLOAT, ScopeZoomConfig::defaultZoom,
+		ByteBufCodecs.BOOL, ScopeZoomConfig::offhandEnabled,
 		ScopeZoomConfig::new
 	);
 }

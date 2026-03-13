@@ -17,19 +17,25 @@
 
 package net.lunade.camera.mixin.camera;
 
-import com.llamalad7.mixinextras.injector.ModifyReturnValue;
+import com.llamalad7.mixinextras.injector.wrapoperation.Operation;
+import com.llamalad7.mixinextras.injector.wrapoperation.WrapOperation;
 import net.lunade.camera.util.ScopeItemHelper;
 import net.minecraft.world.entity.player.Player;
+import net.minecraft.world.item.ItemStack;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.injection.At;
 
 @Mixin(Player.class)
 public class LivingEntityMixin {
 
-	@ModifyReturnValue(method = "isScoping", at = @At("RETURN"))
-	private boolean cameraPort$enableScopingForCamera(boolean original) {
-		if (original) return true;
-
-		return ScopeItemHelper.isPlayerUsingCamera((Player) (Object) this);
+	@WrapOperation(
+		method = "isScoping",
+		at = @At(
+			value = "INVOKE",
+			target = "Lnet/minecraft/world/item/ItemStack;is(Ljava/lang/Object;)Z"
+		)
+	)
+	private boolean cameraPort$enableScopingForCamera(ItemStack instance, Object o, Operation<Boolean> original) {
+		return original.call(instance, o) || ScopeItemHelper.isScopeItem(instance);
 	}
 }

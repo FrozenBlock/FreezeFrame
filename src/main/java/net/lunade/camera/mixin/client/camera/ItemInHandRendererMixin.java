@@ -17,32 +17,37 @@
 
 package net.lunade.camera.mixin.client.camera;
 
+import com.llamalad7.mixinextras.sugar.Local;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
+import net.lunade.camera.item.CameraItem;
 import net.lunade.camera.util.ScopeItemHelper;
-import net.minecraft.client.Minecraft;
 import net.minecraft.client.player.LocalPlayer;
+import net.minecraft.client.renderer.ItemInHandRenderer;
+import net.minecraft.world.item.ItemStack;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
-import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
 
 @Environment(EnvType.CLIENT)
-@Mixin(Minecraft.class)
-public class MinecraftMixin {
+@Mixin(ItemInHandRenderer.class)
+public class ItemInHandRendererMixin {
 
-	@Inject(method = "startAttack", at = @At("HEAD"), cancellable = true)
-	private void cameraPort$cancelAttackWhileUsingCamera(CallbackInfoReturnable<Boolean> info) {
-		final LocalPlayer player = Minecraft.class.cast(this).player;
-		if (player == null || !ScopeItemHelper.isPlayerHoldingCamera(player)) return;
-		info.setReturnValue(false);
+	@Inject(
+		method = "evaluateWhichHandsToRender",
+		at = @At(
+			value = "INVOKE",
+			target = "Lnet/minecraft/world/item/ItemStack;is(Ljava/lang/Object;)Z",
+			ordinal = 0
+		),
+		cancellable = true
+	)
+	private static void cameraPort$renderOnlyMainHandWhenUsingCamera(
+		LocalPlayer player, CallbackInfoReturnable<ItemInHandRenderer.HandRenderSelection> info,
+		@Local(name = "mainHandItem") ItemStack mainHandItem
+	) {
+		if (CameraItem.isCapableOfTakingPhotos(mainHandItem)) info.setReturnValue(ItemInHandRenderer.HandRenderSelection.RENDER_MAIN_HAND_ONLY);
 	}
 
-	@Inject(method = "continueAttack", at = @At("HEAD"), cancellable = true)
-	private void cameraPort$blockBreakWhileUsingCamera(boolean down, CallbackInfo info) {
-		final LocalPlayer player = Minecraft.class.cast(this).player;
-		if (player == null || !ScopeItemHelper.isPlayerHoldingCamera(player)) return;
-		info.cancel();
-	}
 }

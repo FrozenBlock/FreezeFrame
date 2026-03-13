@@ -74,9 +74,12 @@ public class CameraItem extends SpawnEggItem {
 		}
 
 		if (player.isShiftKeyDown()) return super.use(level, player, hand);
+		if (hand != InteractionHand.OFF_HAND) {
+			player.startUsingItem(hand);
+			return InteractionResult.CONSUME;
+		}
 
-		player.startUsingItem(hand);
-		return InteractionResult.CONSUME;
+		return InteractionResult.PASS;
 	}
 
 	@Override
@@ -88,7 +91,7 @@ public class CameraItem extends SpawnEggItem {
 
 	@Override
 	public int getUseDuration(ItemStack stack, LivingEntity entity) {
-		return 72000;
+		return APPROXIMATELY_INFINITE_USE_DURATION;
 	}
 
 	@Override
@@ -242,18 +245,22 @@ public class CameraItem extends SpawnEggItem {
 		stack.set(CameraPortDataComponents.CAMERA_CONTENTS, contents.toImmutable());
 	}
 
-	public static int getSelectedItemIndex(final ItemStack stack) {
+	public static int getSelectedItemIndex(ItemStack stack) {
 		return stack.getOrDefault(CameraPortDataComponents.CAMERA_CONTENTS, CameraContents.EMPTY).getSelectedItemIndex();
 	}
 
 	@Nullable
-	public static ItemStackTemplate getSelectedItem(final ItemStack stack) {
+	public static ItemStackTemplate getSelectedItem(ItemStack stack) {
 		return stack.getOrDefault(CameraPortDataComponents.CAMERA_CONTENTS, CameraContents.EMPTY).getSelectedItem();
 	}
 
-	public static int getNumberOfItemsToShow(final ItemStack stack) {
+	public static int getNumberOfItemsToShow(ItemStack stack) {
 		final CameraContents contents = stack.getOrDefault(CameraPortDataComponents.CAMERA_CONTENTS, CameraContents.EMPTY);
 		return contents.getNumberOfItemsToShow();
+	}
+
+	public static boolean isCapableOfTakingPhotos(ItemStack stack) {
+		return stack.getOrDefault(CameraPortDataComponents.CAMERA_CONTENTS, CameraContents.EMPTY).hasSpaceForPhotograph();
 	}
 
 	@Override

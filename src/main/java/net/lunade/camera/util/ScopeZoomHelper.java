@@ -21,14 +21,13 @@ import net.lunade.camera.component.ScopeZoomConfig;
 import net.lunade.camera.registry.CameraPortDataComponents;
 import net.minecraft.util.Mth;
 import net.minecraft.world.item.ItemStack;
-import net.minecraft.world.item.ItemUseAnimation;
 import org.jspecify.annotations.Nullable;
 
 public final class ScopeZoomHelper {
-	public static final ScopeZoomConfig CAMERA_DEFAULTS = new ScopeZoomConfig(1.0F, 4.0F, 0.25F, 1.0F);
-	public static final ScopeZoomConfig SPYGLASS_DEFAULTS = new ScopeZoomConfig(1.0F, 10.0F, 0.5F, 1.0F);
-	public static final float MIN_SUPPORTED_ZOOM = 1.0F;
-	public static final float MAX_SUPPORTED_ZOOM = 64.0F;
+	public static final ScopeZoomConfig CAMERA_DEFAULTS = new ScopeZoomConfig(1F, 4F, 0.25F, 1F, false);
+	public static final ScopeZoomConfig SPYGLASS_DEFAULTS = new ScopeZoomConfig(1F, 10F, 0.5F, 1F, true);
+	public static final float MIN_SUPPORTED_ZOOM = 1F;
+	public static final float MAX_SUPPORTED_ZOOM = 64F;
 
 	private ScopeZoomHelper() {
 	}
@@ -55,11 +54,11 @@ public final class ScopeZoomHelper {
 
 	public static float getStoredZoom(ItemStack stack) {
 		final ScopeZoomConfig config = resolveZoomConfig(stack);
-		final float stored = stack.getOrDefault(CameraPortDataComponents.CAMERA_ZOOM, config.defaultZoom());
+		final float stored = stack.getOrDefault(CameraPortDataComponents.SCOPE_ZOOM, config.defaultZoom());
 		if (stored <= 0F) return config.defaultZoom();
 
-		if (stored < config.minZoom() && config.minZoom() >= 1.0F) {
-			return Mth.clamp(1.0F / stored, config.minZoom(), config.maxZoom());
+		if (stored < config.minZoom() && config.minZoom() >= 1F) {
+			return Mth.clamp(1F / stored, config.minZoom(), config.maxZoom());
 		}
 
 		return Mth.clamp(stored, config.minZoom(), config.maxZoom());
@@ -67,11 +66,11 @@ public final class ScopeZoomHelper {
 
 	public static void setStoredZoom(ItemStack stack, float zoom) {
 		final ScopeZoomConfig config = resolveZoomConfig(stack);
-		stack.set(CameraPortDataComponents.CAMERA_ZOOM, Mth.clamp(zoom, config.minZoom(), config.maxZoom()));
+		stack.set(CameraPortDataComponents.SCOPE_ZOOM, Mth.clamp(zoom, config.minZoom(), config.maxZoom()));
 	}
 
 	public static float toFovModifier(float zoomFactor) {
-		return 1.0F / Mth.clamp(zoomFactor, MIN_SUPPORTED_ZOOM, MAX_SUPPORTED_ZOOM);
+		return 1F / Mth.clamp(zoomFactor, MIN_SUPPORTED_ZOOM, MAX_SUPPORTED_ZOOM);
 	}
 
 	private static ScopeZoomConfig resolveZoomConfig(ItemStack stack) {
@@ -79,38 +78,36 @@ public final class ScopeZoomHelper {
 		return config != null ? config : SPYGLASS_DEFAULTS;
 	}
 
-	private static @Nullable ScopeZoomConfig getZoomConfig(ItemStack stack) {
+	@Nullable
+	private static ScopeZoomConfig getZoomConfig(ItemStack stack) {
 		final ScopeZoomConfig explicitConfig = stack.get(CameraPortDataComponents.SCOPE_ZOOM_CONFIG);
 		if (explicitConfig != null) return sanitize(explicitConfig);
-		if (stack.getUseAnimation() == ItemUseAnimation.SPYGLASS) return SPYGLASS_DEFAULTS;
 		return null;
 	}
 
 	private static ScopeZoomConfig sanitize(ScopeZoomConfig config) {
-		if (config.maxZoom() <= 1.0F && config.minZoom() > 0F) {
-			return sanitizeLegacyMultiplierConfig(config);
-		}
+		if (config.maxZoom() <= 1F && config.minZoom() > 0F) return sanitizeLegacyMultiplierConfig(config);
 
 		final float min = Mth.clamp(config.minZoom(), MIN_SUPPORTED_ZOOM, MAX_SUPPORTED_ZOOM);
 		final float max = Mth.clamp(config.maxZoom(), min, MAX_SUPPORTED_ZOOM);
 		final float span = Math.max(max - min, 0.001F);
 		final float increment = Mth.clamp(config.zoomIncrement(), 0.001F, span);
 		final float def = Mth.clamp(config.defaultZoom(), min, max);
-		return new ScopeZoomConfig(min, max, increment, def);
+		return new ScopeZoomConfig(min, max, increment, def, config.offhandEnabled());
 	}
 
 	private static ScopeZoomConfig sanitizeLegacyMultiplierConfig(ScopeZoomConfig config) {
-		final float legacyMinMultiplier = Mth.clamp(Math.min(config.minZoom(), config.maxZoom()), 0.01F, 1.0F);
-		final float legacyMaxMultiplier = Mth.clamp(Math.max(config.minZoom(), config.maxZoom()), legacyMinMultiplier, 1.0F);
+		final float legacyMinMultiplier = Mth.clamp(Math.min(config.minZoom(), config.maxZoom()), 0.01F, 1F);
+		final float legacyMaxMultiplier = Mth.clamp(Math.max(config.minZoom(), config.maxZoom()), legacyMinMultiplier, 1F);
 
-		final float min = Mth.clamp(1.0F / legacyMaxMultiplier, MIN_SUPPORTED_ZOOM, MAX_SUPPORTED_ZOOM);
-		final float max = Mth.clamp(1.0F / legacyMinMultiplier, min, MAX_SUPPORTED_ZOOM);
+		final float min = Mth.clamp(1F / legacyMaxMultiplier, MIN_SUPPORTED_ZOOM, MAX_SUPPORTED_ZOOM);
+		final float max = Mth.clamp(1F / legacyMinMultiplier, min, MAX_SUPPORTED_ZOOM);
 		final float span = Math.max(max - min, 0.001F);
 
 		final float defaultMultiplier = Mth.clamp(config.defaultZoom(), legacyMinMultiplier, legacyMaxMultiplier);
-		final float def = Mth.clamp(1.0F / defaultMultiplier, min, max);
-		final float increment = Mth.clamp(span / 20.0F, 0.05F, span);
+		final float def = Mth.clamp(1F / defaultMultiplier, min, max);
+		final float increment = Mth.clamp(span / 20F, 0.05F, span);
 
-		return new ScopeZoomConfig(min, max, increment, def);
+		return new ScopeZoomConfig(min, max, increment, def, config.offhandEnabled());
 	}
 }

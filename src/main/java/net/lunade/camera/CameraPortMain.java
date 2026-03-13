@@ -30,7 +30,6 @@ import net.lunade.camera.registry.CameraPortSounds;
 
 public class CameraPortMain implements ModInitializer {
 
-
 	@Override
 	public void onInitialize() {
 		CameraPortEntityTypes.init();

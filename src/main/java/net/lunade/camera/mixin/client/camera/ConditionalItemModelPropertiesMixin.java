@@ -17,32 +17,32 @@
 
 package net.lunade.camera.mixin.client.camera;
 
+import com.mojang.serialization.MapCodec;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
-import net.lunade.camera.util.ScopeItemHelper;
-import net.minecraft.client.Minecraft;
-import net.minecraft.client.player.LocalPlayer;
+import net.lunade.camera.CameraPortConstants;
+import net.lunade.camera.client.renderer.item.properties.conditional.CanTakePhoto;
+import net.minecraft.client.renderer.item.properties.conditional.ConditionalItemModelProperties;
+import net.minecraft.client.renderer.item.properties.conditional.ConditionalItemModelProperty;
+import net.minecraft.resources.Identifier;
+import net.minecraft.util.ExtraCodecs;
+import org.spongepowered.asm.mixin.Final;
 import org.spongepowered.asm.mixin.Mixin;
+import org.spongepowered.asm.mixin.Shadow;
 import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
-import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
 
 @Environment(EnvType.CLIENT)
-@Mixin(Minecraft.class)
-public class MinecraftMixin {
+@Mixin(ConditionalItemModelProperties.class)
+public class ConditionalItemModelPropertiesMixin {
 
-	@Inject(method = "startAttack", at = @At("HEAD"), cancellable = true)
-	private void cameraPort$cancelAttackWhileUsingCamera(CallbackInfoReturnable<Boolean> info) {
-		final LocalPlayer player = Minecraft.class.cast(this).player;
-		if (player == null || !ScopeItemHelper.isPlayerHoldingCamera(player)) return;
-		info.setReturnValue(false);
-	}
+	@Shadow
+	@Final
+	public static ExtraCodecs.LateBoundIdMapper<Identifier, MapCodec<? extends ConditionalItemModelProperty>> ID_MAPPER;
 
-	@Inject(method = "continueAttack", at = @At("HEAD"), cancellable = true)
-	private void cameraPort$blockBreakWhileUsingCamera(boolean down, CallbackInfo info) {
-		final LocalPlayer player = Minecraft.class.cast(this).player;
-		if (player == null || !ScopeItemHelper.isPlayerHoldingCamera(player)) return;
-		info.cancel();
+	@Inject(method = "bootstrap", at = @At("TAIL"))
+	private static void cameraPort$bootstrap(CallbackInfo info) {
+		ID_MAPPER.put(CameraPortConstants.id("can_take_photo"), CanTakePhoto.MAP_CODEC);
 	}
 }

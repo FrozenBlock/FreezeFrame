@@ -17,7 +17,7 @@
 
 package net.lunade.camera.util;
 
-import net.lunade.camera.registry.CameraPortDataComponents;
+import net.lunade.camera.tag.CameraPortItemTags;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.ItemStack;
 
@@ -27,7 +27,7 @@ public final class ScopeItemHelper {
 	}
 
 	public static boolean isCameraItem(ItemStack stack) {
-		return stack.getOrDefault(CameraPortDataComponents.CAMERA_CAPABLE, false);
+		return stack.is(CameraPortItemTags.CAMERAS);
 	}
 
 	public static boolean isScopeItem(ItemStack stack) {

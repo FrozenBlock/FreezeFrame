@@ -118,8 +118,6 @@ public final class CameraUseController {
 	private static void applyZoomProfile(ItemStack stack, boolean applyStoredZoom) {
 		CameraZoomManager.setActiveRange(ScopeZoomHelper.getMinZoomFor(stack), ScopeZoomHelper.getMaxZoomFor(stack));
 		CameraZoomManager.setActiveZoomStep(ScopeZoomHelper.getZoomIncrementFor(stack));
-		if (applyStoredZoom) {
-			CameraZoomManager.setZoom(ScopeZoomHelper.getStoredZoom(stack));
-		}
+		if (applyStoredZoom) CameraZoomManager.setZoom(ScopeZoomHelper.getStoredZoom(stack));
 	}
 }

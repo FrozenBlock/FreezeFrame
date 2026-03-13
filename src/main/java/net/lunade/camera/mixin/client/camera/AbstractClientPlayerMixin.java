@@ -28,23 +28,23 @@ import net.minecraft.client.Minecraft;
 import net.minecraft.client.player.AbstractClientPlayer;
 import net.minecraft.util.Mth;
 import org.spongepowered.asm.mixin.Mixin;
+import org.spongepowered.asm.mixin.Unique;
 import org.spongepowered.asm.mixin.injection.At;
 
 @Environment(EnvType.CLIENT)
 @Mixin(AbstractClientPlayer.class)
 public class AbstractClientPlayerMixin {
-	private static final float CAMERA_BASE_PLAYER_FOV = 70F;
+
+	@Unique
+	private static final float CAMERA_PORT$DEFAULT_FOV = 70F;
 
 	@ModifyReturnValue(method = "getFieldOfViewModifier", at = @At("RETURN"))
 	private float cameraPort$applyZoomWheelToScopeFov(float original, boolean firstPerson, float fovEffectScale) {
-		final AbstractClientPlayer player = (AbstractClientPlayer) (Object) this;
+		final AbstractClientPlayer player = AbstractClientPlayer.class.cast(this);
 		if (!ScopeItemHelper.isPlayerUsingScopeItem(player) && !CameraScreenshotManager.isUsingHandheldCamera()) return original;
 
-		final Minecraft minecraft = Minecraft.getInstance();
-		final float playerSettingFov = minecraft.options == null
-			? CAMERA_BASE_PLAYER_FOV
-			: Mth.clamp(minecraft.options.fov().get().floatValue(), 1F, 180F);
-		final float fovNormalization = CAMERA_BASE_PLAYER_FOV / playerSettingFov;
+		final float playerSettingFov = Mth.clamp(Minecraft.getInstance().options.fov().get().floatValue(), 1F, 180F);
+		final float fovNormalization = CAMERA_PORT$DEFAULT_FOV / playerSettingFov;
 		final float cameraFovModifier = ScopeZoomHelper.toFovModifier(CameraZoomManager.getZoom());
 		return cameraFovModifier * fovNormalization;
 	}
