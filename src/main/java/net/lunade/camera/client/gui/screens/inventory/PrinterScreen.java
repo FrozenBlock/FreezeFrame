@@ -65,6 +65,7 @@ public class PrinterScreen extends AbstractContainerScreen<PrinterMenu> {
 	private static final Identifier TEXTURE = CameraPortConstants.id("textures/gui/container/printer.png");
 	private static final Identifier TEXTURE_FILM = CameraPortConstants.id("textures/gui/container/printer_film.png");
 	private static final Identifier SCROLLER = CameraPortConstants.id("container/printer/scroller");
+	private static final Identifier FILM_PHOTOGRAPH_HIGHLIGHT = CameraPortConstants.id("container/printer/film_photograph_highlight");
 	private static final List<Identifier> SOURCE_SLOT_ICONS = List.of(
 		CameraPortConstants.id("container/slot/film"),
 		CameraPortConstants.id("container/slot/photograph")
@@ -132,6 +133,7 @@ public class PrinterScreen extends AbstractContainerScreen<PrinterMenu> {
 		super.render(graphics, mouseX, mouseY, partialTicks);
 
 		if (this.displayFilm) {
+			boolean alreadyHovering = false;
 			if (this.middlePhotograph != null) {
 				PhotographRenderer.blit(
 					this.leftPos,
@@ -143,6 +145,17 @@ public class PrinterScreen extends AbstractContainerScreen<PrinterMenu> {
 					FILM_PHOTOGRAPH_SIZE,
 					PhotographRenderer.FrameType.FILM_EMBED
 				);
+				if (this.isHovering(FILM_MIDDLE_PHOTOGRAPH_X, FILM_PHOTOGRAPH_Y, FILM_PHOTOGRAPH_SIZE, FILM_PHOTOGRAPH_SIZE, mouseX, mouseY)) {
+					alreadyHovering = true;
+					graphics.blitSprite(
+						RenderPipelines.GUI_TEXTURED,
+						FILM_PHOTOGRAPH_HIGHLIGHT,
+						this.leftPos + FILM_MIDDLE_PHOTOGRAPH_X,
+						this.topPos + FILM_PHOTOGRAPH_Y,
+						FILM_PHOTOGRAPH_SIZE,
+						FILM_PHOTOGRAPH_SIZE
+					);
+				}
 			}
 
 			if (this.hasMultipleFilmPhotographs()) {
@@ -157,7 +170,16 @@ public class PrinterScreen extends AbstractContainerScreen<PrinterMenu> {
 						FILM_PHOTOGRAPH_SIZE,
 						PhotographRenderer.FrameType.FILM_EMBED
 					);
-					if (this.isHovering(FILM_RIGHT_PHOTOGRAPH_X, FILM_PHOTOGRAPH_Y, FILM_PHOTOGRAPH_SIZE, FILM_PHOTOGRAPH_SIZE, mouseX, mouseY)) {
+					if (!alreadyHovering && this.isHovering(FILM_RIGHT_PHOTOGRAPH_X, FILM_PHOTOGRAPH_Y, FILM_PHOTOGRAPH_SIZE, FILM_PHOTOGRAPH_SIZE, mouseX, mouseY)) {
+						alreadyHovering = true;
+						graphics.blitSprite(
+							RenderPipelines.GUI_TEXTURED,
+							FILM_PHOTOGRAPH_HIGHLIGHT,
+							this.leftPos + FILM_RIGHT_PHOTOGRAPH_X,
+							this.topPos + FILM_PHOTOGRAPH_Y,
+							FILM_PHOTOGRAPH_SIZE,
+							FILM_PHOTOGRAPH_SIZE
+						);
 						graphics.requestCursor(CursorTypes.POINTING_HAND);
 					}
 				}
@@ -173,7 +195,16 @@ public class PrinterScreen extends AbstractContainerScreen<PrinterMenu> {
 						FILM_PHOTOGRAPH_SIZE,
 						PhotographRenderer.FrameType.FILM_EMBED
 					);
-					if (this.isHovering(FILM_LEFT_PHOTOGRAPH_X, FILM_PHOTOGRAPH_Y, FILM_PHOTOGRAPH_SIZE, FILM_PHOTOGRAPH_SIZE, mouseX, mouseY)) {
+					if (!alreadyHovering && this.isHovering(FILM_LEFT_PHOTOGRAPH_X, FILM_PHOTOGRAPH_Y, FILM_PHOTOGRAPH_SIZE, FILM_PHOTOGRAPH_SIZE, mouseX, mouseY)) {
+						alreadyHovering = true;
+						graphics.blitSprite(
+							RenderPipelines.GUI_TEXTURED,
+							FILM_PHOTOGRAPH_HIGHLIGHT,
+							this.leftPos + FILM_LEFT_PHOTOGRAPH_X,
+							this.topPos + FILM_PHOTOGRAPH_Y,
+							FILM_PHOTOGRAPH_SIZE,
+							FILM_PHOTOGRAPH_SIZE
+						);
 						graphics.requestCursor(CursorTypes.POINTING_HAND);
 					}
 				}
@@ -219,15 +250,21 @@ public class PrinterScreen extends AbstractContainerScreen<PrinterMenu> {
 			}
 		}
 
-		// Right arrow clicked
-		if (this.rightPhotograph != null && this.isHovering(FILM_RIGHT_PHOTOGRAPH_X, FILM_PHOTOGRAPH_Y, FILM_PHOTOGRAPH_SIZE, FILM_PHOTOGRAPH_SIZE, mouseX, mouseY)) {
-			this.incrementPhotographIndex(false);
+		// Middle photograph clicked
+		if (this.rightPhotograph != null && this.isHovering(FILM_MIDDLE_PHOTOGRAPH_X, FILM_PHOTOGRAPH_Y, FILM_PHOTOGRAPH_SIZE, FILM_PHOTOGRAPH_SIZE, mouseX, mouseY)) {
+			this.incrementPhotographIndex(0);
 			return true;
 		}
 
-		// Left arrow clicked
+		// Right photograph clicked
+		if (this.rightPhotograph != null && this.isHovering(FILM_RIGHT_PHOTOGRAPH_X, FILM_PHOTOGRAPH_Y, FILM_PHOTOGRAPH_SIZE, FILM_PHOTOGRAPH_SIZE, mouseX, mouseY)) {
+			this.incrementPhotographIndex(1);
+			return true;
+		}
+
+		// Left photograph clicked
 		if (this.leftPhotograph != null && this.isHovering(FILM_LEFT_PHOTOGRAPH_X, FILM_PHOTOGRAPH_Y, FILM_PHOTOGRAPH_SIZE, FILM_PHOTOGRAPH_SIZE, mouseX, mouseY)) {
-			this.incrementPhotographIndex(true);
+			this.incrementPhotographIndex(-1);
 			return true;
 		}
 
@@ -254,18 +291,13 @@ public class PrinterScreen extends AbstractContainerScreen<PrinterMenu> {
 		return super.mouseDragged(event, dx, dy);
 	}
 
-	private void incrementPhotographIndex(boolean left) {
+	private void incrementPhotographIndex(int amount) {
 		if (this.filmContents == null || this.filmContents.isEmpty()) return;
 
-		final int updatedIndex = Math.max(0, Math.min(this.photographIndex + (left ? -1 : 1), this.getMaxPhotographIndex()));
-		if (updatedIndex == this.photographIndex) {
-			return;
-		}
-
+		final int updatedIndex = Math.max(0, Math.min(this.photographIndex + amount, this.getMaxPhotographIndex()));
+		if (updatedIndex != this.photographIndex) this.setupDataAndResultSlot(updatedIndex);
 		this.photographIndex = updatedIndex;
-		this.setupDataAndResultSlot(this.photographIndex);
 		Minecraft.getInstance().getSoundManager().play(SimpleSoundInstance.forUI(SoundEvents.UI_BUTTON_CLICK, 1F));
-
 		this.updateScrollerXFromPhotographIndex();
 	}
 
