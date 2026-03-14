@@ -19,7 +19,11 @@ package net.lunade.camera.client.gui.screens.inventory;
 
 import com.mojang.blaze3d.platform.cursor.CursorTypes;
 import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Map;
+import java.util.Set;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 import net.fabricmc.fabric.api.client.networking.v1.ClientPlayNetworking;
@@ -57,6 +61,8 @@ public class FilmScreen extends Screen {
 	private static final Identifier SCROLLER_DISABLED = CameraPortConstants.id("container/film/scroller_disabled");
 	private static final Identifier FILM_PHOTOGRAPH_BLOCKER = CameraPortConstants.id("container/film/film_photograph_blocker");
 	private static final Identifier FILM_PHOTOGRAPH_HIGHLIGHT = CameraPortConstants.id("container/film/film_photograph_highlight");
+	private static final Identifier FILM_PHOTOGRAPH_SAVE = CameraPortConstants.id("container/film/film_photograph_save");
+	private static final Identifier FILM_PHOTOGRAPH_DELETE = CameraPortConstants.id("container/film/film_photograph_delete");
 	private static final Identifier TEXT_FIELD = CameraPortConstants.id("container/film/text_field");
 	private static final Identifier TEXT_FIELD_DISABLED = CameraPortConstants.id("container/film/text_field_disabled");
 	private static final Identifier DELETE_BUTTON = CameraPortConstants.id("container/film/delete_button");
@@ -103,6 +109,8 @@ public class FilmScreen extends Screen {
 	private final InteractionHand hand;
 	private final ScrollWheelHandler scrollWheelHandler = new ScrollWheelHandler();
 	private final List<Photograph> photographs = new ArrayList<>();
+	private final Map<Identifier, String> originalPhotographNamesById = new HashMap<>();
+	private final Set<Identifier> modifiedPhotographIds = new HashSet<>();
 	private int leftPos;
 	private int topPos;
 	private int selectedPhotographIndex;
@@ -194,7 +202,12 @@ public class FilmScreen extends Screen {
 	public void extractRenderState(GuiGraphicsExtractor graphics, int mouseX, int mouseY, float delta) {
 		this.extractTransparentBackground(graphics);
 		this.extractBackground(graphics, mouseX, mouseY, delta);
-		Photograph hoveredPhotograph = null;
+		final int hoveredOffset = this.getHoveredFilmPhotographOffset(mouseX, mouseY);
+		Photograph hoveredPhotograph = hoveredOffset == Integer.MIN_VALUE ? null : this.getFilmPhotographComponent(this.selectedPhotographIndex + hoveredOffset);
+		final boolean hasPhotographs = this.hasPhotographs();
+		final boolean hoveringSaveButton = this.isHovering(SAVE_BUTTON_X, ACTION_BUTTON_Y, ACTION_BUTTON_WIDTH, ACTION_BUTTON_HEIGHT, mouseX, mouseY);
+		final boolean hoveringDeleteButton = this.isHovering(DELETE_BUTTON_X, DELETE_BUTTON_Y, DELETE_BUTTON_WIDTH, DELETE_BUTTON_HEIGHT, mouseX, mouseY) && hasPhotographs;
+		final boolean showSaveHighlights = hoveringSaveButton && hasPhotographs;
 
 		if (this.isAtBeginning()) {
 			this.extractFilmPhotographBlocker(graphics, FILM_LEFT_PHOTOGRAPH_X);
@@ -204,7 +217,6 @@ public class FilmScreen extends Screen {
 			this.extractFilmPhotographBlocker(graphics, FILM_RIGHT_PHOTOGRAPH_X);
 		}
 
-		boolean alreadyHovering = false;
 		if (this.middlePhotograph != null) {
 			PhotographRenderer.blit(
 				this.leftPos,
@@ -216,17 +228,17 @@ public class FilmScreen extends Screen {
 				FILM_PHOTOGRAPH_SIZE,
 				PhotographRenderer.FrameType.FILM_EMBED
 			);
-			if (this.isHovering(FILM_MIDDLE_PHOTOGRAPH_X, FILM_PHOTOGRAPH_Y, FILM_PHOTOGRAPH_SIZE, FILM_PHOTOGRAPH_SIZE, mouseX, mouseY)) {
-				alreadyHovering = true;
-				hoveredPhotograph = this.getFilmPhotographComponent(this.selectedPhotographIndex);
-				graphics.blitSprite(
-					RenderPipelines.GUI_TEXTURED,
-					FILM_PHOTOGRAPH_HIGHLIGHT,
-						this.leftPos + FILM_MIDDLE_PHOTOGRAPH_X,
-						this.topPos + FILM_PHOTOGRAPH_Y,
-						FILM_PHOTOGRAPH_SIZE,
-						FILM_PHOTOGRAPH_SIZE
-				);
+
+			if (hoveringDeleteButton) {
+				this.extractFilmPhotographOverlay(graphics, FILM_MIDDLE_PHOTOGRAPH_X, FILM_PHOTOGRAPH_DELETE);
+			} else if (showSaveHighlights && this.isPhotographModified(this.selectedPhotographIndex)) {
+				this.extractFilmPhotographOverlay(graphics, FILM_MIDDLE_PHOTOGRAPH_X, FILM_PHOTOGRAPH_SAVE);
+			} else if (hoveredOffset == 0) {
+				this.extractFilmPhotographOverlay(graphics, FILM_MIDDLE_PHOTOGRAPH_X, FILM_PHOTOGRAPH_HIGHLIGHT);
+			}
+
+			if (hoveredOffset == 0) {
+				graphics.requestCursor(CursorTypes.POINTING_HAND);
 			}
 		}
 
@@ -242,18 +254,14 @@ public class FilmScreen extends Screen {
 					FILM_PHOTOGRAPH_SIZE,
 					PhotographRenderer.FrameType.FILM_EMBED
 				);
-				if (!alreadyHovering && this.isHovering(FILM_RIGHT_PHOTOGRAPH_X, FILM_PHOTOGRAPH_Y, FILM_PHOTOGRAPH_SIZE, FILM_PHOTOGRAPH_SIZE, mouseX, mouseY)) {
-					alreadyHovering = true;
-					hoveredPhotograph = this.getFilmPhotographComponent(this.selectedPhotographIndex + 1);
-					graphics.blitSprite(
-						RenderPipelines.GUI_TEXTURED,
-						FILM_PHOTOGRAPH_HIGHLIGHT,
-						this.leftPos + FILM_RIGHT_PHOTOGRAPH_X,
-						this.topPos + FILM_PHOTOGRAPH_Y,
-						FILM_PHOTOGRAPH_SIZE,
-						FILM_PHOTOGRAPH_SIZE
-					);
+				if (hoveredOffset == 1) {
 					graphics.requestCursor(CursorTypes.POINTING_HAND);
+				}
+
+				if (showSaveHighlights && this.isPhotographModified(this.selectedPhotographIndex + 1)) {
+					this.extractFilmPhotographOverlay(graphics, FILM_RIGHT_PHOTOGRAPH_X, FILM_PHOTOGRAPH_SAVE);
+				} else if (hoveredOffset == 1) {
+					this.extractFilmPhotographOverlay(graphics, FILM_RIGHT_PHOTOGRAPH_X, FILM_PHOTOGRAPH_HIGHLIGHT);
 				}
 			}
 
@@ -268,18 +276,14 @@ public class FilmScreen extends Screen {
 					FILM_PHOTOGRAPH_SIZE,
 					PhotographRenderer.FrameType.FILM_EMBED
 				);
-				if (!alreadyHovering && this.isHovering(FILM_LEFT_PHOTOGRAPH_X, FILM_PHOTOGRAPH_Y, FILM_PHOTOGRAPH_SIZE, FILM_PHOTOGRAPH_SIZE, mouseX, mouseY)) {
-					alreadyHovering = true;
-					hoveredPhotograph = this.getFilmPhotographComponent(this.selectedPhotographIndex - 1);
-					graphics.blitSprite(
-						RenderPipelines.GUI_TEXTURED,
-						FILM_PHOTOGRAPH_HIGHLIGHT,
-						this.leftPos + FILM_LEFT_PHOTOGRAPH_X,
-						this.topPos + FILM_PHOTOGRAPH_Y,
-						FILM_PHOTOGRAPH_SIZE,
-						FILM_PHOTOGRAPH_SIZE
-					);
+				if (hoveredOffset == -1) {
 					graphics.requestCursor(CursorTypes.POINTING_HAND);
+				}
+
+				if (showSaveHighlights && this.isPhotographModified(this.selectedPhotographIndex - 1)) {
+					this.extractFilmPhotographOverlay(graphics, FILM_LEFT_PHOTOGRAPH_X, FILM_PHOTOGRAPH_SAVE);
+				} else if (hoveredOffset == -1) {
+					this.extractFilmPhotographOverlay(graphics, FILM_LEFT_PHOTOGRAPH_X, FILM_PHOTOGRAPH_HIGHLIGHT);
 				}
 			}
 
@@ -302,10 +306,9 @@ public class FilmScreen extends Screen {
 			);
 		}
 
-		final boolean hoveringDeleteButton = this.isHovering(DELETE_BUTTON_X, DELETE_BUTTON_Y, DELETE_BUTTON_WIDTH, DELETE_BUTTON_HEIGHT, mouseX, mouseY) && this.hasPhotographs();
 		graphics.blitSprite(
 			RenderPipelines.GUI_TEXTURED,
-			this.hasPhotographs() ? TEXT_FIELD : TEXT_FIELD_DISABLED,
+			hasPhotographs ? TEXT_FIELD : TEXT_FIELD_DISABLED,
 			this.leftPos + NAME_BOX_X,
 			this.topPos + NAME_BOX_Y,
 			NAME_BOX_WIDTH,
@@ -424,7 +427,10 @@ public class FilmScreen extends Screen {
 	private void deleteSelectedPhotograph() {
 		if (!this.hasPhotographs()) return;
 
+		final Photograph removed = this.photographs.get(this.selectedPhotographIndex);
 		this.photographs.remove(this.selectedPhotographIndex);
+		this.modifiedPhotographIds.remove(removed.identifier());
+		this.originalPhotographNamesById.remove(removed.identifier());
 		this.filmMaxPhotographs = Math.max(this.photographs.size(), this.filmMaxPhotographs - 1);
 		if (this.photographs.isEmpty()) {
 			this.selectedPhotographIndex = 0;
@@ -444,7 +450,14 @@ public class FilmScreen extends Screen {
 			return;
 		}
 		final Photograph current = this.photographs.get(this.selectedPhotographIndex);
+		if (clampedName.equals(current.name())) return;
 		this.photographs.set(this.selectedPhotographIndex, current.withName(clampedName));
+		final String originalName = this.originalPhotographNamesById.getOrDefault(current.identifier(), "");
+		if (clampedName.equals(originalName)) {
+			this.modifiedPhotographIds.remove(current.identifier());
+		} else {
+			this.modifiedPhotographIds.add(current.identifier());
+		}
 	}
 
 	private void incrementPhotographIndex(int amount) {
@@ -491,10 +504,15 @@ public class FilmScreen extends Screen {
 
 	private void reloadFromHeldFilm() {
 		final ItemStack filmStack = this.owner.getItemInHand(this.hand);
+		this.originalPhotographNamesById.clear();
+		this.modifiedPhotographIds.clear();
 		if (!filmStack.isEmpty()) {
 			final FilmContents contents = filmStack.getOrDefault(CameraPortDataComponents.FILM_CONTENTS, FilmContents.EMPTY);
 			this.photographs.clear();
 			this.photographs.addAll(contents.photographs());
+			for (Photograph photograph : this.photographs) {
+				this.originalPhotographNamesById.put(photograph.identifier(), photograph.name());
+			}
 			this.selectedPhotographIndex = Mth.clamp(contents.getSelectedPhotographIndex(), 0, Math.max(0, this.photographs.size() - 1));
 			this.filmMaxPhotographs = FilmItem.getMaxPhotographs(filmStack);
 		} else {
@@ -583,6 +601,75 @@ public class FilmScreen extends Screen {
 			FILM_PHOTOGRAPH_BLOCKER_SIZE,
 			FILM_PHOTOGRAPH_BLOCKER_SIZE
 		);
+	}
+
+	private void extractFilmPhotographOverlay(GuiGraphicsExtractor graphics, int slotX, Identifier sprite) {
+		graphics.blitSprite(
+			RenderPipelines.GUI_TEXTURED,
+			sprite,
+			this.leftPos + slotX,
+			this.topPos + FILM_PHOTOGRAPH_Y,
+			FILM_PHOTOGRAPH_SIZE,
+			FILM_PHOTOGRAPH_SIZE
+		);
+	}
+
+	private boolean isPhotographModified(int photographIndex) {
+		final Photograph photograph = this.getFilmPhotographComponent(photographIndex);
+		return photograph != null && this.modifiedPhotographIds.contains(photograph.identifier());
+	}
+
+	private int getHoveredFilmPhotographOffset(double mouseX, double mouseY) {
+		if (!this.hasPhotographs()) return Integer.MIN_VALUE;
+
+		final int top = this.topPos + FILM_PHOTOGRAPH_Y;
+		final int bottom = top + FILM_PHOTOGRAPH_SIZE;
+		if (mouseY < top || mouseY >= bottom) return Integer.MIN_VALUE;
+
+		int minX = Integer.MAX_VALUE;
+		int maxX = Integer.MIN_VALUE;
+		int closestOffset = Integer.MIN_VALUE;
+		double closestDistance = Double.MAX_VALUE;
+
+		if (this.leftPhotograph != null) {
+			final int left = this.leftPos + FILM_LEFT_PHOTOGRAPH_X;
+			final int right = left + FILM_PHOTOGRAPH_SIZE;
+			minX = Math.min(minX, left);
+			maxX = Math.max(maxX, right);
+			final double distance = Math.abs(mouseX - (left + (FILM_PHOTOGRAPH_SIZE / 2.0)));
+			if (distance < closestDistance) {
+				closestDistance = distance;
+				closestOffset = -1;
+			}
+		}
+
+		if (this.middlePhotograph != null) {
+			final int left = this.leftPos + FILM_MIDDLE_PHOTOGRAPH_X;
+			final int right = left + FILM_PHOTOGRAPH_SIZE;
+			minX = Math.min(minX, left);
+			maxX = Math.max(maxX, right);
+			final double distance = Math.abs(mouseX - (left + (FILM_PHOTOGRAPH_SIZE / 2.0)));
+			if (distance < closestDistance) {
+				closestDistance = distance;
+				closestOffset = 0;
+			}
+		}
+
+		if (this.rightPhotograph != null) {
+			final int left = this.leftPos + FILM_RIGHT_PHOTOGRAPH_X;
+			final int right = left + FILM_PHOTOGRAPH_SIZE;
+			minX = Math.min(minX, left);
+			maxX = Math.max(maxX, right);
+			final double distance = Math.abs(mouseX - (left + (FILM_PHOTOGRAPH_SIZE / 2.0)));
+			if (distance < closestDistance) {
+				closestDistance = distance;
+				closestOffset = 1;
+			}
+		}
+
+		if (closestOffset == Integer.MIN_VALUE) return Integer.MIN_VALUE;
+		if (mouseX < minX || mouseX >= maxX) return Integer.MIN_VALUE;
+		return closestOffset;
 	}
 
 	private boolean isAtBeginning() {

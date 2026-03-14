@@ -66,6 +66,9 @@ public class DevelopmentTableScreen extends AbstractContainerScreen<DevelopmentT
 	private static final int COPY_PHOTOGRAPH_SIZE = 67;
 	private static final int COPY_PHOTOGRAPH_Y = 31;
 	private static final int COPY_PHOTOGRAPH_X = 55;
+	private static final int RESULT_SLOT_X = 134;
+	private static final int RESULT_SLOT_Y = 113;
+	private static final int RESULT_SLOT_SIZE = 16;
 	private static final Identifier TEXTURE = CameraPortConstants.id("textures/gui/container/development_table.png");
 	private static final Identifier TEXTURE_FILM = CameraPortConstants.id("textures/gui/container/development_table_film.png");
 	private static final Identifier SCROLLER = CameraPortConstants.id("container/development_table/scroller");
@@ -141,7 +144,10 @@ public class DevelopmentTableScreen extends AbstractContainerScreen<DevelopmentT
 	@Override
 	public void extractRenderState(GuiGraphicsExtractor graphics, int mouseX, int mouseY, float partialTicks) {
 		super.extractRenderState(graphics, mouseX, mouseY, partialTicks);
-		Photograph hoveredPhotograph = null;
+		final int hoveredOffset = this.getHoveredFilmPhotographOffset(mouseX, mouseY);
+		Photograph hoveredPhotograph = hoveredOffset == Integer.MIN_VALUE ? null : this.getFilmPhotographComponent(this.photographIndex + hoveredOffset);
+		final boolean hoveringResultSlot = this.menu.getSlot(DevelopmentTableMenu.RESULT_SLOT).hasItem()
+			&& this.isHovering(RESULT_SLOT_X, RESULT_SLOT_Y, RESULT_SLOT_SIZE, RESULT_SLOT_SIZE, mouseX, mouseY);
 
 		if (this.displayFilm) {
 			if (this.isAtBeginning()) {
@@ -152,7 +158,6 @@ public class DevelopmentTableScreen extends AbstractContainerScreen<DevelopmentT
 				this.extractFilmPhotographBlocker(graphics, FILM_RIGHT_PHOTOGRAPH_X);
 			}
 
-			boolean alreadyHovering = false;
 			if (this.middlePhotograph != null) {
 				PhotographRenderer.blit(
 					this.leftPos,
@@ -164,9 +169,7 @@ public class DevelopmentTableScreen extends AbstractContainerScreen<DevelopmentT
 					FILM_PHOTOGRAPH_SIZE,
 					PhotographRenderer.FrameType.FILM_EMBED
 				);
-				if (this.isHovering(FILM_MIDDLE_PHOTOGRAPH_X, FILM_PHOTOGRAPH_Y, FILM_PHOTOGRAPH_SIZE, FILM_PHOTOGRAPH_SIZE, mouseX, mouseY)) {
-					alreadyHovering = true;
-					hoveredPhotograph = this.getFilmPhotographComponent(this.photographIndex);
+				if (hoveredOffset == 0 || hoveringResultSlot) {
 					graphics.blitSprite(
 						RenderPipelines.GUI_TEXTURED,
 						FILM_PHOTOGRAPH_HIGHLIGHT,
@@ -175,6 +178,9 @@ public class DevelopmentTableScreen extends AbstractContainerScreen<DevelopmentT
 						FILM_PHOTOGRAPH_SIZE,
 						FILM_PHOTOGRAPH_SIZE
 					);
+				}
+				if (hoveredOffset == 0) {
+					graphics.requestCursor(CursorTypes.POINTING_HAND);
 				}
 			}
 
@@ -190,9 +196,7 @@ public class DevelopmentTableScreen extends AbstractContainerScreen<DevelopmentT
 						FILM_PHOTOGRAPH_SIZE,
 						PhotographRenderer.FrameType.FILM_EMBED
 					);
-					if (!alreadyHovering && this.isHovering(FILM_RIGHT_PHOTOGRAPH_X, FILM_PHOTOGRAPH_Y, FILM_PHOTOGRAPH_SIZE, FILM_PHOTOGRAPH_SIZE, mouseX, mouseY)) {
-						alreadyHovering = true;
-						hoveredPhotograph = this.getFilmPhotographComponent(this.photographIndex + 1);
+					if (hoveredOffset == 1) {
 						graphics.blitSprite(
 							RenderPipelines.GUI_TEXTURED,
 							FILM_PHOTOGRAPH_HIGHLIGHT,
@@ -216,9 +220,7 @@ public class DevelopmentTableScreen extends AbstractContainerScreen<DevelopmentT
 						FILM_PHOTOGRAPH_SIZE,
 						PhotographRenderer.FrameType.FILM_EMBED
 					);
-					if (!alreadyHovering && this.isHovering(FILM_LEFT_PHOTOGRAPH_X, FILM_PHOTOGRAPH_Y, FILM_PHOTOGRAPH_SIZE, FILM_PHOTOGRAPH_SIZE, mouseX, mouseY)) {
-						alreadyHovering = true;
-						hoveredPhotograph = this.getFilmPhotographComponent(this.photographIndex - 1);
+					if (hoveredOffset == -1) {
 						graphics.blitSprite(
 							RenderPipelines.GUI_TEXTURED,
 							FILM_PHOTOGRAPH_HIGHLIGHT,
@@ -426,6 +428,59 @@ public class DevelopmentTableScreen extends AbstractContainerScreen<DevelopmentT
 			FILM_PHOTOGRAPH_BLOCKER_SIZE,
 			FILM_PHOTOGRAPH_BLOCKER_SIZE
 		);
+	}
+
+	private int getHoveredFilmPhotographOffset(double mouseX, double mouseY) {
+		if (!this.displayFilm || this.filmContents == null || this.filmContents.isEmpty()) return Integer.MIN_VALUE;
+
+		final int top = this.topPos + FILM_PHOTOGRAPH_Y;
+		final int bottom = top + FILM_PHOTOGRAPH_SIZE;
+		if (mouseY < top || mouseY >= bottom) return Integer.MIN_VALUE;
+
+		int minX = Integer.MAX_VALUE;
+		int maxX = Integer.MIN_VALUE;
+		int closestOffset = Integer.MIN_VALUE;
+		double closestDistance = Double.MAX_VALUE;
+
+		if (this.leftPhotograph != null) {
+			final int left = this.leftPos + FILM_LEFT_PHOTOGRAPH_X;
+			final int right = left + FILM_PHOTOGRAPH_SIZE;
+			minX = Math.min(minX, left);
+			maxX = Math.max(maxX, right);
+			final double distance = Math.abs(mouseX - (left + (FILM_PHOTOGRAPH_SIZE / 2.0)));
+			if (distance < closestDistance) {
+				closestDistance = distance;
+				closestOffset = -1;
+			}
+		}
+
+		if (this.middlePhotograph != null) {
+			final int left = this.leftPos + FILM_MIDDLE_PHOTOGRAPH_X;
+			final int right = left + FILM_PHOTOGRAPH_SIZE;
+			minX = Math.min(minX, left);
+			maxX = Math.max(maxX, right);
+			final double distance = Math.abs(mouseX - (left + (FILM_PHOTOGRAPH_SIZE / 2.0)));
+			if (distance < closestDistance) {
+				closestDistance = distance;
+				closestOffset = 0;
+			}
+		}
+
+		if (this.rightPhotograph != null) {
+			final int left = this.leftPos + FILM_RIGHT_PHOTOGRAPH_X;
+			final int right = left + FILM_PHOTOGRAPH_SIZE;
+			minX = Math.min(minX, left);
+			maxX = Math.max(maxX, right);
+			final double distance = Math.abs(mouseX - (left + (FILM_PHOTOGRAPH_SIZE / 2.0)));
+			if (distance < closestDistance) {
+				closestDistance = distance;
+				closestOffset = 1;
+			}
+		}
+
+		if (closestOffset == Integer.MIN_VALUE) return Integer.MIN_VALUE;
+		if (mouseX < minX || mouseX >= maxX) return Integer.MIN_VALUE;
+		return closestOffset;
 	}
 
 	private boolean isAtBeginning() {
