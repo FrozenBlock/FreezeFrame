@@ -291,7 +291,6 @@ public class DevelopingTableScreen extends AbstractContainerScreen<DevelopingTab
 
 		// Middle photograph clicked
 		if (this.isHovering(FILM_MIDDLE_PHOTOGRAPH_X, FILM_PHOTOGRAPH_Y, FILM_PHOTOGRAPH_SIZE, FILM_PHOTOGRAPH_SIZE, mouseX, mouseY)) {
-			this.incrementPhotographIndex(0);
 			return true;
 		}
 
