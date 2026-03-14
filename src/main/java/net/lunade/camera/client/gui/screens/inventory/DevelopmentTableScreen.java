@@ -138,6 +138,8 @@ public class DevelopmentTableScreen extends AbstractContainerScreen<DevelopmentT
 
 		if (this.isHovering(SCROLLER_TRACK_X, SCROLLER_TRACK_Y, SCROLLER_TRACK_WIDTH, SCROLLER_HEIGHT, mouseX, mouseY) && this.hasMultipleFilmPhotographs()) {
 			graphics.requestCursor(this.draggingScroller ? CursorTypes.RESIZE_EW : CursorTypes.POINTING_HAND);
+		} else if (this.isHovering(SCROLLER_TRACK_X, SCROLLER_TRACK_Y, SCROLLER_TRACK_WIDTH, SCROLLER_HEIGHT, mouseX, mouseY) && this.displayFilm) {
+			graphics.requestCursor(CursorTypes.NOT_ALLOWED);
 		}
 	}
 

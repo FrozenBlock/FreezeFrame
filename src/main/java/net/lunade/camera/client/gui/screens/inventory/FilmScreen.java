@@ -196,6 +196,11 @@ public class FilmScreen extends Screen {
 	@Override
 	public void extractBackground(GuiGraphicsExtractor graphics, int mouseX, int mouseY, float partialTicks) {
 		graphics.blit(RenderPipelines.GUI_TEXTURED, TEXTURE, this.leftPos, this.topPos, 0F, 0F, BACKGROUND_WIDTH, BACKGROUND_HEIGHT, TEXTURE_WIDTH, TEXTURE_HEIGHT);
+		if (this.isHovering(SCROLLER_TRACK_X, SCROLLER_TRACK_Y, SCROLLER_TRACK_WIDTH, SCROLLER_HEIGHT, mouseX, mouseY) && this.hasMultipleFilmPhotographs()) {
+			graphics.requestCursor(this.draggingScroller ? CursorTypes.RESIZE_EW : CursorTypes.POINTING_HAND);
+		} else if (this.isHovering(SCROLLER_TRACK_X, SCROLLER_TRACK_Y, SCROLLER_TRACK_WIDTH, SCROLLER_HEIGHT, mouseX, mouseY)) {
+			graphics.requestCursor(CursorTypes.NOT_ALLOWED);
+		}
 	}
 
 	@Override
