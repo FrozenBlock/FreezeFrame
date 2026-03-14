@@ -24,34 +24,34 @@ import net.minecraft.network.codec.ByteBufCodecs;
 import net.minecraft.network.codec.StreamCodec;
 import net.minecraft.resources.Identifier;
 
-public record PhotographComponent(Identifier identifier, String photographer, String name, int generation) {
+public record Photograph(Identifier identifier, String photographer, String name, int generation) {
 	public static final int ORIGINAL = 0;
 	public static final int COPY = 1;
 	public static final int COPY_OF_COPY = 2;
 	public static final int MAX_COPY_GENERATION = COPY_OF_COPY;
 
-	public static final Codec<PhotographComponent> CODEC = RecordCodecBuilder.create(instance -> instance
+	public static final Codec<Photograph> CODEC = RecordCodecBuilder.create(instance -> instance
 		.group(
 			Identifier.CODEC.fieldOf("identifier").forGetter(component -> component.identifier),
-			Codec.STRING.fieldOf("author").forGetter(PhotographComponent::photographer),
-			Codec.STRING.optionalFieldOf("name", "").forGetter(PhotographComponent::name),
-			Codec.INT.optionalFieldOf("generation", ORIGINAL).forGetter(PhotographComponent::generation)
+			Codec.STRING.fieldOf("author").forGetter(Photograph::photographer),
+			Codec.STRING.optionalFieldOf("name", "").forGetter(Photograph::name),
+			Codec.INT.optionalFieldOf("generation", ORIGINAL).forGetter(Photograph::generation)
 		)
-		.apply(instance, PhotographComponent::new)
+		.apply(instance, Photograph::new)
 	);
-	public static final StreamCodec<ByteBuf, PhotographComponent> STREAM_CODEC = StreamCodec.composite(
-		Identifier.STREAM_CODEC, PhotographComponent::identifier,
-		ByteBufCodecs.STRING_UTF8, PhotographComponent::photographer,
-		ByteBufCodecs.STRING_UTF8, PhotographComponent::name,
-		ByteBufCodecs.VAR_INT, PhotographComponent::generation,
-		PhotographComponent::new
+	public static final StreamCodec<ByteBuf, Photograph> STREAM_CODEC = StreamCodec.composite(
+		Identifier.STREAM_CODEC, Photograph::identifier,
+		ByteBufCodecs.STRING_UTF8, Photograph::photographer,
+		ByteBufCodecs.STRING_UTF8, Photograph::name,
+		ByteBufCodecs.VAR_INT, Photograph::generation,
+		Photograph::new
 	);
 
-	public PhotographComponent(Identifier identifier, String photographer) {
+	public Photograph(Identifier identifier, String photographer) {
 		this(identifier, photographer, "", ORIGINAL);
 	}
 
-	public PhotographComponent(Identifier identifier, String photographer, int generation) {
+	public Photograph(Identifier identifier, String photographer, int generation) {
 		this(identifier, photographer, "", generation);
 	}
 
@@ -63,11 +63,11 @@ public record PhotographComponent(Identifier identifier, String photographer, St
 		return this.generation < MAX_COPY_GENERATION;
 	}
 
-	public PhotographComponent asCopy() {
-		return new PhotographComponent(this.identifier, this.photographer, this.name, Math.min(this.generation + 1, MAX_COPY_GENERATION));
+	public Photograph asCopy() {
+		return new Photograph(this.identifier, this.photographer, this.name, Math.min(this.generation + 1, MAX_COPY_GENERATION));
 	}
 
-	public PhotographComponent withName(String newName) {
-		return new PhotographComponent(this.identifier, this.photographer, newName, this.generation);
+	public Photograph withName(String newName) {
+		return new Photograph(this.identifier, this.photographer, newName, this.generation);
 	}
 }

@@ -37,31 +37,31 @@ public final class FilmContents {
 	public static final int MAX_UPGRADES = 3;
 	public static final int ABSOLUTE_MAX_PHOTOGRAPHS = BASE_MAX_PHOTOGRAPHS + (CAPACITY_INCREASE_PER_UPGRADE * MAX_UPGRADES);
 	public static final int MAX_PHOTOGRAPHS = BASE_MAX_PHOTOGRAPHS;
-	public static final Codec<FilmContents> CODEC = PhotographComponent.CODEC.listOf().xmap(FilmContents::new, contents -> contents.photographs);
-	public static final StreamCodec<ByteBuf, FilmContents> STREAM_CODEC = PhotographComponent.STREAM_CODEC
+	public static final Codec<FilmContents> CODEC = Photograph.CODEC.listOf().xmap(FilmContents::new, contents -> contents.photographs);
+	public static final StreamCodec<ByteBuf, FilmContents> STREAM_CODEC = Photograph.STREAM_CODEC
 		.apply(ByteBufCodecs.list())
 		.map(FilmContents::new, contents -> contents.photographs);
-	private final List<PhotographComponent> photographs;
+	private final List<Photograph> photographs;
 	private final int selectedPhotograph;
 	private final Supplier<DataResult<Fraction>> weight;
 
-	private FilmContents(final List<PhotographComponent> photographs, int selectedPhotograph) {
+	private FilmContents(final List<Photograph> photographs, int selectedPhotograph) {
 		this.photographs = photographs;
 		this.selectedPhotograph = selectedPhotograph;
 		this.weight = Suppliers.memoize(() -> computeContentWeight(this.photographs));
 	}
 
-	public FilmContents(final List<PhotographComponent> photographs) {
+	public FilmContents(final List<Photograph> photographs) {
 		this(photographs, 0);
 	}
 
-	private static DataResult<Fraction> computeContentWeight(final List<PhotographComponent> items) {
+	private static DataResult<Fraction> computeContentWeight(final List<Photograph> items) {
 		final Fraction weight = Fraction.getFraction(items.size(), BASE_MAX_PHOTOGRAPHS);
 		if (weight.compareTo(Fraction.ONE) <= 0) return DataResult.success(weight);
 		return DataResult.error(() -> "Excessive total film weight");
 	}
 
-	public List<PhotographComponent> photographs() {
+	public List<Photograph> photographs() {
 		return this.photographs;
 	}
 
@@ -83,13 +83,13 @@ public final class FilmContents {
 	}
 
 	@Nullable
-	public PhotographComponent getSelectedPhotograph() {
+	public Photograph getSelectedPhotograph() {
 		if (this.photographs.isEmpty() || this.selectedPhotograph < 0 || this.selectedPhotograph >= this.photographs.size()) return null;
 		return this.photographs.get(this.selectedPhotograph);
 	}
 
 	@Nullable
-	public PhotographComponent getPhotographAtIndex(int index) {
+	public Photograph getPhotographAtIndex(int index) {
 		if (index < 0 || index >= this.size()) return null;
 		return this.photographs.get(index);
 	}
@@ -111,7 +111,7 @@ public final class FilmContents {
 	}
 
 	public static class Mutable {
-		private final List<PhotographComponent> photographs;
+		private final List<Photograph> photographs;
 		private final Fraction photographWeight;
 		private Fraction weight;
 		private int selectedPhotograph;
@@ -133,7 +133,7 @@ public final class FilmContents {
 			return this.weight.compareTo(Fraction.ONE) < 0;
 		}
 
-		public boolean tryInsert(PhotographComponent photograph) {
+		public boolean tryInsert(Photograph photograph) {
 			if (!this.hasRemainingSpace()) return false;
 			this.weight = this.weight.add(this.photographWeight);
 			this.photographs.addFirst(photograph);
@@ -148,7 +148,7 @@ public final class FilmContents {
 
 		public boolean setPhotographName(int photographIndex, String name) {
 			if (this.indexIsOutsideAllowedBounds(photographIndex)) return false;
-			final PhotographComponent current = this.photographs.get(photographIndex);
+			final Photograph current = this.photographs.get(photographIndex);
 			this.photographs.set(photographIndex, current.withName(name));
 			return true;
 		}
@@ -174,8 +174,8 @@ public final class FilmContents {
 		}
 
 		public FilmContents toImmutable() {
-			final ImmutableList.Builder<PhotographComponent> builder = ImmutableList.builder();
-			for (PhotographComponent photograph : this.photographs) builder.add(photograph);
+			final ImmutableList.Builder<Photograph> builder = ImmutableList.builder();
+			for (Photograph photograph : this.photographs) builder.add(photograph);
 			return new FilmContents(builder.build(), this.selectedPhotograph);
 		}
 	}

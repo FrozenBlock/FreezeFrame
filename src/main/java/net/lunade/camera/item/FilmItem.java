@@ -19,7 +19,7 @@ package net.lunade.camera.item;
 
 import java.util.Optional;
 import net.lunade.camera.component.FilmContents;
-import net.lunade.camera.component.PhotographComponent;
+import net.lunade.camera.component.Photograph;
 import net.lunade.camera.component.tooltip.FilmTooltip;
 import net.lunade.camera.networking.packet.OpenFilmScreenPacket;
 import net.lunade.camera.registry.CameraPortDataComponents;
@@ -137,7 +137,7 @@ public class FilmItem extends Item {
 	}
 
 	@Nullable
-	public static PhotographComponent getSelectedPhotograph(ItemStack stack) {
+	public static Photograph getSelectedPhotograph(ItemStack stack) {
 		return stack.getOrDefault(CameraPortDataComponents.FILM_CONTENTS, FilmContents.EMPTY).getSelectedPhotograph();
 	}
 

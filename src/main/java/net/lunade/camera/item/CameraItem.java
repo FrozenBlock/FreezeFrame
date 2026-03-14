@@ -22,7 +22,7 @@ import java.util.Objects;
 import net.lunade.camera.CameraPortConstants;
 import net.lunade.camera.component.CameraContents;
 import net.lunade.camera.component.FilmContents;
-import net.lunade.camera.component.PhotographComponent;
+import net.lunade.camera.component.Photograph;
 import net.lunade.camera.component.tooltip.CameraTooltip;
 import net.lunade.camera.networking.packet.CameraTakeScreenshotPacket;
 import net.lunade.camera.registry.CameraPortDataComponents;
@@ -293,7 +293,7 @@ public class CameraItem extends SpawnEggItem {
 		final ItemStack film = potentialFilm.get();
 		final int maxPhotographs = FilmItem.getMaxPhotographs(film);
 		final FilmContents.Mutable filmContents = new FilmContents.Mutable(film.getOrDefault(CameraPortDataComponents.FILM_CONTENTS, FilmContents.EMPTY), maxPhotographs);
-		final PhotographComponent photograph = new PhotographComponent(CameraPortConstants.id(fileName), player.getPlainTextName());
+		final Photograph photograph = new Photograph(CameraPortConstants.id(fileName), player.getPlainTextName());
 		if (!filmContents.tryInsert(photograph)) return;
 
 		film.set(CameraPortDataComponents.FILM_CONTENTS, filmContents.toImmutable());

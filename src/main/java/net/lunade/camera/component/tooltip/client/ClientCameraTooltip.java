@@ -74,7 +74,7 @@ public class ClientCameraTooltip implements ClientTooltipComponent {
 	}
 
 	private static int getEmptyBundleBackgroundHeight(final Font font) {
-		return getEmptyBundleDescriptionTextHeight(font) + 13 + 8;
+		return getEmptyCameraDescriptionTextHeight(font) + 13 + 8;
 	}
 
 	private int backgroundHeight(final Font font) {
@@ -90,7 +90,7 @@ public class ClientCameraTooltip implements ClientTooltipComponent {
 		final InsertedFilmProgress insertedFilmProgress = this.getInsertedFilmProgress();
 
 		if (this.contents.isEmpty()) {
-			extractEmptyBundleTooltip(font, x, y, w, h, graphics);
+			extractEmptyCameraTooltip(font, x, y, w, h, graphics);
 		} else {
 			this.extractCameraWithItemsTooltip(font, x, y, w, h, graphics, insertedFilmProgress);
 		}
@@ -105,12 +105,12 @@ public class ClientCameraTooltip implements ClientTooltipComponent {
 		return new InsertedFilmProgress(FilmItem.getWeightSafe(filmContents, maxPhotographs), filmContents.size(), maxPhotographs);
 	}
 
-	private static void extractEmptyBundleTooltip(Font font, int x, int y, int w, int h, GuiGraphicsExtractor graphics) {
+	private static void extractEmptyCameraTooltip(Font font, int x, int y, int w, int h, GuiGraphicsExtractor graphics) {
 		final int left = x + getContentXOffset(w);
-		drawEmptyBundleDescriptionText(left, y, font, graphics);
+		extractEmptyCameraDescriptionText(left, y, font, graphics);
 		extractProgressbar(
 			left,
-			y + getEmptyBundleDescriptionTextHeight(font) + 4,
+			y + getEmptyCameraDescriptionTextHeight(font) + 4,
 			font,
 			graphics,
 			Fraction.ZERO,
@@ -122,7 +122,7 @@ public class ClientCameraTooltip implements ClientTooltipComponent {
 
 	private void extractCameraWithItemsTooltip(Font font, int x, int y, int w, int h, GuiGraphicsExtractor graphics, InsertedFilmProgress insertedFilmProgress) {
 		final int left = x + getContentXOffset(w);
-		drawContainsDescriptionText(left, y, font, graphics);
+		extractContainsDescriptionText(left, y, font, graphics);
 		extractProgressbar(
 			left,
 			y + getContainsDescriptionTextHeight(font) + 4,
@@ -147,15 +147,15 @@ public class ClientCameraTooltip implements ClientTooltipComponent {
 		if (progressBarFillText != null) graphics.centeredText(font, progressBarFillText, x + 48, y + 3, -1);
 	}
 
-	private static void drawEmptyBundleDescriptionText(int x, int y, Font font, GuiGraphicsExtractor graphics) {
+	private static void extractEmptyCameraDescriptionText(int x, int y, Font font, GuiGraphicsExtractor graphics) {
 		graphics.textWithWordWrap(font, CAMERA_EMPTY_DESCRIPTION, x, y, GRID_WIDTH, -5592406);
 	}
 
-	private static void drawContainsDescriptionText(int x, int y, Font font, GuiGraphicsExtractor graphics) {
+	private static void extractContainsDescriptionText(int x, int y, Font font, GuiGraphicsExtractor graphics) {
 		graphics.textWithWordWrap(font, CAMERA_CONTAINS_DESCRIPTION, x, y, GRID_WIDTH, -5592406);
 	}
 
-	private static int getEmptyBundleDescriptionTextHeight(Font font) {
+	private static int getEmptyCameraDescriptionTextHeight(Font font) {
 		return font.split(CAMERA_EMPTY_DESCRIPTION, GRID_WIDTH).size() * 9;
 	}
 

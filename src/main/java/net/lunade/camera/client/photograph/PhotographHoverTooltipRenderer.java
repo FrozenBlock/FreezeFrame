@@ -18,7 +18,7 @@
 package net.lunade.camera.client.photograph;
 
 import java.util.List;
-import net.lunade.camera.component.PhotographComponent;
+import net.lunade.camera.component.Photograph;
 import net.minecraft.client.gui.Font;
 import net.minecraft.client.gui.GuiGraphicsExtractor;
 import net.minecraft.network.chat.Component;
@@ -33,7 +33,15 @@ public final class PhotographHoverTooltipRenderer {
 	private PhotographHoverTooltipRenderer() {
 	}
 
-	public static void render(GuiGraphicsExtractor graphics, Font font, int screenWidth, int screenHeight, int mouseX, int mouseY, PhotographComponent photograph) {
+	public static void extractRenderState(
+		GuiGraphicsExtractor graphics,
+		Font font,
+		int screenWidth,
+		int screenHeight,
+		int mouseX,
+		int mouseY,
+		Photograph photograph
+	) {
 		final List<Component> lines = PhotographDetails.buildTooltipLines(photograph);
 		if (lines.isEmpty()) return;
 
@@ -62,7 +70,7 @@ public final class PhotographHoverTooltipRenderer {
 
 		graphics.pose().pushMatrix();
 
-		drawVanillaTooltipBox(graphics, x0, y0, x1, y1);
+		extractVanillaTooltipBox(graphics, x0, y0, x1, y1);
 
 		int textY = tooltipY;
 		for (Component line : lines) {
@@ -73,7 +81,7 @@ public final class PhotographHoverTooltipRenderer {
 		graphics.pose().popMatrix();
 	}
 
-	private static void drawVanillaTooltipBox(GuiGraphicsExtractor graphics, int x0, int y0, int x1, int y1) {
+	private static void extractVanillaTooltipBox(GuiGraphicsExtractor graphics, int x0, int y0, int x1, int y1) {
 		graphics.fillGradient(x0 - 3, y0 - 4, x1 + 3, y0 - 3, BACKGROUND_COLOR, BACKGROUND_COLOR);
 		graphics.fillGradient(x0 - 3, y1 + 3, x1 + 3, y1 + 4, BACKGROUND_COLOR, BACKGROUND_COLOR);
 		graphics.fillGradient(x0 - 3, y0 - 3, x1 + 3, y1 + 3, BACKGROUND_COLOR, BACKGROUND_COLOR);

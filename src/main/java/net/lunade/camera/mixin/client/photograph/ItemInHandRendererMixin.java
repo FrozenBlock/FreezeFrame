@@ -23,7 +23,7 @@ import com.mojang.math.Axis;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 import net.lunade.camera.client.photograph.PhotographRenderer;
-import net.lunade.camera.component.PhotographComponent;
+import net.lunade.camera.component.Photograph;
 import net.lunade.camera.registry.CameraPortDataComponents;
 import net.lunade.camera.registry.CameraPortItems;
 import net.minecraft.client.Minecraft;
@@ -79,10 +79,10 @@ public abstract class ItemInHandRendererMixin {
 	) {
 		if (!stack.is(CameraPortItems.PHOTOGRAPH)) return;
 
-		final PhotographComponent photographComponent = stack.get(CameraPortDataComponents.PHOTOGRAPH);
-		if (photographComponent == null) return;
+		final Photograph photograph = stack.get(CameraPortDataComponents.PHOTOGRAPH);
+		if (photograph == null) return;
 
-		this.cameraPort$submitPhotographInHand(poseStack, collector, lightCoords, inverseArmHeight, attackValue, arm, photographComponent);
+		this.cameraPort$submitPhotographInHand(poseStack, collector, lightCoords, inverseArmHeight, attackValue, arm, photograph);
 		info.cancel();
 	}
 
@@ -94,7 +94,7 @@ public abstract class ItemInHandRendererMixin {
 		float inverseArmHeight,
 		float attackValue,
 		HumanoidArm arm,
-		PhotographComponent photographComponent
+		Photograph photograph
 	) {
 		poseStack.pushPose();
 
@@ -117,16 +117,16 @@ public abstract class ItemInHandRendererMixin {
 		poseStack.translate(armOffset * i, j - 0.3F * h, k);
 		poseStack.mulPose(Axis.XP.rotationDegrees(h * -45F));
 		poseStack.mulPose(Axis.YP.rotationDegrees(armOffset * h * -30F));
-		this.cameraPort$renderPhotograph(poseStack, collector, lightCoords, photographComponent);
+		this.cameraPort$renderPhotograph(poseStack, collector, lightCoords, photograph);
 		poseStack.popPose();
 
 		poseStack.popPose();
 	}
 
 	@Unique
-	private void cameraPort$renderPhotograph(PoseStack poseStack, SubmitNodeCollector collector, int lightCoords, PhotographComponent photographComponent) {
+	private void cameraPort$renderPhotograph(PoseStack poseStack, SubmitNodeCollector collector, int lightCoords, Photograph photograph) {
 		poseStack.mulPose(Axis.YP.rotationDegrees(180F));
 		poseStack.scale(0.38F, 0.38F, 0.38F);
-		PhotographRenderer.submit(poseStack, collector, photographComponent.identifier(), lightCoords, PhotographRenderer.FrameType.FRAME);
+		PhotographRenderer.submit(poseStack, collector, photograph.identifier(), lightCoords, PhotographRenderer.FrameType.FRAME);
 	}
 }

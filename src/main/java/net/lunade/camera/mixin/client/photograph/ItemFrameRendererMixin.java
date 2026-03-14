@@ -28,7 +28,7 @@ import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 import net.lunade.camera.client.photograph.PhotographRenderer;
 import net.lunade.camera.client.renderer.entity.state.impl.CameraPortRenderStateDataKeys;
-import net.lunade.camera.component.PhotographComponent;
+import net.lunade.camera.component.Photograph;
 import net.lunade.camera.registry.CameraPortDataComponents;
 import net.minecraft.client.renderer.SubmitNodeCollector;
 import net.minecraft.client.renderer.entity.ItemFrameRenderer;
@@ -51,10 +51,10 @@ public class ItemFrameRendererMixin<T extends ItemFrame> {
 		at = @At("TAIL")
 	)
 	public void cameraPort$addPhotoToRenderState(T itemFrame, ItemFrameRenderState renderState, float partialTicks, CallbackInfo info) {
-		final PhotographComponent photographComponent = itemFrame.getItem().get(CameraPortDataComponents.PHOTOGRAPH);
+		final Photograph photograph = itemFrame.getItem().get(CameraPortDataComponents.PHOTOGRAPH);
 		renderState.setData(
 			CameraPortRenderStateDataKeys.PHOTOGRAPH_ID,
-			photographComponent == null ? null : photographComponent.identifier()
+			photograph == null ? null : photograph.identifier()
 		);
 	}
 

@@ -26,7 +26,7 @@ import net.lunade.camera.CameraPortConstants;
 import net.lunade.camera.client.photograph.PhotographHoverTooltipRenderer;
 import net.lunade.camera.client.photograph.PhotographRenderer;
 import net.lunade.camera.component.FilmContents;
-import net.lunade.camera.component.PhotographComponent;
+import net.lunade.camera.component.Photograph;
 import net.lunade.camera.item.FilmItem;
 import net.lunade.camera.menu.DevelopmentTableMenu;
 import net.lunade.camera.networking.packet.DevelopmentTableSyncSelectPhotographIndexPacket;
@@ -141,7 +141,7 @@ public class DevelopmentTableScreen extends AbstractContainerScreen<DevelopmentT
 	@Override
 	public void extractRenderState(GuiGraphicsExtractor graphics, int mouseX, int mouseY, float partialTicks) {
 		super.extractRenderState(graphics, mouseX, mouseY, partialTicks);
-		PhotographComponent hoveredPhotograph = null;
+		Photograph hoveredPhotograph = null;
 
 		if (this.displayFilm) {
 			if (this.isAtBeginning()) {
@@ -265,7 +265,7 @@ public class DevelopmentTableScreen extends AbstractContainerScreen<DevelopmentT
 		}
 
 		if (hoveredPhotograph != null) {
-			PhotographHoverTooltipRenderer.render(graphics, this.font, this.width, this.height, mouseX, mouseY, hoveredPhotograph);
+			PhotographHoverTooltipRenderer.extractRenderState(graphics, this.font, this.width, this.height, mouseX, mouseY, hoveredPhotograph);
 		}
 	}
 
@@ -367,7 +367,7 @@ public class DevelopmentTableScreen extends AbstractContainerScreen<DevelopmentT
 	}
 
 	@Nullable
-	private PhotographComponent getFilmPhotographComponent(int index) {
+	private Photograph getFilmPhotographComponent(int index) {
 		if (this.filmContents == null || this.filmContents.isEmpty()) return null;
 		if (index < 0 || index >= this.filmContents.size()) return null;
 		return this.filmContents.getPhotographAtIndex(index);
@@ -467,8 +467,8 @@ public class DevelopmentTableScreen extends AbstractContainerScreen<DevelopmentT
 		this.setupOrClearFilmPhotographDisplays();
 
 		if (sourceItem.is(CameraPortItems.PHOTOGRAPH)) {
-			final PhotographComponent photographComponent = sourceItem.get(CameraPortDataComponents.PHOTOGRAPH);
-			this.photographCopyId = (photographComponent == null || !photographComponent.canCopy()) ? null : photographComponent.identifier();
+			final Photograph photograph = sourceItem.get(CameraPortDataComponents.PHOTOGRAPH);
+			this.photographCopyId = (photograph == null || !photograph.canCopy()) ? null : photograph.identifier();
 		} else {
 			this.photographCopyId = null;
 		}

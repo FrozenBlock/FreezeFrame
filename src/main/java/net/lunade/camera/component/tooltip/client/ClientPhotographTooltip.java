@@ -21,7 +21,7 @@ import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 import net.lunade.camera.client.photograph.PhotographDetails;
 import net.lunade.camera.client.photograph.PhotographRenderer;
-import net.lunade.camera.component.PhotographComponent;
+import net.lunade.camera.component.Photograph;
 import net.lunade.camera.component.tooltip.PhotographTooltip;
 import net.lunade.camera.config.CameraPortConfig;
 import net.minecraft.client.gui.Font;
@@ -55,7 +55,7 @@ public class ClientPhotographTooltip implements ClientTooltipComponent {
 
 	public ClientPhotographTooltip(PhotographTooltip component) {
 		this.photographId = component.identifier();
-		final PhotographComponent photograph = new PhotographComponent(component.identifier(), component.photographer(), component.name(), component.generation());
+		final Photograph photograph = new Photograph(component.identifier(), component.photographer(), component.name(), component.generation());
 		this.name = PhotographDetails.getPhotographNameLine(photograph);
 		this.photographer = PhotographDetails.getPhotographerLine(photograph);
 		this.dateAndTime = PhotographDetails.getDateLine(photograph);

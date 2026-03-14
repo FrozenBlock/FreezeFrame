@@ -22,18 +22,19 @@ import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 import java.util.Optional;
-import net.lunade.camera.component.PhotographComponent;
-import net.minecraft.ChatFormatting;
+import net.lunade.camera.component.Photograph;
 import net.minecraft.network.chat.Component;
 import net.minecraft.util.StringUtil;
 import org.jetbrains.annotations.Nullable;
+import net.minecraft.ChatFormatting;
 
 public final class PhotographDetails {
+
 	private PhotographDetails() {
 	}
 
-	public static List<Component> buildTooltipLines(PhotographComponent photograph) {
-		final List<Component> lines = new ArrayList<>(3);
+	public static List<Component> buildTooltipLines(Photograph photograph) {
+		final List<Component> lines = new ArrayList<>();
 		final Component name = getPhotographNameLine(photograph);
 		if (name != null) lines.add(name);
 
@@ -47,21 +48,20 @@ public final class PhotographDetails {
 	}
 
 	@Nullable
-	public static Component getPhotographNameLine(PhotographComponent photograph) {
-		if (StringUtil.isNullOrEmpty(photograph.name())) {
-			return Component.translatable("item.camera_port.photograph").withStyle(ChatFormatting.GRAY);
-		}
+	public static Component getPhotographNameLine(Photograph photograph) {
+		if (StringUtil.isNullOrEmpty(photograph.name())) return null;
+		// StringUtil.isNullOrEmpty(photograph.name()) return Component.translatable("item.camera_port.photograph").withStyle(ChatFormatting.GRAY);
 		return Component.literal(photograph.name()).withStyle(ChatFormatting.GRAY);
 	}
 
 	@Nullable
-	public static Component getPhotographerLine(PhotographComponent photograph) {
+	public static Component getPhotographerLine(Photograph photograph) {
 		if (StringUtil.isNullOrEmpty(photograph.photographer())) return null;
 		return Component.translatable("photograph.photographer", photograph.photographer()).withStyle(ChatFormatting.GRAY);
 	}
 
 	@Nullable
-	public static Component getDateLine(PhotographComponent photograph) {
+	public static Component getDateLine(Photograph photograph) {
 		final Optional<Date> optionalDate = PhotographLoader.parseDate(photograph.identifier().getPath());
 		return optionalDate
 			.map(date -> Component.translatable("photograph.date", formatDate(date)).withStyle(ChatFormatting.GRAY))

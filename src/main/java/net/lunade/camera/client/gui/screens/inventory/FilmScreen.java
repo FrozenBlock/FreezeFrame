@@ -27,7 +27,7 @@ import net.lunade.camera.CameraPortConstants;
 import net.lunade.camera.client.photograph.PhotographHoverTooltipRenderer;
 import net.lunade.camera.client.photograph.PhotographRenderer;
 import net.lunade.camera.component.FilmContents;
-import net.lunade.camera.component.PhotographComponent;
+import net.lunade.camera.component.Photograph;
 import net.lunade.camera.item.FilmItem;
 import net.lunade.camera.networking.packet.SaveFilmChangesPacket;
 import net.lunade.camera.registry.CameraPortDataComponents;
@@ -95,7 +95,7 @@ public class FilmScreen extends Screen {
 	private final Player owner;
 	private final InteractionHand hand;
 	private final ScrollWheelHandler scrollWheelHandler = new ScrollWheelHandler();
-	private final List<PhotographComponent> photographs = new ArrayList<>();
+	private final List<Photograph> photographs = new ArrayList<>();
 	private int leftPos;
 	private int topPos;
 	private int selectedPhotographIndex;
@@ -181,7 +181,7 @@ public class FilmScreen extends Screen {
 	public void extractRenderState(GuiGraphicsExtractor graphics, int mouseX, int mouseY, float delta) {
 		this.extractTransparentBackground(graphics);
 		this.extractBackground(graphics, mouseX, mouseY, delta);
-		PhotographComponent hoveredPhotograph = null;
+		Photograph hoveredPhotograph = null;
 
 		if (this.isAtBeginning()) {
 			this.extractFilmPhotographBlocker(graphics, FILM_LEFT_PHOTOGRAPH_X);
@@ -304,7 +304,7 @@ public class FilmScreen extends Screen {
 		super.extractRenderState(graphics, mouseX, mouseY, delta);
 
 		if (hoveredPhotograph != null) {
-			PhotographHoverTooltipRenderer.render(graphics, this.font, this.width, this.height, mouseX, mouseY, hoveredPhotograph);
+			PhotographHoverTooltipRenderer.extractRenderState(graphics, this.font, this.width, this.height, mouseX, mouseY, hoveredPhotograph);
 		}
 	}
 
@@ -416,7 +416,7 @@ public class FilmScreen extends Screen {
 
 	private void onNameChanged(String updatedName) {
 		if (!this.hasPhotographs()) return;
-		final PhotographComponent current = this.photographs.get(this.selectedPhotographIndex);
+		final Photograph current = this.photographs.get(this.selectedPhotographIndex);
 		this.photographs.set(this.selectedPhotographIndex, current.withName(updatedName));
 	}
 
@@ -494,7 +494,7 @@ public class FilmScreen extends Screen {
 	}
 
 	@Nullable
-	private PhotographComponent getFilmPhotographComponent(int index) {
+	private Photograph getFilmPhotographComponent(int index) {
 		if (index < 0 || index >= this.photographs.size()) return null;
 		return this.photographs.get(index);
 	}

@@ -23,7 +23,7 @@ import net.fabricmc.fabric.api.item.v1.DefaultItemComponentEvents;
 import net.lunade.camera.CameraPortConstants;
 import net.lunade.camera.component.CameraContents;
 import net.lunade.camera.component.FilmContents;
-import net.lunade.camera.component.PhotographComponent;
+import net.lunade.camera.component.Photograph;
 import net.lunade.camera.component.ScopeZoomConfig;
 import net.lunade.camera.component.WritablePortfolioContent;
 import net.lunade.camera.util.ScopeZoomHelper;
@@ -34,9 +34,9 @@ import net.minecraft.network.codec.ByteBufCodecs;
 import net.minecraft.world.item.Items;
 
 public class CameraPortDataComponents {
-	public static final DataComponentType<PhotographComponent> PHOTOGRAPH = register(
+	public static final DataComponentType<Photograph> PHOTOGRAPH = register(
 		"photograph",
-		builder -> builder.persistent(PhotographComponent.CODEC).networkSynchronized(PhotographComponent.STREAM_CODEC)
+		builder -> builder.persistent(Photograph.CODEC).networkSynchronized(Photograph.STREAM_CODEC)
 	);
 	public static final DataComponentType<CameraContents> CAMERA_CONTENTS = register(
 		"camera_contents",

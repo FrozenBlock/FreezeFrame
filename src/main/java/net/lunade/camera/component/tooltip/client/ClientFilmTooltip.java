@@ -28,7 +28,7 @@ import net.lunade.camera.client.photograph.PhotographLoader;
 import net.lunade.camera.client.photograph.PhotographRenderer;
 import net.lunade.camera.config.CameraPortConfig;
 import net.lunade.camera.component.FilmContents;
-import net.lunade.camera.component.PhotographComponent;
+import net.lunade.camera.component.Photograph;
 import net.lunade.camera.item.FilmItem;
 import net.minecraft.client.gui.Font;
 import net.minecraft.client.gui.GuiGraphicsExtractor;
@@ -76,7 +76,7 @@ public class ClientFilmTooltip implements ClientTooltipComponent {
 		this.empty = contents.isEmpty();
 		this.hasMultiplePhotographs = !this.empty && contents.size() > 1;
 		this.maxPhotographs = FilmItem.normalizeMaxPhotographs(maxPhotographs);
-		@Nullable PhotographComponent photograph = this.empty ? null : contents.getSelectedPhotograph();
+		@Nullable Photograph photograph = this.empty ? null : contents.getSelectedPhotograph();
 
 		this.photographId = photograph == null
 			? null
@@ -151,19 +151,19 @@ public class ClientFilmTooltip implements ClientTooltipComponent {
 		final Fraction weight = FilmItem.getWeightSafe(this.contents, this.maxPhotographs);
 
 		if (this.empty) {
-			this.renderEmptyFilmTooltip(font, x, y, w, h, graphics);
+			this.extractEmptyFilmTooltip(font, x, y, w, h, graphics);
 		} else {
-			this.renderPhotographTooltip(font, x, y, w, h, graphics, weight);
+			this.extractPhotographTooltip(font, x, y, w, h, graphics, weight);
 		}
 	}
 
-	private void renderEmptyFilmTooltip(Font font, int x, int y, int w, int h, GuiGraphicsExtractor graphics) {
+	private void extractEmptyFilmTooltip(Font font, int x, int y, int w, int h, GuiGraphicsExtractor graphics) {
 		final int left = x + getContentXOffset(w);
 		this.extractEmptyFilmDescriptionText(left, y, font, graphics);
 		extractProgressbar(left, y + this.getEmptyFilmDescriptionTextHeight(font) + 4, font, graphics, Fraction.ZERO, 0, this.maxPhotographs);
 	}
 
-	private void renderPhotographTooltip(Font font, int x, int y, int w, int h, GuiGraphicsExtractor graphics, Fraction weight) {
+	private void extractPhotographTooltip(Font font, int x, int y, int w, int h, GuiGraphicsExtractor graphics, Fraction weight) {
 		if (!this.hidePhotographPreviewAndInfo) {
 			this.extractSelectedPhotographTooltip(font, graphics, x, y, w);
 			extractProgressbar(
