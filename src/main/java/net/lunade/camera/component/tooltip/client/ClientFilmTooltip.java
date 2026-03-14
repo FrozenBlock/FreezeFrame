@@ -17,7 +17,7 @@
 
 package net.lunade.camera.component.tooltip.client;
 
-import com.mojang.serialization.DataResult;
+import java.text.DateFormat;
 import java.util.Date;
 import java.util.Optional;
 import net.fabricmc.api.EnvType;
@@ -25,8 +25,10 @@ import net.fabricmc.api.Environment;
 import net.lunade.camera.CameraPortConstants;
 import net.lunade.camera.client.photograph.PhotographLoader;
 import net.lunade.camera.client.photograph.PhotographRenderer;
+import net.lunade.camera.config.CameraPortConfig;
 import net.lunade.camera.component.FilmContents;
 import net.lunade.camera.component.PhotographComponent;
+import net.lunade.camera.item.FilmItem;
 import net.minecraft.client.gui.Font;
 import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.client.gui.screens.inventory.tooltip.ClientTooltipComponent;
@@ -51,7 +53,8 @@ public class ClientFilmTooltip implements ClientTooltipComponent {
 	private static final int PROGRESSBAR_FILL_COLOR = 0xFFB8895F;
 	private static final Component FILM_FULL_TEXT = Component.translatable("item." + CameraPortConstants.MOD_ID + ".film.full");
 	private static final Component FILM_EMPTY_TEXT = Component.translatable("item." + CameraPortConstants.MOD_ID + ".film.empty");
-	private static final Component FILM_EMPTY_DESCRIPTION = Component.translatable("item." + CameraPortConstants.MOD_ID + ".film.empty.description");
+	private static final String FILM_EMPTY_DESCRIPTION_KEY = "item." + CameraPortConstants.MOD_ID + ".film.empty.description";
+	private static final String FILM_FULLNESS_KEY = "item." + CameraPortConstants.MOD_ID + ".film.fullness";
 	private final FilmContents contents;
 	private final boolean empty;
 	private final boolean hasMultiplePhotographs;
@@ -61,13 +64,15 @@ public class ClientFilmTooltip implements ClientTooltipComponent {
 	private final Component photographer;
 	@Nullable
 	private final Component dateAndTime;
-	@Nullable
-	private final Component copy;
+	private final Component emptyDescription;
+	private final boolean hidePhotographPreviewAndInfo;
+	private final int maxPhotographs;
 
-	public ClientFilmTooltip(FilmContents contents) {
+	public ClientFilmTooltip(FilmContents contents, int maxPhotographs) {
 		this.contents = contents;
 		this.empty = contents.isEmpty();
 		this.hasMultiplePhotographs = !this.empty && contents.size() > 1;
+		this.maxPhotographs = FilmItem.normalizeMaxPhotographs(maxPhotographs);
 		@Nullable PhotographComponent photograph = this.empty ? null : contents.getSelectedPhotograph();
 
 		this.photographId = photograph == null
@@ -80,27 +85,25 @@ public class ClientFilmTooltip implements ClientTooltipComponent {
 
 		final Optional<Date> optionalDate = photograph == null ? Optional.empty() : PhotographLoader.parseDate(this.photographId.getPath());
 		this.dateAndTime = optionalDate
-			.map(date -> Component.translatable("photograph.date", date.toLocaleString()).withStyle(ChatFormatting.GRAY))
+			.map(date -> Component.translatable("photograph.date", formatDate(date)).withStyle(ChatFormatting.GRAY))
 			.orElse(null);
 
-		this.copy = photograph == null || !photograph.isCopy()
-			? null
-			: ClientPhotographTooltip.COPY_COMPONENT;
+		this.emptyDescription = Component.translatable(FILM_EMPTY_DESCRIPTION_KEY, this.maxPhotographs);
+
+		this.hidePhotographPreviewAndInfo = CameraPortConfig.get().hideFilmPhotoPreviewAndInfo;
 	}
 
 	@Override
 	public int getHeight(Font font) {
-		return this.empty ? getEmptyFilmBackgroundHeight(font) : this.backgroundHeight(font);
+		if (this.hidePhotographPreviewAndInfo) return this.getEmptyFilmBackgroundHeight(font);
+		return this.empty ? this.getEmptyFilmBackgroundHeight(font) : this.backgroundHeight(font);
 	}
 
 	@Override
 	public int getWidth(Font font) {
 		final int textWidth = Math.max(
-			Math.max(
-				this.photographer != null ? getTextHeight(this.photographer, font) : 0,
-				this.dateAndTime != null ? getTextHeight(this.dateAndTime, font) : 0
-			),
-			this.copy != null ? getTextHeight(this.copy, font) : 0
+			this.photographer != null ? getTextHeight(this.photographer, font) : 0,
+			this.dateAndTime != null ? getTextHeight(this.dateAndTime, font) : 0
 		);
 		return Math.max(GRID_WIDTH, textWidth);
 	}
@@ -110,8 +113,8 @@ public class ClientFilmTooltip implements ClientTooltipComponent {
 		return true;
 	}
 
-	private static int getEmptyFilmBackgroundHeight(Font font) {
-		return getEmptyFilmDescriptionTextHeight(font) + 13 + 8;
+	private int getEmptyFilmBackgroundHeight(Font font) {
+		return this.getEmptyFilmDescriptionTextHeight(font) + 13 + 8;
 	}
 
 	private int backgroundHeight(Font font) {
@@ -120,11 +123,11 @@ public class ClientFilmTooltip implements ClientTooltipComponent {
 
 	private int photographGridHeight(Font font) {
 		if (this.empty) return 0;
+		if (this.hidePhotographPreviewAndInfo) return 0;
 
 		int extension = 0;
 		if (this.photographer != null) extension += getTextHeight(this.photographer, font);
 		if (this.dateAndTime != null) extension += getTextHeight(this.dateAndTime, font);
-		if (this.copy != null) extension += getTextHeight(this.copy, font);
 		return PHOTOGRAPH_RENDER_SIZE + extension;
 	}
 
@@ -134,25 +137,39 @@ public class ClientFilmTooltip implements ClientTooltipComponent {
 
 	@Override
 	public void renderImage(Font font, int x, int y, int w, int h, GuiGraphics graphics) {
-		final DataResult<Fraction> weight = this.contents.weight();
-		if (weight.isError()) return;
+		final Fraction weight = FilmItem.getWeightSafe(this.contents, this.maxPhotographs);
 
 		if (this.empty) {
-			renderEmptyFilmTooltip(font, x, y, w, h, graphics);
+			this.renderEmptyFilmTooltip(font, x, y, w, h, graphics);
 		} else {
-			this.renderPhotographTooltip(font, x, y, w, h, graphics, weight.getOrThrow());
+			this.renderPhotographTooltip(font, x, y, w, h, graphics, weight);
 		}
 	}
 
-	private static void renderEmptyFilmTooltip(Font font, int x, int y, int w, int h, GuiGraphics graphics) {
+	private void renderEmptyFilmTooltip(Font font, int x, int y, int w, int h, GuiGraphics graphics) {
 		final int left = x + getContentXOffset(w);
-		drawEmptyFilmDescriptionText(left, y, font, graphics);
-		drawProgressbar(left, y + getEmptyFilmDescriptionTextHeight(font) + 4, font, graphics, Fraction.ZERO);
+		this.drawEmptyFilmDescriptionText(left, y, font, graphics);
+		drawProgressbar(left, y + this.getEmptyFilmDescriptionTextHeight(font) + 4, font, graphics, Fraction.ZERO, 0, this.maxPhotographs);
 	}
 
 	private void renderPhotographTooltip(Font font, int x, int y, int w, int h, GuiGraphics graphics, Fraction weight) {
-		this.drawSelectedPhotographTooltip(font, graphics, x, y, w);
-		drawProgressbar(x + getContentXOffset(w), y + this.photographGridHeight(font) + BELOW_PHOTOGRAPH_SPACING, font, graphics, weight);
+		if (!this.hidePhotographPreviewAndInfo) {
+			this.drawSelectedPhotographTooltip(font, graphics, x, y, w);
+			drawProgressbar(
+				x + getContentXOffset(w),
+				y + this.photographGridHeight(font) + BELOW_PHOTOGRAPH_SPACING,
+				font,
+				graphics,
+				weight,
+				this.contents.size(),
+				this.maxPhotographs
+			);
+			return;
+		}
+
+		final int left = x + getContentXOffset(w);
+		this.drawEmptyFilmDescriptionText(left, y, font, graphics);
+		drawProgressbar(left, y + this.getEmptyFilmDescriptionTextHeight(font) + 4, font, graphics, weight, this.contents.size(), this.maxPhotographs);
 	}
 
 	private void drawSelectedPhotographTooltip(Font font, GuiGraphics graphics, int x, int y, int w) {
@@ -169,7 +186,7 @@ public class ClientFilmTooltip implements ClientTooltipComponent {
 		this.drawPhotographTooltips(left, y + TOOLTIP_HEIGHT, font, graphics);
 	}
 
-	private static void drawProgressbar(int x, int y, Font font, GuiGraphics graphics, Fraction weight) {
+	private static void drawProgressbar(int x, int y, Font font, GuiGraphics graphics, Fraction weight, int photographCount, int maxPhotographs) {
 		final int progressBarFill = getProgressBarFill(weight);
 		if (weight.compareTo(Fraction.ONE) >= 0) {
 			graphics.blitSprite(RenderPipelines.GUI_TEXTURED, PROGRESSBAR_FULL_SPRITE, x + 1, y, progressBarFill, 13);
@@ -178,12 +195,12 @@ public class ClientFilmTooltip implements ClientTooltipComponent {
 		}
 		graphics.blitSprite(RenderPipelines.GUI_TEXTURED, PROGRESSBAR_BORDER_SPRITE, x, y, 96, 13);
 
-		final Component progressBarFillText = getProgressBarFillText(weight);
+		final Component progressBarFillText = getProgressBarFillText(weight, photographCount, maxPhotographs);
 		if (progressBarFillText != null) graphics.drawCenteredString(font, progressBarFillText, x + 48, y + 3, -1);
 	}
 
-	private static void drawEmptyFilmDescriptionText(int x, int y, Font font, GuiGraphics graphics) {
-		graphics.drawWordWrap(font, FILM_EMPTY_DESCRIPTION, x, y, GRID_WIDTH, -5592406);
+	private void drawEmptyFilmDescriptionText(int x, int y, Font font, GuiGraphics graphics) {
+		graphics.drawWordWrap(font, this.emptyDescription, x, y, GRID_WIDTH, -5592406);
 	}
 
 	private void drawPhotographTooltips(int x, int y, Font font, GuiGraphics graphics) {
@@ -196,15 +213,10 @@ public class ClientFilmTooltip implements ClientTooltipComponent {
 			graphics.drawWordWrap(font, this.dateAndTime, x, y, GRID_WIDTH, -5592406);
 			y += getTextHeight(this.dateAndTime, font);
 		}
-
-		if (this.copy != null) {
-			graphics.drawWordWrap(font, this.copy, x, y, GRID_WIDTH, -5592406);
-			y += getTextHeight(this.copy, font);
-		}
 	}
 
-	private static int getEmptyFilmDescriptionTextHeight(Font font) {
-		return getTextHeight(FILM_EMPTY_DESCRIPTION, font);
+	private int getEmptyFilmDescriptionTextHeight(Font font) {
+		return getTextHeight(this.emptyDescription, font);
 	}
 
 	private static int getTextHeight(FormattedText text, Font font) {
@@ -215,9 +227,14 @@ public class ClientFilmTooltip implements ClientTooltipComponent {
 		return Mth.clamp(Mth.mulAndTruncate(weight, 94), 0, 94);
 	}
 
+	private static String formatDate(Date date) {
+		return DateFormat.getDateTimeInstance(DateFormat.SHORT, DateFormat.SHORT).format(date);
+	}
+
 	@Nullable
-	private static Component getProgressBarFillText(Fraction weight) {
+	private static Component getProgressBarFillText(Fraction weight, int photographCount, int maxPhotographs) {
 		if (weight.compareTo(Fraction.ZERO) == 0) return FILM_EMPTY_TEXT;
-		return weight.compareTo(Fraction.ONE) >= 0 ? FILM_FULL_TEXT : null;
+		if (weight.compareTo(Fraction.ONE) >= 0) return FILM_FULL_TEXT;
+		return Component.translatable(FILM_FULLNESS_KEY, photographCount, maxPhotographs);
 	}
 }

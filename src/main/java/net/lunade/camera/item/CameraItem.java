@@ -136,7 +136,7 @@ public class CameraItem extends SpawnEggItem {
 
 		final ItemStackTemplate filmStack = contents.items().get(0);
 		final FilmContents filmContents = Objects.requireNonNullElse(filmStack.get(CameraPortDataComponents.FILM_CONTENTS), FilmContents.EMPTY);
-		return FilmItem.getWeightSafe(filmContents);
+		return FilmItem.getWeightSafe(filmContents, filmStack);
 	}
 
 	public static float getFullnessDisplay(ItemStack stack) {
@@ -291,11 +291,13 @@ public class CameraItem extends SpawnEggItem {
 		if (potentialFilm.isEmpty()) return;
 
 		final ItemStack film = potentialFilm.get();
-		final FilmContents.Mutable filmContents = new FilmContents.Mutable(film.getOrDefault(CameraPortDataComponents.FILM_CONTENTS, FilmContents.EMPTY));
+		final int maxPhotographs = FilmItem.getMaxPhotographs(film);
+		final FilmContents.Mutable filmContents = new FilmContents.Mutable(film.getOrDefault(CameraPortDataComponents.FILM_CONTENTS, FilmContents.EMPTY), maxPhotographs);
 		final PhotographComponent photograph = new PhotographComponent(CameraPortConstants.id(fileName), player.getPlainTextName());
 		if (!filmContents.tryInsert(photograph)) return;
 
 		film.set(CameraPortDataComponents.FILM_CONTENTS, filmContents.toImmutable());
+		FilmItem.refreshStackingState(film);
 		stack.set(CameraPortDataComponents.CAMERA_CONTENTS, cameraContents.toImmutable());
 		broadcastChangesOnContainerMenu(player);
 	}

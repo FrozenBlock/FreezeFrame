@@ -47,6 +47,7 @@ public class ClientCameraTooltip implements ClientTooltipComponent {
 	private static final int PROGRESSBAR_FILL_MAX = 94;
 	private static final int PROGRESSBAR_FILL_COLOR = 0xFFB8895F;
 	private static final Component CAMERA_FULL_TEXT = Component.translatable("item." + CameraPortConstants.MOD_ID + ".camera.full");
+	private static final String CAMERA_FULLNESS_KEY = "item." + CameraPortConstants.MOD_ID + ".camera.fullness";
 	private static final Component CAMERA_EMPTY_TEXT = Component.translatable("item." + CameraPortConstants.MOD_ID + ".camera.empty");
 	private static final Component CAMERA_FILM_EMPTY_TEXT = Component.translatable("item." + CameraPortConstants.MOD_ID + ".camera.film.empty");
 	private static final Component CAMERA_EMPTY_DESCRIPTION = Component.translatable("item." + CameraPortConstants.MOD_ID + ".camera.empty.description");
@@ -86,36 +87,55 @@ public class ClientCameraTooltip implements ClientTooltipComponent {
 
 	@Override
 	public void renderImage(Font font, int x, int y, int w, int h, GuiGraphics graphics) {
-		final Fraction weight = this.getInsertedFilmWeight();
+		final InsertedFilmProgress insertedFilmProgress = this.getInsertedFilmProgress();
 
 		if (this.contents.isEmpty()) {
 			renderEmptyBundleTooltip(font, x, y, w, h, graphics);
 		} else {
-			this.renderBundleWithItemsTooltip(font, x, y, w, h, graphics, weight);
+			this.renderBundleWithItemsTooltip(font, x, y, w, h, graphics, insertedFilmProgress);
 		}
 	}
 
-	private Fraction getInsertedFilmWeight() {
-		if (this.contents.isEmpty()) return Fraction.ZERO;
+	private InsertedFilmProgress getInsertedFilmProgress() {
+		if (this.contents.isEmpty()) return new InsertedFilmProgress(Fraction.ZERO, 0, FilmContents.BASE_MAX_PHOTOGRAPHS);
 
 		final ItemStackTemplate filmStack = this.contents.items().get(0);
 		final FilmContents filmContents = Objects.requireNonNullElse(filmStack.get(CameraPortDataComponents.FILM_CONTENTS), FilmContents.EMPTY);
-		return FilmItem.getWeightSafe(filmContents);
+		final int maxPhotographs = FilmItem.getMaxPhotographs(filmStack);
+		return new InsertedFilmProgress(FilmItem.getWeightSafe(filmContents, maxPhotographs), filmContents.size(), maxPhotographs);
 	}
 
 	private static void renderEmptyBundleTooltip(Font font, int x, int y, int w, int h, GuiGraphics graphics) {
 		final int left = x + getContentXOffset(w);
 		drawEmptyBundleDescriptionText(left, y, font, graphics);
-		drawProgressbar(left, y + getEmptyBundleDescriptionTextHeight(font) + 4, font, graphics, Fraction.ZERO, CAMERA_EMPTY_TEXT);
+		drawProgressbar(
+			left,
+			y + getEmptyBundleDescriptionTextHeight(font) + 4,
+			font,
+			graphics,
+			Fraction.ZERO,
+			CAMERA_EMPTY_TEXT,
+			0,
+			FilmContents.BASE_MAX_PHOTOGRAPHS
+		);
 	}
 
-	private void renderBundleWithItemsTooltip(Font font, int x, int y, int w, int h, GuiGraphics graphics, Fraction weight) {
+	private void renderBundleWithItemsTooltip(Font font, int x, int y, int w, int h, GuiGraphics graphics, InsertedFilmProgress insertedFilmProgress) {
 		final int left = x + getContentXOffset(w);
 		drawContainsDescriptionText(left, y, font, graphics);
-		drawProgressbar(left, y + getContainsDescriptionTextHeight(font) + 4, font, graphics, weight, CAMERA_FILM_EMPTY_TEXT);
+		drawProgressbar(
+			left,
+			y + getContainsDescriptionTextHeight(font) + 4,
+			font,
+			graphics,
+			insertedFilmProgress.weight(),
+			CAMERA_FILM_EMPTY_TEXT,
+			insertedFilmProgress.photographCount(),
+			insertedFilmProgress.maxPhotographs()
+		);
 	}
 
-	private static void drawProgressbar(int x, int y, Font font, GuiGraphics graphics, Fraction weight, Component emptyText) {
+	private static void drawProgressbar(int x, int y, Font font, GuiGraphics graphics, Fraction weight, Component emptyText, int photographCount, int maxPhotographs) {
 		final int progressBarFill = getProgressBarFill(weight);
 		if (weight.compareTo(Fraction.ONE) >= 0) {
 			graphics.blitSprite(RenderPipelines.GUI_TEXTURED, PROGRESSBAR_FULL_SPRITE, x + PROGRESSBAR_BORDER, y, progressBarFill, PROGRESSBAR_HEIGHT);
@@ -123,7 +143,7 @@ public class ClientCameraTooltip implements ClientTooltipComponent {
 			graphics.fill(x + PROGRESSBAR_BORDER, y, x + PROGRESSBAR_BORDER + progressBarFill, y + PROGRESSBAR_HEIGHT, PROGRESSBAR_FILL_COLOR);
 		}
 		graphics.blitSprite(RenderPipelines.GUI_TEXTURED, PROGRESSBAR_BORDER_SPRITE, x, y, PROGRESSBAR_WIDTH, PROGRESSBAR_HEIGHT);
-		final Component progressBarFillText = getProgressBarFillText(weight, emptyText);
+		final Component progressBarFillText = getProgressBarFillText(weight, emptyText, photographCount, maxPhotographs);
 		if (progressBarFillText != null) graphics.drawCenteredString(font, progressBarFillText, x + 48, y + 3, -1);
 	}
 
@@ -148,8 +168,12 @@ public class ClientCameraTooltip implements ClientTooltipComponent {
 	}
 
 	@Nullable
-	private static Component getProgressBarFillText(final Fraction weight, Component emptyText) {
+	private static Component getProgressBarFillText(final Fraction weight, Component emptyText, int photographCount, int maxPhotographs) {
 		if (weight.compareTo(Fraction.ZERO) == 0) return emptyText;
-		return weight.compareTo(Fraction.ONE) >= 0 ? CAMERA_FULL_TEXT : null;
+		if (weight.compareTo(Fraction.ONE) >= 0) return CAMERA_FULL_TEXT;
+		return Component.translatable(CAMERA_FULLNESS_KEY, photographCount, maxPhotographs);
+	}
+
+	private record InsertedFilmProgress(Fraction weight, int photographCount, int maxPhotographs) {
 	}
 }

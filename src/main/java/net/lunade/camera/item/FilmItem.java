@@ -17,16 +17,19 @@
 
 package net.lunade.camera.item;
 
-import com.mojang.serialization.DataResult;
 import java.util.Optional;
 import net.lunade.camera.component.FilmContents;
 import net.lunade.camera.component.PhotographComponent;
 import net.lunade.camera.component.tooltip.FilmTooltip;
 import net.lunade.camera.registry.CameraPortDataComponents;
 import net.minecraft.core.component.DataComponents;
+import net.minecraft.server.level.ServerLevel;
 import net.minecraft.util.ARGB;
 import net.minecraft.util.Mth;
+import net.minecraft.world.entity.Entity;
+import net.minecraft.world.entity.EquipmentSlot;
 import net.minecraft.world.inventory.tooltip.TooltipComponent;
+import net.minecraft.world.item.ItemInstance;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.component.TooltipDisplay;
@@ -41,34 +44,52 @@ public class FilmItem extends Item {
 		super(properties);
 	}
 
-	public static Fraction getWeightSafe(FilmContents contents) {
-		return switch (contents.weight()) {
-			case DataResult.Success<Fraction> success -> success.value();
-			case DataResult.Error<?> error -> Fraction.ONE;
-		};
+	public static int normalizeMaxPhotographs(int maxPhotographs) {
+		return Mth.clamp(maxPhotographs, FilmContents.BASE_MAX_PHOTOGRAPHS, FilmContents.ABSOLUTE_MAX_PHOTOGRAPHS);
+	}
+
+	public static int getMaxPhotographs(ItemInstance filmItem) {
+		final Integer maxPhotographs = filmItem.get(CameraPortDataComponents.FILM_MAX_PHOTOGRAPHS);
+		if (maxPhotographs == null) return FilmContents.BASE_MAX_PHOTOGRAPHS;
+		return normalizeMaxPhotographs(maxPhotographs);
+	}
+
+	public static Fraction getWeightSafe(FilmContents contents, int maxPhotographs) {
+		return Fraction.getFraction(contents.size(), Math.max(1, normalizeMaxPhotographs(maxPhotographs)));
+	}
+
+	public static Fraction getWeightSafe(FilmContents contents, ItemInstance filmItem) {
+		return getWeightSafe(contents, getMaxPhotographs(filmItem));
 	}
 
 	public static float getFullnessDisplay(ItemStack stack) {
 		final FilmContents contents = stack.getOrDefault(CameraPortDataComponents.FILM_CONTENTS, FilmContents.EMPTY);
-		return getWeightSafe(contents).floatValue();
+		return getWeightSafe(contents, stack).floatValue();
+	}
+
+	@Override
+	public void inventoryTick(ItemStack stack, ServerLevel level, Entity entity, EquipmentSlot equipmentSlot) {
+		if (needsStackingRefresh(stack)) {
+			refreshStackingState(stack);
+		}
 	}
 
 	@Override
 	public boolean isBarVisible(ItemStack stack) {
 		final FilmContents contents = stack.getOrDefault(CameraPortDataComponents.FILM_CONTENTS, FilmContents.EMPTY);
-		return getWeightSafe(contents).compareTo(Fraction.ZERO) > 0;
+		return getWeightSafe(contents, stack).compareTo(Fraction.ZERO) > 0;
 	}
 
 	@Override
 	public int getBarWidth(ItemStack stack) {
 		final FilmContents contents = stack.getOrDefault(CameraPortDataComponents.FILM_CONTENTS, FilmContents.EMPTY);
-		return Math.min(1 + Mth.mulAndTruncate(getWeightSafe(contents), 12), 13);
+		return Math.min(1 + Mth.mulAndTruncate(getWeightSafe(contents, stack), 12), 13);
 	}
 
 	@Override
 	public int getBarColor(ItemStack stack) {
 		final FilmContents contents = stack.getOrDefault(CameraPortDataComponents.FILM_CONTENTS, FilmContents.EMPTY);
-		return getWeightSafe(contents).compareTo(Fraction.ONE) >= 0 ? FULL_BAR_COLOR : BAR_COLOR;
+		return getWeightSafe(contents, stack).compareTo(Fraction.ONE) >= 0 ? FULL_BAR_COLOR : BAR_COLOR;
 	}
 
 	public static void toggleSelectedPhotograph(ItemStack stack, int selectedPhotograph) {
@@ -78,6 +99,19 @@ public class FilmItem extends Item {
 		final FilmContents.Mutable contents = new FilmContents.Mutable(initialContents);
 		contents.toggleSelectedPhotograph(selectedPhotograph);
 		stack.set(CameraPortDataComponents.FILM_CONTENTS, contents.toImmutable());
+		refreshStackingState(stack);
+	}
+
+	public static void refreshStackingState(ItemStack stack) {
+		final FilmContents contents = stack.getOrDefault(CameraPortDataComponents.FILM_CONTENTS, FilmContents.EMPTY);
+		final int expectedMaxStackSize = contents.isEmpty() ? stack.getItem().getDefaultMaxStackSize() : 1;
+		stack.set(DataComponents.MAX_STACK_SIZE, expectedMaxStackSize);
+	}
+
+	private static boolean needsStackingRefresh(ItemStack stack) {
+		final FilmContents contents = stack.getOrDefault(CameraPortDataComponents.FILM_CONTENTS, FilmContents.EMPTY);
+		final int expectedMaxStackSize = contents.isEmpty() ? stack.getItem().getDefaultMaxStackSize() : 1;
+		return stack.getOrDefault(DataComponents.MAX_STACK_SIZE, stack.getItem().getDefaultMaxStackSize()) != expectedMaxStackSize;
 	}
 
 	public static int getSelectedPhotographIndex(ItemStack stack) {
@@ -100,7 +134,7 @@ public class FilmItem extends Item {
 		if (!tooltipDisplay.shows(CameraPortDataComponents.FILM_CONTENTS)) return Optional.empty();
 
 		final FilmContents contents = stack.get(CameraPortDataComponents.FILM_CONTENTS);
-		if (contents != null) return Optional.of(new FilmTooltip(contents));
+		if (contents != null) return Optional.of(new FilmTooltip(contents, getMaxPhotographs(stack)));
 		return Optional.empty();
 	}
 

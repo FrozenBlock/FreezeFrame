@@ -57,14 +57,15 @@ public class CameraPortItems {
 		"film",
 		FilmItem::new,
 		new Item.Properties()
-			.stacksTo(1)
+			.stacksTo(16)
 			.component(CameraPortDataComponents.FILM_CONTENTS, FilmContents.EMPTY)
+			.component(CameraPortDataComponents.FILM_MAX_PHOTOGRAPHS, FilmContents.BASE_MAX_PHOTOGRAPHS)
 	);
 	public static final PhotographItem PHOTOGRAPH = register(
 		"photograph",
 		PhotographItem::new,
 		new Item.Properties()
-			.stacksTo(1)
+			.stacksTo(16)
 	);
 
 	// public static final PortfolioItem PORTFOLIO = new PortfolioItem(new Item.Properties().stacksTo(1).component(WRITABLE_PORTFOLIO_CONTENT, WritablePortfolioContent.EMPTY));

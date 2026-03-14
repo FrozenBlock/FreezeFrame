@@ -26,6 +26,7 @@ import net.lunade.camera.CameraPortConstants;
 import net.lunade.camera.client.photograph.PhotographRenderer;
 import net.lunade.camera.component.FilmContents;
 import net.lunade.camera.component.PhotographComponent;
+import net.lunade.camera.item.FilmItem;
 import net.lunade.camera.menu.PrinterMenu;
 import net.lunade.camera.networking.packet.PrinterSyncSelectPhotographIndexPacket;
 import net.lunade.camera.registry.CameraPortDataComponents;
@@ -54,6 +55,8 @@ public class PrinterScreen extends AbstractContainerScreen<PrinterMenu> {
 	private static final int FILM_LEFT_PHOTOGRAPH_X = 5;
 	private static final int FILM_MIDDLE_PHOTOGRAPH_X = 62;
 	private static final int FILM_RIGHT_PHOTOGRAPH_X = 119;
+	private static final int FILM_PHOTOGRAPH_BLOCKER_OFFSET = -1;
+	private static final int FILM_PHOTOGRAPH_BLOCKER_SIZE = FILM_PHOTOGRAPH_SIZE + 2;
 	private static final int SCROLLER_WIDTH = 17;
 	private static final int SCROLLER_HEIGHT = 8;
 	private static final int SCROLLER_TRACK_X = FILM_LEFT_PHOTOGRAPH_X - 1;
@@ -65,6 +68,8 @@ public class PrinterScreen extends AbstractContainerScreen<PrinterMenu> {
 	private static final Identifier TEXTURE = CameraPortConstants.id("textures/gui/container/printer.png");
 	private static final Identifier TEXTURE_FILM = CameraPortConstants.id("textures/gui/container/printer_film.png");
 	private static final Identifier SCROLLER = CameraPortConstants.id("container/printer/scroller");
+	private static final Identifier SCROLLER_DISABLED = CameraPortConstants.id("container/printer/scroller_disabled");
+	private static final Identifier FILM_PHOTOGRAPH_BLOCKER = CameraPortConstants.id("container/printer/film_photograph_blocker");
 	private static final Identifier FILM_PHOTOGRAPH_HIGHLIGHT = CameraPortConstants.id("container/printer/film_photograph_highlight");
 	private static final List<Identifier> SOURCE_SLOT_ICONS = List.of(
 		CameraPortConstants.id("container/slot/film"),
@@ -86,6 +91,8 @@ public class PrinterScreen extends AbstractContainerScreen<PrinterMenu> {
 	private boolean displayFilm = false;
 	private boolean draggingScroller = false;
 	private int scrollerX = SCROLLER_TRACK_X;
+	private int filmMaxPhotographs = FilmContents.BASE_MAX_PHOTOGRAPHS;
+	private ItemStack lastSourceItem = ItemStack.EMPTY;
 	private Identifier photographCopyId;
 
 	public PrinterScreen(PrinterMenu menu, Inventory inventory, Component title) {
@@ -111,6 +118,7 @@ public class PrinterScreen extends AbstractContainerScreen<PrinterMenu> {
 	}
 
 	private void setupDataAndResultSlot(int photographIndex) {
+		this.photographIndex = photographIndex;
 		ClientPlayNetworking.send(new PrinterSyncSelectPhotographIndexPacket(photographIndex));
 		this.menu.setupDataAndResultSlot(photographIndex);
 		setupOrClearFilmPhotographDisplays();
@@ -133,6 +141,14 @@ public class PrinterScreen extends AbstractContainerScreen<PrinterMenu> {
 		super.render(graphics, mouseX, mouseY, partialTicks);
 
 		if (this.displayFilm) {
+			if (this.isAtBeginning()) {
+				this.renderFilmPhotographBlocker(graphics, FILM_LEFT_PHOTOGRAPH_X);
+			}
+
+			if (this.isAtEnd() && this.isFilmFull()) {
+				this.renderFilmPhotographBlocker(graphics, FILM_RIGHT_PHOTOGRAPH_X);
+			}
+
 			boolean alreadyHovering = false;
 			if (this.middlePhotograph != null) {
 				PhotographRenderer.blit(
@@ -217,6 +233,15 @@ public class PrinterScreen extends AbstractContainerScreen<PrinterMenu> {
 					SCROLLER_WIDTH,
 					SCROLLER_HEIGHT
 				);
+			} else {
+				graphics.blitSprite(
+					RenderPipelines.GUI_TEXTURED,
+					SCROLLER_DISABLED,
+					this.leftPos + SCROLLER_TRACK_X,
+					this.topPos + SCROLLER_TRACK_Y,
+					SCROLLER_WIDTH,
+					SCROLLER_HEIGHT
+				);
 			}
 		}
 
@@ -295,7 +320,10 @@ public class PrinterScreen extends AbstractContainerScreen<PrinterMenu> {
 		if (this.filmContents == null || this.filmContents.isEmpty()) return;
 
 		final int updatedIndex = amount == 0 ? this.photographIndex : Math.max(0, Math.min(this.photographIndex + amount, this.getMaxPhotographIndex()));
-		if (updatedIndex != this.photographIndex) this.setupDataAndResultSlot(updatedIndex);
+		if (updatedIndex != this.photographIndex) {
+			this.photographIndex = updatedIndex;
+			this.setupDataAndResultSlot(this.photographIndex);
+		}
 		this.photographIndex = updatedIndex;
 		Minecraft.getInstance().getSoundManager().play(SimpleSoundInstance.forUI(SoundEvents.UI_BUTTON_CLICK, 1F));
 		this.updateScrollerXFromPhotographIndex();
@@ -372,6 +400,29 @@ public class PrinterScreen extends AbstractContainerScreen<PrinterMenu> {
 		this.scrollerX = SCROLLER_TRACK_X + Math.round(progress * travel);
 	}
 
+	private void renderFilmPhotographBlocker(GuiGraphics graphics, int slotX) {
+		graphics.blitSprite(
+			RenderPipelines.GUI_TEXTURED,
+			FILM_PHOTOGRAPH_BLOCKER,
+			this.leftPos + slotX + FILM_PHOTOGRAPH_BLOCKER_OFFSET,
+			this.topPos + FILM_PHOTOGRAPH_Y + FILM_PHOTOGRAPH_BLOCKER_OFFSET,
+			FILM_PHOTOGRAPH_BLOCKER_SIZE,
+			FILM_PHOTOGRAPH_BLOCKER_SIZE
+		);
+	}
+
+	private boolean isAtBeginning() {
+		return this.displayFilm && this.filmContents != null && !this.filmContents.isEmpty() && this.photographIndex <= 0;
+	}
+
+	private boolean isAtEnd() {
+		return this.displayFilm && this.filmContents != null && !this.filmContents.isEmpty() && this.photographIndex >= this.getMaxPhotographIndex();
+	}
+
+	private boolean isFilmFull() {
+		return this.filmContents != null && this.filmContents.size() >= this.filmMaxPhotographs;
+	}
+
 	private void containerChanged() {
 		if (!this.menu.hasSourceItem()) {
 			this.filmContents = null;
@@ -381,19 +432,31 @@ public class PrinterScreen extends AbstractContainerScreen<PrinterMenu> {
 			this.photographIndex = 0;
 			this.displayFilm = false;
 			this.draggingScroller = false;
+			this.scrollerX = SCROLLER_TRACK_X;
 			this.photographCopyId = null;
+			this.lastSourceItem = ItemStack.EMPTY;
 			return;
+		}
+
+		final ItemStack sourceItem = this.menu.getSourceItem();
+		final boolean sourceChanged = !ItemStack.isSameItemSameComponents(sourceItem, this.lastSourceItem);
+		if (sourceChanged) {
+			this.photographIndex = 0;
+			this.draggingScroller = false;
+			this.scrollerX = SCROLLER_TRACK_X;
+			this.setupDataAndResultSlot(0);
 		}
 
 		this.setupOrClearFilmPhotographDisplays();
 
-		final ItemStack sourceItem = this.menu.getSourceItem();
 		if (sourceItem.is(CameraPortItems.PHOTOGRAPH)) {
 			final PhotographComponent photographComponent = sourceItem.get(CameraPortDataComponents.PHOTOGRAPH);
-			this.photographCopyId = (photographComponent == null || photographComponent.isCopy()) ? null : photographComponent.identifier();
+			this.photographCopyId = (photographComponent == null || !photographComponent.canCopy()) ? null : photographComponent.identifier();
 		} else {
 			this.photographCopyId = null;
 		}
+
+		this.lastSourceItem = sourceItem.copyWithCount(1);
 	}
 
 	private void setupOrClearFilmPhotographDisplays() {
@@ -401,6 +464,7 @@ public class PrinterScreen extends AbstractContainerScreen<PrinterMenu> {
 		this.displayFilm = sourceItem.is(CameraPortItems.FILM) && sourceItem.has(CameraPortDataComponents.FILM_CONTENTS);
 		if (!this.displayFilm) {
 			this.filmContents = null;
+			this.filmMaxPhotographs = FilmContents.BASE_MAX_PHOTOGRAPHS;
 			this.leftPhotograph = null;
 			this.middlePhotograph = null;
 			this.rightPhotograph = null;
@@ -409,6 +473,7 @@ public class PrinterScreen extends AbstractContainerScreen<PrinterMenu> {
 			this.scrollerX = SCROLLER_TRACK_X;
 		} else {
 			this.filmContents = sourceItem.get(CameraPortDataComponents.FILM_CONTENTS);
+			this.filmMaxPhotographs = FilmItem.getMaxPhotographs(sourceItem);
 			this.photographIndex = Math.max(0, Math.min(this.photographIndex, this.getMaxPhotographIndex()));
 			this.middlePhotograph = this.getFilmPhotograph(this.photographIndex);
 			this.rightPhotograph = this.getFilmPhotograph(this.photographIndex + 1);

@@ -18,6 +18,7 @@
 package net.lunade.camera;
 
 import net.fabricmc.api.ModInitializer;
+import net.lunade.camera.config.CameraPortConfig;
 import net.lunade.camera.networking.CameraPortNetworking;
 import net.lunade.camera.registry.CameraPortBlocks;
 import net.lunade.camera.registry.CameraPortContainerComponentManipulators;
@@ -26,12 +27,15 @@ import net.lunade.camera.registry.CameraPortDataComponents;
 import net.lunade.camera.registry.CameraPortEntityTypes;
 import net.lunade.camera.registry.CameraPortItems;
 import net.lunade.camera.registry.CameraPortMenuTypes;
+import net.lunade.camera.registry.CameraPortRecipeSerializers;
 import net.lunade.camera.registry.CameraPortSounds;
 
 public class CameraPortMain implements ModInitializer {
 
 	@Override
 	public void onInitialize() {
+		CameraPortConfig.init();
+
 		CameraPortEntityTypes.init();
 		CameraPortBlocks.register();
 		CameraPortItems.init();
@@ -39,6 +43,7 @@ public class CameraPortMain implements ModInitializer {
 		CameraPortDataComponentPredicates.init();
 		CameraPortSounds.init();
 		CameraPortDataComponents.init();
+		CameraPortRecipeSerializers.init();
 		CameraPortMenuTypes.register();
 
 		CameraPortNetworking.init();

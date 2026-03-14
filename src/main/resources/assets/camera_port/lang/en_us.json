@@ -19,13 +19,15 @@
   "subtitles.item.camera.insert_fail": "Camera full",
   "subtitles.item.camera.remove_one": "Film unpacked",
 
-  "photograph.photographer": "Photographer: %1$s",
+  "photograph.photographer": "by %1$s",
   "photograph.date": "%s",
-  "photograph.copy": "Copy",
+  "photograph.original": "Original",
+  "photograph.copy": "Copy of Original",
+  "photograph.copy_of_copy": "Copy of Copy",
 
   "item.camera_port.film": "Film Roll",
   "item.camera_port.film.empty": "Blank",
-  "item.camera_port.film.empty.description": "Stores up to 16 photographs",
+  "item.camera_port.film.empty.description": "Stores up to %s images",
   "item.camera_port.film.full": "Full",
   "item.camera_port.film.fullness": "%s/%s",
 
@@ -37,10 +39,14 @@
   "subtitle.entity.camera.hit": "Tripod buckles",
   "subtitle.entity.camera.fall": "Tripod lands",
   "subtitle.entity.camera.break": "Tripod breaks",
-  "container.printer": "Printer",
-  "block.camera_port.printer": "Printer",
+  "container.printer": "Developing Table",
+  "block.camera_port.printer": "Developing Table",
   "option.camera_port.component.title": "Camera Port Options",
   "option.camera_port.config": "Config",
   "option.camera_port.use_as_world_icon": "Use Photos As World Icons",
-  "tooltip.camera_port.use_as_world_icon": "Whether the latest-taken Photo in a world should replace the world icon."
+  "tooltip.camera_port.use_as_world_icon": "Whether the latest-taken Photo in a world should replace the world icon.",
+  "option.camera_port.hide_film_photo_preview_and_info": "Hide Film Photo Preview & Info",
+  "tooltip.camera_port.hide_film_photo_preview_and_info": "Hides only the embedded photo preview and photo information text in Film Roll tooltips.",
+  "option.camera_port.hide_photograph_preview": "Hide Photograph Preview",
+  "tooltip.camera_port.hide_photograph_preview": "Hides only the Photograph image preview on photograph items."
 }

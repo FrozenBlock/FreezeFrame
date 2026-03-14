@@ -58,7 +58,7 @@ public class CameraPortClient implements ClientModInitializer {
 
 		ClientTooltipComponentCallback.EVENT.register(component -> {
 			if (component instanceof PhotographTooltip tooltip) return new ClientPhotographTooltip(tooltip);
-			if (component instanceof FilmTooltip tooltip) return new ClientFilmTooltip(tooltip.contents());
+			if (component instanceof FilmTooltip tooltip) return new ClientFilmTooltip(tooltip.contents(), tooltip.maxPhotographs());
 			if (component instanceof CameraTooltip tooltip) return new ClientCameraTooltip(tooltip.contents());
 			return null;
 		});

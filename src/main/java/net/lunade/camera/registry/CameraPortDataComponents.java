@@ -46,6 +46,10 @@ public class CameraPortDataComponents {
 		"film_contents",
 		builder -> builder.persistent(FilmContents.CODEC).networkSynchronized(FilmContents.STREAM_CODEC)
 	);
+	public static final DataComponentType<Integer> FILM_MAX_PHOTOGRAPHS = register(
+		"film_max_photographs",
+		builder -> builder.persistent(Codec.INT).networkSynchronized(ByteBufCodecs.VAR_INT)
+	);
 	public static final DataComponentType<WritablePortfolioContent> WRITABLE_PORTFOLIO_CONTENT = register(
 		"writable_portfolio_content",
 		builder -> builder.persistent(WritablePortfolioContent.CODEC).networkSynchronized(WritablePortfolioContent.STREAM_CODEC)

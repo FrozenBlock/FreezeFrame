@@ -23,12 +23,14 @@ import net.fabricmc.fabric.api.datagen.v1.provider.FabricRecipeProvider;
 import net.fabricmc.fabric.api.tag.convention.v2.ConventionalItemTags;
 import net.frozenblock.lib.recipe.api.RecipeExportNamespaceFix;
 import net.lunade.camera.CameraPortConstants;
+import net.lunade.camera.recipe.FilmCapacityUpgradeRecipe;
 import net.lunade.camera.registry.CameraPortItems;
 import net.minecraft.core.HolderLookup;
 import net.minecraft.core.registries.Registries;
 import net.minecraft.data.recipes.RecipeCategory;
 import net.minecraft.data.recipes.RecipeOutput;
 import net.minecraft.data.recipes.RecipeProvider;
+import net.minecraft.data.recipes.SpecialRecipeBuilder;
 import net.minecraft.tags.ItemTags;
 import net.minecraft.world.item.Items;
 import net.minecraft.world.item.crafting.Ingredient;
@@ -72,6 +74,10 @@ public final class CameraPortRecipeProvider extends FabricRecipeProvider {
 					.pattern("X")
 					.unlockedBy(RecipeProvider.getHasName(CameraPortItems.DISC_CAMERA), this.has(CameraPortItems.DISC_CAMERA))
 					.save(exporter);
+
+				SpecialRecipeBuilder.special(FilmCapacityUpgradeRecipe::new)
+					.unlockedBy("has_film", this.has(CameraPortItems.FILM))
+					.save(this.output, "film_capacity_upgrade");
 
 				RecipeExportNamespaceFix.clearCurrentGeneratingModId();
 			}

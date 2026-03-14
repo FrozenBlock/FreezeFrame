@@ -122,7 +122,7 @@ public final class CameraContents {
 		for (ItemStackTemplate stack : this.items) {
 			final FilmContents filmContents = stack.get(CameraPortDataComponents.FILM_CONTENTS);
 			if (filmContents == null) continue;
-			if (FilmItem.getWeightSafe(filmContents).compareTo(Fraction.ONE) < 0) return true;
+			if (FilmItem.getWeightSafe(filmContents, stack).compareTo(Fraction.ONE) < 0) return true;
 		}
 		return false;
 	}
@@ -228,7 +228,7 @@ public final class CameraContents {
 			for (ItemStack stack : this.items) {
 				final FilmContents filmContents = stack.get(CameraPortDataComponents.FILM_CONTENTS);
 				if (filmContents == null) continue;
-				if (FilmItem.getWeightSafe(filmContents).compareTo(Fraction.ONE) < 0) return Optional.of(stack);
+				if (FilmItem.getWeightSafe(filmContents, stack).compareTo(Fraction.ONE) < 0) return Optional.of(stack);
 			}
 			return Optional.empty();
 		}

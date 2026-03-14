@@ -24,27 +24,40 @@ import net.minecraft.network.codec.ByteBufCodecs;
 import net.minecraft.network.codec.StreamCodec;
 import net.minecraft.resources.Identifier;
 
-public record PhotographComponent(Identifier identifier, String photographer, boolean isCopy) {
+public record PhotographComponent(Identifier identifier, String photographer, int generation) {
+	public static final int ORIGINAL = 0;
+	public static final int COPY = 1;
+	public static final int COPY_OF_COPY = 2;
+	public static final int MAX_COPY_GENERATION = COPY_OF_COPY;
+
 	public static final Codec<PhotographComponent> CODEC = RecordCodecBuilder.create(instance -> instance
 		.group(
 			Identifier.CODEC.fieldOf("identifier").forGetter(component -> component.identifier),
 			Codec.STRING.fieldOf("author").forGetter(PhotographComponent::photographer),
-			Codec.BOOL.optionalFieldOf("is_copy", false).forGetter(PhotographComponent::isCopy)
+			Codec.INT.optionalFieldOf("generation", ORIGINAL).forGetter(PhotographComponent::generation)
 		)
 		.apply(instance, PhotographComponent::new)
 	);
 	public static final StreamCodec<ByteBuf, PhotographComponent> STREAM_CODEC = StreamCodec.composite(
 		Identifier.STREAM_CODEC, PhotographComponent::identifier,
 		ByteBufCodecs.STRING_UTF8, PhotographComponent::photographer,
-		ByteBufCodecs.BOOL, PhotographComponent::isCopy,
+		ByteBufCodecs.VAR_INT, PhotographComponent::generation,
 		PhotographComponent::new
 	);
 
 	public PhotographComponent(Identifier identifier, String photographer) {
-		this(identifier, photographer, false);
+		this(identifier, photographer, ORIGINAL);
+	}
+
+	public boolean isCopy() {
+		return this.generation > ORIGINAL;
+	}
+
+	public boolean canCopy() {
+		return this.generation < MAX_COPY_GENERATION;
 	}
 
 	public PhotographComponent asCopy() {
-		return new PhotographComponent(this.identifier, this.photographer, true);
+		return new PhotographComponent(this.identifier, this.photographer, Math.min(this.generation + 1, MAX_COPY_GENERATION));
 	}
 }

@@ -30,6 +30,7 @@ import net.fabricmc.api.Environment;
 import net.frozenblock.lib.file.transfer.FileTransferPacket;
 import net.frozenblock.lib.networking.FrozenNetworking;
 import net.lunade.camera.CameraPortConstants;
+import net.lunade.camera.config.CameraPortConfig;
 import net.lunade.camera.registry.CameraPortSounds;
 import net.lunade.camera.util.CameraScreenshotHelper;
 import net.minecraft.client.Camera;
@@ -38,6 +39,7 @@ import net.minecraft.client.Minecraft;
 import net.minecraft.client.Screenshot;
 import net.minecraft.client.multiplayer.ClientPacketListener;
 import net.minecraft.client.renderer.GameRenderer;
+import net.minecraft.client.server.IntegratedServer;
 import net.minecraft.core.particles.ParticleTypes;
 import net.minecraft.network.chat.ClickEvent;
 import net.minecraft.network.chat.Component;
@@ -143,7 +145,6 @@ public class CameraScreenshotManager {
 		Screenshot.takeScreenshot(target, 1, nativeImage -> {
 			Optional<Path> iconPath = Optional.empty();
 			Minecraft minecraft = Minecraft.getInstance();
-			/*
 			if (CameraPortConfig.get().useLatestPhotoAsWorldIcon && minecraft.isLocalServer()) {
 				IntegratedServer integratedServer = minecraft.getSingleplayerServer();
 				if (integratedServer != null) {
@@ -151,7 +152,6 @@ public class CameraScreenshotManager {
 					iconPath.ifPresent(path -> path.toFile().mkdirs());
 				}
 			}
-			 */
 
 			final File photographFile = resolvePhotographFile(workDir, fileName);
 			Optional<Path> finalIconPath = iconPath;

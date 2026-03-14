@@ -17,12 +17,14 @@
 
 package net.lunade.camera.component.tooltip.client;
 
+import java.text.DateFormat;
 import java.util.Date;
 import java.util.Optional;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 import net.lunade.camera.client.photograph.PhotographLoader;
 import net.lunade.camera.client.photograph.PhotographRenderer;
+import net.lunade.camera.config.CameraPortConfig;
 import net.lunade.camera.component.tooltip.PhotographTooltip;
 import net.minecraft.client.gui.Font;
 import net.minecraft.client.gui.GuiGraphics;
@@ -40,14 +42,17 @@ public class ClientPhotographTooltip implements ClientTooltipComponent {
 	private static final int BELOW_PHOTOGRAPH_SPACING = 6;
 	private static final int TOOLTIP_HEIGHT = PHOTOGRAPH_RENDER_SIZE + BELOW_PHOTOGRAPH_SPACING;
 	private static final int TOOLTIP_WIDTH = PHOTOGRAPH_RENDER_SIZE + (PHOTOGRAPH_RENDER_OFFSET_X * 2);
+	public static final Component ORIGINAL_COMPONENT = Component.translatable("photograph.original").withStyle(ChatFormatting.GRAY);
 	public static final Component COPY_COMPONENT = Component.translatable("photograph.copy").withStyle(ChatFormatting.GRAY);
+	public static final Component COPY_OF_COPY_COMPONENT = Component.translatable("photograph.copy_of_copy").withStyle(ChatFormatting.GRAY);
 	private final Identifier photographId;
 	@Nullable
 	private final Component photographer;
 	@Nullable
 	private final Component dateAndTime;
 	@Nullable
-	private final Component copy;
+	private final Component generationLabel;
+	private final boolean previewHidden;
 
 	public ClientPhotographTooltip(PhotographTooltip component) {
 		this.photographId = component.identifier();
@@ -57,12 +62,16 @@ public class ClientPhotographTooltip implements ClientTooltipComponent {
 
 		final Optional<Date> optionalDate = PhotographLoader.parseDate(component.identifier().getPath());
 		this.dateAndTime = optionalDate
-			.map(date -> Component.translatable("photograph.date", date.toLocaleString()).withStyle(ChatFormatting.GRAY))
+			.map(date -> Component.translatable("photograph.date", formatDate(date)).withStyle(ChatFormatting.GRAY))
 			.orElse(null);
 
-		this.copy = !component.isCopy()
-			? null
-			: COPY_COMPONENT;
+		this.generationLabel = switch (component.generation()) {
+			case 0 -> ORIGINAL_COMPONENT;
+			case 1 -> COPY_COMPONENT;
+			default -> COPY_OF_COPY_COMPONENT;
+		};
+
+		this.previewHidden = CameraPortConfig.get().hidePhotographPreview;
 	}
 
 	@Override
@@ -70,8 +79,8 @@ public class ClientPhotographTooltip implements ClientTooltipComponent {
 		int extension = 0;
 		if (this.photographer != null) extension += font.lineHeight;
 		if (this.dateAndTime != null) extension += font.lineHeight;
-		if (this.copy != null) extension += font.lineHeight;
-		return TOOLTIP_HEIGHT + extension;
+		if (this.generationLabel != null) extension += font.lineHeight;
+		return (this.previewHidden ? 0 : TOOLTIP_HEIGHT) + extension;
 	}
 
 	@Override
@@ -81,19 +90,22 @@ public class ClientPhotographTooltip implements ClientTooltipComponent {
 				this.photographer != null ? font.width(this.photographer) : 0,
 				this.dateAndTime != null ? font.width(this.dateAndTime) : 0
 			),
-			this.copy != null ? font.width(this.copy) : 0
+			this.generationLabel != null ? font.width(this.generationLabel) : 0
 		);
-		return Math.max(TOOLTIP_WIDTH, textWidth);
+		return this.previewHidden ? textWidth : Math.max(TOOLTIP_WIDTH, textWidth);
 	}
 
 	@Override
 	public void renderImage(Font font, int x, int y, int k, int l, GuiGraphics graphics) {
+		if (this.previewHidden) return;
 		PhotographRenderer.blit(x, y, PHOTOGRAPH_RENDER_OFFSET_X, 0, graphics, this.photographId, PHOTOGRAPH_RENDER_SIZE, PhotographRenderer.FrameType.FRAME);
 	}
 
 	@Override
 	public void renderText(GuiGraphics graphics, Font font, int x, int y) {
-		y += TOOLTIP_HEIGHT;
+		if (!this.previewHidden) {
+			y += TOOLTIP_HEIGHT;
+		}
 
 		if (this.photographer != null) {
 			graphics.drawString(font, this.photographer, x, y, -1, true);
@@ -105,9 +117,13 @@ public class ClientPhotographTooltip implements ClientTooltipComponent {
 			y += font.lineHeight;
 		}
 
-		if (this.copy != null) {
-			graphics.drawString(font, this.copy, x, y, -1, true);
+		if (this.generationLabel != null) {
+			graphics.drawString(font, this.generationLabel, x, y, -1, true);
 			y += font.lineHeight;
 		}
+	}
+
+	private static String formatDate(Date date) {
+		return DateFormat.getDateTimeInstance(DateFormat.SHORT, DateFormat.SHORT).format(date);
 	}
 }

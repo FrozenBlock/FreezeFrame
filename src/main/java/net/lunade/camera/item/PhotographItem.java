@@ -39,7 +39,7 @@ public class PhotographItem extends Item {
 		if (!tooltipDisplay.shows(CameraPortDataComponents.PHOTOGRAPH)) return Optional.empty();
 
 		final PhotographComponent component = stack.get(CameraPortDataComponents.PHOTOGRAPH);
-		if (component != null) return Optional.of(new PhotographTooltip(component.identifier(), component.photographer(), component.isCopy()));
+		if (component != null) return Optional.of(new PhotographTooltip(component.identifier(), component.photographer(), component.generation()));
 		return Optional.empty();
 	}
 }

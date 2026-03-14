@@ -32,8 +32,11 @@ import org.jspecify.annotations.Nullable;
 
 public final class FilmContents {
 	public static final FilmContents EMPTY = new FilmContents(List.of());
-	private static final int MAX_PHOTOGRAPHS = 16;
-	private static final Fraction PHOTOGRAPH_WEIGHT = Fraction.getFraction(1, MAX_PHOTOGRAPHS);
+	public static final int BASE_MAX_PHOTOGRAPHS = 16;
+	public static final int CAPACITY_INCREASE_PER_UPGRADE = 16;
+	public static final int MAX_UPGRADES = 3;
+	public static final int ABSOLUTE_MAX_PHOTOGRAPHS = BASE_MAX_PHOTOGRAPHS + (CAPACITY_INCREASE_PER_UPGRADE * MAX_UPGRADES);
+	public static final int MAX_PHOTOGRAPHS = BASE_MAX_PHOTOGRAPHS;
 	public static final Codec<FilmContents> CODEC = PhotographComponent.CODEC.listOf().xmap(FilmContents::new, contents -> contents.photographs);
 	public static final StreamCodec<ByteBuf, FilmContents> STREAM_CODEC = PhotographComponent.STREAM_CODEC
 		.apply(ByteBufCodecs.list())
@@ -53,7 +56,7 @@ public final class FilmContents {
 	}
 
 	private static DataResult<Fraction> computeContentWeight(final List<PhotographComponent> items) {
-		final Fraction weight = Fraction.getFraction(items.size(), MAX_PHOTOGRAPHS);
+		final Fraction weight = Fraction.getFraction(items.size(), BASE_MAX_PHOTOGRAPHS);
 		if (weight.compareTo(Fraction.ONE) <= 0) return DataResult.success(weight);
 		return DataResult.error(() -> "Excessive total film weight");
 	}
@@ -107,21 +110,20 @@ public final class FilmContents {
 
 	public static class Mutable {
 		private final List<PhotographComponent> photographs;
+		private final Fraction photographWeight;
 		private Fraction weight;
 		private int selectedPhotograph;
 
 		public Mutable(FilmContents contents) {
-			final DataResult<Fraction> currentWeight = contents.weight.get();
-			if (currentWeight.isError()) {
-				this.photographs = new ArrayList<>();
-				this.weight = Fraction.ZERO;
-				this.selectedPhotograph = 0;
-				return;
-			}
+			this(contents, BASE_MAX_PHOTOGRAPHS);
+		}
 
+		public Mutable(FilmContents contents, int maxPhotographs) {
+			final int normalizedMax = Math.max(BASE_MAX_PHOTOGRAPHS, maxPhotographs);
 			this.photographs = new ArrayList<>(contents.photographs.size());
 			this.photographs.addAll(contents.photographs);
-			this.weight = currentWeight.getOrThrow();
+			this.photographWeight = Fraction.getFraction(1, normalizedMax);
+			this.weight = Fraction.getFraction(this.photographs.size(), normalizedMax);
 			this.selectedPhotograph = contents.selectedPhotograph;
 		}
 
@@ -131,7 +133,7 @@ public final class FilmContents {
 
 		public boolean tryInsert(PhotographComponent photograph) {
 			if (!this.hasRemainingSpace()) return false;
-			this.weight = this.weight.add(PHOTOGRAPH_WEIGHT);
+			this.weight = this.weight.add(this.photographWeight);
 			this.photographs.addFirst(photograph);
 			return true;
 		}
