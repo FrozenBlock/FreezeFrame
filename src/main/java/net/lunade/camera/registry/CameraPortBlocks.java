@@ -21,7 +21,7 @@ import java.util.function.BiFunction;
 import java.util.function.Function;
 import net.fabricmc.fabric.api.creativetab.v1.CreativeModeTabEvents;
 import net.lunade.camera.CameraPortConstants;
-import net.lunade.camera.block.DevelopmentTableBlock;
+import net.lunade.camera.block.DevelopingTableBlock;
 import net.minecraft.core.Registry;
 import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.core.registries.Registries;
@@ -42,8 +42,8 @@ import net.minecraft.world.level.material.MapColor;
 
 public class CameraPortBlocks {
 
-	public static final DevelopmentTableBlock DEVELOPMENT_TABLE = register("development_table",
-		DevelopmentTableBlock::new,
+	public static final DevelopingTableBlock DEVELOPING_TABLE = register("developing_table",
+		DevelopingTableBlock::new,
 		BlockBehaviour.Properties.of()
 			.mapColor(MapColor.WOOD)
 			.instrument(NoteBlockInstrument.BASS)
@@ -53,7 +53,7 @@ public class CameraPortBlocks {
 	);
 
 	public static void register() {
-		CreativeModeTabEvents.modifyOutputEvent(CreativeModeTabs.FUNCTIONAL_BLOCKS).register((entries) -> entries.insertAfter(Items.LODESTONE, DEVELOPMENT_TABLE));
+		CreativeModeTabEvents.modifyOutputEvent(CreativeModeTabs.FUNCTIONAL_BLOCKS).register((entries) -> entries.insertAfter(Items.LODESTONE, DEVELOPING_TABLE));
 	}
 
 	private static <T extends Block> T registerWithoutItem(String path, Function<BlockBehaviour.Properties, T> block, BlockBehaviour.Properties properties) {

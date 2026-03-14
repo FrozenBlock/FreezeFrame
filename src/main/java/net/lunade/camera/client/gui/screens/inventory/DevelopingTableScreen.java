@@ -28,8 +28,8 @@ import net.lunade.camera.client.photograph.PhotographRenderer;
 import net.lunade.camera.component.FilmContents;
 import net.lunade.camera.component.Photograph;
 import net.lunade.camera.item.FilmItem;
-import net.lunade.camera.menu.DevelopmentTableMenu;
-import net.lunade.camera.networking.packet.DevelopmentTableSyncSelectPhotographIndexPacket;
+import net.lunade.camera.menu.DevelopingTableMenu;
+import net.lunade.camera.networking.packet.DevelopingTableSyncSelectPhotographIndexPacket;
 import net.lunade.camera.registry.CameraPortDataComponents;
 import net.lunade.camera.registry.CameraPortItems;
 import net.minecraft.client.Minecraft;
@@ -50,7 +50,7 @@ import org.joml.Vector2i;
 import org.lwjgl.glfw.GLFW;
 
 @Environment(EnvType.CLIENT)
-public class DevelopmentTableScreen extends AbstractContainerScreen<DevelopmentTableMenu> {
+public class DevelopingTableScreen extends AbstractContainerScreen<DevelopingTableMenu> {
 	private static final int FILM_PHOTOGRAPH_SIZE = 52;
 	private static final int FILM_PHOTOGRAPH_Y = 39;
 	private static final int FILM_LEFT_PHOTOGRAPH_X = 5;
@@ -66,23 +66,23 @@ public class DevelopmentTableScreen extends AbstractContainerScreen<DevelopmentT
 	private static final int COPY_PHOTOGRAPH_SIZE = 67;
 	private static final int COPY_PHOTOGRAPH_Y = 31;
 	private static final int COPY_PHOTOGRAPH_X = 55;
-	private static final int RESULT_SLOT_X = 134;
+	private static final int RESULT_SLOT_X = 116;
 	private static final int RESULT_SLOT_Y = 113;
 	private static final int RESULT_SLOT_SIZE = 16;
-	private static final Identifier TEXTURE = CameraPortConstants.id("textures/gui/container/development_table.png");
-	private static final Identifier TEXTURE_FILM = CameraPortConstants.id("textures/gui/container/development_table_film.png");
-	private static final Identifier SCROLLER = CameraPortConstants.id("container/development_table/scroller");
-	private static final Identifier SCROLLER_DISABLED = CameraPortConstants.id("container/development_table/scroller_disabled");
-	private static final Identifier FILM_PHOTOGRAPH_BLOCKER = CameraPortConstants.id("container/development_table/film_photograph_blocker");
-	private static final Identifier FILM_PHOTOGRAPH_HIGHLIGHT = CameraPortConstants.id("container/development_table/film_photograph_highlight");
+	private static final Identifier TEXTURE = CameraPortConstants.id("textures/gui/container/developing_table.png");
+	private static final Identifier TEXTURE_FILM = CameraPortConstants.id("textures/gui/container/developing_table_film.png");
+	private static final Identifier SCROLLER = CameraPortConstants.id("container/developing_table/scroller");
+	private static final Identifier SCROLLER_DISABLED = CameraPortConstants.id("container/developing_table/scroller_disabled");
+	private static final Identifier FILM_PHOTOGRAPH_BLOCKER = CameraPortConstants.id("container/developing_table/film_photograph_blocker");
+	private static final Identifier FILM_PHOTOGRAPH_HIGHLIGHT = CameraPortConstants.id("container/developing_table/film_photograph_highlight");
 	private static final List<Identifier> SOURCE_SLOT_ICONS = List.of(
 		CameraPortConstants.id("container/slot/film"),
 		CameraPortConstants.id("container/slot/photograph")
 	);
 	private static final List<Identifier> PAPER_SLOT_ICONS = List.of(CameraPortConstants.id("container/slot/paper"));
 	private final ScrollWheelHandler scrollWheelHandler;
-	private final CyclingSlotBackground sourceSlotBackground = new CyclingSlotBackground(DevelopmentTableMenu.SOURCE_SLOT);
-	private final CyclingSlotBackground paperSlotBackground = new CyclingSlotBackground(DevelopmentTableMenu.PAPER_SLOT);
+	private final CyclingSlotBackground sourceSlotBackground = new CyclingSlotBackground(DevelopingTableMenu.SOURCE_SLOT);
+	private final CyclingSlotBackground paperSlotBackground = new CyclingSlotBackground(DevelopingTableMenu.PAPER_SLOT);
 	@Nullable
 	private FilmContents filmContents;
 	@Nullable
@@ -99,7 +99,7 @@ public class DevelopmentTableScreen extends AbstractContainerScreen<DevelopmentT
 	private ItemStack lastSourceItem = ItemStack.EMPTY;
 	private Identifier photographCopyId;
 
-	public DevelopmentTableScreen(DevelopmentTableMenu menu, Inventory inventory, Component title) {
+	public DevelopingTableScreen(DevelopingTableMenu menu, Inventory inventory, Component title) {
 		super(menu, inventory, title, DEFAULT_IMAGE_WIDTH, 226);
 		this.scrollWheelHandler = new ScrollWheelHandler();
 		menu.registerUpdateListener(this::containerChanged);
@@ -123,7 +123,7 @@ public class DevelopmentTableScreen extends AbstractContainerScreen<DevelopmentT
 
 	private void setupDataAndResultSlot(int photographIndex) {
 		this.photographIndex = photographIndex;
-		ClientPlayNetworking.send(new DevelopmentTableSyncSelectPhotographIndexPacket(photographIndex));
+		ClientPlayNetworking.send(new DevelopingTableSyncSelectPhotographIndexPacket(photographIndex));
 		this.menu.setupDataAndResultSlot(photographIndex);
 		setupOrClearFilmPhotographDisplays();
 	}
@@ -148,7 +148,7 @@ public class DevelopmentTableScreen extends AbstractContainerScreen<DevelopmentT
 		super.extractRenderState(graphics, mouseX, mouseY, partialTicks);
 		final int hoveredOffset = this.getHoveredFilmPhotographOffset(mouseX, mouseY);
 		Photograph hoveredPhotograph = hoveredOffset == Integer.MIN_VALUE ? null : this.getFilmPhotographComponent(this.photographIndex + hoveredOffset);
-		final boolean hoveringResultSlot = this.menu.getSlot(DevelopmentTableMenu.RESULT_SLOT).hasItem()
+		final boolean hoveringResultSlot = this.menu.getSlot(DevelopingTableMenu.RESULT_SLOT).hasItem()
 			&& this.isHovering(RESULT_SLOT_X, RESULT_SLOT_Y, RESULT_SLOT_SIZE, RESULT_SLOT_SIZE, mouseX, mouseY);
 
 		if (this.displayFilm) {

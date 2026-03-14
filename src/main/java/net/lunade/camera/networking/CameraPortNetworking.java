@@ -21,7 +21,7 @@ import net.fabricmc.fabric.api.networking.v1.PayloadTypeRegistry;
 import net.fabricmc.fabric.api.networking.v1.ServerPlayNetworking;
 import net.frozenblock.lib.file.transfer.FileTransferFilter;
 import net.lunade.camera.networking.packet.CameraTakeScreenshotPacket;
-import net.lunade.camera.networking.packet.DevelopmentTableSyncSelectPhotographIndexPacket;
+import net.lunade.camera.networking.packet.DevelopingTableSyncSelectPhotographIndexPacket;
 import net.lunade.camera.networking.packet.OpenFilmScreenPacket;
 import net.lunade.camera.networking.packet.QuickCameraPhotographPacket;
 import net.lunade.camera.networking.packet.SaveFilmChangesPacket;
@@ -38,8 +38,8 @@ public class CameraPortNetworking {
 		registry.register(CameraTakeScreenshotPacket.PACKET_TYPE, CameraTakeScreenshotPacket.CODEC);
 		registry.register(OpenFilmScreenPacket.PACKET_TYPE, OpenFilmScreenPacket.CODEC);
 
-		c2sRegistry.register(DevelopmentTableSyncSelectPhotographIndexPacket.PACKET_TYPE, DevelopmentTableSyncSelectPhotographIndexPacket.CODEC);
-		ServerPlayNetworking.registerGlobalReceiver(DevelopmentTableSyncSelectPhotographIndexPacket.PACKET_TYPE, DevelopmentTableSyncSelectPhotographIndexPacket::handle);
+		c2sRegistry.register(DevelopingTableSyncSelectPhotographIndexPacket.PACKET_TYPE, DevelopingTableSyncSelectPhotographIndexPacket.CODEC);
+		ServerPlayNetworking.registerGlobalReceiver(DevelopingTableSyncSelectPhotographIndexPacket.PACKET_TYPE, DevelopingTableSyncSelectPhotographIndexPacket::handle);
 
 		c2sRegistry.register(SelectFilmPhotographPacket.PACKET_TYPE, SelectFilmPhotographPacket.CODEC);
 		ServerPlayNetworking.registerGlobalReceiver(SelectFilmPhotographPacket.PACKET_TYPE, SelectFilmPhotographPacket::handle);

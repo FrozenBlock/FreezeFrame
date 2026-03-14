@@ -22,9 +22,9 @@ import net.minecraft.world.inventory.Slot;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.Items;
 
-public class DevelopmentTablePaperSlot extends Slot {
+public class DevelopingTablePaperSlot extends Slot {
 
-	public DevelopmentTablePaperSlot(Container container, int slot, int x, int y) {
+	public DevelopingTablePaperSlot(Container container, int slot, int x, int y) {
 		super(container, slot, x, y);
 	}
 

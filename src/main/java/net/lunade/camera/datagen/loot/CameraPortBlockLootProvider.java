@@ -36,7 +36,7 @@ public final class CameraPortBlockLootProvider extends FabricBlockLootSubProvide
 	public void generate() {
 		HolderLookup.RegistryLookup<Enchantment> registryLookup = this.registries.lookupOrThrow(Registries.ENCHANTMENT);
 
-		this.dropSelf(CameraPortBlocks.DEVELOPMENT_TABLE);
+		this.dropSelf(CameraPortBlocks.DEVELOPING_TABLE);
 	}
 
 }

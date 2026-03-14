@@ -11,7 +11,7 @@
       "entries": [
         {
           "type": "minecraft:item",
-          "name": "camera_port:development_table"
+          "name": "camera_port:developing_table"
         }
       ],
       "rolls": 1.0
