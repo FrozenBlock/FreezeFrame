@@ -26,7 +26,7 @@ import net.lunade.camera.component.FilmContents;
 import net.lunade.camera.item.FilmItem;
 import net.lunade.camera.registry.CameraPortDataComponents;
 import net.minecraft.client.gui.Font;
-import net.minecraft.client.gui.GuiGraphics;
+import net.minecraft.client.gui.GuiGraphicsExtractor;
 import net.minecraft.client.gui.screens.inventory.tooltip.ClientTooltipComponent;
 import net.minecraft.client.renderer.RenderPipelines;
 import net.minecraft.network.chat.Component;
@@ -86,13 +86,13 @@ public class ClientCameraTooltip implements ClientTooltipComponent {
 	}
 
 	@Override
-	public void renderImage(Font font, int x, int y, int w, int h, GuiGraphics graphics) {
+	public void extractImage(Font font, int x, int y, int w, int h, GuiGraphicsExtractor graphics) {
 		final InsertedFilmProgress insertedFilmProgress = this.getInsertedFilmProgress();
 
 		if (this.contents.isEmpty()) {
-			renderEmptyBundleTooltip(font, x, y, w, h, graphics);
+			extractEmptyBundleTooltip(font, x, y, w, h, graphics);
 		} else {
-			this.renderBundleWithItemsTooltip(font, x, y, w, h, graphics, insertedFilmProgress);
+			this.extractCameraWithItemsTooltip(font, x, y, w, h, graphics, insertedFilmProgress);
 		}
 	}
 
@@ -105,10 +105,10 @@ public class ClientCameraTooltip implements ClientTooltipComponent {
 		return new InsertedFilmProgress(FilmItem.getWeightSafe(filmContents, maxPhotographs), filmContents.size(), maxPhotographs);
 	}
 
-	private static void renderEmptyBundleTooltip(Font font, int x, int y, int w, int h, GuiGraphics graphics) {
+	private static void extractEmptyBundleTooltip(Font font, int x, int y, int w, int h, GuiGraphicsExtractor graphics) {
 		final int left = x + getContentXOffset(w);
 		drawEmptyBundleDescriptionText(left, y, font, graphics);
-		drawProgressbar(
+		extractProgressbar(
 			left,
 			y + getEmptyBundleDescriptionTextHeight(font) + 4,
 			font,
@@ -120,10 +120,10 @@ public class ClientCameraTooltip implements ClientTooltipComponent {
 		);
 	}
 
-	private void renderBundleWithItemsTooltip(Font font, int x, int y, int w, int h, GuiGraphics graphics, InsertedFilmProgress insertedFilmProgress) {
+	private void extractCameraWithItemsTooltip(Font font, int x, int y, int w, int h, GuiGraphicsExtractor graphics, InsertedFilmProgress insertedFilmProgress) {
 		final int left = x + getContentXOffset(w);
 		drawContainsDescriptionText(left, y, font, graphics);
-		drawProgressbar(
+		extractProgressbar(
 			left,
 			y + getContainsDescriptionTextHeight(font) + 4,
 			font,
@@ -135,7 +135,7 @@ public class ClientCameraTooltip implements ClientTooltipComponent {
 		);
 	}
 
-	private static void drawProgressbar(int x, int y, Font font, GuiGraphics graphics, Fraction weight, Component emptyText, int photographCount, int maxPhotographs) {
+	private static void extractProgressbar(int x, int y, Font font, GuiGraphicsExtractor graphics, Fraction weight, Component emptyText, int photographCount, int maxPhotographs) {
 		final int progressBarFill = getProgressBarFill(weight);
 		if (weight.compareTo(Fraction.ONE) >= 0) {
 			graphics.blitSprite(RenderPipelines.GUI_TEXTURED, PROGRESSBAR_FULL_SPRITE, x + PROGRESSBAR_BORDER, y, progressBarFill, PROGRESSBAR_HEIGHT);
@@ -144,15 +144,15 @@ public class ClientCameraTooltip implements ClientTooltipComponent {
 		}
 		graphics.blitSprite(RenderPipelines.GUI_TEXTURED, PROGRESSBAR_BORDER_SPRITE, x, y, PROGRESSBAR_WIDTH, PROGRESSBAR_HEIGHT);
 		final Component progressBarFillText = getProgressBarFillText(weight, emptyText, photographCount, maxPhotographs);
-		if (progressBarFillText != null) graphics.drawCenteredString(font, progressBarFillText, x + 48, y + 3, -1);
+		if (progressBarFillText != null) graphics.centeredText(font, progressBarFillText, x + 48, y + 3, -1);
 	}
 
-	private static void drawEmptyBundleDescriptionText(int x, int y, Font font, GuiGraphics graphics) {
-		graphics.drawWordWrap(font, CAMERA_EMPTY_DESCRIPTION, x, y, GRID_WIDTH, -5592406);
+	private static void drawEmptyBundleDescriptionText(int x, int y, Font font, GuiGraphicsExtractor graphics) {
+		graphics.textWithWordWrap(font, CAMERA_EMPTY_DESCRIPTION, x, y, GRID_WIDTH, -5592406);
 	}
 
-	private static void drawContainsDescriptionText(int x, int y, Font font, GuiGraphics graphics) {
-		graphics.drawWordWrap(font, CAMERA_CONTAINS_DESCRIPTION, x, y, GRID_WIDTH, -5592406);
+	private static void drawContainsDescriptionText(int x, int y, Font font, GuiGraphicsExtractor graphics) {
+		graphics.textWithWordWrap(font, CAMERA_CONTAINS_DESCRIPTION, x, y, GRID_WIDTH, -5592406);
 	}
 
 	private static int getEmptyBundleDescriptionTextHeight(Font font) {

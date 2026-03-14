@@ -31,7 +31,7 @@ import net.lunade.camera.component.FilmContents;
 import net.lunade.camera.component.PhotographComponent;
 import net.lunade.camera.item.FilmItem;
 import net.minecraft.client.gui.Font;
-import net.minecraft.client.gui.GuiGraphics;
+import net.minecraft.client.gui.GuiGraphicsExtractor;
 import net.minecraft.client.gui.screens.inventory.tooltip.ClientTooltipComponent;
 import net.minecraft.client.renderer.RenderPipelines;
 import net.minecraft.network.chat.Component;
@@ -147,7 +147,7 @@ public class ClientFilmTooltip implements ClientTooltipComponent {
 	}
 
 	@Override
-	public void renderImage(Font font, int x, int y, int w, int h, GuiGraphics graphics) {
+	public void extractImage(Font font, int x, int y, int w, int h, GuiGraphicsExtractor graphics) {
 		final Fraction weight = FilmItem.getWeightSafe(this.contents, this.maxPhotographs);
 
 		if (this.empty) {
@@ -157,16 +157,16 @@ public class ClientFilmTooltip implements ClientTooltipComponent {
 		}
 	}
 
-	private void renderEmptyFilmTooltip(Font font, int x, int y, int w, int h, GuiGraphics graphics) {
+	private void renderEmptyFilmTooltip(Font font, int x, int y, int w, int h, GuiGraphicsExtractor graphics) {
 		final int left = x + getContentXOffset(w);
-		this.drawEmptyFilmDescriptionText(left, y, font, graphics);
-		drawProgressbar(left, y + this.getEmptyFilmDescriptionTextHeight(font) + 4, font, graphics, Fraction.ZERO, 0, this.maxPhotographs);
+		this.extractEmptyFilmDescriptionText(left, y, font, graphics);
+		extractProgressbar(left, y + this.getEmptyFilmDescriptionTextHeight(font) + 4, font, graphics, Fraction.ZERO, 0, this.maxPhotographs);
 	}
 
-	private void renderPhotographTooltip(Font font, int x, int y, int w, int h, GuiGraphics graphics, Fraction weight) {
+	private void renderPhotographTooltip(Font font, int x, int y, int w, int h, GuiGraphicsExtractor graphics, Fraction weight) {
 		if (!this.hidePhotographPreviewAndInfo) {
-			this.drawSelectedPhotographTooltip(font, graphics, x, y, w);
-			drawProgressbar(
+			this.extractSelectedPhotographTooltip(font, graphics, x, y, w);
+			extractProgressbar(
 				x + getContentXOffset(w),
 				y + this.photographGridHeight(font) + BELOW_PHOTOGRAPH_SPACING,
 				font,
@@ -179,25 +179,25 @@ public class ClientFilmTooltip implements ClientTooltipComponent {
 		}
 
 		final int left = x + getContentXOffset(w);
-		this.drawEmptyFilmDescriptionText(left, y, font, graphics);
-		drawProgressbar(left, y + this.getEmptyFilmDescriptionTextHeight(font) + 4, font, graphics, weight, this.contents.size(), this.maxPhotographs);
+		this.extractEmptyFilmDescriptionText(left, y, font, graphics);
+		extractProgressbar(left, y + this.getEmptyFilmDescriptionTextHeight(font) + 4, font, graphics, weight, this.contents.size(), this.maxPhotographs);
 	}
 
-	private void drawSelectedPhotographTooltip(Font font, GuiGraphics graphics, int x, int y, int w) {
+	private void extractSelectedPhotographTooltip(Font font, GuiGraphicsExtractor graphics, int x, int y, int w) {
 		if (this.empty) return;
 
 		final int left = x + getContentXOffset(w);
 		final int photoDrawX = left + ((w / 2) - (PHOTOGRAPH_RENDER_SIZE / 2));
 		PhotographRenderer.blit(photoDrawX, y, 0, 0, graphics, this.photographId, PHOTOGRAPH_RENDER_SIZE, PhotographRenderer.FrameType.FILM_EMBED);
 
-		// TODO: Draw arrows
+		// TODO: extract arrows
 		if (this.hasMultiplePhotographs) {
 		}
 
-		this.drawPhotographTooltips(left, y + TOOLTIP_HEIGHT, font, graphics);
+		this.extractPhotographTooltips(left, y + TOOLTIP_HEIGHT, font, graphics);
 	}
 
-	private static void drawProgressbar(int x, int y, Font font, GuiGraphics graphics, Fraction weight, int photographCount, int maxPhotographs) {
+	private static void extractProgressbar(int x, int y, Font font, GuiGraphicsExtractor graphics, Fraction weight, int photographCount, int maxPhotographs) {
 		final int progressBarFill = getProgressBarFill(weight);
 		if (weight.compareTo(Fraction.ONE) >= 0) {
 			graphics.blitSprite(RenderPipelines.GUI_TEXTURED, PROGRESSBAR_FULL_SPRITE, x + 1, y, progressBarFill, 13);
@@ -207,26 +207,26 @@ public class ClientFilmTooltip implements ClientTooltipComponent {
 		graphics.blitSprite(RenderPipelines.GUI_TEXTURED, PROGRESSBAR_BORDER_SPRITE, x, y, 96, 13);
 
 		final Component progressBarFillText = getProgressBarFillText(weight, photographCount, maxPhotographs);
-		if (progressBarFillText != null) graphics.drawCenteredString(font, progressBarFillText, x + 48, y + 3, -1);
+		if (progressBarFillText != null) graphics.centeredText(font, progressBarFillText, x + 48, y + 3, -1);
 	}
 
-	private void drawEmptyFilmDescriptionText(int x, int y, Font font, GuiGraphics graphics) {
-		graphics.drawWordWrap(font, this.emptyDescription, x, y, GRID_WIDTH, -5592406);
+	private void extractEmptyFilmDescriptionText(int x, int y, Font font, GuiGraphicsExtractor graphics) {
+		graphics.textWithWordWrap(font, this.emptyDescription, x, y, GRID_WIDTH, -5592406);
 	}
 
-	private void drawPhotographTooltips(int x, int y, Font font, GuiGraphics graphics) {
+	private void extractPhotographTooltips(int x, int y, Font font, GuiGraphicsExtractor graphics) {
 		if (this.name != null) {
-			graphics.drawWordWrap(font, this.name, x, y, GRID_WIDTH, -5592406);
+			graphics.textWithWordWrap(font, this.name, x, y, GRID_WIDTH, -5592406);
 			y += getTextHeight(this.name, font);
 		}
 
 		if (this.photographer != null) {
-			graphics.drawWordWrap(font, this.photographer, x, y, GRID_WIDTH, -5592406);
+			graphics.textWithWordWrap(font, this.photographer, x, y, GRID_WIDTH, -5592406);
 			y += getTextHeight(this.photographer, font);
 		}
 
 		if (this.dateAndTime != null) {
-			graphics.drawWordWrap(font, this.dateAndTime, x, y, GRID_WIDTH, -5592406);
+			graphics.textWithWordWrap(font, this.dateAndTime, x, y, GRID_WIDTH, -5592406);
 			y += getTextHeight(this.dateAndTime, font);
 		}
 	}

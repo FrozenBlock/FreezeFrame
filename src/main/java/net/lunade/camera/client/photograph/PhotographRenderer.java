@@ -22,7 +22,7 @@ import com.mojang.math.Axis;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 import net.lunade.camera.CameraPortConstants;
-import net.minecraft.client.gui.GuiGraphics;
+import net.minecraft.client.gui.GuiGraphicsExtractor;
 import net.minecraft.client.renderer.RenderPipelines;
 import net.minecraft.client.renderer.SubmitNodeCollector;
 import net.minecraft.client.renderer.rendertype.RenderType;
@@ -69,7 +69,7 @@ public class PhotographRenderer {
 		);
 	}
 
-	public static void blit(int x, int y, int xOffset, int yOffset, GuiGraphics graphics, Identifier photoLocation, int renderSize, FrameType frameType) {
+	public static void blit(int x, int y, int xOffset, int yOffset, GuiGraphicsExtractor graphics, Identifier photoLocation, int renderSize, FrameType frameType) {
 		final Identifier loadedPhotoId = PhotographLoader.getAndLoadPhotograph(photoLocation, false);
 		final int renderX = x + xOffset;
 		final int renderY = y + yOffset;

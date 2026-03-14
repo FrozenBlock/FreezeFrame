@@ -33,7 +33,7 @@ import net.lunade.camera.networking.packet.SaveFilmChangesPacket;
 import net.lunade.camera.registry.CameraPortDataComponents;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.ScrollWheelHandler;
-import net.minecraft.client.gui.GuiGraphics;
+import net.minecraft.client.gui.GuiGraphicsExtractor;
 import net.minecraft.client.gui.components.Button;
 import net.minecraft.client.gui.components.EditBox;
 import net.minecraft.client.gui.screens.Screen;
@@ -173,22 +173,22 @@ public class FilmScreen extends Screen {
 	}
 
 	@Override
-	public void renderBackground(GuiGraphics graphics, int mouseX, int mouseY, float delta) {
+	public void extractBackground(GuiGraphicsExtractor graphics, int mouseX, int mouseY, float partialTicks) {
 		graphics.blit(RenderPipelines.GUI_TEXTURED, TEXTURE, this.leftPos, this.topPos, 0F, 0F, BACKGROUND_WIDTH, BACKGROUND_HEIGHT, TEXTURE_WIDTH, TEXTURE_HEIGHT);
 	}
 
 	@Override
-	public void render(GuiGraphics graphics, int mouseX, int mouseY, float delta) {
-		this.renderTransparentBackground(graphics);
-		this.renderBackground(graphics, mouseX, mouseY, delta);
+	public void extractRenderState(GuiGraphicsExtractor graphics, int mouseX, int mouseY, float delta) {
+		this.extractTransparentBackground(graphics);
+		this.extractBackground(graphics, mouseX, mouseY, delta);
 		PhotographComponent hoveredPhotograph = null;
 
 		if (this.isAtBeginning()) {
-			this.renderFilmPhotographBlocker(graphics, FILM_LEFT_PHOTOGRAPH_X);
+			this.extractFilmPhotographBlocker(graphics, FILM_LEFT_PHOTOGRAPH_X);
 		}
 
 		if (this.isAtEnd() && this.isFilmFull()) {
-			this.renderFilmPhotographBlocker(graphics, FILM_RIGHT_PHOTOGRAPH_X);
+			this.extractFilmPhotographBlocker(graphics, FILM_RIGHT_PHOTOGRAPH_X);
 		}
 
 		boolean alreadyHovering = false;
@@ -300,8 +300,8 @@ public class FilmScreen extends Screen {
 		);
 		if (hoveringDeleteButton) graphics.requestCursor(CursorTypes.POINTING_HAND);
 
-		graphics.drawString(this.font, Component.translatable("screen.camera_port.film.name"), this.leftPos + NAME_LABEL_X, this.topPos + NAME_LABEL_Y, 0x3f3f3f, false);
-		super.render(graphics, mouseX, mouseY, delta);
+		graphics.text(this.font, Component.translatable("screen.camera_port.film.name"), this.leftPos + NAME_LABEL_X, this.topPos + NAME_LABEL_Y, 0x3f3f3f, false);
+		super.extractRenderState(graphics, mouseX, mouseY, delta);
 
 		if (hoveredPhotograph != null) {
 			PhotographHoverTooltipRenderer.render(graphics, this.font, this.width, this.height, mouseX, mouseY, hoveredPhotograph);
@@ -541,7 +541,7 @@ public class FilmScreen extends Screen {
 		this.scrollerX = SCROLLER_TRACK_X + Math.round(progress * travel);
 	}
 
-	private void renderFilmPhotographBlocker(GuiGraphics graphics, int slotX) {
+	private void extractFilmPhotographBlocker(GuiGraphicsExtractor graphics, int slotX) {
 		graphics.blitSprite(
 			RenderPipelines.GUI_TEXTURED,
 			FILM_PHOTOGRAPH_BLOCKER,

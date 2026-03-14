@@ -9,8 +9,7 @@
     "camera.ItemStackMixin",
     "camera.LivingEntityMixin",
     "camera.PlayerMixin",
-    "film.AbstractContainerMenuMixin",
-    "film.BundleContentsMixin"
+    "film.AbstractContainerMenuMixin"
   ],
   "client": [
     "client.camera.AbstractClientPlayerMixin",

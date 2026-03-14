@@ -17,8 +17,8 @@
 
 package net.lunade.camera.client.gui.screens.inventory;
 
-import java.util.List;
 import com.mojang.blaze3d.platform.cursor.CursorTypes;
+import java.util.List;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 import net.fabricmc.fabric.api.client.networking.v1.ClientPlayNetworking;
@@ -34,7 +34,7 @@ import net.lunade.camera.registry.CameraPortDataComponents;
 import net.lunade.camera.registry.CameraPortItems;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.ScrollWheelHandler;
-import net.minecraft.client.gui.GuiGraphics;
+import net.minecraft.client.gui.GuiGraphicsExtractor;
 import net.minecraft.client.gui.screens.inventory.AbstractContainerScreen;
 import net.minecraft.client.gui.screens.inventory.CyclingSlotBackground;
 import net.minecraft.client.input.MouseButtonEvent;
@@ -126,11 +126,12 @@ public class DevelopmentTableScreen extends AbstractContainerScreen<DevelopmentT
 	}
 
 	@Override
-	protected void renderBg(GuiGraphics graphics, float delta, int mouseX, int mouseY) {
+	public void extractBackground(GuiGraphicsExtractor graphics, int mouseX, int mouseY, float partialTicks) {
+		super.extractBackground(graphics, mouseX, mouseY, partialTicks);
 		final Identifier bgTexture = this.displayFilm ? TEXTURE_FILM : TEXTURE;
 		graphics.blit(RenderPipelines.GUI_TEXTURED, bgTexture, this.leftPos, this.topPos, 0F, 0F, this.imageWidth, this.imageHeight, BACKGROUND_TEXTURE_WIDTH, BACKGROUND_TEXTURE_HEIGHT);
-		this.sourceSlotBackground.render(this.menu, graphics, delta, this.leftPos, this.topPos);
-		this.paperSlotBackground.render(this.menu, graphics, delta, this.leftPos, this.topPos);
+		this.sourceSlotBackground.extractRenderState(this.menu, graphics, partialTicks, this.leftPos, this.topPos);
+		this.paperSlotBackground.extractRenderState(this.menu, graphics, partialTicks, this.leftPos, this.topPos);
 
 		if (this.isHovering(SCROLLER_TRACK_X, SCROLLER_TRACK_Y, SCROLLER_TRACK_WIDTH, SCROLLER_HEIGHT, mouseX, mouseY) && this.hasMultipleFilmPhotographs()) {
 			graphics.requestCursor(this.draggingScroller ? CursorTypes.RESIZE_EW : CursorTypes.POINTING_HAND);
@@ -138,17 +139,17 @@ public class DevelopmentTableScreen extends AbstractContainerScreen<DevelopmentT
 	}
 
 	@Override
-	public void render(GuiGraphics graphics, int mouseX, int mouseY, float partialTicks) {
-		super.render(graphics, mouseX, mouseY, partialTicks);
+	public void extractRenderState(GuiGraphicsExtractor graphics, int mouseX, int mouseY, float partialTicks) {
+		super.extractRenderState(graphics, mouseX, mouseY, partialTicks);
 		PhotographComponent hoveredPhotograph = null;
 
 		if (this.displayFilm) {
 			if (this.isAtBeginning()) {
-				this.renderFilmPhotographBlocker(graphics, FILM_LEFT_PHOTOGRAPH_X);
+				this.extractFilmPhotographBlocker(graphics, FILM_LEFT_PHOTOGRAPH_X);
 			}
 
 			if (this.isAtEnd() && this.isFilmFull()) {
-				this.renderFilmPhotographBlocker(graphics, FILM_RIGHT_PHOTOGRAPH_X);
+				this.extractFilmPhotographBlocker(graphics, FILM_RIGHT_PHOTOGRAPH_X);
 			}
 
 			boolean alreadyHovering = false;
@@ -416,7 +417,7 @@ public class DevelopmentTableScreen extends AbstractContainerScreen<DevelopmentT
 		this.scrollerX = SCROLLER_TRACK_X + Math.round(progress * travel);
 	}
 
-	private void renderFilmPhotographBlocker(GuiGraphics graphics, int slotX) {
+	private void extractFilmPhotographBlocker(GuiGraphicsExtractor graphics, int slotX) {
 		graphics.blitSprite(
 			RenderPipelines.GUI_TEXTURED,
 			FILM_PHOTOGRAPH_BLOCKER,

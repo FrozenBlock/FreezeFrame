@@ -19,6 +19,8 @@ package net.lunade.camera.registry;
 
 import java.util.function.Function;
 import net.fabricmc.fabric.api.creativetab.v1.CreativeModeTabEvents;
+import net.frozenblock.lib.item.api.component.BundleWeightOverride;
+import net.frozenblock.lib.item.api.component.FrozenLibDataComponents;
 import net.lunade.camera.CameraPortConstants;
 import net.lunade.camera.component.CameraContents;
 import net.lunade.camera.component.FilmContents;
@@ -60,6 +62,7 @@ public class CameraPortItems {
 			.stacksTo(16)
 			.component(CameraPortDataComponents.FILM_CONTENTS, FilmContents.EMPTY)
 			.component(CameraPortDataComponents.FILM_MAX_PHOTOGRAPHS, FilmContents.BASE_MAX_PHOTOGRAPHS)
+			.component(FrozenLibDataComponents.BUNDLE_WEIGHT_OVERRIDE, new BundleWeightOverride(1, 16))
 	);
 	public static final PhotographItem PHOTOGRAPH = register(
 		"photograph",

@@ -21,11 +21,11 @@ import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 import net.lunade.camera.client.photograph.PhotographDetails;
 import net.lunade.camera.client.photograph.PhotographRenderer;
-import net.lunade.camera.config.CameraPortConfig;
 import net.lunade.camera.component.PhotographComponent;
 import net.lunade.camera.component.tooltip.PhotographTooltip;
+import net.lunade.camera.config.CameraPortConfig;
 import net.minecraft.client.gui.Font;
-import net.minecraft.client.gui.GuiGraphics;
+import net.minecraft.client.gui.GuiGraphicsExtractor;
 import net.minecraft.client.gui.screens.inventory.tooltip.ClientTooltipComponent;
 import net.minecraft.network.chat.Component;
 import net.minecraft.resources.Identifier;
@@ -95,34 +95,32 @@ public class ClientPhotographTooltip implements ClientTooltipComponent {
 	}
 
 	@Override
-	public void renderImage(Font font, int x, int y, int k, int l, GuiGraphics graphics) {
+	public void extractImage(Font font, int x, int y, int k, int l, GuiGraphicsExtractor graphics) {
 		if (this.previewHidden) return;
 		PhotographRenderer.blit(x, y, PHOTOGRAPH_RENDER_OFFSET_X, 0, graphics, this.photographId, PHOTOGRAPH_RENDER_SIZE, PhotographRenderer.FrameType.FRAME);
 	}
 
 	@Override
-	public void renderText(GuiGraphics graphics, Font font, int x, int y) {
-		if (!this.previewHidden) {
-			y += TOOLTIP_HEIGHT;
-		}
+	public void extractText(GuiGraphicsExtractor graphics, Font font, int x, int y) {
+		if (!this.previewHidden) y += TOOLTIP_HEIGHT;
 
 		if (this.name != null) {
-			graphics.drawString(font, this.name, x, y, -1, true);
+			graphics.text(font, this.name, x, y, -1, true);
 			y += font.lineHeight;
 		}
 
 		if (this.photographer != null) {
-			graphics.drawString(font, this.photographer, x, y, -1, true);
+			graphics.text(font, this.photographer, x, y, -1, true);
 			y += font.lineHeight;
 		}
 
 		if (this.dateAndTime != null) {
-			graphics.drawString(font, this.dateAndTime, x, y, -1, true);
+			graphics.text(font, this.dateAndTime, x, y, -1, true);
 			y += font.lineHeight;
 		}
 
 		if (this.generationLabel != null) {
-			graphics.drawString(font, this.generationLabel, x, y, -1, true);
+			graphics.text(font, this.generationLabel, x, y, -1, true);
 			y += font.lineHeight;
 		}
 	}

@@ -26,7 +26,7 @@ import net.lunade.camera.util.client.CameraScreenshotManager;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.DeltaTracker;
 import net.minecraft.client.gui.Gui;
-import net.minecraft.client.gui.GuiGraphics;
+import net.minecraft.client.gui.GuiGraphicsExtractor;
 import net.minecraft.resources.Identifier;
 import org.objectweb.asm.Opcodes;
 import org.spongepowered.asm.mixin.Final;
@@ -48,13 +48,13 @@ public class GuiMixin {
 	@Unique
 	private static final Identifier CAMERA_PORT$CAMERA_ZOOM = CameraPortConstants.id("textures/misc/camera_zoom.png");
 
-	@Inject(method = "render", at = @At("HEAD"), cancellable = true)
-	public void cameraPort$removeOverlays(GuiGraphics graphics, DeltaTracker deltaTracker, CallbackInfo info) {
+	@Inject(method = "extractRenderState", at = @At("HEAD"), cancellable = true)
+	public void cameraPort$removeOverlays(GuiGraphicsExtractor graphics, DeltaTracker deltaTracker, CallbackInfo info) {
 		if (CameraScreenshotManager.isUsingSelfRenderingCamera()) info.cancel();
 	}
 
 	@ModifyExpressionValue(
-		method = "renderSpyglassOverlay",
+		method = "extractSpyglassOverlay",
 		at = @At(
 			value = "FIELD",
 			target = "Lnet/minecraft/client/gui/Gui;SPYGLASS_SCOPE_LOCATION:Lnet/minecraft/resources/Identifier;",
