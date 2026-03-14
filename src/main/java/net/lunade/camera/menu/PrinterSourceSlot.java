@@ -24,6 +24,7 @@ import net.minecraft.world.inventory.Slot;
 import net.minecraft.world.item.ItemStack;
 
 public class PrinterSourceSlot extends Slot {
+	private static final int MAX_SOURCE_STACK_SIZE = 1;
 
 	public PrinterSourceSlot(Container container, int slot, int x, int y) {
 		super(container, slot, x, y);
@@ -32,6 +33,16 @@ public class PrinterSourceSlot extends Slot {
 	@Override
 	public boolean mayPlace(ItemStack stack) {
 		return isValidAsSource(stack);
+	}
+
+	@Override
+	public int getMaxStackSize() {
+		return MAX_SOURCE_STACK_SIZE;
+	}
+
+	@Override
+	public int getMaxStackSize(ItemStack stack) {
+		return MAX_SOURCE_STACK_SIZE;
 	}
 
 	public static boolean isValidAsSource(ItemStack stack) {
