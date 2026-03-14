@@ -1,0 +1,32 @@
+{
+  "parent": "minecraft:recipes/root",
+  "criteria": {
+    "has_film": {
+      "conditions": {
+        "items": [
+          {
+            "items": "camera_port:film"
+          }
+        ]
+      },
+      "trigger": "minecraft:inventory_changed"
+    },
+    "has_the_recipe": {
+      "conditions": {
+        "recipe": "camera_port:film_capacity_upgrade"
+      },
+      "trigger": "minecraft:recipe_unlocked"
+    }
+  },
+  "requirements": [
+    [
+      "has_the_recipe",
+      "has_film"
+    ]
+  ],
+  "rewards": {
+    "recipes": [
+      "camera_port:film_capacity_upgrade"
+    ]
+  }
+}
