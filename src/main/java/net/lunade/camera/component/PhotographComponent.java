@@ -24,7 +24,7 @@ import net.minecraft.network.codec.ByteBufCodecs;
 import net.minecraft.network.codec.StreamCodec;
 import net.minecraft.resources.Identifier;
 
-public record PhotographComponent(Identifier identifier, String photographer, int generation) {
+public record PhotographComponent(Identifier identifier, String photographer, String name, int generation) {
 	public static final int ORIGINAL = 0;
 	public static final int COPY = 1;
 	public static final int COPY_OF_COPY = 2;
@@ -34,6 +34,7 @@ public record PhotographComponent(Identifier identifier, String photographer, in
 		.group(
 			Identifier.CODEC.fieldOf("identifier").forGetter(component -> component.identifier),
 			Codec.STRING.fieldOf("author").forGetter(PhotographComponent::photographer),
+			Codec.STRING.optionalFieldOf("name", "").forGetter(PhotographComponent::name),
 			Codec.INT.optionalFieldOf("generation", ORIGINAL).forGetter(PhotographComponent::generation)
 		)
 		.apply(instance, PhotographComponent::new)
@@ -41,12 +42,17 @@ public record PhotographComponent(Identifier identifier, String photographer, in
 	public static final StreamCodec<ByteBuf, PhotographComponent> STREAM_CODEC = StreamCodec.composite(
 		Identifier.STREAM_CODEC, PhotographComponent::identifier,
 		ByteBufCodecs.STRING_UTF8, PhotographComponent::photographer,
+		ByteBufCodecs.STRING_UTF8, PhotographComponent::name,
 		ByteBufCodecs.VAR_INT, PhotographComponent::generation,
 		PhotographComponent::new
 	);
 
 	public PhotographComponent(Identifier identifier, String photographer) {
-		this(identifier, photographer, ORIGINAL);
+		this(identifier, photographer, "", ORIGINAL);
+	}
+
+	public PhotographComponent(Identifier identifier, String photographer, int generation) {
+		this(identifier, photographer, "", generation);
 	}
 
 	public boolean isCopy() {
@@ -58,6 +64,10 @@ public record PhotographComponent(Identifier identifier, String photographer, in
 	}
 
 	public PhotographComponent asCopy() {
-		return new PhotographComponent(this.identifier, this.photographer, Math.min(this.generation + 1, MAX_COPY_GENERATION));
+		return new PhotographComponent(this.identifier, this.photographer, this.name, Math.min(this.generation + 1, MAX_COPY_GENERATION));
+	}
+
+	public PhotographComponent withName(String newName) {
+		return new PhotographComponent(this.identifier, this.photographer, newName, this.generation);
 	}
 }

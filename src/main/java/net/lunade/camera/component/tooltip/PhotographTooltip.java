@@ -20,5 +20,5 @@ package net.lunade.camera.component.tooltip;
 import net.minecraft.resources.Identifier;
 import net.minecraft.world.inventory.tooltip.TooltipComponent;
 
-public record PhotographTooltip(Identifier identifier, String photographer, int generation) implements TooltipComponent {
+public record PhotographTooltip(Identifier identifier, String name, String photographer, int generation) implements TooltipComponent {
 }

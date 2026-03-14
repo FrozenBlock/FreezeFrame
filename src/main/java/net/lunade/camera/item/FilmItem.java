@@ -21,13 +21,18 @@ import java.util.Optional;
 import net.lunade.camera.component.FilmContents;
 import net.lunade.camera.component.PhotographComponent;
 import net.lunade.camera.component.tooltip.FilmTooltip;
+import net.lunade.camera.networking.packet.OpenFilmScreenPacket;
 import net.lunade.camera.registry.CameraPortDataComponents;
 import net.minecraft.core.component.DataComponents;
 import net.minecraft.server.level.ServerLevel;
+import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.util.ARGB;
 import net.minecraft.util.Mth;
+import net.minecraft.world.InteractionHand;
+import net.minecraft.world.InteractionResult;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.EquipmentSlot;
+import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.inventory.tooltip.TooltipComponent;
 import net.minecraft.world.item.ItemInstance;
 import net.minecraft.world.item.Item;
@@ -65,6 +70,19 @@ public class FilmItem extends Item {
 	public static float getFullnessDisplay(ItemStack stack) {
 		final FilmContents contents = stack.getOrDefault(CameraPortDataComponents.FILM_CONTENTS, FilmContents.EMPTY);
 		return getWeightSafe(contents, stack).floatValue();
+	}
+
+	@Override
+	public InteractionResult use(net.minecraft.world.level.Level level, Player player, InteractionHand hand) {
+		final ItemStack stack = player.getItemInHand(hand);
+		if (!stack.isEmpty() && !stack.getOrDefault(CameraPortDataComponents.FILM_CONTENTS, FilmContents.EMPTY).isEmpty()) {
+			if (player instanceof ServerPlayer serverPlayer) {
+				OpenFilmScreenPacket.sendTo(serverPlayer, hand);
+			}
+			return InteractionResult.SUCCESS;
+		}
+
+		return InteractionResult.PASS;
 	}
 
 	@Override

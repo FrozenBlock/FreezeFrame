@@ -23,6 +23,7 @@ import java.util.Optional;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 import net.lunade.camera.CameraPortConstants;
+import net.lunade.camera.client.photograph.PhotographDetails;
 import net.lunade.camera.client.photograph.PhotographLoader;
 import net.lunade.camera.client.photograph.PhotographRenderer;
 import net.lunade.camera.config.CameraPortConfig;
@@ -61,6 +62,8 @@ public class ClientFilmTooltip implements ClientTooltipComponent {
 	@Nullable
 	private final Identifier photographId;
 	@Nullable
+	private final Component name;
+	@Nullable
 	private final Component photographer;
 	@Nullable
 	private final Component dateAndTime;
@@ -78,6 +81,10 @@ public class ClientFilmTooltip implements ClientTooltipComponent {
 		this.photographId = photograph == null
 			? null
 			: photograph.identifier();
+
+		this.name = photograph == null
+			? null
+			: PhotographDetails.getPhotographNameLine(photograph);
 
 		this.photographer = photograph == null || StringUtil.isNullOrEmpty(photograph.photographer())
 			? null
@@ -102,8 +109,11 @@ public class ClientFilmTooltip implements ClientTooltipComponent {
 	@Override
 	public int getWidth(Font font) {
 		final int textWidth = Math.max(
-			this.photographer != null ? getTextHeight(this.photographer, font) : 0,
-			this.dateAndTime != null ? getTextHeight(this.dateAndTime, font) : 0
+			this.name != null ? getTextHeight(this.name, font) : 0,
+			Math.max(
+				this.photographer != null ? getTextHeight(this.photographer, font) : 0,
+				this.dateAndTime != null ? getTextHeight(this.dateAndTime, font) : 0
+			)
 		);
 		return Math.max(GRID_WIDTH, textWidth);
 	}
@@ -126,6 +136,7 @@ public class ClientFilmTooltip implements ClientTooltipComponent {
 		if (this.hidePhotographPreviewAndInfo) return 0;
 
 		int extension = 0;
+		if (this.name != null) extension += getTextHeight(this.name, font);
 		if (this.photographer != null) extension += getTextHeight(this.photographer, font);
 		if (this.dateAndTime != null) extension += getTextHeight(this.dateAndTime, font);
 		return PHOTOGRAPH_RENDER_SIZE + extension;
@@ -204,6 +215,11 @@ public class ClientFilmTooltip implements ClientTooltipComponent {
 	}
 
 	private void drawPhotographTooltips(int x, int y, Font font, GuiGraphics graphics) {
+		if (this.name != null) {
+			graphics.drawWordWrap(font, this.name, x, y, GRID_WIDTH, -5592406);
+			y += getTextHeight(this.name, font);
+		}
+
 		if (this.photographer != null) {
 			graphics.drawWordWrap(font, this.photographer, x, y, GRID_WIDTH, -5592406);
 			y += getTextHeight(this.photographer, font);

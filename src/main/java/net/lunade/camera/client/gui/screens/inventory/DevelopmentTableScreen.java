@@ -23,6 +23,7 @@ import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 import net.fabricmc.fabric.api.client.networking.v1.ClientPlayNetworking;
 import net.lunade.camera.CameraPortConstants;
+import net.lunade.camera.client.photograph.PhotographHoverTooltipRenderer;
 import net.lunade.camera.client.photograph.PhotographRenderer;
 import net.lunade.camera.component.FilmContents;
 import net.lunade.camera.component.PhotographComponent;
@@ -139,6 +140,7 @@ public class DevelopmentTableScreen extends AbstractContainerScreen<DevelopmentT
 	@Override
 	public void render(GuiGraphics graphics, int mouseX, int mouseY, float partialTicks) {
 		super.render(graphics, mouseX, mouseY, partialTicks);
+		PhotographComponent hoveredPhotograph = null;
 
 		if (this.displayFilm) {
 			if (this.isAtBeginning()) {
@@ -163,6 +165,7 @@ public class DevelopmentTableScreen extends AbstractContainerScreen<DevelopmentT
 				);
 				if (this.isHovering(FILM_MIDDLE_PHOTOGRAPH_X, FILM_PHOTOGRAPH_Y, FILM_PHOTOGRAPH_SIZE, FILM_PHOTOGRAPH_SIZE, mouseX, mouseY)) {
 					alreadyHovering = true;
+					hoveredPhotograph = this.getFilmPhotographComponent(this.photographIndex);
 					graphics.blitSprite(
 						RenderPipelines.GUI_TEXTURED,
 						FILM_PHOTOGRAPH_HIGHLIGHT,
@@ -188,6 +191,7 @@ public class DevelopmentTableScreen extends AbstractContainerScreen<DevelopmentT
 					);
 					if (!alreadyHovering && this.isHovering(FILM_RIGHT_PHOTOGRAPH_X, FILM_PHOTOGRAPH_Y, FILM_PHOTOGRAPH_SIZE, FILM_PHOTOGRAPH_SIZE, mouseX, mouseY)) {
 						alreadyHovering = true;
+						hoveredPhotograph = this.getFilmPhotographComponent(this.photographIndex + 1);
 						graphics.blitSprite(
 							RenderPipelines.GUI_TEXTURED,
 							FILM_PHOTOGRAPH_HIGHLIGHT,
@@ -213,6 +217,7 @@ public class DevelopmentTableScreen extends AbstractContainerScreen<DevelopmentT
 					);
 					if (!alreadyHovering && this.isHovering(FILM_LEFT_PHOTOGRAPH_X, FILM_PHOTOGRAPH_Y, FILM_PHOTOGRAPH_SIZE, FILM_PHOTOGRAPH_SIZE, mouseX, mouseY)) {
 						alreadyHovering = true;
+						hoveredPhotograph = this.getFilmPhotographComponent(this.photographIndex - 1);
 						graphics.blitSprite(
 							RenderPipelines.GUI_TEXTURED,
 							FILM_PHOTOGRAPH_HIGHLIGHT,
@@ -256,6 +261,10 @@ public class DevelopmentTableScreen extends AbstractContainerScreen<DevelopmentT
 				COPY_PHOTOGRAPH_SIZE,
 				PhotographRenderer.FrameType.FRAME
 			);
+		}
+
+		if (hoveredPhotograph != null) {
+			PhotographHoverTooltipRenderer.render(graphics, this.font, this.width, this.height, mouseX, mouseY, hoveredPhotograph);
 		}
 	}
 
@@ -354,6 +363,13 @@ public class DevelopmentTableScreen extends AbstractContainerScreen<DevelopmentT
 		if (this.filmContents == null || this.filmContents.isEmpty()) return null;
 		if (index < 0 || index >= this.filmContents.size()) return null;
 		return this.filmContents.getPhotographAtIndex(index).identifier();
+	}
+
+	@Nullable
+	private PhotographComponent getFilmPhotographComponent(int index) {
+		if (this.filmContents == null || this.filmContents.isEmpty()) return null;
+		if (index < 0 || index >= this.filmContents.size()) return null;
+		return this.filmContents.getPhotographAtIndex(index);
 	}
 
 	private boolean hasMultipleFilmPhotographs() {

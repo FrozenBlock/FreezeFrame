@@ -78,11 +78,13 @@ public final class FilmContents {
 	}
 
 	public int getSelectedPhotographIndex() {
+		if (this.photographs.isEmpty()) return 0;
 		return this.selectedPhotograph;
 	}
 
 	@Nullable
 	public PhotographComponent getSelectedPhotograph() {
+		if (this.photographs.isEmpty() || this.selectedPhotograph < 0 || this.selectedPhotograph >= this.photographs.size()) return null;
 		return this.photographs.get(this.selectedPhotograph);
 	}
 
@@ -142,6 +144,25 @@ public final class FilmContents {
 			this.selectedPhotograph = this.selectedPhotograph != selectedPhotograph && !this.indexIsOutsideAllowedBounds(selectedPhotograph)
 				? selectedPhotograph
 				: 0;
+		}
+
+		public boolean setPhotographName(int photographIndex, String name) {
+			if (this.indexIsOutsideAllowedBounds(photographIndex)) return false;
+			final PhotographComponent current = this.photographs.get(photographIndex);
+			this.photographs.set(photographIndex, current.withName(name));
+			return true;
+		}
+
+		public boolean removePhotographAt(int photographIndex) {
+			if (this.indexIsOutsideAllowedBounds(photographIndex)) return false;
+			this.photographs.remove(photographIndex);
+			this.weight = Fraction.getFraction(this.photographs.size(), this.photographWeight.getDenominator());
+			if (this.photographs.isEmpty()) {
+				this.selectedPhotograph = 0;
+			} else if (this.selectedPhotograph >= this.photographs.size()) {
+				this.selectedPhotograph = this.photographs.size() - 1;
+			}
+			return true;
 		}
 
 		private boolean indexIsOutsideAllowedBounds(int selectedPhotograph) {

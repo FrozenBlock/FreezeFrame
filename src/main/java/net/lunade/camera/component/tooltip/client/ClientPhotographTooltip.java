@@ -17,21 +17,18 @@
 
 package net.lunade.camera.component.tooltip.client;
 
-import java.text.DateFormat;
-import java.util.Date;
-import java.util.Optional;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
-import net.lunade.camera.client.photograph.PhotographLoader;
+import net.lunade.camera.client.photograph.PhotographDetails;
 import net.lunade.camera.client.photograph.PhotographRenderer;
 import net.lunade.camera.config.CameraPortConfig;
+import net.lunade.camera.component.PhotographComponent;
 import net.lunade.camera.component.tooltip.PhotographTooltip;
 import net.minecraft.client.gui.Font;
 import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.client.gui.screens.inventory.tooltip.ClientTooltipComponent;
 import net.minecraft.network.chat.Component;
 import net.minecraft.resources.Identifier;
-import net.minecraft.util.StringUtil;
 import org.jetbrains.annotations.Nullable;
 import net.minecraft.ChatFormatting;
 
@@ -47,6 +44,8 @@ public class ClientPhotographTooltip implements ClientTooltipComponent {
 	public static final Component COPY_OF_COPY_COMPONENT = Component.translatable("photograph.copy_of_copy").withStyle(ChatFormatting.GRAY);
 	private final Identifier photographId;
 	@Nullable
+	private final Component name;
+	@Nullable
 	private final Component photographer;
 	@Nullable
 	private final Component dateAndTime;
@@ -56,14 +55,10 @@ public class ClientPhotographTooltip implements ClientTooltipComponent {
 
 	public ClientPhotographTooltip(PhotographTooltip component) {
 		this.photographId = component.identifier();
-		this.photographer = StringUtil.isNullOrEmpty(component.photographer())
-			? null
-			: Component.translatable("photograph.photographer", component.photographer()).withStyle(ChatFormatting.GRAY);
-
-		final Optional<Date> optionalDate = PhotographLoader.parseDate(component.identifier().getPath());
-		this.dateAndTime = optionalDate
-			.map(date -> Component.translatable("photograph.date", formatDate(date)).withStyle(ChatFormatting.GRAY))
-			.orElse(null);
+		final PhotographComponent photograph = new PhotographComponent(component.identifier(), component.photographer(), component.name(), component.generation());
+		this.name = PhotographDetails.getPhotographNameLine(photograph);
+		this.photographer = PhotographDetails.getPhotographerLine(photograph);
+		this.dateAndTime = PhotographDetails.getDateLine(photograph);
 
 		this.generationLabel = switch (component.generation()) {
 			case 0 -> ORIGINAL_COMPONENT;
@@ -77,6 +72,7 @@ public class ClientPhotographTooltip implements ClientTooltipComponent {
 	@Override
 	public int getHeight(Font font) {
 		int extension = 0;
+		if (this.name != null) extension += font.lineHeight;
 		if (this.photographer != null) extension += font.lineHeight;
 		if (this.dateAndTime != null) extension += font.lineHeight;
 		if (this.generationLabel != null) extension += font.lineHeight;
@@ -87,8 +83,11 @@ public class ClientPhotographTooltip implements ClientTooltipComponent {
 	public int getWidth(Font font) {
 		final int textWidth = Math.max(
 			Math.max(
+				this.name != null ? font.width(this.name) : 0,
+				Math.max(
 				this.photographer != null ? font.width(this.photographer) : 0,
 				this.dateAndTime != null ? font.width(this.dateAndTime) : 0
+				)
 			),
 			this.generationLabel != null ? font.width(this.generationLabel) : 0
 		);
@@ -107,6 +106,11 @@ public class ClientPhotographTooltip implements ClientTooltipComponent {
 			y += TOOLTIP_HEIGHT;
 		}
 
+		if (this.name != null) {
+			graphics.drawString(font, this.name, x, y, -1, true);
+			y += font.lineHeight;
+		}
+
 		if (this.photographer != null) {
 			graphics.drawString(font, this.photographer, x, y, -1, true);
 			y += font.lineHeight;
@@ -121,9 +125,5 @@ public class ClientPhotographTooltip implements ClientTooltipComponent {
 			graphics.drawString(font, this.generationLabel, x, y, -1, true);
 			y += font.lineHeight;
 		}
-	}
-
-	private static String formatDate(Date date) {
-		return DateFormat.getDateTimeInstance(DateFormat.SHORT, DateFormat.SHORT).format(date);
 	}
 }
