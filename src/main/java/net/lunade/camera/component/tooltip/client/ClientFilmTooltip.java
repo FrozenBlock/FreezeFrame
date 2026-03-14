@@ -216,7 +216,7 @@ public class ClientFilmTooltip implements ClientTooltipComponent {
 
 	private void extractPhotographTooltips(int x, int y, Font font, GuiGraphicsExtractor graphics) {
 		if (this.name != null) {
-			graphics.textWithWordWrap(font, this.name, x, y, GRID_WIDTH, -5592406);
+			graphics.textWithWordWrap(font, this.name, x, y, GRID_WIDTH, -1);
 			y += getTextHeight(this.name, font);
 		}
 

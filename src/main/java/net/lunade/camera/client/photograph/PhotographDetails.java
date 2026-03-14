@@ -49,9 +49,10 @@ public final class PhotographDetails {
 
 	@Nullable
 	public static Component getPhotographNameLine(Photograph photograph) {
-		if (StringUtil.isNullOrEmpty(photograph.name())) return null;
-		// StringUtil.isNullOrEmpty(photograph.name()) return Component.translatable("item.camera_port.photograph").withStyle(ChatFormatting.GRAY);
-		return Component.literal(photograph.name()).withStyle(ChatFormatting.GRAY);
+		if (StringUtil.isNullOrEmpty(photograph.name())) {
+			return Component.translatable("photograph.unnamed").withStyle(ChatFormatting.WHITE);
+		}
+		return Component.literal(photograph.name()).withStyle(ChatFormatting.WHITE);
 	}
 
 	@Nullable

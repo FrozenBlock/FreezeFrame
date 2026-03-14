@@ -57,6 +57,8 @@ public class FilmScreen extends Screen {
 	private static final Identifier SCROLLER_DISABLED = CameraPortConstants.id("container/film/scroller_disabled");
 	private static final Identifier FILM_PHOTOGRAPH_BLOCKER = CameraPortConstants.id("container/film/film_photograph_blocker");
 	private static final Identifier FILM_PHOTOGRAPH_HIGHLIGHT = CameraPortConstants.id("container/film/film_photograph_highlight");
+	private static final Identifier TEXT_FIELD = CameraPortConstants.id("container/film/text_field");
+	private static final Identifier TEXT_FIELD_DISABLED = CameraPortConstants.id("container/film/text_field_disabled");
 	private static final Identifier DELETE_BUTTON = CameraPortConstants.id("container/film/delete_button");
 	private static final Identifier DELETE_BUTTON_HOVER = CameraPortConstants.id("container/film/delete_button_hover");
 	private static final int TEXTURE_WIDTH = 256;
@@ -65,25 +67,30 @@ public class FilmScreen extends Screen {
 	private static final int BACKGROUND_HEIGHT = 128;
 	private static final int CONTENT_HEIGHT = 160;
 	private static final int FILM_PHOTOGRAPH_SIZE = 78;
-	private static final int FILM_PHOTOGRAPH_HIGHLIGHT_SIZE = 78;
-	private static final int FILM_PHOTOGRAPH_Y = 20;
-	private static final int FILM_LEFT_PHOTOGRAPH_X = 9;
-	private static final int FILM_MIDDLE_PHOTOGRAPH_X = 90;
-	private static final int FILM_RIGHT_PHOTOGRAPH_X = 171;
+	private static final int FILM_PHOTOGRAPH_Y = 35;
+	private static final int FILM_LEFT_PHOTOGRAPH_X = 5;
+	private static final int FILM_MIDDLE_PHOTOGRAPH_X = 89;
+	private static final int FILM_RIGHT_PHOTOGRAPH_X = 173;
 	private static final int FILM_PHOTOGRAPH_BLOCKER_OFFSET = -1;
+	private static final int FILM_PHOTOGRAPH_BLOCKER_SIZE = FILM_PHOTOGRAPH_SIZE + 2;
 	private static final int SCROLLER_WIDTH = 19;
 	private static final int SCROLLER_HEIGHT = 10;
 	private static final int SCROLLER_TRACK_X = FILM_LEFT_PHOTOGRAPH_X - 1;
-	private static final int SCROLLER_TRACK_Y = 96;
+	private static final int SCROLLER_TRACK_Y = 116;
 	private static final int SCROLLER_TRACK_WIDTH = FILM_RIGHT_PHOTOGRAPH_X + FILM_PHOTOGRAPH_SIZE - FILM_LEFT_PHOTOGRAPH_X + 2;
 	private static final int NAME_LABEL_X = 17;
 	private static final int NAME_LABEL_Y = 111;
-	private static final int NAME_BOX_X = 17;
-	private static final int NAME_BOX_Y = 102;
-	private static final int NAME_BOX_WIDTH = 204;
-	private static final int NAME_BOX_HEIGHT = 20;
-	private static final int DELETE_BUTTON_X = 226;
-	private static final int DELETE_BUTTON_Y = 105;
+	private static final int NAME_BOX_X = 88;
+	private static final int NAME_BOX_Y = 5;
+	private static final int NAME_BOX_WIDTH = 80;
+	private static final int NAME_BOX_HEIGHT = 16;
+	private static final int NAME_TEXT_INSET_X = 4;
+	private static final int NAME_TEXT_INSET_Y = 3;
+	private static final int NAME_TEXT_OFFSET_Y = 1;
+	private static final int NAME_TEXT_WIDTH = NAME_BOX_WIDTH - (NAME_TEXT_INSET_X * 2);
+	private static final int NAME_TEXT_HEIGHT = NAME_BOX_HEIGHT - (NAME_TEXT_INSET_Y * 2);
+	private static final int DELETE_BUTTON_X = 174;
+	private static final int DELETE_BUTTON_Y = 4;
 	private static final int DELETE_BUTTON_WIDTH = 13;
 	private static final int DELETE_BUTTON_HEIGHT = 14;
 	private static final int ACTION_BUTTON_Y = BACKGROUND_HEIGHT + 8;
@@ -91,7 +98,7 @@ public class FilmScreen extends Screen {
 	private static final int ACTION_BUTTON_HEIGHT = 20;
 	private static final int SAVE_BUTTON_X = 17;
 	private static final int CANCEL_BUTTON_X = 141;
-	private static final int MAX_NAME_LENGTH = 64;
+	private static final int MAX_NAME_LENGTH = 16;
 	private final Player owner;
 	private final InteractionHand hand;
 	private final ScrollWheelHandler scrollWheelHandler = new ScrollWheelHandler();
@@ -128,17 +135,17 @@ public class FilmScreen extends Screen {
 
 		this.nameEditBox = new EditBox(
 			this.font,
-			this.leftPos + NAME_BOX_X,
-			this.topPos + NAME_BOX_Y,
-			NAME_BOX_WIDTH,
-			NAME_BOX_HEIGHT,
+			this.leftPos + NAME_BOX_X + NAME_TEXT_INSET_X,
+			this.topPos + NAME_BOX_Y + NAME_TEXT_INSET_Y + NAME_TEXT_OFFSET_Y,
+			NAME_TEXT_WIDTH,
+			NAME_TEXT_HEIGHT,
 			Component.translatable("screen.camera_port.film.name")
 		);
 		this.nameEditBox.setMaxLength(MAX_NAME_LENGTH);
 		this.nameEditBox.setCanLoseFocus(false);
-		this.nameEditBox.setBordered(true);
-		this.nameEditBox.setTextColor(0xFF303030);
-		this.nameEditBox.setTextColorUneditable(0xFF303030);
+		this.nameEditBox.setBordered(false);
+		this.nameEditBox.setTextColor(0xFFFFFFFF);
+		this.nameEditBox.setTextColorUneditable(0xFFFFFFFF);
 		this.nameEditBox.setResponder(this::onNameChanged);
 		this.addRenderableWidget(this.nameEditBox);
 
@@ -153,12 +160,18 @@ public class FilmScreen extends Screen {
 		this.setupOrClearFilmPhotographDisplays();
 		this.updateButtons();
 		this.setInitialFocus(this.nameEditBox);
-		this.nameEditBox.setFocused(true);
+		this.ensureNameEditBoxFocus();
 	}
 
 	@Override
 	public void tick() {
 		super.tick();
+		this.ensureNameEditBoxFocus();
+	}
+
+	private void ensureNameEditBoxFocus() {
+		if (this.nameEditBox == null || !this.nameEditBox.active || !this.nameEditBox.visible) return;
+		if (this.getFocused() != this.nameEditBox) this.setFocused(this.nameEditBox);
 		if (!this.nameEditBox.isFocused()) this.nameEditBox.setFocused(true);
 	}
 
@@ -209,10 +222,10 @@ public class FilmScreen extends Screen {
 				graphics.blitSprite(
 					RenderPipelines.GUI_TEXTURED,
 					FILM_PHOTOGRAPH_HIGHLIGHT,
-					this.leftPos + FILM_MIDDLE_PHOTOGRAPH_X + FILM_PHOTOGRAPH_BLOCKER_OFFSET,
-					this.topPos + FILM_PHOTOGRAPH_Y + FILM_PHOTOGRAPH_BLOCKER_OFFSET,
-					FILM_PHOTOGRAPH_HIGHLIGHT_SIZE,
-					FILM_PHOTOGRAPH_HIGHLIGHT_SIZE
+						this.leftPos + FILM_MIDDLE_PHOTOGRAPH_X,
+						this.topPos + FILM_PHOTOGRAPH_Y,
+						FILM_PHOTOGRAPH_SIZE,
+						FILM_PHOTOGRAPH_SIZE
 				);
 			}
 		}
@@ -235,10 +248,10 @@ public class FilmScreen extends Screen {
 					graphics.blitSprite(
 						RenderPipelines.GUI_TEXTURED,
 						FILM_PHOTOGRAPH_HIGHLIGHT,
-						this.leftPos + FILM_RIGHT_PHOTOGRAPH_X + FILM_PHOTOGRAPH_BLOCKER_OFFSET,
-						this.topPos + FILM_PHOTOGRAPH_Y + FILM_PHOTOGRAPH_BLOCKER_OFFSET,
-						FILM_PHOTOGRAPH_HIGHLIGHT_SIZE,
-						FILM_PHOTOGRAPH_HIGHLIGHT_SIZE
+						this.leftPos + FILM_RIGHT_PHOTOGRAPH_X,
+						this.topPos + FILM_PHOTOGRAPH_Y,
+						FILM_PHOTOGRAPH_SIZE,
+						FILM_PHOTOGRAPH_SIZE
 					);
 					graphics.requestCursor(CursorTypes.POINTING_HAND);
 				}
@@ -261,10 +274,10 @@ public class FilmScreen extends Screen {
 					graphics.blitSprite(
 						RenderPipelines.GUI_TEXTURED,
 						FILM_PHOTOGRAPH_HIGHLIGHT,
-						this.leftPos + FILM_LEFT_PHOTOGRAPH_X + FILM_PHOTOGRAPH_BLOCKER_OFFSET,
-						this.topPos + FILM_PHOTOGRAPH_Y + FILM_PHOTOGRAPH_BLOCKER_OFFSET,
-						FILM_PHOTOGRAPH_HIGHLIGHT_SIZE,
-						FILM_PHOTOGRAPH_HIGHLIGHT_SIZE
+						this.leftPos + FILM_LEFT_PHOTOGRAPH_X,
+						this.topPos + FILM_PHOTOGRAPH_Y,
+						FILM_PHOTOGRAPH_SIZE,
+						FILM_PHOTOGRAPH_SIZE
 					);
 					graphics.requestCursor(CursorTypes.POINTING_HAND);
 				}
@@ -290,6 +303,14 @@ public class FilmScreen extends Screen {
 		}
 
 		final boolean hoveringDeleteButton = this.isHovering(DELETE_BUTTON_X, DELETE_BUTTON_Y, DELETE_BUTTON_WIDTH, DELETE_BUTTON_HEIGHT, mouseX, mouseY) && this.hasPhotographs();
+		graphics.blitSprite(
+			RenderPipelines.GUI_TEXTURED,
+			this.hasPhotographs() ? TEXT_FIELD : TEXT_FIELD_DISABLED,
+			this.leftPos + NAME_BOX_X,
+			this.topPos + NAME_BOX_Y,
+			NAME_BOX_WIDTH,
+			NAME_BOX_HEIGHT
+		);
 		graphics.blitSprite(
 			RenderPipelines.GUI_TEXTURED,
 			hoveringDeleteButton ? DELETE_BUTTON_HOVER : DELETE_BUTTON,
@@ -404,6 +425,7 @@ public class FilmScreen extends Screen {
 		if (!this.hasPhotographs()) return;
 
 		this.photographs.remove(this.selectedPhotographIndex);
+		this.filmMaxPhotographs = Math.max(this.photographs.size(), this.filmMaxPhotographs - 1);
 		if (this.photographs.isEmpty()) {
 			this.selectedPhotographIndex = 0;
 		} else {
@@ -416,8 +438,13 @@ public class FilmScreen extends Screen {
 
 	private void onNameChanged(String updatedName) {
 		if (!this.hasPhotographs()) return;
+		final String clampedName = this.font.plainSubstrByWidth(updatedName, NAME_TEXT_WIDTH);
+		if (!clampedName.equals(updatedName)) {
+			this.nameEditBox.setValue(clampedName);
+			return;
+		}
 		final Photograph current = this.photographs.get(this.selectedPhotographIndex);
-		this.photographs.set(this.selectedPhotographIndex, current.withName(updatedName));
+		this.photographs.set(this.selectedPhotographIndex, current.withName(clampedName));
 	}
 
 	private void incrementPhotographIndex(int amount) {
@@ -430,9 +457,15 @@ public class FilmScreen extends Screen {
 	}
 
 	private void onSelectedPhotographChanged() {
+		this.onSelectedPhotographChanged(true);
+	}
+
+	private void onSelectedPhotographChanged(boolean updateScrollerFromIndex) {
 		this.setupOrClearFilmPhotographDisplays();
 		this.syncNameEditBox();
-		this.updateScrollerXFromPhotographIndex();
+		if (updateScrollerFromIndex) {
+			this.updateScrollerXFromPhotographIndex();
+		}
 		this.updateButtons();
 	}
 
@@ -526,7 +559,7 @@ public class FilmScreen extends Screen {
 		this.scrollerX = SCROLLER_TRACK_X + relative;
 		if (updatedIndex != this.selectedPhotographIndex) {
 			this.selectedPhotographIndex = updatedIndex;
-			this.onSelectedPhotographChanged();
+			this.onSelectedPhotographChanged(false);
 		}
 	}
 
@@ -547,8 +580,8 @@ public class FilmScreen extends Screen {
 			FILM_PHOTOGRAPH_BLOCKER,
 			this.leftPos + slotX + FILM_PHOTOGRAPH_BLOCKER_OFFSET,
 			this.topPos + FILM_PHOTOGRAPH_Y + FILM_PHOTOGRAPH_BLOCKER_OFFSET,
-			FILM_PHOTOGRAPH_HIGHLIGHT_SIZE,
-			FILM_PHOTOGRAPH_HIGHLIGHT_SIZE
+			FILM_PHOTOGRAPH_BLOCKER_SIZE,
+			FILM_PHOTOGRAPH_BLOCKER_SIZE
 		);
 	}
 

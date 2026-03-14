@@ -25,7 +25,6 @@ import net.minecraft.network.chat.Component;
 
 public final class PhotographHoverTooltipRenderer {
 	private static final int TOOLTIP_MARGIN = 4;
-	private static final int TOOLTIP_PADDING = 3;
 	private static final int BACKGROUND_COLOR = 0xF0100010;
 	private static final int BORDER_TOP_COLOR = 0x505000FF;
 	private static final int BORDER_BOTTOM_COLOR = 0x5028007F;
@@ -45,28 +44,30 @@ public final class PhotographHoverTooltipRenderer {
 		final List<Component> lines = PhotographDetails.buildTooltipLines(photograph);
 		if (lines.isEmpty()) return;
 
-		int tooltipWidth = 0;
+		int contentWidth = 0;
 		for (Component line : lines) {
-			tooltipWidth = Math.max(tooltipWidth, font.width(line.getString()));
+			contentWidth = Math.max(contentWidth, font.width(line));
 		}
 
-		final int tooltipHeight = (lines.size() * font.lineHeight) + (TOOLTIP_PADDING * 2);
+		final int contentHeight = lines.size() * font.lineHeight;
 		int tooltipX = mouseX + 12;
 		int tooltipY = mouseY - 12;
-		if (tooltipX + tooltipWidth + (TOOLTIP_PADDING * 2) > screenWidth - TOOLTIP_MARGIN) {
-			tooltipX = mouseX - 12 - tooltipWidth - (TOOLTIP_PADDING * 2);
+		final int totalWidth = contentWidth + 6;
+		final int totalHeight = contentHeight + 6;
+		if (tooltipX + totalWidth > screenWidth - TOOLTIP_MARGIN) {
+			tooltipX = mouseX - 12 - totalWidth;
 		}
-		if (tooltipY + tooltipHeight > screenHeight - TOOLTIP_MARGIN) {
-			tooltipY = screenHeight - tooltipHeight - TOOLTIP_MARGIN;
+		if (tooltipY + totalHeight > screenHeight - TOOLTIP_MARGIN) {
+			tooltipY = screenHeight - totalHeight - TOOLTIP_MARGIN;
 		}
 		if (tooltipY < TOOLTIP_MARGIN) {
 			tooltipY = TOOLTIP_MARGIN;
 		}
 
-		final int x0 = tooltipX - TOOLTIP_PADDING;
-		final int y0 = tooltipY - TOOLTIP_PADDING;
-		final int x1 = tooltipX + tooltipWidth + TOOLTIP_PADDING;
-		final int y1 = tooltipY + tooltipHeight - TOOLTIP_PADDING;
+		final int x0 = tooltipX;
+		final int y0 = tooltipY;
+		final int x1 = tooltipX + contentWidth;
+		final int y1 = tooltipY + contentHeight;
 
 		graphics.pose().pushMatrix();
 
@@ -74,7 +75,7 @@ public final class PhotographHoverTooltipRenderer {
 
 		int textY = tooltipY;
 		for (Component line : lines) {
-			graphics.text(font, line.getString(), tooltipX, textY, 0xFFFFFFFF, false);
+			graphics.text(font, line, tooltipX, textY, 0xFFFFFFFF, false);
 			textY += font.lineHeight;
 		}
 

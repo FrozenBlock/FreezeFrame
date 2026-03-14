@@ -27,6 +27,11 @@ import net.minecraft.network.FriendlyByteBuf;
 import net.minecraft.network.codec.StreamCodec;
 import net.minecraft.network.protocol.common.custom.CustomPacketPayload;
 import net.minecraft.server.level.ServerPlayer;
+import net.minecraft.server.level.ServerLevel;
+import net.minecraft.core.particles.ItemParticleOption;
+import net.minecraft.core.particles.ParticleTypes;
+import net.minecraft.sounds.SoundEvents;
+import net.minecraft.sounds.SoundSource;
 import net.minecraft.world.InteractionHand;
 import net.minecraft.world.item.ItemStack;
 
@@ -55,10 +60,41 @@ public record SaveFilmChangesPacket(InteractionHand hand, FilmContents contents)
 		final ItemStack stack = player.getItemInHand(packet.hand);
 		if (!stack.is(CameraPortItems.FILM)) return;
 
+		final FilmContents existingContents = stack.getOrDefault(CameraPortDataComponents.FILM_CONTENTS, FilmContents.EMPTY);
 		final int maxPhotographs = FilmItem.getMaxPhotographs(stack);
 		if (packet.contents.size() > maxPhotographs) return;
+		final int removedPhotographs = Math.max(0, existingContents.size() - packet.contents.size());
+		final int reducedMaxPhotographs = Math.max(packet.contents.size(), maxPhotographs - removedPhotographs);
+		if (reducedMaxPhotographs <= 0) {
+			if (player.level() instanceof ServerLevel level) {
+				level.playSound(
+					null,
+					player.getX(),
+					player.getEyeY(),
+					player.getZ(),
+					SoundEvents.ITEM_BREAK,
+					SoundSource.PLAYERS,
+					0.8F,
+					0.8F + level.getRandom().nextFloat() * 0.4F
+				);
+				level.sendParticles(
+					new ItemParticleOption(ParticleTypes.ITEM, stack.getItem()),
+					player.getX(),
+					player.getEyeY(),
+					player.getZ(),
+					10,
+					0.2D,
+					0.2D,
+					0.2D,
+					0.05D
+				);
+			}
+			player.setItemInHand(packet.hand, ItemStack.EMPTY);
+			return;
+		}
 
 		stack.set(CameraPortDataComponents.FILM_CONTENTS, packet.contents);
+		stack.set(CameraPortDataComponents.FILM_MAX_PHOTOGRAPHS, FilmItem.normalizeMaxPhotographs(reducedMaxPhotographs));
 		FilmItem.refreshStackingState(stack);
 	}
 }

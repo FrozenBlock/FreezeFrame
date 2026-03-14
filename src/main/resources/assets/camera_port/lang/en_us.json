@@ -1,5 +1,5 @@
 {
-  "item.camera_port.photograph": "Photograph",
+  "item.camera_port.photograph": "Photo",
   "item.camera_port.portfolio": "Portfolio",
 
 
@@ -21,6 +21,7 @@
 
   "photograph.photographer": "by %1$s",
   "photograph.name": "%1$s",
+  "photograph.unnamed": "Unnamed Photo",
   "photograph.date": "%s",
   "photograph.original": "Original",
   "photograph.copy": "Copy of Original",
@@ -31,7 +32,6 @@
   "item.camera_port.film.empty.description": "Stores up to %s images",
   "item.camera_port.film.full": "Full",
   "item.camera_port.film.fullness": "%s/%s",
-  "screen.camera_port.film.title": "Film Roll",
   "screen.camera_port.film.name": "Name",
   "screen.camera_port.film.save": "Save",
   "screen.camera_port.film.cancel": "Cancel",

@@ -56,7 +56,7 @@ public class ClientPhotographTooltip implements ClientTooltipComponent {
 	public ClientPhotographTooltip(PhotographTooltip component) {
 		this.photographId = component.identifier();
 		final Photograph photograph = new Photograph(component.identifier(), component.photographer(), component.name(), component.generation());
-		this.name = PhotographDetails.getPhotographNameLine(photograph);
+		this.name = null;
 		this.photographer = PhotographDetails.getPhotographerLine(photograph);
 		this.dateAndTime = PhotographDetails.getDateLine(photograph);
 

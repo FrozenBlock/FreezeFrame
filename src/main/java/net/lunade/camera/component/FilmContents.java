@@ -121,7 +121,7 @@ public final class FilmContents {
 		}
 
 		public Mutable(FilmContents contents, int maxPhotographs) {
-			final int normalizedMax = Math.max(BASE_MAX_PHOTOGRAPHS, maxPhotographs);
+			final int normalizedMax = Math.max(1, maxPhotographs);
 			this.photographs = new ArrayList<>(contents.photographs.size());
 			this.photographs.addAll(contents.photographs);
 			this.photographWeight = Fraction.getFraction(1, normalizedMax);
