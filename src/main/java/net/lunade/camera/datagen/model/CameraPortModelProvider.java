@@ -42,7 +42,7 @@ public final class CameraPortModelProvider extends FabricModelProvider {
 
 	@Override
 	public void generateBlockStateModels(BlockModelGenerators generator) {
-		generator.createHorizontallyRotatedBlock(CameraPortBlocks.PRINTER, TexturedModel.ORIENTABLE);
+		generator.createHorizontallyRotatedBlock(CameraPortBlocks.DEVELOPMENT_TABLE, TexturedModel.ORIENTABLE);
 	}
 
 	@Override

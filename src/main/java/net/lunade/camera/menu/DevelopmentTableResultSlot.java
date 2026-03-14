@@ -24,10 +24,10 @@ import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.inventory.Slot;
 import net.minecraft.world.item.ItemStack;
 
-public class PrinterResultSlot extends Slot {
-	private final PrinterMenu menu;
+public class DevelopmentTableResultSlot extends Slot {
+	private final DevelopmentTableMenu menu;
 
-	public PrinterResultSlot(PrinterMenu menu, Container container, int slot, int x, int y) {
+	public DevelopmentTableResultSlot(DevelopmentTableMenu menu, Container container, int slot, int x, int y) {
 		super(container, slot, x, y);
 		this.menu = menu;
 	}

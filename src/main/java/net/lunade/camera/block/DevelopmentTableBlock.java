@@ -18,7 +18,7 @@
 package net.lunade.camera.block;
 
 import com.mojang.serialization.MapCodec;
-import net.lunade.camera.menu.PrinterMenu;
+import net.lunade.camera.menu.DevelopmentTableMenu;
 import net.minecraft.core.BlockPos;
 import net.minecraft.network.chat.Component;
 import net.minecraft.world.InteractionResult;
@@ -34,11 +34,11 @@ import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.level.block.state.StateDefinition;
 import net.minecraft.world.phys.BlockHitResult;
 
-public class PrinterBlock extends HorizontalDirectionalBlock {
-	public static final MapCodec<PrinterBlock> CODEC = simpleCodec(PrinterBlock::new);
-	private static final Component CONTAINER_TITLE = Component.translatable("container.printer");
+public class DevelopmentTableBlock extends HorizontalDirectionalBlock {
+	public static final MapCodec<DevelopmentTableBlock> CODEC = simpleCodec(DevelopmentTableBlock::new);
+	private static final Component CONTAINER_TITLE = Component.translatable("container.development_table");
 
-	public PrinterBlock(Properties properties) {
+	public DevelopmentTableBlock(Properties properties) {
 		super(properties);
 	}
 
@@ -60,7 +60,7 @@ public class PrinterBlock extends HorizontalDirectionalBlock {
 	@Override
 	protected MenuProvider getMenuProvider(BlockState state, Level level, BlockPos pos) {
 		return new SimpleMenuProvider(
-			(id, inventory, player) -> new PrinterMenu(id, inventory, ContainerLevelAccess.create(level, pos)),
+			(id, inventory, player) -> new DevelopmentTableMenu(id, inventory, ContainerLevelAccess.create(level, pos)),
 			CONTAINER_TITLE
 		);
 	}

@@ -36,7 +36,7 @@ import net.minecraft.world.item.ItemStackTemplate;
 import net.minecraft.world.item.Items;
 import net.minecraft.world.item.crafting.TransmuteRecipe;
 
-public class PrinterMenu extends AbstractContainerMenu {
+public class DevelopmentTableMenu extends AbstractContainerMenu {
 	public static final int SOURCE_SLOT = 0;
 	public static final int PAPER_SLOT = 1;
 	public static final int RESULT_SLOT = 2;
@@ -56,22 +56,22 @@ public class PrinterMenu extends AbstractContainerMenu {
 		@Override
 		public void setChanged() {
 			super.setChanged();
-			PrinterMenu.this.slotsChanged(this);
-			PrinterMenu.this.slotUpdateListener.run();
+			DevelopmentTableMenu.this.slotsChanged(this);
+			DevelopmentTableMenu.this.slotUpdateListener.run();
 		}
 	};
 	final ResultContainer resultContainer = new ResultContainer();
 
-	public PrinterMenu(int id, Inventory inventory) {
+	public DevelopmentTableMenu(int id, Inventory inventory) {
 		this(id, inventory, ContainerLevelAccess.NULL);
 	}
 
-	public PrinterMenu(int id, Inventory inventory, ContainerLevelAccess access) {
-		super(CameraPortMenuTypes.PRINTER, id);
+	public DevelopmentTableMenu(int id, Inventory inventory, ContainerLevelAccess access) {
+		super(CameraPortMenuTypes.DEVELOPMENT_TABLE, id);
 		this.access = access;
-		this.sourceSlot = addSlot(new PrinterSourceSlot(this.inputContainer, SOURCE_SLOT, 14, 15));
-		this.paperSlot = addSlot(new PrinterPaperSlot(this.inputContainer, PAPER_SLOT, 80, 113));
-		this.resultSlot = addSlot(new PrinterResultSlot(this, this.resultContainer, RESULT_SLOT, 134, 113));
+		this.sourceSlot = addSlot(new DevelopmentTableSourceSlot(this.inputContainer, SOURCE_SLOT, 14, 15));
+		this.paperSlot = addSlot(new DevelopmentTablePaperSlot(this.inputContainer, PAPER_SLOT, 80, 113));
+		this.resultSlot = addSlot(new DevelopmentTableResultSlot(this, this.resultContainer, RESULT_SLOT, 134, 113));
 		this.addStandardInventorySlots(inventory, 8, 144);
 		this.addDataSlot(this.photographIndex);
 	}
@@ -90,7 +90,7 @@ public class PrinterMenu extends AbstractContainerMenu {
 
 	@Override
 	public boolean stillValid(Player player) {
-		return stillValid(this.access, player, CameraPortBlocks.PRINTER);
+		return stillValid(this.access, player, CameraPortBlocks.DEVELOPMENT_TABLE);
 	}
 
 	@Override
@@ -156,7 +156,7 @@ public class PrinterMenu extends AbstractContainerMenu {
 			slot.onQuickCraft(item, clicked);
 		} else if (fromIndex == SOURCE_SLOT || fromIndex == PAPER_SLOT) {
 			if (!this.moveItemStackTo(item, INV_SLOT_START, USE_ROW_SLOT_END, false)) return ItemStack.EMPTY;
-		} else if (PrinterSourceSlot.isValidAsSource(item)) {
+		} else if (DevelopmentTableSourceSlot.isValidAsSource(item)) {
 			if (!this.moveItemStackTo(item, SOURCE_SLOT, SOURCE_SLOT + 1, false)) return ItemStack.EMPTY;
 		} else if (item.is(Items.PAPER)) {
 			if (!this.moveItemStackTo(item, PAPER_SLOT, PAPER_SLOT + 1, false)) return ItemStack.EMPTY;

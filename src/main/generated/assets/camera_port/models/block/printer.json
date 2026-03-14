@@ -1,9 +1,0 @@
-{
-  "parent": "minecraft:block/orientable_with_bottom",
-  "textures": {
-    "bottom": "camera_port:block/printer_bottom",
-    "front": "camera_port:block/printer_front",
-    "side": "camera_port:block/printer_side",
-    "top": "camera_port:block/printer_top"
-  }
-}

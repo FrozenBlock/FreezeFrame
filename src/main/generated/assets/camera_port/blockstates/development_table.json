@@ -1,0 +1,19 @@
+{
+  "variants": {
+    "facing=east": {
+      "model": "camera_port:block/development_table",
+      "y": 90
+    },
+    "facing=north": {
+      "model": "camera_port:block/development_table"
+    },
+    "facing=south": {
+      "model": "camera_port:block/development_table",
+      "y": 180
+    },
+    "facing=west": {
+      "model": "camera_port:block/development_table",
+      "y": 270
+    }
+  }
+}

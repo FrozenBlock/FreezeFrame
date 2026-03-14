@@ -23,10 +23,10 @@ import net.minecraft.world.Container;
 import net.minecraft.world.inventory.Slot;
 import net.minecraft.world.item.ItemStack;
 
-public class PrinterSourceSlot extends Slot {
+public class DevelopmentTableSourceSlot extends Slot {
 	private static final int MAX_SOURCE_STACK_SIZE = 1;
 
-	public PrinterSourceSlot(Container container, int slot, int x, int y) {
+	public DevelopmentTableSourceSlot(Container container, int slot, int x, int y) {
 		super(container, slot, x, y);
 	}
 

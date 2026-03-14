@@ -27,8 +27,8 @@ import net.lunade.camera.client.photograph.PhotographRenderer;
 import net.lunade.camera.component.FilmContents;
 import net.lunade.camera.component.PhotographComponent;
 import net.lunade.camera.item.FilmItem;
-import net.lunade.camera.menu.PrinterMenu;
-import net.lunade.camera.networking.packet.PrinterSyncSelectPhotographIndexPacket;
+import net.lunade.camera.menu.DevelopmentTableMenu;
+import net.lunade.camera.networking.packet.DevelopmentTableSyncSelectPhotographIndexPacket;
 import net.lunade.camera.registry.CameraPortDataComponents;
 import net.lunade.camera.registry.CameraPortItems;
 import net.minecraft.client.Minecraft;
@@ -49,7 +49,7 @@ import org.joml.Vector2i;
 import org.lwjgl.glfw.GLFW;
 
 @Environment(EnvType.CLIENT)
-public class PrinterScreen extends AbstractContainerScreen<PrinterMenu> {
+public class DevelopmentTableScreen extends AbstractContainerScreen<DevelopmentTableMenu> {
 	private static final int FILM_PHOTOGRAPH_SIZE = 52;
 	private static final int FILM_PHOTOGRAPH_Y = 39;
 	private static final int FILM_LEFT_PHOTOGRAPH_X = 5;
@@ -65,20 +65,20 @@ public class PrinterScreen extends AbstractContainerScreen<PrinterMenu> {
 	private static final int COPY_PHOTOGRAPH_SIZE = 67;
 	private static final int COPY_PHOTOGRAPH_Y = 31;
 	private static final int COPY_PHOTOGRAPH_X = 55;
-	private static final Identifier TEXTURE = CameraPortConstants.id("textures/gui/container/printer.png");
-	private static final Identifier TEXTURE_FILM = CameraPortConstants.id("textures/gui/container/printer_film.png");
-	private static final Identifier SCROLLER = CameraPortConstants.id("container/printer/scroller");
-	private static final Identifier SCROLLER_DISABLED = CameraPortConstants.id("container/printer/scroller_disabled");
-	private static final Identifier FILM_PHOTOGRAPH_BLOCKER = CameraPortConstants.id("container/printer/film_photograph_blocker");
-	private static final Identifier FILM_PHOTOGRAPH_HIGHLIGHT = CameraPortConstants.id("container/printer/film_photograph_highlight");
+	private static final Identifier TEXTURE = CameraPortConstants.id("textures/gui/container/development_table.png");
+	private static final Identifier TEXTURE_FILM = CameraPortConstants.id("textures/gui/container/development_table_film.png");
+	private static final Identifier SCROLLER = CameraPortConstants.id("container/development_table/scroller");
+	private static final Identifier SCROLLER_DISABLED = CameraPortConstants.id("container/development_table/scroller_disabled");
+	private static final Identifier FILM_PHOTOGRAPH_BLOCKER = CameraPortConstants.id("container/development_table/film_photograph_blocker");
+	private static final Identifier FILM_PHOTOGRAPH_HIGHLIGHT = CameraPortConstants.id("container/development_table/film_photograph_highlight");
 	private static final List<Identifier> SOURCE_SLOT_ICONS = List.of(
 		CameraPortConstants.id("container/slot/film"),
 		CameraPortConstants.id("container/slot/photograph")
 	);
 	private static final List<Identifier> PAPER_SLOT_ICONS = List.of(CameraPortConstants.id("container/slot/paper"));
 	private final ScrollWheelHandler scrollWheelHandler;
-	private final CyclingSlotBackground sourceSlotBackground = new CyclingSlotBackground(PrinterMenu.SOURCE_SLOT);
-	private final CyclingSlotBackground paperSlotBackground = new CyclingSlotBackground(PrinterMenu.PAPER_SLOT);
+	private final CyclingSlotBackground sourceSlotBackground = new CyclingSlotBackground(DevelopmentTableMenu.SOURCE_SLOT);
+	private final CyclingSlotBackground paperSlotBackground = new CyclingSlotBackground(DevelopmentTableMenu.PAPER_SLOT);
 	@Nullable
 	private FilmContents filmContents;
 	@Nullable
@@ -95,7 +95,7 @@ public class PrinterScreen extends AbstractContainerScreen<PrinterMenu> {
 	private ItemStack lastSourceItem = ItemStack.EMPTY;
 	private Identifier photographCopyId;
 
-	public PrinterScreen(PrinterMenu menu, Inventory inventory, Component title) {
+	public DevelopmentTableScreen(DevelopmentTableMenu menu, Inventory inventory, Component title) {
 		super(menu, inventory, title, DEFAULT_IMAGE_WIDTH, 226);
 		this.scrollWheelHandler = new ScrollWheelHandler();
 		menu.registerUpdateListener(this::containerChanged);
@@ -119,7 +119,7 @@ public class PrinterScreen extends AbstractContainerScreen<PrinterMenu> {
 
 	private void setupDataAndResultSlot(int photographIndex) {
 		this.photographIndex = photographIndex;
-		ClientPlayNetworking.send(new PrinterSyncSelectPhotographIndexPacket(photographIndex));
+		ClientPlayNetworking.send(new DevelopmentTableSyncSelectPhotographIndexPacket(photographIndex));
 		this.menu.setupDataAndResultSlot(photographIndex);
 		setupOrClearFilmPhotographDisplays();
 	}

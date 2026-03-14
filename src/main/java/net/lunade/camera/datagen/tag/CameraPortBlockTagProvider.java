@@ -45,7 +45,7 @@ public final class CameraPortBlockTagProvider extends FabricTagsProvider.BlockTa
 	@Override
 	protected void addTags(HolderLookup.Provider arg) {
 		this.valueLookupBuilder(BlockTags.MINEABLE_WITH_AXE)
-			.add(CameraPortBlocks.PRINTER);
+			.add(CameraPortBlocks.DEVELOPMENT_TABLE);
 	}
 
 }
