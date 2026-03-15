@@ -59,23 +59,23 @@ public class CameraScreenshotManager {
 	@Nullable
 	public static Entity previousCameraEntity = null;
 
-	public static boolean isPossessingCamera() {
+	public static boolean isScreenshotting() {
 		return CameraScreenshotManager.possessingCamera;
 	}
 
-	public static boolean isUsingSelfRenderingCamera() {
-		return isPossessingCamera() && !isCameraHandheld;
+	public static boolean isScreenshottingFromTripodCamera() {
+		return isScreenshotting() && !isCameraHandheld;
 	}
 
-	public static boolean isUsingHandheldCamera() {
-		return isPossessingCamera() && isCameraHandheld;
+	public static boolean isScreenshottingFromHandheldCamera() {
+		return isScreenshotting() && isCameraHandheld;
 	}
 
 	public static void executeScreenshot(@Nullable Entity entity, boolean handheldCapture, @Nullable String fileName, float zoom) {
 		final Minecraft minecraft = Minecraft.getInstance();
 		isCameraHandheld = handheldCapture;
 		if (handheldCapture) {
-			CameraZoomManager.pushForcedZoom(zoom);
+			ScopeZoomManager.pushForcedZoom(zoom);
 		}
 		previousCameraEntity = minecraft.getCameraEntity();
 		if (entity != null) minecraft.setCameraEntity(entity);
@@ -108,7 +108,7 @@ public class CameraScreenshotManager {
 		minecraft.options.hideGui = wasGuiHidden;
 		possessingCamera = false;
 		isCameraHandheld = false;
-		if (handheldCapture) CameraZoomManager.clearForcedZoom();
+		if (handheldCapture) ScopeZoomManager.clearForcedZoom();
 	}
 
 	public static void grabCameraScreenshot(File workDir, int width, int height, @Nullable String fileName, boolean usePanoramicMode) {

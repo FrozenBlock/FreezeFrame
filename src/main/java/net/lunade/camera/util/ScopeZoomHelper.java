@@ -24,9 +24,9 @@ import net.minecraft.world.item.ItemStack;
 import org.jspecify.annotations.Nullable;
 
 public final class ScopeZoomHelper {
-	public static final ScopeZoomConfig CAMERA_DEFAULTS = new ScopeZoomConfig(1F, 4F, 0.25F, 1F, false);
-	public static final ScopeZoomConfig SPYGLASS_DEFAULTS = new ScopeZoomConfig(1F, 10F, 0.5F, 1F, true);
-	public static final float MIN_SUPPORTED_ZOOM = 1F;
+	public static final ScopeZoomConfig CAMERA_DEFAULTS = new ScopeZoomConfig(0.75F, 3F, 0.25F, 1F, false);
+	public static final ScopeZoomConfig SPYGLASS_DEFAULTS = new ScopeZoomConfig(1F, 10F, 0.5F, 10F, true);
+	public static final float MIN_SUPPORTED_ZOOM = 0.75F;
 	public static final float MAX_SUPPORTED_ZOOM = 64F;
 
 	private ScopeZoomHelper() {

@@ -22,7 +22,7 @@ import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 import net.fabricmc.fabric.api.client.rendering.v1.ClientTooltipComponentCallback;
 import net.fabricmc.fabric.api.client.rendering.v1.ModelLayerRegistry;
-import net.lunade.camera.client.CameraUseController;
+import net.lunade.camera.client.ScopeAndCameraUseController;
 import net.lunade.camera.client.model.object.camera.CameraModel;
 import net.lunade.camera.client.model.object.camera.DiscCameraModel;
 import net.lunade.camera.client.renderer.entity.TripodCameraRenderer;
@@ -52,7 +52,7 @@ public class CameraPortClient implements ClientModInitializer {
 		ModelLayerRegistry.registerModelLayer(DISC_CAMERA_MODEL_LAYER, DiscCameraModel::getTexturedModelData);
 
 		CameraPortScreens.init();
-		CameraUseController.init();
+		ScopeAndCameraUseController.init();
 
 		CameraPortClientNetworking.init();
 

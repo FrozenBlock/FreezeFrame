@@ -24,7 +24,7 @@ import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 import net.lunade.camera.util.ScopeItemHelper;
 import net.lunade.camera.util.ScopeZoomHelper;
-import net.lunade.camera.util.client.CameraZoomManager;
+import net.lunade.camera.util.client.ScopeZoomManager;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.MouseHandler;
 import net.minecraft.world.entity.player.Inventory;
@@ -57,7 +57,7 @@ public class MouseHandlerMixin {
 			return;
 		}
 
-		if (wheel == 0 || !CameraZoomManager.adjustZoom(-wheel)) return;
-		ScopeZoomHelper.setStoredZoom(this.minecraft.player.getUseItem(), CameraZoomManager.getZoom());
+		if (wheel == 0 || !ScopeZoomManager.adjustZoom(-wheel)) return;
+		ScopeZoomHelper.setStoredZoom(this.minecraft.player.getUseItem(), ScopeZoomManager.getZoom());
 	}
 }

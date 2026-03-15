@@ -20,8 +20,9 @@ package net.lunade.camera.util.client;
 import net.lunade.camera.util.ScopeZoomHelper;
 import net.minecraft.util.Mth;
 
-public final class CameraZoomManager {
-	public static final float BASE_ZOOM = ScopeZoomHelper.CAMERA_DEFAULTS.defaultZoom();
+public final class ScopeZoomManager {
+	public static final float DEFAULT_FOV = 70F;
+	public static final float BASE_ZOOM = 1F;
 	public static final float MIN_ZOOM = ScopeZoomHelper.MIN_SUPPORTED_ZOOM;
 	public static final float MAX_ZOOM = ScopeZoomHelper.MAX_SUPPORTED_ZOOM;
 	private static final float DEFAULT_ZOOM_STEP = ScopeZoomHelper.SPYGLASS_DEFAULTS.zoomIncrement();
@@ -33,7 +34,7 @@ public final class CameraZoomManager {
 	private static boolean hasForcedZoom = false;
 	private static float forcedZoom = BASE_ZOOM;
 
-	private CameraZoomManager() {
+	private ScopeZoomManager() {
 	}
 
 	public static float getZoom() {

@@ -50,7 +50,7 @@ public class GuiMixin {
 
 	@Inject(method = "extractRenderState", at = @At("HEAD"), cancellable = true)
 	public void cameraPort$removeOverlays(GuiGraphicsExtractor graphics, DeltaTracker deltaTracker, CallbackInfo info) {
-		if (CameraScreenshotManager.isUsingSelfRenderingCamera()) info.cancel();
+		if (CameraScreenshotManager.isScreenshottingFromTripodCamera()) info.cancel();
 	}
 
 	@ModifyExpressionValue(

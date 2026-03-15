@@ -24,7 +24,7 @@ import net.fabricmc.fabric.api.client.event.lifecycle.v1.ClientTickEvents;
 import net.lunade.camera.networking.packet.QuickCameraPhotographPacket;
 import net.lunade.camera.util.ScopeItemHelper;
 import net.lunade.camera.util.ScopeZoomHelper;
-import net.lunade.camera.util.client.CameraZoomManager;
+import net.lunade.camera.util.client.ScopeZoomManager;
 import net.minecraft.client.CameraType;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.multiplayer.MultiPlayerGameMode;
@@ -32,26 +32,29 @@ import net.minecraft.client.player.LocalPlayer;
 import net.minecraft.world.item.ItemStack;
 
 @Environment(EnvType.CLIENT)
-public final class CameraUseController {
+public final class ScopeAndCameraUseController {
+	private static boolean wasPlayerNull;
 	private static boolean wasAttackDown = false;
-	private static boolean wasUsingCamera = false;
+	private static boolean wasUsingScopeItem = false;
 	private static boolean forcedFirstPerson = false;
 	private static CameraType previousCameraType = CameraType.FIRST_PERSON;
 
-	private CameraUseController() {
+	private ScopeAndCameraUseController() {
 	}
 
 	public static void init() {
-		ClientTickEvents.END_CLIENT_TICK.register(CameraUseController::tick);
+		ClientTickEvents.END_CLIENT_TICK.register(ScopeAndCameraUseController::tick);
 	}
 
 	private static void tick(Minecraft minecraft) {
 		final LocalPlayer player = minecraft.player;
 		if (player == null) {
-			resetState(minecraft);
+			if (!wasPlayerNull) resetState(minecraft);
+			wasPlayerNull = true;
 			return;
 		}
 
+		wasPlayerNull = false;
 		final boolean usingScopeItem = ScopeItemHelper.isPlayerUsingScopeItem(player);
 		final boolean holdingCamera = ScopeItemHelper.isPlayerHoldingCamera(player);
 		if (usingScopeItem) {
@@ -60,20 +63,15 @@ public final class CameraUseController {
 			restoreCameraType(minecraft);
 		}
 
-		if (!usingScopeItem && !holdingCamera) {
-			CameraZoomManager.resetActiveRange();
+		if (!usingScopeItem) {
+			ScopeZoomManager.resetActiveRange();
+			ScopeZoomManager.resetZoom();
 			wasAttackDown = minecraft.options.keyAttack.isDown();
-			wasUsingCamera = false;
+			wasUsingScopeItem = false;
 			return;
-		}
-
-		if (usingScopeItem && !wasUsingCamera) {
+		} else if (!wasUsingScopeItem) {
 			final ItemStack useItem = player.getUseItem();
-			applyZoomProfile(useItem, true);
-		}
-		if (!usingScopeItem && holdingCamera) {
-			final ItemStack cameraStack = player.getMainHandItem();
-			applyZoomProfile(cameraStack, false);
+			applyZoomProfile(useItem);
 		}
 
 		final boolean attackDown = minecraft.options.keyAttack.isDown();
@@ -89,7 +87,7 @@ public final class CameraUseController {
 		}
 
 		wasAttackDown = attackDown;
-		wasUsingCamera = usingScopeItem;
+		wasUsingScopeItem = usingScopeItem;
 	}
 
 	private static void ensureFirstPerson(Minecraft minecraft) {
@@ -97,9 +95,7 @@ public final class CameraUseController {
 			previousCameraType = minecraft.options.getCameraType();
 			forcedFirstPerson = true;
 		}
-		if (!minecraft.options.getCameraType().isFirstPerson()) {
-			minecraft.options.setCameraType(CameraType.FIRST_PERSON);
-		}
+		minecraft.options.setCameraType(CameraType.FIRST_PERSON);
 	}
 
 	private static void restoreCameraType(Minecraft minecraft) {
@@ -110,14 +106,14 @@ public final class CameraUseController {
 
 	private static void resetState(Minecraft minecraft) {
 		restoreCameraType(minecraft);
-		CameraZoomManager.resetActiveRange();
+		ScopeZoomManager.resetActiveRange();
 		wasAttackDown = false;
-		wasUsingCamera = false;
+		wasUsingScopeItem = false;
 	}
 
-	private static void applyZoomProfile(ItemStack stack, boolean applyStoredZoom) {
-		CameraZoomManager.setActiveRange(ScopeZoomHelper.getMinZoomFor(stack), ScopeZoomHelper.getMaxZoomFor(stack));
-		CameraZoomManager.setActiveZoomStep(ScopeZoomHelper.getZoomIncrementFor(stack));
-		if (applyStoredZoom) CameraZoomManager.setZoom(ScopeZoomHelper.getStoredZoom(stack));
+	private static void applyZoomProfile(ItemStack stack) {
+		ScopeZoomManager.setActiveRange(ScopeZoomHelper.getMinZoomFor(stack), ScopeZoomHelper.getMaxZoomFor(stack));
+		ScopeZoomManager.setActiveZoomStep(ScopeZoomHelper.getZoomIncrementFor(stack));
+		ScopeZoomManager.setZoom(ScopeZoomHelper.getStoredZoom(stack));
 	}
 }

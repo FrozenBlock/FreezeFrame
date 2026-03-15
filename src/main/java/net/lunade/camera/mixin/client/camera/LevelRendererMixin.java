@@ -51,7 +51,7 @@ public class LevelRendererMixin {
 		@Local(name = "entity") Entity entity
 	) {
 		if (this.minecraft.player == null) return original;
-		if (!CameraScreenshotManager.isPossessingCamera() || CameraScreenshotManager.isUsingHandheldCamera()) return original;
+		if (!CameraScreenshotManager.isScreenshotting() || CameraScreenshotManager.isScreenshottingFromHandheldCamera()) return original;
 
 		return entity == this.minecraft.player ? entity : original;
 	}

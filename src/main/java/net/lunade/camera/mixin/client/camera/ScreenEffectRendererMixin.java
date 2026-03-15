@@ -44,7 +44,7 @@ public class ScreenEffectRendererMixin {
 		Player player, CallbackInfoReturnable<BlockState> info,
 		@Share("cameraPort$cameraEntity") LocalRef<Entity> entityLocalRef
 	) {
-		if (CameraScreenshotManager.isUsingSelfRenderingCamera()) entityLocalRef.set(Minecraft.getInstance().getCameraEntity());
+		if (CameraScreenshotManager.isScreenshottingFromTripodCamera()) entityLocalRef.set(Minecraft.getInstance().getCameraEntity());
 	}
 
 	@ModifyExpressionValue(
@@ -56,7 +56,7 @@ public class ScreenEffectRendererMixin {
 		)
 	)
 	private static boolean cameraPort$fixNoPhysicsCheck(boolean original) {
-		if (CameraScreenshotManager.isUsingSelfRenderingCamera()) return false;
+		if (CameraScreenshotManager.isScreenshottingFromTripodCamera()) return false;
 		return original;
 	}
 
