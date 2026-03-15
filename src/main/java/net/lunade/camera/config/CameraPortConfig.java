@@ -51,7 +51,7 @@ public class CameraPortConfig {
 		.build();
 
 	public static final ConfigEntry<PhotographFormat> PHOTOGRAPH_FORMAT = CONFIG.unsyncableEntryBuilder("photographFormat", PHOTOGRAPH_FORMAT_ENTRY_TYPE, PhotographFormat.MCPHOTO_LOSSLESS)
-		.comment("Dictates the file format to save photographs as. mcphoto is treated as jpeg.")
+		.comment("Dictates the file format to save photographs as. mcphoto is treated as jpeg. It is recommended to used mcphoto_very_compressed when using higher resolutions, and mcphoto_lossless when using lower resolutions.")
 		.build();
 
     public static void init() {
@@ -60,7 +60,8 @@ public class CameraPortConfig {
 	public static enum PhotographFormat implements StringRepresentable {
 		PNG("png", "png"),
 		MCPHOTO_LOSSLESS("mcphoto_lossless", "mcphoto"),
-		MCPHOTO_COMPRESSED("mcphoto_compressed", "mcphoto", 95);
+		MCPHOTO_COMPRESSED("mcphoto_compressed", "mcphoto", 95),
+		MCPHOTO_VERY_COMPRESSED("mcphoto_very_compressed", "mcphoto", 90);
 		public static final Codec<PhotographFormat> CODEC = StringRepresentable.fromEnum(PhotographFormat::values);
 		public static final StreamCodec<ByteBuf, PhotographFormat> STREAM_CODEC = ByteBufCodecs.STRING_UTF8.map(
 			string -> CODEC.parse(JavaOps.INSTANCE, string).result().orElseThrow(),
