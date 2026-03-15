@@ -46,6 +46,10 @@ public class CameraPortConfig {
 		.comment("Hides Photograph image previews in tooltips while keeping text information visible.")
 		.build();
 
+	public static final ConfigEntry<Integer> PHOTOGRAPH_RESOLUTION = CONFIG.entryBuilder("photographResolution", EntryType.INT, 256)
+		.comment("The resolution of photographs taken. Will be clamped between 128 and 1024.")
+		.build();
+
 	public static final ConfigEntry<PhotographFormat> PHOTOGRAPH_FORMAT = CONFIG.unsyncableEntryBuilder("photographFormat", PHOTOGRAPH_FORMAT_ENTRY_TYPE, PhotographFormat.MCPHOTO_LOSSLESS)
 		.comment("Dictates the file format to save photographs as. mcphoto is treated as jpeg.")
 		.build();

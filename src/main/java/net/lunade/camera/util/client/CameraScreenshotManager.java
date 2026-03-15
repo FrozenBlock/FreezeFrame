@@ -84,7 +84,8 @@ public class CameraScreenshotManager {
 		minecraft.options.hideGui = true;
 		possessingCamera = true;
 
-		grabCameraScreenshot(minecraft.gameDirectory, 256, 256, fileName, !handheldCapture);
+		final int resolution = Math.clamp(CameraPortConfig.PHOTOGRAPH_RESOLUTION.get(), 128, 1024);
+		grabCameraScreenshot(minecraft.gameDirectory, resolution, resolution, fileName, !handheldCapture);
 
 		makeSnapSoundAndSmoke: {
 			if (minecraft.level == null) break makeSnapSoundAndSmoke;
