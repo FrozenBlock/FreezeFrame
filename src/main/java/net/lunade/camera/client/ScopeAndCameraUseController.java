@@ -35,7 +35,7 @@ import net.minecraft.world.item.ItemStack;
 public final class ScopeAndCameraUseController {
 	private static boolean wasPlayerNull;
 	private static boolean wasAttackDown = false;
-	private static boolean wasUsingScopeItem = false;
+	private static ItemStack previousScopeItem = ItemStack.EMPTY;
 	private static boolean forcedFirstPerson = false;
 	private static CameraType previousCameraType = CameraType.FIRST_PERSON;
 
@@ -63,16 +63,17 @@ public final class ScopeAndCameraUseController {
 			restoreCameraType(minecraft);
 		}
 
-		if (!usingScopeItem) {
+		final ItemStack scopeItem = usingScopeItem ? player.getUseItem() : ItemStack.EMPTY;
+		final boolean isScopeItemDifferent = ItemStack.isSameItemSameComponents(previousScopeItem, scopeItem);
+		if (!usingScopeItem || isScopeItemDifferent) {
 			ScopeZoomManager.resetActiveRange();
 			ScopeZoomManager.resetZoom();
 			wasAttackDown = minecraft.options.keyAttack.isDown();
-			wasUsingScopeItem = false;
-			return;
-		} else if (!wasUsingScopeItem) {
-			final ItemStack useItem = player.getUseItem();
-			applyZoomProfile(useItem);
+			previousScopeItem = ItemStack.EMPTY;
+			if (!usingScopeItem) return;
 		}
+
+		if (isScopeItemDifferent) applyZoomProfile(scopeItem);
 
 		final boolean attackDown = minecraft.options.keyAttack.isDown();
 		if (attackDown && !wasAttackDown && holdingCamera) {
@@ -87,7 +88,7 @@ public final class ScopeAndCameraUseController {
 		}
 
 		wasAttackDown = attackDown;
-		wasUsingScopeItem = usingScopeItem;
+		previousScopeItem = scopeItem;
 	}
 
 	private static void ensureFirstPerson(Minecraft minecraft) {
@@ -108,7 +109,7 @@ public final class ScopeAndCameraUseController {
 		restoreCameraType(minecraft);
 		ScopeZoomManager.resetActiveRange();
 		wasAttackDown = false;
-		wasUsingScopeItem = false;
+		previousScopeItem = ItemStack.EMPTY;
 	}
 
 	private static void applyZoomProfile(ItemStack stack) {
