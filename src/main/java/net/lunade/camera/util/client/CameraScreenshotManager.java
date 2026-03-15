@@ -140,7 +140,7 @@ public class CameraScreenshotManager {
 	}
 
 	private static void grab(File workDir, @Nullable String fileName, RenderTarget target, Consumer<Component> callback) {
-		Screenshot.takeScreenshot(target, 1, nativeImage -> {
+		Screenshot.takeScreenshot(target, screenshot -> {
 			final Minecraft minecraft = Minecraft.getInstance();
 
 			Optional<Path> iconPath = Optional.empty();
@@ -154,8 +154,8 @@ public class CameraScreenshotManager {
 
 			Util.ioPool().execute(() -> {
 				try {
-					nativeImage.writeToFile(photographFile);
-					finalIconPath.ifPresent(path -> copyPhotographToFileWithSize(nativeImage, path, 64, 64));
+					screenshot.writeToFile(photographFile);
+					finalIconPath.ifPresent(path -> copyPhotographToFileWithSize(screenshot, path, 64, 64));
 
 					final Component component = Component.literal(photographFile.getName())
 						.withStyle(ChatFormatting.UNDERLINE)
@@ -180,7 +180,7 @@ public class CameraScreenshotManager {
 					CameraPortConstants.warn("Couldn't save screenshot " + e, true);
 					callback.accept(Component.translatable("screenshot.failure", e.getMessage()));
 				} finally {
-					nativeImage.close();
+					screenshot.close();
 				}
 			});
 		});
@@ -199,9 +199,9 @@ public class CameraScreenshotManager {
 			sourceHeight = sourceWidth;
 		}
 
-		try (NativeImage nativeImage2 = new NativeImage(width, height, false)) {
-			image.resizeSubRectTo(newX, newY, sourceWidth, sourceHeight, nativeImage2);
-			nativeImage2.writeToFile(path);
+		try (NativeImage scaled = new NativeImage(width, height, false)) {
+			image.resizeSubRectTo(newX, newY, sourceWidth, sourceHeight, scaled);
+			scaled.writeToFile(path);
 		} catch (IOException e) {
 			CameraPortConstants.LOGGER.warn("Couldn't save photograph as icon", e);
 		}
