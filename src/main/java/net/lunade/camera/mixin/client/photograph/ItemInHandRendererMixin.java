@@ -30,6 +30,7 @@ import net.minecraft.client.Minecraft;
 import net.minecraft.client.player.AbstractClientPlayer;
 import net.minecraft.client.renderer.ItemInHandRenderer;
 import net.minecraft.client.renderer.SubmitNodeCollector;
+import net.minecraft.resources.Identifier;
 import net.minecraft.util.Mth;
 import net.minecraft.world.InteractionHand;
 import net.minecraft.world.entity.HumanoidArm;
@@ -82,7 +83,7 @@ public abstract class ItemInHandRendererMixin {
 		final Photograph photograph = stack.get(CameraPortDataComponents.PHOTOGRAPH);
 		if (photograph == null) return;
 
-		this.cameraPort$submitPhotographInHand(poseStack, collector, lightCoords, inverseArmHeight, attackValue, arm, photograph);
+		this.cameraPort$submitPhotographInHand(poseStack, collector, lightCoords, inverseArmHeight, attackValue, arm, photograph.identifier());
 		info.cancel();
 	}
 
@@ -94,7 +95,7 @@ public abstract class ItemInHandRendererMixin {
 		float inverseArmHeight,
 		float attackValue,
 		HumanoidArm arm,
-		Photograph photograph
+		Identifier photographId
 	) {
 		poseStack.pushPose();
 
@@ -117,16 +118,16 @@ public abstract class ItemInHandRendererMixin {
 		poseStack.translate(armOffset * i, j - 0.3F * h, k);
 		poseStack.mulPose(Axis.XP.rotationDegrees(h * -45F));
 		poseStack.mulPose(Axis.YP.rotationDegrees(armOffset * h * -30F));
-		this.cameraPort$renderPhotograph(poseStack, collector, lightCoords, photograph);
+		this.cameraPort$renderPhotograph(poseStack, collector, lightCoords, photographId);
 		poseStack.popPose();
 
 		poseStack.popPose();
 	}
 
 	@Unique
-	private void cameraPort$renderPhotograph(PoseStack poseStack, SubmitNodeCollector collector, int lightCoords, Photograph photograph) {
+	private void cameraPort$renderPhotograph(PoseStack poseStack, SubmitNodeCollector collector, int lightCoords, Identifier photographId) {
 		poseStack.mulPose(Axis.YP.rotationDegrees(180F));
 		poseStack.scale(0.38F, 0.38F, 0.38F);
-		PhotographRenderer.submit(poseStack, collector, photograph.identifier(), lightCoords, PhotographRenderer.FrameType.FRAME);
+		PhotographRenderer.submit(poseStack, collector, photographId, lightCoords, PhotographRenderer.FrameType.FRAME);
 	}
 }

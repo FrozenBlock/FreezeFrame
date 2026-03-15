@@ -17,8 +17,8 @@
 
 package net.lunade.camera.item;
 
-import java.util.Optional;
 import java.util.Objects;
+import java.util.Optional;
 import net.lunade.camera.CameraPortConstants;
 import net.lunade.camera.component.CameraContents;
 import net.lunade.camera.component.FilmContents;
@@ -27,7 +27,6 @@ import net.lunade.camera.component.tooltip.CameraTooltip;
 import net.lunade.camera.networking.packet.CameraTakeScreenshotPacket;
 import net.lunade.camera.registry.CameraPortDataComponents;
 import net.lunade.camera.registry.CameraPortSounds;
-import net.lunade.camera.util.CameraScreenshotHelper;
 import net.lunade.camera.util.ScopeItemHelper;
 import net.lunade.camera.util.ScopeZoomHelper;
 import net.minecraft.core.component.DataComponents;
@@ -53,8 +52,8 @@ import net.minecraft.world.item.ItemUseAnimation;
 import net.minecraft.world.item.ItemUtils;
 import net.minecraft.world.item.SpawnEggItem;
 import net.minecraft.world.item.component.TooltipDisplay;
-import net.minecraft.world.level.Level;
 import net.minecraft.world.item.context.UseOnContext;
+import net.minecraft.world.level.Level;
 import org.apache.commons.lang3.math.Fraction;
 import org.jspecify.annotations.Nullable;
 
@@ -99,6 +98,10 @@ public class CameraItem extends SpawnEggItem {
 		return ItemUseAnimation.SPYGLASS;
 	}
 
+	public static String makeFileName(Player player) {
+		return player.getStringUUID() + "_" + System.currentTimeMillis();
+	}
+
 	public static boolean tryTakeInstantPhotograph(ServerPlayer player) {
 		final ItemStack stack = player.getMainHandItem();
 		if (!ScopeItemHelper.isCameraItem(stack)) return false;
@@ -122,7 +125,7 @@ public class CameraItem extends SpawnEggItem {
 
 		player.getCooldowns().addCooldown(stack, 20);
 		if (player instanceof ServerPlayer serverPlayer) {
-			final String fileName = CameraScreenshotHelper.makeFileName(serverPlayer);
+			final String fileName = makeFileName(serverPlayer);
 			CameraTakeScreenshotPacket.sendToAsHandheld(serverPlayer, fileName, captureZoom);
 			addPhotograph(stack, player, fileName);
 		}

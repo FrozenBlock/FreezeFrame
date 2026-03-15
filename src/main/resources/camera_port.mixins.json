@@ -25,7 +25,8 @@
     "client.film.AbstractContainerScreenMixin",
     "client.film.RangeSelectItemModelPropertiesMixin",
     "client.photograph.ItemFrameRendererMixin",
-    "client.photograph.ItemInHandRendererMixin"
+    "client.photograph.ItemInHandRendererMixin",
+    "client.photograph.NativeImageMixin"
   ],
   "injectors": {
     "defaultRequire": 1

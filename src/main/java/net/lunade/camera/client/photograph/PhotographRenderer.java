@@ -56,7 +56,7 @@ public class PhotographRenderer {
 			);
 		}
 
-		final Identifier loadedPhotoLocation = PhotographLoader.getAndLoadPhotograph(photographId, false);
+		final Identifier loadedPhotoLocation = PhotographLoader.getAndLoadPhotograph(photographId);
 		collector.submitCustomGeometry(
 			poseStack,
 			RenderTypes.text(loadedPhotoLocation),
@@ -70,7 +70,7 @@ public class PhotographRenderer {
 	}
 
 	public static void blit(int x, int y, int xOffset, int yOffset, GuiGraphicsExtractor graphics, Identifier photoLocation, int renderSize, FrameType frameType) {
-		final Identifier loadedPhotoId = PhotographLoader.getAndLoadPhotograph(photoLocation, false);
+		final Identifier loadedPhotoId = PhotographLoader.getAndLoadPhotograph(photoLocation);
 		final int renderX = x + xOffset;
 		final int renderY = y + yOffset;
 

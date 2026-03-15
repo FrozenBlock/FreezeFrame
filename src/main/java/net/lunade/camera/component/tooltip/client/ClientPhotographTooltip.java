@@ -66,7 +66,7 @@ public class ClientPhotographTooltip implements ClientTooltipComponent {
 			default -> COPY_OF_COPY_COMPONENT;
 		};
 
-		this.previewHidden = CameraPortConfig.get().hidePhotographPreview;
+		this.previewHidden = CameraPortConfig.HIDE_PHOTOGRAPH_PREVIEW.get();
 	}
 
 	@Override

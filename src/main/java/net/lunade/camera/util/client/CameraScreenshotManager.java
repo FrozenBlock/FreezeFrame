@@ -32,14 +32,12 @@ import net.frozenblock.lib.networking.FrozenNetworking;
 import net.lunade.camera.CameraPortConstants;
 import net.lunade.camera.config.CameraPortConfig;
 import net.lunade.camera.registry.CameraPortSounds;
-import net.lunade.camera.util.CameraScreenshotHelper;
 import net.minecraft.client.Camera;
 import net.minecraft.client.DeltaTracker;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.Screenshot;
 import net.minecraft.client.multiplayer.ClientPacketListener;
 import net.minecraft.client.renderer.GameRenderer;
-import net.minecraft.client.server.IntegratedServer;
 import net.minecraft.core.particles.ParticleTypes;
 import net.minecraft.network.chat.ClickEvent;
 import net.minecraft.network.chat.Component;
@@ -48,8 +46,8 @@ import net.minecraft.sounds.SoundSource;
 import net.minecraft.util.StringUtil;
 import net.minecraft.util.Util;
 import net.minecraft.world.entity.Entity;
-import net.minecraft.ChatFormatting;
 import org.jetbrains.annotations.Nullable;
+import net.minecraft.ChatFormatting;
 
 @Environment(EnvType.CLIENT)
 public class CameraScreenshotManager {
@@ -143,14 +141,12 @@ public class CameraScreenshotManager {
 
 	private static void grab(File workDir, @Nullable String fileName, RenderTarget target, Consumer<Component> callback) {
 		Screenshot.takeScreenshot(target, 1, nativeImage -> {
+			final Minecraft minecraft = Minecraft.getInstance();
+
 			Optional<Path> iconPath = Optional.empty();
-			Minecraft minecraft = Minecraft.getInstance();
-			if (CameraPortConfig.get().useLatestPhotoAsWorldIcon && minecraft.isLocalServer()) {
-				IntegratedServer integratedServer = minecraft.getSingleplayerServer();
-				if (integratedServer != null) {
-					iconPath = minecraft.getSingleplayerServer().getWorldScreenshotFile();
-					iconPath.ifPresent(path -> path.toFile().mkdirs());
-				}
+			if (CameraPortConfig.USE_LATEST_PHOTO_AS_WORLD_ICON.get() && FrozenNetworking.connectedToIntegratedServer()) {
+				iconPath = minecraft.getSingleplayerServer().getWorldScreenshotFile();
+				iconPath.ifPresent(path -> path.toFile().mkdirs());
 			}
 
 			final File photographFile = resolvePhotographFile(workDir, fileName);
@@ -219,7 +215,16 @@ public class CameraScreenshotManager {
 		photographPath.mkdirs();
 
 	 	return StringUtil.isNullOrEmpty(fileName)
-			? CameraScreenshotHelper.getPhotographFile(PLAYER_UUID, photographPath)
-			: CameraScreenshotHelper.getPhotographFile(fileName, photographPath);
+			? getPhotographFile(PLAYER_UUID, photographPath)
+			: getPhotographFile(fileName, photographPath);
+	}
+
+	public static File getPhotographFile(String fileName, File directory) {
+		int fileIndex = 1;
+		while (true) {
+			File file = new File(directory, fileName + (fileIndex == 1 ? "" : "_" + fileIndex) + "." + CameraPortConfig.PHOTOGRAPH_FORMAT.get().extension());
+			if (!file.exists()) return file;
+			++fileIndex;
+		}
 	}
 }

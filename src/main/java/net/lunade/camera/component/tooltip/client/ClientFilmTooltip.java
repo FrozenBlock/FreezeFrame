@@ -97,7 +97,7 @@ public class ClientFilmTooltip implements ClientTooltipComponent {
 
 		this.emptyDescription = Component.translatable(FILM_EMPTY_DESCRIPTION_KEY, this.maxPhotographs);
 
-		this.hidePhotographPreviewAndInfo = CameraPortConfig.get().hideFilmPhotoPreviewAndInfo;
+		this.hidePhotographPreviewAndInfo = CameraPortConfig.HIDE_FILM_PHOTO_PREVIEW_AND_INFO.get();
 	}
 
 	@Override
