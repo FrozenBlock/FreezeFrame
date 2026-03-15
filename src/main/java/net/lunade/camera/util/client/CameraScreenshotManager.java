@@ -157,11 +157,11 @@ public class CameraScreenshotManager {
 					screenshot.writeToFile(photographFile);
 					finalIconPath.ifPresent(path -> copyPhotographToFileWithSize(screenshot, path, 64, 64));
 
-					final Component component = Component.literal(photographFile.getName())
-						.withStyle(ChatFormatting.UNDERLINE)
-						.withStyle(style -> style.withClickEvent(new ClickEvent.OpenFile(photographFile.getAbsoluteFile())));
-
-					callback.accept(Component.translatable("screenshot.success", component));
+					callback.accept(
+						Component.translatable("photograph.success")
+							.withStyle(ChatFormatting.UNDERLINE)
+							.withStyle(style -> style.withClickEvent(new ClickEvent.OpenFile(photographFile.getAbsoluteFile())))
+					);
 					sendToServer:{
 						if (StringUtil.isNullOrEmpty(fileName) || FrozenNetworking.connectedToIntegratedServer()) break sendToServer;
 
@@ -178,7 +178,7 @@ public class CameraScreenshotManager {
 					}
 				} catch (Exception e) {
 					CameraPortConstants.warn("Couldn't save screenshot " + e, true);
-					callback.accept(Component.translatable("screenshot.failure", e.getMessage()));
+					callback.accept(Component.translatable("photograph.failure", e.getMessage()));
 				} finally {
 					screenshot.close();
 				}

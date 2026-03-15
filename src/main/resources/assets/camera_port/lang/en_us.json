@@ -2,7 +2,6 @@
   "item.camera_port.photograph": "Photo",
   "item.camera_port.portfolio": "Portfolio",
 
-
   "entity.camera_port.camera": "Camera",
   "item.camera_port.camera": "Camera",
   "entity.camera_port.small_camera": "Disc Camera",
@@ -26,6 +25,8 @@
   "photograph.original": "Original",
   "photograph.copy": "Copy of Original",
   "photograph.copy_of_copy": "Copy of Copy",
+  "photograph.failure": "Couldn't save photograph",
+  "photograph.success": "Saved photograph",
 
   "item.camera_port.film": "Film Roll",
   "item.camera_port.film.empty": "Blank",
