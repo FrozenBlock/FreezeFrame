@@ -5,10 +5,11 @@
   "name": "Camera Port",
   "description": "Ports Bedrock/Education Edition's Camera entity to Java Edition.",
   "authors": [
-    "Luna"
+    "Luna",
+    "Lufurrius"
   ],
   "contributors": [
-    "Lufurrius"
+    "zntm"
   ],
   "contact": {
     "homepage": "https://modrinth.com/mod/camera-port"

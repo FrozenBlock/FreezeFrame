@@ -47,7 +47,14 @@ public class DevelopingTableResultSlot extends Slot {
 			final long gameTime = level.getGameTime();
 			if (this.menu.lastSoundTime == gameTime) return;
 
-			level.playSound(null, pos, CameraPortSounds.CAMERA_SNAP, SoundSource.BLOCKS, 1F, 1F);
+			level.playSound(
+				null,
+				pos,
+				CameraPortSounds.DEVELOPING_TABLE_TAKE_RESULT,
+				SoundSource.BLOCKS,
+				1F,
+				0.8F + (level.getRandom().nextFloat() * 0.4F)
+			);
 			this.menu.lastSoundTime = gameTime;
 		});
 

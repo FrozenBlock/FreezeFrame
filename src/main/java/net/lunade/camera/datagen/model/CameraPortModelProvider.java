@@ -29,6 +29,8 @@ import net.minecraft.client.data.models.ItemModelGenerators;
 import net.minecraft.client.data.models.model.ItemModelUtils;
 import net.minecraft.client.data.models.model.ModelLocationUtils;
 import net.minecraft.client.data.models.model.ModelTemplates;
+import net.minecraft.client.data.models.model.TextureMapping;
+import net.minecraft.client.data.models.model.TextureSlot;
 import net.minecraft.client.data.models.model.TexturedModel;
 import net.minecraft.client.renderer.item.ItemModel;
 import net.minecraft.world.item.Item;
@@ -42,7 +44,20 @@ public final class CameraPortModelProvider extends FabricModelProvider {
 
 	@Override
 	public void generateBlockStateModels(BlockModelGenerators generator) {
-		generator.createHorizontallyRotatedBlock(CameraPortBlocks.DEVELOPING_TABLE, TexturedModel.ORIENTABLE);
+		generator.createHorizontallyRotatedBlock(
+			CameraPortBlocks.DEVELOPING_TABLE,
+			TexturedModel.createDefault(
+				block -> new TextureMapping()
+					.put(TextureSlot.PARTICLE, TextureMapping.getBlockTexture(block, "_north"))
+					.put(TextureSlot.DOWN, TextureMapping.getBlockTexture(block, "_bottom"))
+					.put(TextureSlot.UP, TextureMapping.getBlockTexture(block, "_top"))
+					.put(TextureSlot.NORTH, TextureMapping.getBlockTexture(block, "_north"))
+					.put(TextureSlot.EAST, TextureMapping.getBlockTexture(block, "_east"))
+					.put(TextureSlot.SOUTH, TextureMapping.getBlockTexture(block, "_south"))
+					.put(TextureSlot.WEST, TextureMapping.getBlockTexture(block, "_west")),
+				ModelTemplates.CUBE
+			)
+		);
 	}
 
 	@Override

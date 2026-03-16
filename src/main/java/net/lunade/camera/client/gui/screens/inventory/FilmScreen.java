@@ -35,6 +35,7 @@ import net.lunade.camera.component.Photograph;
 import net.lunade.camera.item.FilmItem;
 import net.lunade.camera.networking.packet.SaveFilmChangesPacket;
 import net.lunade.camera.registry.CameraPortDataComponents;
+import net.lunade.camera.registry.CameraPortSounds;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.ScrollWheelHandler;
 import net.minecraft.client.gui.GuiGraphicsExtractor;
@@ -405,6 +406,7 @@ public class FilmScreen extends Screen {
 			if (currentIndex != updatedIndex) {
 				this.selectedPhotographIndex = updatedIndex;
 				this.onSelectedPhotographChanged();
+				Minecraft.getInstance().getSoundManager().play(SimpleSoundInstance.forUI(CameraPortSounds.FILM_ROLL, (float) (0.8F + (Math.random() * 0.4F))));
 			}
 		}
 
@@ -413,6 +415,7 @@ public class FilmScreen extends Screen {
 
 	private void saveChangesAndClose() {
 		if (this.minecraft == null) return;
+		if (!this.modifiedPhotographIds.isEmpty()) Minecraft.getInstance().getSoundManager().play(SimpleSoundInstance.forUI(CameraPortSounds.FILM_RENAME, (float) (0.8F + (Math.random() * 0.4F))));
 		ClientPlayNetworking.send(new SaveFilmChangesPacket(this.hand, this.toFilmContents()));
 		this.minecraft.setScreen(null);
 	}
@@ -443,6 +446,7 @@ public class FilmScreen extends Screen {
 		}
 
 		Minecraft.getInstance().getSoundManager().play(SimpleSoundInstance.forUI(SoundEvents.UI_BUTTON_CLICK, 1F));
+		Minecraft.getInstance().getSoundManager().play(SimpleSoundInstance.forUI(CameraPortSounds.FILM_TEAR, (float) (0.8F + (Math.random() * 0.4F))));
 		this.onSelectedPhotographChanged();
 	}
 
@@ -470,6 +474,7 @@ public class FilmScreen extends Screen {
 		if (updatedIndex == this.selectedPhotographIndex) return;
 		this.selectedPhotographIndex = updatedIndex;
 		Minecraft.getInstance().getSoundManager().play(SimpleSoundInstance.forUI(SoundEvents.UI_BUTTON_CLICK, 1F));
+		Minecraft.getInstance().getSoundManager().play(SimpleSoundInstance.forUI(CameraPortSounds.FILM_ROLL, (float) (0.8F + (Math.random() * 0.4F))));
 		this.onSelectedPhotographChanged();
 	}
 
@@ -582,6 +587,7 @@ public class FilmScreen extends Screen {
 		if (updatedIndex != this.selectedPhotographIndex) {
 			this.selectedPhotographIndex = updatedIndex;
 			this.onSelectedPhotographChanged(false);
+			Minecraft.getInstance().getSoundManager().play(SimpleSoundInstance.forUI(CameraPortSounds.FILM_ROLL, (float) (0.8F + (Math.random() * 0.4F))));
 		}
 	}
 

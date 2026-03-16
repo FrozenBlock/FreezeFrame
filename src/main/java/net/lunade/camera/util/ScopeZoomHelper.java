@@ -17,15 +17,36 @@
 
 package net.lunade.camera.util;
 
+import java.util.Optional;
 import net.lunade.camera.component.ScopeZoomConfig;
 import net.lunade.camera.registry.CameraPortDataComponents;
+import net.lunade.camera.registry.CameraPortSounds;
+import net.minecraft.core.Holder;
+import net.minecraft.core.registries.BuiltInRegistries;
+import net.minecraft.sounds.SoundEvent;
 import net.minecraft.util.Mth;
 import net.minecraft.world.item.ItemStack;
 import org.jspecify.annotations.Nullable;
 
 public final class ScopeZoomHelper {
-	public static final ScopeZoomConfig CAMERA_DEFAULTS = new ScopeZoomConfig(0.75F, 3F, 0.25F, 1F, false);
-	public static final ScopeZoomConfig SPYGLASS_DEFAULTS = new ScopeZoomConfig(1F, 10F, 0.5F, 10F, true);
+	public static final ScopeZoomConfig CAMERA_DEFAULTS = new ScopeZoomConfig(
+		0.75F,
+		3F,
+		0.25F,
+		1F,
+		false,
+		Optional.of(BuiltInRegistries.SOUND_EVENT.wrapAsHolder(CameraPortSounds.CAMERA_ZOOM_INCREASE)),
+		Optional.of(BuiltInRegistries.SOUND_EVENT.wrapAsHolder(CameraPortSounds.CAMERA_ZOOM_DECREASE))
+	);
+	public static final ScopeZoomConfig SPYGLASS_DEFAULTS = new ScopeZoomConfig(
+		1F,
+		10F,
+		0.5F,
+		10F,
+		true,
+		Optional.of(BuiltInRegistries.SOUND_EVENT.wrapAsHolder(CameraPortSounds.SPYGLASS_ZOOM_INCREASE)),
+		Optional.of(BuiltInRegistries.SOUND_EVENT.wrapAsHolder(CameraPortSounds.SPYGLASS_ZOOM_DECREASE))
+	);
 	public static final float MIN_SUPPORTED_ZOOM = 0.75F;
 	public static final float MAX_SUPPORTED_ZOOM = 64F;
 
@@ -50,6 +71,14 @@ public final class ScopeZoomHelper {
 
 	public static float getDefaultZoomFor(ItemStack stack) {
 		return resolveZoomConfig(stack).defaultZoom();
+	}
+
+	public static Optional<Holder<SoundEvent>> getZoomInSoundFor(ItemStack stack) {
+		return resolveZoomConfig(stack).zoomInSound();
+	}
+
+	public static Optional<Holder<SoundEvent>> getZoomOutSoundFor(ItemStack stack) {
+		return resolveZoomConfig(stack).zoomOutSound();
 	}
 
 	public static float getStoredZoom(ItemStack stack) {
@@ -93,7 +122,7 @@ public final class ScopeZoomHelper {
 		final float span = Math.max(max - min, 0.001F);
 		final float increment = Mth.clamp(config.zoomIncrement(), 0.001F, span);
 		final float def = Mth.clamp(config.defaultZoom(), min, max);
-		return new ScopeZoomConfig(min, max, increment, def, config.offhandEnabled());
+		return new ScopeZoomConfig(min, max, increment, def, config.offhandEnabled(), config.zoomInSound(), config.zoomOutSound());
 	}
 
 	private static ScopeZoomConfig sanitizeLegacyMultiplierConfig(ScopeZoomConfig config) {
@@ -108,6 +137,6 @@ public final class ScopeZoomHelper {
 		final float def = Mth.clamp(1F / defaultMultiplier, min, max);
 		final float increment = Mth.clamp(span / 20F, 0.05F, span);
 
-		return new ScopeZoomConfig(min, max, increment, def, config.offhandEnabled());
+		return new ScopeZoomConfig(min, max, increment, def, config.offhandEnabled(), config.zoomInSound(), config.zoomOutSound());
 	}
 }

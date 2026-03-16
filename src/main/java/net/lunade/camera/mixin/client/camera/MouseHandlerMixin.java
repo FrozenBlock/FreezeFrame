@@ -57,7 +57,7 @@ public class MouseHandlerMixin {
 			return;
 		}
 
-		if (wheel == 0 || !ScopeZoomManager.adjustZoom(-wheel)) return;
+		if (wheel == 0 || !ScopeZoomManager.adjustZoom(this.minecraft, -wheel)) return;
 		ScopeZoomHelper.setStoredZoom(this.minecraft.player.getUseItem(), ScopeZoomManager.getZoom());
 	}
 }

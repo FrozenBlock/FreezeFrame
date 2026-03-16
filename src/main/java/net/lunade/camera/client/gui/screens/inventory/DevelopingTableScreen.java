@@ -32,6 +32,7 @@ import net.lunade.camera.menu.DevelopingTableMenu;
 import net.lunade.camera.networking.packet.DevelopingTableSyncSelectPhotographIndexPacket;
 import net.lunade.camera.registry.CameraPortDataComponents;
 import net.lunade.camera.registry.CameraPortItems;
+import net.lunade.camera.registry.CameraPortSounds;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.ScrollWheelHandler;
 import net.minecraft.client.gui.GuiGraphicsExtractor;
@@ -339,6 +340,7 @@ public class DevelopingTableScreen extends AbstractContainerScreen<DevelopingTab
 		}
 		this.photographIndex = updatedIndex;
 		Minecraft.getInstance().getSoundManager().play(SimpleSoundInstance.forUI(SoundEvents.UI_BUTTON_CLICK, 1F));
+		Minecraft.getInstance().getSoundManager().play(SimpleSoundInstance.forUI(CameraPortSounds.FILM_ROLL, (float) (0.8F + (Math.random() * 0.4F))));
 		this.updateScrollerXFromPhotographIndex();
 	}
 
@@ -355,6 +357,7 @@ public class DevelopingTableScreen extends AbstractContainerScreen<DevelopingTab
 			if (currentIndex != updatedIndex) {
 				this.photographIndex = updatedIndex;
 				this.setupDataAndResultSlot(this.photographIndex);
+				Minecraft.getInstance().getSoundManager().play(SimpleSoundInstance.forUI(CameraPortSounds.FILM_ROLL, (float) (0.8F + (Math.random() * 0.4F))));
 				this.updateScrollerXFromPhotographIndex();
 			}
 		}
@@ -406,6 +409,7 @@ public class DevelopingTableScreen extends AbstractContainerScreen<DevelopingTab
 		if (updatedIndex != this.photographIndex) {
 			this.photographIndex = updatedIndex;
 			this.setupDataAndResultSlot(this.photographIndex);
+			Minecraft.getInstance().getSoundManager().play(SimpleSoundInstance.forUI(CameraPortSounds.FILM_ROLL, (float) (0.8F + (Math.random() * 0.4F))));
 		}
 	}
 

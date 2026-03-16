@@ -69,7 +69,7 @@ public final class ScopeAndCameraUseController {
 		final boolean isScopeComponentDifferent = !previousScopeItem.getOrDefault(CameraPortDataComponents.SCOPE_ZOOM_CONFIG, ScopeZoomConfig.EMPTY)
 				.equals(scopeItem.getOrDefault(CameraPortDataComponents.SCOPE_ZOOM_CONFIG, ScopeZoomConfig.EMPTY));
 		if (!usingScopeItem || isScopeComponentDifferent) {
-			ScopeZoomManager.resetActiveRange();
+			ScopeZoomManager.resetActiveZoomProfile();
 			ScopeZoomManager.resetZoom();
 		}
 
@@ -107,13 +107,18 @@ public final class ScopeAndCameraUseController {
 
 	private static void resetState(Minecraft minecraft) {
 		restoreCameraType(minecraft);
-		ScopeZoomManager.resetActiveRange();
+		ScopeZoomManager.resetActiveZoomProfile();
 		wasAttackDown = false;
 		previousScopeItem = ItemStack.EMPTY;
 	}
 
 	private static void applyZoomProfile(ItemStack stack) {
-		ScopeZoomManager.setActiveRange(ScopeZoomHelper.getMinZoomFor(stack), ScopeZoomHelper.getMaxZoomFor(stack));
+		ScopeZoomManager.setActiveZoomProfile(
+			ScopeZoomHelper.getMinZoomFor(stack),
+			ScopeZoomHelper.getMaxZoomFor(stack),
+			ScopeZoomHelper.getZoomInSoundFor(stack),
+			ScopeZoomHelper.getZoomOutSoundFor(stack)
+		);
 		ScopeZoomManager.setActiveZoomStep(ScopeZoomHelper.getZoomIncrementFor(stack));
 		ScopeZoomManager.setZoom(ScopeZoomHelper.getStoredZoom(stack));
 	}

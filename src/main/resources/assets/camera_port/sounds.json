@@ -91,6 +91,49 @@
       "camera_port:camera/film_take_fail2"
     ]
   },
+  "item.camera.zoom_increase": {
+    "sounds": [
+      "camera_port:item/camera/zoom1",
+      "camera_port:item/camera/zoom2",
+      "camera_port:item/camera/zoom3",
+      "camera_port:item/camera/zoom4",
+      "camera_port:item/camera/zoom5",
+      "camera_port:item/camera/zoom6",
+      "camera_port:item/camera/zoom7"
+    ]
+  },
+  "item.camera.zoom_decrease": {
+    "sounds": [
+      "camera_port:item/camera/zoom1",
+      "camera_port:item/camera/zoom2",
+      "camera_port:item/camera/zoom3",
+      "camera_port:item/camera/zoom4",
+      "camera_port:item/camera/zoom5",
+      "camera_port:item/camera/zoom6",
+      "camera_port:item/camera/zoom7"
+    ]
+  },
+
+  "item.spyglass.zoom_increase": {
+    "sounds": [
+      "camera_port:item/spyglass/zoom1",
+      "camera_port:item/spyglass/zoom2",
+      "camera_port:item/spyglass/zoom3",
+      "camera_port:item/spyglass/zoom4",
+      "camera_port:item/spyglass/zoom5",
+      "camera_port:item/spyglass/zoom6"
+    ]
+  },
+  "item.spyglass.zoom_decrease": {
+    "sounds": [
+      "camera_port:item/spyglass/zoom1",
+      "camera_port:item/spyglass/zoom2",
+      "camera_port:item/spyglass/zoom3",
+      "camera_port:item/spyglass/zoom4",
+      "camera_port:item/spyglass/zoom5",
+      "camera_port:item/spyglass/zoom6"
+    ]
+  },
 
   "ui.developing_table.take_result": {
     "sounds": [
@@ -100,5 +143,28 @@
       "camera_port:ui/developing_table/take_result4"
     ],
     "subtitle": "subtitles.ui.developing_table.take_result"
+  },
+
+  "ui.film.rename": {
+    "sounds": [
+      "camera_port:ui/film/rename1",
+      "camera_port:ui/film/rename2",
+      "camera_port:ui/film/rename3"
+    ]
+  },
+  "ui.film.roll": {
+    "sounds": [
+      "camera_port:ui/film/roll1",
+      "camera_port:ui/film/roll2",
+      "camera_port:ui/film/roll3",
+      "camera_port:ui/film/roll4"
+    ]
+  },
+  "ui.film.tear": {
+    "sounds": [
+      "camera_port:ui/film/tear1",
+      "camera_port:ui/film/tear2",
+      "camera_port:ui/film/tear3"
+    ]
   }
 }

@@ -1,9 +1,12 @@
 {
-  "parent": "minecraft:block/orientable_with_bottom",
+  "parent": "minecraft:block/cube",
   "textures": {
-    "bottom": "camera_port:block/developing_table_bottom",
-    "front": "camera_port:block/developing_table_front",
-    "side": "camera_port:block/developing_table_side",
-    "top": "camera_port:block/developing_table_top"
+    "down": "camera_port:block/developing_table_bottom",
+    "east": "camera_port:block/developing_table_east",
+    "north": "camera_port:block/developing_table_north",
+    "particle": "camera_port:block/developing_table_north",
+    "south": "camera_port:block/developing_table_south",
+    "up": "camera_port:block/developing_table_top",
+    "west": "camera_port:block/developing_table_west"
   }
 }

@@ -17,9 +17,17 @@
 
 package net.lunade.camera.util.client;
 
+import java.util.Optional;
+import net.fabricmc.api.EnvType;
+import net.fabricmc.api.Environment;
 import net.lunade.camera.util.ScopeZoomHelper;
+import net.minecraft.client.Minecraft;
+import net.minecraft.client.resources.sounds.SimpleSoundInstance;
+import net.minecraft.core.Holder;
+import net.minecraft.sounds.SoundEvent;
 import net.minecraft.util.Mth;
 
+@Environment(EnvType.CLIENT)
 public final class ScopeZoomManager {
 	public static final float DEFAULT_FOV = 70F;
 	public static final float BASE_ZOOM = 1F;
@@ -31,6 +39,8 @@ public final class ScopeZoomManager {
 	private static float activeMinZoom = MIN_ZOOM;
 	private static float activeMaxZoom = MAX_ZOOM;
 	private static float activeZoomStep = DEFAULT_ZOOM_STEP;
+	private static Optional<Holder<SoundEvent>> activeZoomInSound = Optional.empty();
+	private static Optional<Holder<SoundEvent>> activeZoomOutSound = Optional.empty();
 	private static boolean hasForcedZoom = false;
 	private static float forcedZoom = BASE_ZOOM;
 
@@ -45,7 +55,7 @@ public final class ScopeZoomManager {
 		zoom = BASE_ZOOM;
 	}
 
-	public static void setActiveRange(float minZoom, float maxZoom) {
+	public static void setActiveZoomProfile(float minZoom, float maxZoom, Optional<Holder<SoundEvent>> zoomInSound, Optional<Holder<SoundEvent>> zoomOutSound) {
 		activeMinZoom = Mth.clamp(minZoom, MIN_ZOOM, MAX_ZOOM);
 		activeMaxZoom = Mth.clamp(maxZoom, MIN_ZOOM, MAX_ZOOM);
 		if (activeMinZoom > activeMaxZoom) {
@@ -54,12 +64,16 @@ public final class ScopeZoomManager {
 			activeMaxZoom = previousMin;
 		}
 		zoom = Mth.clamp(zoom, activeMinZoom, activeMaxZoom);
+		activeZoomInSound = zoomInSound;
+		activeZoomOutSound = zoomOutSound;
 	}
 
-	public static void resetActiveRange() {
+	public static void resetActiveZoomProfile() {
 		activeMinZoom = MIN_ZOOM;
 		activeMaxZoom = MAX_ZOOM;
 		activeZoomStep = DEFAULT_ZOOM_STEP;
+		activeZoomInSound = Optional.empty();
+		activeZoomOutSound = Optional.empty();
 	}
 
 	public static void setActiveZoomStep(float value) {
@@ -79,14 +93,21 @@ public final class ScopeZoomManager {
 		hasForcedZoom = false;
 	}
 
-	public static boolean adjustZoom(int wheelDirection) {
+	public static boolean adjustZoom(Minecraft minecraft, int wheelDirection) {
 		if (wheelDirection == 0) return false;
 
 		final float previousZoom = zoom;
-		if (wheelDirection > 0) {
+		final boolean increase = wheelDirection < 0;
+		if (!increase) {
 			zoom = Mth.clamp(zoom - activeZoomStep, activeMinZoom, activeMaxZoom);
 		} else {
 			zoom = Mth.clamp(zoom + activeZoomStep, activeMinZoom, activeMaxZoom);
+		}
+
+		if (previousZoom != zoom) {
+			final float zoomProgress = zoom / activeMaxZoom;
+			final Optional<Holder<SoundEvent>> zoomSound = increase ? activeZoomInSound : activeZoomOutSound;
+			zoomSound.ifPresent(soundEventHolder -> minecraft.getSoundManager().play(SimpleSoundInstance.forUI(soundEventHolder.value(), 0.9F + zoomProgress)));
 		}
 
 		return previousZoom != zoom;

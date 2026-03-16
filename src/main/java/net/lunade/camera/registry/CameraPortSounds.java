@@ -31,6 +31,11 @@ public class CameraPortSounds {
 	public static final SoundEvent CAMERA_INSERT_FAIL = register("item.camera.insert_fail");
 	public static final SoundEvent CAMERA_REMOVE_ONE = register("item.camera.remove_one");
 	public static final SoundEvent CAMERA_REMOVE_ONE_FAIL = register("item.camera.remove_one_fail");
+	public static final SoundEvent CAMERA_ZOOM_INCREASE = register("item.camera.zoom_increase");
+	public static final SoundEvent CAMERA_ZOOM_DECREASE = register("item.camera.zoom_decrease");
+
+	public static final SoundEvent SPYGLASS_ZOOM_INCREASE = register("item.spyglass.zoom_increase");
+	public static final SoundEvent SPYGLASS_ZOOM_DECREASE = register("item.spyglass.zoom_decrease");
 
 	public static final SoundEvent CAMERA_BREAK = register("entity.camera.break");
 	public static final SoundEvent CAMERA_FALL = register("entity.camera.fall");
@@ -38,6 +43,12 @@ public class CameraPortSounds {
 	public static final SoundEvent CAMERA_PLACE = register("entity.camera.place");
 	public static final SoundEvent CAMERA_PRIME = register("entity.camera.prime");
 	public static final SoundEvent CAMERA_ADJUST = register("entity.camera.adjust");
+
+	public static final SoundEvent DEVELOPING_TABLE_TAKE_RESULT = register("ui.developing_table.take_result");
+
+	public static final SoundEvent FILM_RENAME = register("ui.film.rename");
+	public static final SoundEvent FILM_ROLL = register("ui.film.roll");
+	public static final SoundEvent FILM_TEAR = register("ui.film.tear");
 
 	private static Holder.Reference<SoundEvent> registerForHolder(String path) {
 		return registerForHolder(CameraPortConstants.id(path));

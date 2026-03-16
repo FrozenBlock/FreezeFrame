@@ -49,6 +49,7 @@
   "item.camera_port.film.empty.description": "Stores up to %s images",
   "item.camera_port.film.full": "Full",
   "item.camera_port.film.fullness": "%s/%s",
+  "screen.camera_port.film.title": "Film Roll",
   "screen.camera_port.film.name": "Name",
   "screen.camera_port.film.save": "Save",
   "screen.camera_port.film.cancel": "Cancel",
