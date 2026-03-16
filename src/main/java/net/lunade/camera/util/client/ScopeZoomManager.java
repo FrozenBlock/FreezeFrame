@@ -20,12 +20,16 @@ package net.lunade.camera.util.client;
 import java.util.Optional;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
+import net.fabricmc.fabric.api.client.networking.v1.ClientPlayNetworking;
+import net.lunade.camera.networking.packet.ChangeScopeZoomPacket;
 import net.lunade.camera.util.ScopeZoomHelper;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.resources.sounds.SimpleSoundInstance;
 import net.minecraft.core.Holder;
 import net.minecraft.sounds.SoundEvent;
 import net.minecraft.util.Mth;
+import net.minecraft.world.InteractionHand;
+import net.minecraft.world.entity.player.Player;
 
 @Environment(EnvType.CLIENT)
 public final class ScopeZoomManager {
@@ -93,7 +97,7 @@ public final class ScopeZoomManager {
 		hasForcedZoom = false;
 	}
 
-	public static boolean adjustZoom(Minecraft minecraft, int wheelDirection) {
+	public static boolean adjustZoom(Minecraft minecraft, Player player, int wheelDirection) {
 		if (wheelDirection == 0) return false;
 
 		final float previousZoom = zoom;
@@ -108,6 +112,8 @@ public final class ScopeZoomManager {
 			final float zoomProgress = zoom / activeMaxZoom;
 			final Optional<Holder<SoundEvent>> zoomSound = increase ? activeZoomInSound : activeZoomOutSound;
 			zoomSound.ifPresent(soundEventHolder -> minecraft.getSoundManager().play(SimpleSoundInstance.forUI(soundEventHolder.value(), 0.9F + zoomProgress)));
+			final InteractionHand hand = player.getUsedItemHand();
+			ClientPlayNetworking.send(new ChangeScopeZoomPacket(hand, zoom));
 		}
 
 		return previousZoom != zoom;

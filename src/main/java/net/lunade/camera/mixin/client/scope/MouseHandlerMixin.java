@@ -15,7 +15,7 @@
  * along with this program; if not, see <https://github.com/FrozenBlock/Licenses>.
  */
 
-package net.lunade.camera.mixin.client.camera;
+package net.lunade.camera.mixin.client.scope;
 
 import com.llamalad7.mixinextras.injector.wrapoperation.Operation;
 import com.llamalad7.mixinextras.injector.wrapoperation.WrapOperation;
@@ -23,7 +23,6 @@ import com.llamalad7.mixinextras.sugar.Local;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 import net.lunade.camera.util.ScopeItemHelper;
-import net.lunade.camera.util.ScopeZoomHelper;
 import net.lunade.camera.util.client.ScopeZoomManager;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.MouseHandler;
@@ -57,7 +56,7 @@ public class MouseHandlerMixin {
 			return;
 		}
 
-		if (wheel == 0 || !ScopeZoomManager.adjustZoom(this.minecraft, -wheel)) return;
-		ScopeZoomHelper.setStoredZoom(this.minecraft.player.getUseItem(), ScopeZoomManager.getZoom());
+		if (wheel == 0) return;
+		ScopeZoomManager.adjustZoom(this.minecraft, this.minecraft.player, -wheel);
 	}
 }

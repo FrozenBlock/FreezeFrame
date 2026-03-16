@@ -18,13 +18,16 @@
 package net.lunade.camera.util;
 
 import java.util.Optional;
+import java.util.UUID;
 import net.lunade.camera.component.ScopeZoomConfig;
+import net.lunade.camera.component.ScopeZoomData;
 import net.lunade.camera.registry.CameraPortDataComponents;
 import net.lunade.camera.registry.CameraPortSounds;
 import net.minecraft.core.Holder;
 import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.sounds.SoundEvent;
 import net.minecraft.util.Mth;
+import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.ItemStack;
 import org.jspecify.annotations.Nullable;
 
@@ -81,21 +84,13 @@ public final class ScopeZoomHelper {
 		return resolveZoomConfig(stack).zoomOutSound();
 	}
 
-	public static float getStoredZoom(ItemStack stack) {
+	public static float getStoredZoom(Player player, ItemStack stack) {
 		final ScopeZoomConfig config = resolveZoomConfig(stack);
-		final float stored = stack.getOrDefault(CameraPortDataComponents.SCOPE_ZOOM, config.defaultZoom());
-		if (stored <= 0F) return config.defaultZoom();
+		final UUID currentUUID = player.getUUID();
+		final ScopeZoomData zoomData = stack.get(CameraPortDataComponents.SCOPE_ZOOM_DATA);
+		final float stored = zoomData == null || !zoomData.lastUserUUID().equals(currentUUID) ? config.defaultZoom() : zoomData.zoom();
 
-		if (stored < config.minZoom() && config.minZoom() >= 1F) {
-			return Mth.clamp(1F / stored, config.minZoom(), config.maxZoom());
-		}
-
-		return Mth.clamp(stored, config.minZoom(), config.maxZoom());
-	}
-
-	public static void setStoredZoom(ItemStack stack, float zoom) {
-		final ScopeZoomConfig config = resolveZoomConfig(stack);
-		stack.set(CameraPortDataComponents.SCOPE_ZOOM, Mth.clamp(zoom, config.minZoom(), config.maxZoom()));
+		return stored;
 	}
 
 	public static float toFovModifier(float zoomFactor) {

@@ -42,7 +42,6 @@ public class CameraPortItems {
 			.stacksTo(1)
 			.spawnEgg(CameraPortEntityTypes.CAMERA)
 			.component(CameraPortDataComponents.CAMERA_CONTENTS, CameraContents.EMPTY)
-			.component(CameraPortDataComponents.SCOPE_ZOOM, ScopeZoomHelper.CAMERA_DEFAULTS.defaultZoom())
 			.component(CameraPortDataComponents.SCOPE_ZOOM_CONFIG, ScopeZoomHelper.CAMERA_DEFAULTS)
 	);
 	public static final CameraItem DISC_CAMERA = register(
@@ -52,7 +51,6 @@ public class CameraPortItems {
 			.stacksTo(1)
 			.spawnEgg(CameraPortEntityTypes.DISC_CAMERA)
 			.component(CameraPortDataComponents.CAMERA_CONTENTS, CameraContents.EMPTY)
-			.component(CameraPortDataComponents.SCOPE_ZOOM, ScopeZoomHelper.CAMERA_DEFAULTS.defaultZoom())
 			.component(CameraPortDataComponents.SCOPE_ZOOM_CONFIG, ScopeZoomHelper.CAMERA_DEFAULTS)
 	);
 	public static final FilmItem FILM = register(

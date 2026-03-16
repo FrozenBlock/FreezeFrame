@@ -49,6 +49,7 @@ public class CameraPortSounds {
 	public static final SoundEvent FILM_RENAME = register("ui.film.rename");
 	public static final SoundEvent FILM_ROLL = register("ui.film.roll");
 	public static final SoundEvent FILM_TEAR = register("ui.film.tear");
+	public static final SoundEvent FILM_TEAR_FINISH = register("ui.film.tear_finish");
 
 	private static Holder.Reference<SoundEvent> registerForHolder(String path) {
 		return registerForHolder(CameraPortConstants.id(path));

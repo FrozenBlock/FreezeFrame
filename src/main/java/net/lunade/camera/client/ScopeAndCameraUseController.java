@@ -31,7 +31,9 @@ import net.minecraft.client.CameraType;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.multiplayer.MultiPlayerGameMode;
 import net.minecraft.client.player.LocalPlayer;
+import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.ItemStack;
+import java.util.Objects;
 
 @Environment(EnvType.CLIENT)
 public final class ScopeAndCameraUseController {
@@ -66,14 +68,15 @@ public final class ScopeAndCameraUseController {
 		}
 
 		final ItemStack scopeItem = usingScopeItem ? player.getUseItem() : ItemStack.EMPTY;
-		final boolean isScopeComponentDifferent = !previousScopeItem.getOrDefault(CameraPortDataComponents.SCOPE_ZOOM_CONFIG, ScopeZoomConfig.EMPTY)
+		final boolean isScopeConfigDifferent = !previousScopeItem.getOrDefault(CameraPortDataComponents.SCOPE_ZOOM_CONFIG, ScopeZoomConfig.EMPTY)
 				.equals(scopeItem.getOrDefault(CameraPortDataComponents.SCOPE_ZOOM_CONFIG, ScopeZoomConfig.EMPTY));
-		if (!usingScopeItem || isScopeComponentDifferent) {
+		final boolean isScopeDataDifferent = !Objects.equals(previousScopeItem.get(CameraPortDataComponents.SCOPE_ZOOM_DATA), scopeItem.get(CameraPortDataComponents.SCOPE_ZOOM_DATA));
+		if (!usingScopeItem || isScopeConfigDifferent) {
 			ScopeZoomManager.resetActiveZoomProfile();
 			ScopeZoomManager.resetZoom();
 		}
 
-		if (usingScopeItem && isScopeComponentDifferent) applyZoomProfile(scopeItem);
+		if (usingScopeItem && (isScopeConfigDifferent || isScopeDataDifferent)) applyZoomProfile(player, scopeItem);
 
 		final boolean attackDown = minecraft.options.keyAttack.isDown();
 		if (attackDown && !wasAttackDown && holdingCamera) {
@@ -112,7 +115,7 @@ public final class ScopeAndCameraUseController {
 		previousScopeItem = ItemStack.EMPTY;
 	}
 
-	private static void applyZoomProfile(ItemStack stack) {
+	private static void applyZoomProfile(Player player, ItemStack stack) {
 		ScopeZoomManager.setActiveZoomProfile(
 			ScopeZoomHelper.getMinZoomFor(stack),
 			ScopeZoomHelper.getMaxZoomFor(stack),
@@ -120,6 +123,6 @@ public final class ScopeAndCameraUseController {
 			ScopeZoomHelper.getZoomOutSoundFor(stack)
 		);
 		ScopeZoomManager.setActiveZoomStep(ScopeZoomHelper.getZoomIncrementFor(stack));
-		ScopeZoomManager.setZoom(ScopeZoomHelper.getStoredZoom(stack));
+		ScopeZoomManager.setZoom(ScopeZoomHelper.getStoredZoom(player, stack));
 	}
 }

@@ -53,6 +53,8 @@
   "screen.camera_port.film.name": "Name",
   "screen.camera_port.film.save": "Save",
   "screen.camera_port.film.cancel": "Cancel",
+  "subtitles.item.film.rename": "Film contents renamed",
+  "subtitles.item.film.tear": "Film trimmed",
 
   "option.camera_port.component.title": "Camera Port Options",
   "option.camera_port.config": "Config",

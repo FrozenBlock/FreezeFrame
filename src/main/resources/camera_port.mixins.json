@@ -20,7 +20,7 @@
     "client.camera.ItemInHandRendererMixin",
     "client.camera.LevelRendererMixin",
     "client.camera.MinecraftMixin",
-    "client.camera.MouseHandlerMixin",
+    "client.scope.MouseHandlerMixin",
     "client.camera.ScreenEffectRendererMixin",
     "client.film.AbstractContainerScreenMixin",
     "client.film.RangeSelectItemModelPropertiesMixin",

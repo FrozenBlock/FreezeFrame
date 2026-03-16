@@ -415,8 +415,7 @@ public class FilmScreen extends Screen {
 
 	private void saveChangesAndClose() {
 		if (this.minecraft == null) return;
-		if (!this.modifiedPhotographIds.isEmpty()) Minecraft.getInstance().getSoundManager().play(SimpleSoundInstance.forUI(CameraPortSounds.FILM_RENAME, (float) (0.8F + (Math.random() * 0.4F))));
-		ClientPlayNetworking.send(new SaveFilmChangesPacket(this.hand, this.toFilmContents()));
+		ClientPlayNetworking.send(new SaveFilmChangesPacket(this.hand, this.toFilmContents(), !this.modifiedPhotographIds.isEmpty()));
 		this.minecraft.setScreen(null);
 	}
 
@@ -446,7 +445,7 @@ public class FilmScreen extends Screen {
 		}
 
 		Minecraft.getInstance().getSoundManager().play(SimpleSoundInstance.forUI(SoundEvents.UI_BUTTON_CLICK, 1F));
-		Minecraft.getInstance().getSoundManager().play(SimpleSoundInstance.forUI(CameraPortSounds.FILM_TEAR, (float) (0.8F + (Math.random() * 0.4F))));
+		Minecraft.getInstance().getSoundManager().play(SimpleSoundInstance.forUI(CameraPortSounds.FILM_TEAR, (float) (0.8F + (Math.random() * 0.25F))));
 		this.onSelectedPhotographChanged();
 	}
 
