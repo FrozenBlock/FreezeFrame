@@ -48,7 +48,7 @@ public abstract class LivingEntityMixin {
 		if (!(LivingEntity.class.cast(this) instanceof Player player)) return;
 		final InteractionHand usedItemHand = this.getUsedItemHand();
 		if (usedItemHand == InteractionHand.MAIN_HAND) return;
-		if (ScopeItemHelper.isPlayerHoldingPhotoTakingCamera(player, true)) {
+		if (ScopeItemHelper.isPlayerHoldingPhotoTakingCamera(player)) {
 			this.stopUsingItem();
 			info.cancel();
 		}

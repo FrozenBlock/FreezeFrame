@@ -40,18 +40,65 @@
       "camera_port:camera/prime"
     ]
   },
-  "entity.camera.snap": {
-    "subtitle": "subtitle.entity.camera.snap",
+  "entity.camera.adjust": {
+    "subtitle": "subtitle.entity.camera.adjust",
+    "sounds": [
+      "minecraft:item/spyglass/use"
+    ]
+  },
+
+  "item.camera.snap": {
+    "subtitle": "subtitle.item.camera.snap",
     "sounds": [
       "camera_port:camera/snap1",
       "camera_port:camera/snap2",
       "camera_port:camera/snap3"
     ]
   },
-  "entity.camera.adjust": {
-    "subtitle": "subtitle.entity.camera.adjust",
+  "item.camera.snap_fail": {
+    "subtitle": "subtitle.item.camera.snap_fail",
     "sounds": [
-      "minecraft:item/spyglass/use"
+      "camera_port:camera/snap_fail1",
+      "camera_port:camera/snap_fail2",
+      "camera_port:camera/snap_fail3"
     ]
+  },
+  "item.camera.insert": {
+    "subtitle": "subtitle.item.camera.insert",
+    "sounds": [
+      "camera_port:camera/film_insert1",
+      "camera_port:camera/film_insert2"
+    ]
+  },
+  "item.camera.insert_fail": {
+    "subtitle": "subtitle.item.camera.insert_fail",
+    "sounds": [
+      "camera_port:camera/film_insert_fail1",
+      "camera_port:camera/film_insert_fail2"
+    ]
+  },
+  "item.camera.remove_one": {
+    "subtitle": "subtitle.item.camera.remove_one",
+    "sounds": [
+      "camera_port:camera/film_take1",
+      "camera_port:camera/film_take2"
+    ]
+  },
+  "item.camera.remove_one_fail": {
+    "subtitle": "subtitle.item.camera.remove_one_fail",
+    "sounds": [
+      "camera_port:camera/film_take_fail1",
+      "camera_port:camera/film_take_fail2"
+    ]
+  },
+
+  "ui.developing_table.take_result": {
+    "sounds": [
+      "camera_port:ui/developing_table/take_result1",
+      "camera_port:ui/developing_table/take_result2",
+      "camera_port:ui/developing_table/take_result3",
+      "camera_port:ui/developing_table/take_result4"
+    ],
+    "subtitle": "subtitles.ui.developing_table.take_result"
   }
 }

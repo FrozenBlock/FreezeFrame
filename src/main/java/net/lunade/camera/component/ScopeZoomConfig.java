@@ -31,7 +31,6 @@ public record ScopeZoomConfig(float minZoom, float maxZoom, float zoomIncrement,
 		Codec.FLOAT.fieldOf("default_zoom").forGetter(ScopeZoomConfig::defaultZoom),
 		Codec.BOOL.fieldOf("offhand_enabled").forGetter(ScopeZoomConfig::offhandEnabled)
 	).apply(instance, ScopeZoomConfig::new));
-
 	public static final StreamCodec<RegistryFriendlyByteBuf, ScopeZoomConfig> STREAM_CODEC = StreamCodec.composite(
 		ByteBufCodecs.FLOAT, ScopeZoomConfig::minZoom,
 		ByteBufCodecs.FLOAT, ScopeZoomConfig::maxZoom,
@@ -40,4 +39,5 @@ public record ScopeZoomConfig(float minZoom, float maxZoom, float zoomIncrement,
 		ByteBufCodecs.BOOL, ScopeZoomConfig::offhandEnabled,
 		ScopeZoomConfig::new
 	);
+	public static final ScopeZoomConfig EMPTY = new ScopeZoomConfig(1F, 1F, 0F, 1F, false);
 }

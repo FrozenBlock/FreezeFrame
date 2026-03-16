@@ -44,6 +44,6 @@ public record QuickCameraPhotographPacket() implements CustomPacketPayload {
 	public static void handle(QuickCameraPhotographPacket packet, ServerPlayNetworking.Context context) {
 		final ServerPlayer player = context.player();
 		if (player == null) return;
-		CameraItem.tryTakeInstantPhotograph(player);
+		CameraItem.tryTakeInstantPhotograph(player, true);
 	}
 }

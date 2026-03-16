@@ -25,12 +25,18 @@ import net.minecraft.resources.Identifier;
 import net.minecraft.sounds.SoundEvent;
 
 public class CameraPortSounds {
+	public static final SoundEvent CAMERA_SNAP = register("item.camera.snap");
+	public static final SoundEvent CAMERA_SNAP_FAIL = register("item.camera.snap_fail");
+	public static final SoundEvent CAMERA_INSERT = register("item.camera.insert");
+	public static final SoundEvent CAMERA_INSERT_FAIL = register("item.camera.insert_fail");
+	public static final SoundEvent CAMERA_REMOVE_ONE = register("item.camera.remove_one");
+	public static final SoundEvent CAMERA_REMOVE_ONE_FAIL = register("item.camera.remove_one_fail");
+
 	public static final SoundEvent CAMERA_BREAK = register("entity.camera.break");
 	public static final SoundEvent CAMERA_FALL = register("entity.camera.fall");
 	public static final SoundEvent CAMERA_HIT = register("entity.camera.hit");
 	public static final SoundEvent CAMERA_PLACE = register("entity.camera.place");
 	public static final SoundEvent CAMERA_PRIME = register("entity.camera.prime");
-	public static final SoundEvent CAMERA_SNAP = register("entity.camera.snap");
 	public static final SoundEvent CAMERA_ADJUST = register("entity.camera.adjust");
 
 	private static Holder.Reference<SoundEvent> registerForHolder(String path) {

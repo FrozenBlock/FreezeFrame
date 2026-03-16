@@ -21,7 +21,9 @@ import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 import net.fabricmc.fabric.api.client.networking.v1.ClientPlayNetworking;
 import net.fabricmc.fabric.api.client.event.lifecycle.v1.ClientTickEvents;
+import net.lunade.camera.component.ScopeZoomConfig;
 import net.lunade.camera.networking.packet.QuickCameraPhotographPacket;
+import net.lunade.camera.registry.CameraPortDataComponents;
 import net.lunade.camera.util.ScopeItemHelper;
 import net.lunade.camera.util.ScopeZoomHelper;
 import net.lunade.camera.util.client.ScopeZoomManager;
@@ -64,16 +66,14 @@ public final class ScopeAndCameraUseController {
 		}
 
 		final ItemStack scopeItem = usingScopeItem ? player.getUseItem() : ItemStack.EMPTY;
-		final boolean isScopeItemDifferent = ItemStack.isSameItemSameComponents(previousScopeItem, scopeItem);
-		if (!usingScopeItem || isScopeItemDifferent) {
+		final boolean isScopeComponentDifferent = !previousScopeItem.getOrDefault(CameraPortDataComponents.SCOPE_ZOOM_CONFIG, ScopeZoomConfig.EMPTY)
+				.equals(scopeItem.getOrDefault(CameraPortDataComponents.SCOPE_ZOOM_CONFIG, ScopeZoomConfig.EMPTY));
+		if (!usingScopeItem || isScopeComponentDifferent) {
 			ScopeZoomManager.resetActiveRange();
 			ScopeZoomManager.resetZoom();
-			wasAttackDown = minecraft.options.keyAttack.isDown();
-			previousScopeItem = ItemStack.EMPTY;
-			if (!usingScopeItem) return;
 		}
 
-		if (isScopeItemDifferent) applyZoomProfile(scopeItem);
+		if (usingScopeItem && isScopeComponentDifferent) applyZoomProfile(scopeItem);
 
 		final boolean attackDown = minecraft.options.keyAttack.isDown();
 		if (attackDown && !wasAttackDown && holdingCamera) {

@@ -19,6 +19,7 @@ package net.lunade.camera.item;
 
 import java.util.Objects;
 import java.util.Optional;
+import net.frozenblock.lib.sound.impl.networking.FrozenLibSoundPackets;
 import net.lunade.camera.CameraPortConstants;
 import net.lunade.camera.component.CameraContents;
 import net.lunade.camera.component.FilmContents;
@@ -30,9 +31,8 @@ import net.lunade.camera.registry.CameraPortSounds;
 import net.lunade.camera.util.ScopeItemHelper;
 import net.lunade.camera.util.ScopeZoomHelper;
 import net.minecraft.core.component.DataComponents;
+import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.server.level.ServerPlayer;
-import net.minecraft.sounds.SoundEvents;
-import net.minecraft.sounds.SoundSource;
 import net.minecraft.util.ARGB;
 import net.minecraft.util.Mth;
 import net.minecraft.world.InteractionHand;
@@ -69,7 +69,7 @@ public class CameraItem extends SpawnEggItem {
 	public InteractionResult use(Level level, Player player, InteractionHand hand) {
 		final ItemStack stack = player.getItemInHand(hand);
 		if (player.isUsingItem() && ItemStack.isSameItemSameComponents(player.getUseItem(), stack)) {
-			return takePhotograph(level, player, stack);
+			return takePhotograph(player, stack, false);
 		}
 
 		if (player.isShiftKeyDown()) return super.use(level, player, hand);
@@ -102,24 +102,24 @@ public class CameraItem extends SpawnEggItem {
 		return player.getStringUUID() + "_" + System.currentTimeMillis();
 	}
 
-	public static boolean tryTakeInstantPhotograph(ServerPlayer player) {
+	public static boolean tryTakeInstantPhotograph(ServerPlayer player, boolean playsSeparateClientSound) {
 		final ItemStack stack = player.getMainHandItem();
 		if (!ScopeItemHelper.isCameraItem(stack)) return false;
-		return takePhotograph(player.level(), player, stack, ScopeZoomHelper.getDefaultZoomFor(stack)) == InteractionResult.SUCCESS;
+		return takePhotograph(player, stack, ScopeZoomHelper.getDefaultZoomFor(stack), playsSeparateClientSound) == InteractionResult.SUCCESS;
 	}
 
-	private static InteractionResult takePhotograph(Level level, Player player, ItemStack stack) {
-		return takePhotograph(level, player, stack, ScopeZoomHelper.getStoredZoom(stack));
+	private static InteractionResult takePhotograph(Player player, ItemStack stack, boolean playsSeparateClientSound) {
+		return takePhotograph(player, stack, ScopeZoomHelper.getStoredZoom(stack), playsSeparateClientSound);
 	}
 
-	private static InteractionResult takePhotograph(Level level, Player player, ItemStack stack, float captureZoom) {
+	private static InteractionResult takePhotograph(Player player, ItemStack stack, float captureZoom, boolean playsSeparateClientSound) {
 		if (player.getCooldowns().isOnCooldown(stack)) return InteractionResult.FAIL;
 
 		final CameraContents initialContents = stack.get(CameraPortDataComponents.CAMERA_CONTENTS);
 		if (initialContents == null) return InteractionResult.FAIL;
 
 		if (!initialContents.hasSpaceForPhotograph()) {
-			// TODO: Fail sound
+			playSnapFailSound(player, playsSeparateClientSound);
 			return InteractionResult.FAIL;
 		}
 
@@ -130,7 +130,7 @@ public class CameraItem extends SpawnEggItem {
 			addPhotograph(stack, player, fileName);
 		}
 
-		level.playSound(player, player.getX(), player.getEyeY(), player.getZ(), CameraPortSounds.CAMERA_SNAP, SoundSource.PLAYERS, 0.5F, 1F);
+		playSnapSound(player, playsSeparateClientSound);
 		return InteractionResult.SUCCESS;
 	}
 
@@ -173,6 +173,8 @@ public class CameraItem extends SpawnEggItem {
 				} else {
 					playRemoveOneSound(player);
 				}
+			} else {
+				playRemoveOneFailSound(player);
 			}
 
 			self.set(CameraPortDataComponents.CAMERA_CONTENTS, contents.toImmutable());
@@ -305,17 +307,68 @@ public class CameraItem extends SpawnEggItem {
 		broadcastChangesOnContainerMenu(player);
 	}
 
-	// TODO: Sounds
+	private static void playSnapSound(Entity entity, boolean playsSeparateClientSound) {
+		entity.playSound(
+			CameraPortSounds.CAMERA_SNAP,
+			0.8F,
+			0.95F + entity.level().getRandom().nextFloat() * 0.1F
+		);
+		if (playsSeparateClientSound && entity instanceof ServerPlayer serverPlayer) {
+			FrozenLibSoundPackets.createAndSendLocalPlayerSound(
+				serverPlayer,
+				BuiltInRegistries.SOUND_EVENT.wrapAsHolder(CameraPortSounds.CAMERA_SNAP),
+				0.8F,
+				0.95F + entity.level().getRandom().nextFloat() * 0.1F
+			);
+		}
+	}
+
+	private static void playSnapFailSound(Entity entity, boolean playsSeparateClientSound) {
+		entity.playSound(
+			CameraPortSounds.CAMERA_SNAP_FAIL,
+			0.8F,
+			0.8F + entity.level().getRandom().nextFloat() * 0.4F
+		);
+		if (playsSeparateClientSound && entity instanceof ServerPlayer serverPlayer) {
+			FrozenLibSoundPackets.createAndSendLocalPlayerSound(
+				serverPlayer,
+				BuiltInRegistries.SOUND_EVENT.wrapAsHolder(CameraPortSounds.CAMERA_SNAP_FAIL),
+				0.8F,
+				0.8F + entity.level().getRandom().nextFloat() * 0.4F
+			);
+		}
+	}
+
 	private static void playRemoveOneSound(Entity entity) {
-		entity.playSound(SoundEvents.BUNDLE_REMOVE_ONE, 0.8F, 0.8F + entity.level().getRandom().nextFloat() * 0.4F);
+		entity.playSound(
+			CameraPortSounds.CAMERA_REMOVE_ONE,
+			0.8F,
+			0.8F + entity.level().getRandom().nextFloat() * 0.4F
+		);
+	}
+
+	private static void playRemoveOneFailSound(Entity entity) {
+		entity.playSound(
+			CameraPortSounds.CAMERA_REMOVE_ONE_FAIL,
+			0.8F,
+			0.8F + entity.level().getRandom().nextFloat() * 0.4F
+		);
 	}
 
 	private static void playInsertSound(Entity entity) {
-		entity.playSound(SoundEvents.BUNDLE_INSERT, 0.8F, 0.8F + entity.level().getRandom().nextFloat() * 0.4F);
+		entity.playSound(
+			CameraPortSounds.CAMERA_INSERT,
+			0.8F,
+			0.8F + entity.level().getRandom().nextFloat() * 0.4F
+		);
 	}
 
 	private static void playInsertFailSound(Entity entity) {
-		entity.playSound(SoundEvents.BUNDLE_INSERT_FAIL, 1F, 1F);
+		entity.playSound(
+			CameraPortSounds.CAMERA_INSERT_FAIL,
+			0.8F,
+			0.95F + entity.level().getRandom().nextFloat() * 0.1F
+		);
 	}
 
 	private static void broadcastChangesOnContainerMenu(Player player) {

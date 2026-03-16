@@ -31,7 +31,6 @@ import net.frozenblock.lib.file.transfer.FileTransferPacket;
 import net.frozenblock.lib.networking.FrozenNetworking;
 import net.lunade.camera.CameraPortConstants;
 import net.lunade.camera.config.CameraPortConfig;
-import net.lunade.camera.registry.CameraPortSounds;
 import net.minecraft.client.Camera;
 import net.minecraft.client.DeltaTracker;
 import net.minecraft.client.Minecraft;
@@ -42,7 +41,6 @@ import net.minecraft.core.particles.ParticleTypes;
 import net.minecraft.network.chat.ClickEvent;
 import net.minecraft.network.chat.Component;
 import net.minecraft.network.protocol.common.ServerboundCustomPayloadPacket;
-import net.minecraft.sounds.SoundSource;
 import net.minecraft.util.StringUtil;
 import net.minecraft.util.Util;
 import net.minecraft.world.entity.Entity;
@@ -93,7 +91,6 @@ public class CameraScreenshotManager {
 			final Entity camEntity = minecraft.getCameraEntity();
 			if (camEntity == null) break makeSnapSoundAndSmoke;
 
-			minecraft.level.playLocalSound(minecraft.player, CameraPortSounds.CAMERA_SNAP, SoundSource.PLAYERS, 0.5F, 1F);
 			final int smokeCount = minecraft.level.getRandom().nextInt(1, 5);
 			for (int i = 0; i < smokeCount; i++) {
 				minecraft.level.addParticle(ParticleTypes.LARGE_SMOKE, camEntity.getX(), camEntity.getEyeY(), camEntity.getZ(), 0D, 0.15D, 0D);

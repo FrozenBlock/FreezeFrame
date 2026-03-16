@@ -47,14 +47,14 @@ public class MinecraftMixin {
 	@Inject(method = "startAttack", at = @At("HEAD"), cancellable = true)
 	private void cameraPort$cancelAttackWhileUsingCamera(CallbackInfoReturnable<Boolean> info) {
 		final LocalPlayer player = Minecraft.class.cast(this).player;
-		if (player == null || !ScopeItemHelper.isPlayerHoldingPhotoTakingCamera(player, true)) return;
+		if (player == null || !ScopeItemHelper.isPlayerHoldingPhotoTakingCamera(player)) return;
 		info.setReturnValue(false);
 	}
 
 	@Inject(method = "continueAttack", at = @At("HEAD"), cancellable = true)
 	private void cameraPort$cancelBreakWhileUsingCamera(boolean down, CallbackInfo info) {
 		final LocalPlayer player = Minecraft.class.cast(this).player;
-		if (player == null || !ScopeItemHelper.isPlayerHoldingPhotoTakingCamera(player, true)) return;
+		if (player == null || !ScopeItemHelper.isPlayerHoldingPhotoTakingCamera(player)) return;
 		info.cancel();
 	}
 
@@ -70,6 +70,6 @@ public class MinecraftMixin {
 		@Local(name = "hand") InteractionHand hand
 	) {
 		if (!original.call(instance, enabledFeatures)) return false;
-		return this.player == null || hand != InteractionHand.OFF_HAND || !ScopeItemHelper.isPlayerHoldingPhotoTakingCamera(this.player, true);
+		return this.player == null || hand != InteractionHand.OFF_HAND || !ScopeItemHelper.isPlayerHoldingPhotoTakingCamera(this.player);
 	}
 }
