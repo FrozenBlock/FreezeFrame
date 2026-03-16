@@ -98,8 +98,7 @@
       "camera_port:item/camera/zoom3",
       "camera_port:item/camera/zoom4",
       "camera_port:item/camera/zoom5",
-      "camera_port:item/camera/zoom6",
-      "camera_port:item/camera/zoom7"
+      "camera_port:item/camera/zoom6"
     ]
   },
   "item.camera.zoom_decrease": {
@@ -109,8 +108,7 @@
       "camera_port:item/camera/zoom3",
       "camera_port:item/camera/zoom4",
       "camera_port:item/camera/zoom5",
-      "camera_port:item/camera/zoom6",
-      "camera_port:item/camera/zoom7"
+      "camera_port:item/camera/zoom6"
     ]
   },
 
