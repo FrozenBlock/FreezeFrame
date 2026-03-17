@@ -25,8 +25,8 @@ import net.fabricmc.fabric.api.client.rendering.v1.ModelLayerRegistry;
 import net.lunade.camera.client.ScopeAndCameraUseController;
 import net.lunade.camera.client.model.object.camera.CameraModel;
 import net.lunade.camera.client.model.object.camera.DiscCameraModel;
-import net.lunade.camera.client.renderer.entity.TripodCameraRenderer;
 import net.lunade.camera.client.renderer.entity.DiscCameraRenderer;
+import net.lunade.camera.client.renderer.entity.TripodCameraRenderer;
 import net.lunade.camera.component.tooltip.CameraTooltip;
 import net.lunade.camera.component.tooltip.FilmTooltip;
 import net.lunade.camera.component.tooltip.PhotographTooltip;
@@ -36,7 +36,6 @@ import net.lunade.camera.component.tooltip.client.ClientPhotographTooltip;
 import net.lunade.camera.networking.CameraPortClientNetworking;
 import net.lunade.camera.registry.CameraPortEntityTypes;
 import net.lunade.camera.registry.CameraPortScreens;
-import net.lunade.camera.util.client.ScopeZoomManager;
 import net.minecraft.client.model.geom.ModelLayerLocation;
 import net.minecraft.client.renderer.entity.EntityRenderers;
 
@@ -54,7 +53,6 @@ public class CameraPortClient implements ClientModInitializer {
 
 		CameraPortScreens.init();
 		ScopeAndCameraUseController.init();
-		ScopeZoomManager.init();
 
 		CameraPortClientNetworking.init();
 
