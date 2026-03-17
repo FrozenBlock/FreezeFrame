@@ -20,7 +20,6 @@ package net.lunade.camera.networking.packet;
 import net.fabricmc.fabric.api.networking.v1.ServerPlayNetworking;
 import net.lunade.camera.CameraPortConstants;
 import net.lunade.camera.component.ScopeZoomConfig;
-import net.lunade.camera.component.ScopeZoomData;
 import net.lunade.camera.registry.CameraPortDataComponents;
 import net.minecraft.network.FriendlyByteBuf;
 import net.minecraft.network.codec.StreamCodec;
@@ -28,7 +27,6 @@ import net.minecraft.network.protocol.common.custom.CustomPacketPayload;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.InteractionHand;
 import net.minecraft.world.item.ItemStack;
-import java.util.UUID;
 
 public record ChangeScopeZoomPacket(InteractionHand hand, float zoom) implements CustomPacketPayload {
 	public static final Type<ChangeScopeZoomPacket> PACKET_TYPE = CustomPacketPayload.createType(CameraPortConstants.safeString("change_scope_zoom"));
@@ -58,8 +56,6 @@ public record ChangeScopeZoomPacket(InteractionHand hand, float zoom) implements
 		if (zoomConfig == null) return;
 
 		final float clampedZoom = Math.clamp(packet.zoom, zoomConfig.minZoom(), zoomConfig.maxZoom());
-		final UUID userUUID = player.getUUID();
-		final ScopeZoomData newZoomData = new ScopeZoomData(userUUID, clampedZoom);
-		stack.set(CameraPortDataComponents.SCOPE_ZOOM_DATA, newZoomData);
+		stack.set(CameraPortDataComponents.SCOPE_ZOOM, clampedZoom);
 	}
 }

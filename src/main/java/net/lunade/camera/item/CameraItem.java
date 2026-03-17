@@ -109,7 +109,7 @@ public class CameraItem extends SpawnEggItem {
 	}
 
 	private static InteractionResult takePhotograph(Player player, ItemStack stack, boolean playsSeparateClientSound) {
-		return takePhotograph(player, stack, ScopeZoomHelper.getStoredZoom(player, stack), playsSeparateClientSound);
+		return takePhotograph(player, stack, ScopeZoomHelper.getStoredZoom(stack), playsSeparateClientSound);
 	}
 
 	private static InteractionResult takePhotograph(Player player, ItemStack stack, float captureZoom, boolean playsSeparateClientSound) {

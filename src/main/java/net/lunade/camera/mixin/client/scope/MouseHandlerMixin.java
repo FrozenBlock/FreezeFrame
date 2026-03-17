@@ -56,7 +56,6 @@ public class MouseHandlerMixin {
 			return;
 		}
 
-		if (wheel == 0) return;
 		ScopeZoomManager.adjustZoom(this.minecraft, this.minecraft.player, -wheel);
 	}
 }

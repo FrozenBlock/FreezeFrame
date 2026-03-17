@@ -20,15 +20,18 @@ package net.lunade.camera.util.client;
 import java.util.Optional;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
+import net.fabricmc.fabric.api.client.event.lifecycle.v1.ClientTickEvents;
 import net.fabricmc.fabric.api.client.networking.v1.ClientPlayNetworking;
+import net.lunade.camera.CameraPortConstants;
 import net.lunade.camera.networking.packet.ChangeScopeZoomPacket;
+import net.lunade.camera.registry.CameraPortDataComponents;
+import net.lunade.camera.util.ScopeItemHelper;
 import net.lunade.camera.util.ScopeZoomHelper;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.resources.sounds.SimpleSoundInstance;
 import net.minecraft.core.Holder;
 import net.minecraft.sounds.SoundEvent;
 import net.minecraft.util.Mth;
-import net.minecraft.world.InteractionHand;
 import net.minecraft.world.entity.player.Player;
 
 @Environment(EnvType.CLIENT)
@@ -39,6 +42,7 @@ public final class ScopeZoomManager {
 	public static final float MAX_ZOOM = ScopeZoomHelper.MAX_SUPPORTED_ZOOM;
 	private static final float DEFAULT_ZOOM_STEP = ScopeZoomHelper.SPYGLASS_DEFAULTS.zoomIncrement();
 
+	private static float previousZoom = BASE_ZOOM;
 	private static float zoom = BASE_ZOOM;
 	private static float activeMinZoom = MIN_ZOOM;
 	private static float activeMaxZoom = MAX_ZOOM;
@@ -47,8 +51,26 @@ public final class ScopeZoomManager {
 	private static Optional<Holder<SoundEvent>> activeZoomOutSound = Optional.empty();
 	private static boolean hasForcedZoom = false;
 	private static float forcedZoom = BASE_ZOOM;
+	private static int ticksSinceSynced = -1;
 
 	private ScopeZoomManager() {
+	}
+
+	public static void init() {
+		ClientTickEvents.END_CLIENT_TICK.register(ScopeZoomManager::tick);
+	}
+
+	private static void tick(Minecraft minecraft) {
+		previousZoom = zoom;
+		if (ticksSinceSynced >= 4) {
+			ticksSinceSynced = -1;
+			if (minecraft.player != null && ScopeItemHelper.isPlayerUsingScopeItem(minecraft.player)) {
+				ClientPlayNetworking.send(new ChangeScopeZoomPacket(minecraft.player.getUsedItemHand(), zoom));
+				CameraPortConstants.log("Synced scope zoom", CameraPortConstants.UNSTABLE_LOGGING);
+			}
+		}
+
+		if (ticksSinceSynced >= 0) ticksSinceSynced += 1;
 	}
 
 	public static float getZoom() {
@@ -57,6 +79,8 @@ public final class ScopeZoomManager {
 
 	public static void resetZoom() {
 		zoom = BASE_ZOOM;
+		previousZoom = zoom;
+		ticksSinceSynced = -1;
 	}
 
 	public static void setActiveZoomProfile(float minZoom, float maxZoom, Optional<Holder<SoundEvent>> zoomInSound, Optional<Holder<SoundEvent>> zoomOutSound) {
@@ -68,8 +92,10 @@ public final class ScopeZoomManager {
 			activeMaxZoom = previousMin;
 		}
 		zoom = Mth.clamp(zoom, activeMinZoom, activeMaxZoom);
+		previousZoom = zoom;
 		activeZoomInSound = zoomInSound;
 		activeZoomOutSound = zoomOutSound;
+		ticksSinceSynced = -1;
 	}
 
 	public static void resetActiveZoomProfile() {
@@ -100,7 +126,7 @@ public final class ScopeZoomManager {
 	public static boolean adjustZoom(Minecraft minecraft, Player player, int wheelDirection) {
 		if (wheelDirection == 0) return false;
 
-		final float previousZoom = zoom;
+		final float initalZoom = zoom;
 		final boolean increase = wheelDirection < 0;
 		if (!increase) {
 			zoom = Mth.clamp(zoom - activeZoomStep, activeMinZoom, activeMaxZoom);
@@ -108,14 +134,14 @@ public final class ScopeZoomManager {
 			zoom = Mth.clamp(zoom + activeZoomStep, activeMinZoom, activeMaxZoom);
 		}
 
-		if (previousZoom != zoom) {
+		if (initalZoom != zoom) {
 			final float zoomProgress = zoom / activeMaxZoom;
 			final Optional<Holder<SoundEvent>> zoomSound = increase ? activeZoomInSound : activeZoomOutSound;
 			zoomSound.ifPresent(soundEventHolder -> minecraft.getSoundManager().play(SimpleSoundInstance.forUI(soundEventHolder.value(), 0.9F + zoomProgress)));
-			final InteractionHand hand = player.getUsedItemHand();
-			ClientPlayNetworking.send(new ChangeScopeZoomPacket(hand, zoom));
+			player.getUseItem().set(CameraPortDataComponents.SCOPE_ZOOM, zoomProgress);
+			if (previousZoom == initalZoom) ticksSinceSynced = 0;
 		}
 
-		return previousZoom != zoom;
+		return initalZoom != zoom;
 	}
 }

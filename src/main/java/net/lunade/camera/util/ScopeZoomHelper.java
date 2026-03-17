@@ -18,16 +18,13 @@
 package net.lunade.camera.util;
 
 import java.util.Optional;
-import java.util.UUID;
 import net.lunade.camera.component.ScopeZoomConfig;
-import net.lunade.camera.component.ScopeZoomData;
 import net.lunade.camera.registry.CameraPortDataComponents;
 import net.lunade.camera.registry.CameraPortSounds;
 import net.minecraft.core.Holder;
 import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.sounds.SoundEvent;
 import net.minecraft.util.Mth;
-import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.ItemStack;
 import org.jspecify.annotations.Nullable;
 
@@ -84,13 +81,9 @@ public final class ScopeZoomHelper {
 		return resolveZoomConfig(stack).zoomOutSound();
 	}
 
-	public static float getStoredZoom(Player player, ItemStack stack) {
+	public static float getStoredZoom(ItemStack stack) {
 		final ScopeZoomConfig config = resolveZoomConfig(stack);
-		final UUID currentUUID = player.getUUID();
-		final ScopeZoomData zoomData = stack.get(CameraPortDataComponents.SCOPE_ZOOM_DATA);
-		final float stored = zoomData == null || !zoomData.lastUserUUID().equals(currentUUID) ? config.defaultZoom() : zoomData.zoom();
-
-		return stored;
+		return stack.getOrDefault(CameraPortDataComponents.SCOPE_ZOOM, config.defaultZoom());
 	}
 
 	public static float toFovModifier(float zoomFactor) {

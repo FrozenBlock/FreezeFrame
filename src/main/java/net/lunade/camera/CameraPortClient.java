@@ -36,6 +36,7 @@ import net.lunade.camera.component.tooltip.client.ClientPhotographTooltip;
 import net.lunade.camera.networking.CameraPortClientNetworking;
 import net.lunade.camera.registry.CameraPortEntityTypes;
 import net.lunade.camera.registry.CameraPortScreens;
+import net.lunade.camera.util.client.ScopeZoomManager;
 import net.minecraft.client.model.geom.ModelLayerLocation;
 import net.minecraft.client.renderer.entity.EntityRenderers;
 
@@ -53,6 +54,7 @@ public class CameraPortClient implements ClientModInitializer {
 
 		CameraPortScreens.init();
 		ScopeAndCameraUseController.init();
+		ScopeZoomManager.init();
 
 		CameraPortClientNetworking.init();
 

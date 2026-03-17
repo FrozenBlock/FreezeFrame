@@ -25,7 +25,6 @@ import net.lunade.camera.component.CameraContents;
 import net.lunade.camera.component.FilmContents;
 import net.lunade.camera.component.Photograph;
 import net.lunade.camera.component.ScopeZoomConfig;
-import net.lunade.camera.component.ScopeZoomData;
 import net.lunade.camera.component.WritablePortfolioContent;
 import net.lunade.camera.util.ScopeZoomHelper;
 import net.minecraft.core.Registry;
@@ -55,9 +54,9 @@ public class CameraPortDataComponents {
 		"writable_portfolio_content",
 		builder -> builder.persistent(WritablePortfolioContent.CODEC).networkSynchronized(WritablePortfolioContent.STREAM_CODEC)
 	);
-	public static final DataComponentType<ScopeZoomData> SCOPE_ZOOM_DATA = register(
-		"scope_zoom_data",
-		builder -> builder.persistent(ScopeZoomData.CODEC).networkSynchronized(ScopeZoomData.STREAM_CODEC)
+	public static final DataComponentType<Float> SCOPE_ZOOM = register(
+		"scope_zoom",
+		builder -> builder.persistent(Codec.FLOAT).networkSynchronized(ByteBufCodecs.FLOAT)
 	);
 	public static final DataComponentType<ScopeZoomConfig> SCOPE_ZOOM_CONFIG = register(
 		"scope_zoom_config",
