@@ -152,6 +152,12 @@ public class TripodCamera extends Mob {
 		return InteractionResult.PASS;
 	}
 
+	@Override
+	public void stopSeenByPlayer(ServerPlayer player) {
+		super.stopSeenByPlayer(player);
+		if (this.photographer.matches(player)) this.photographer = null;
+	}
+
 	public float getMaxHeight() {
 		return 1.75F;
 	}
