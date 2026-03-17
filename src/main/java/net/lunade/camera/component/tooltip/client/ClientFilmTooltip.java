@@ -98,6 +98,7 @@ public class ClientFilmTooltip implements ClientTooltipComponent {
 		this.emptyDescription = Component.translatable(FILM_EMPTY_DESCRIPTION_KEY, this.maxPhotographs);
 
 		this.hidePhotographPreviewAndInfo = CameraPortConfig.HIDE_FILM_PHOTO_PREVIEW_AND_INFO.get();
+		contents.photographs().forEach(component -> PhotographLoader.getAndLoadPhotograph(component.identifier()));
 	}
 
 	@Override
@@ -247,7 +248,6 @@ public class ClientFilmTooltip implements ClientTooltipComponent {
 		return DateFormat.getDateTimeInstance(DateFormat.SHORT, DateFormat.SHORT).format(date);
 	}
 
-	@Nullable
 	private static Component getProgressBarFillText(Fraction weight, int photographCount, int maxPhotographs) {
 		if (weight.compareTo(Fraction.ZERO) == 0) return FILM_EMPTY_TEXT;
 		if (weight.compareTo(Fraction.ONE) >= 0) return FILM_FULL_TEXT;

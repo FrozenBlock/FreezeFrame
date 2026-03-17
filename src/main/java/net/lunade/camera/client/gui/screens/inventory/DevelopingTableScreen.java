@@ -24,6 +24,7 @@ import net.fabricmc.api.Environment;
 import net.fabricmc.fabric.api.client.networking.v1.ClientPlayNetworking;
 import net.lunade.camera.CameraPortConstants;
 import net.lunade.camera.client.photograph.PhotographHoverTooltipRenderer;
+import net.lunade.camera.client.photograph.PhotographLoader;
 import net.lunade.camera.client.photograph.PhotographRenderer;
 import net.lunade.camera.component.FilmContents;
 import net.lunade.camera.component.Photograph;
@@ -555,6 +556,7 @@ public class DevelopingTableScreen extends AbstractContainerScreen<DevelopingTab
 			this.middlePhotograph = this.getFilmPhotograph(this.photographIndex);
 			this.rightPhotograph = this.getFilmPhotograph(this.photographIndex + 1);
 			this.leftPhotograph = this.getFilmPhotograph(this.photographIndex - 1);
+			if (this.filmContents != null) this.filmContents.photographs().forEach(photograph -> PhotographLoader.getAndLoadPhotograph(photograph.identifier()));
 		}
 	}
 }

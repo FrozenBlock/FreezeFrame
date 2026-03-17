@@ -87,9 +87,7 @@ public class FilmItem extends Item {
 
 	@Override
 	public void inventoryTick(ItemStack stack, ServerLevel level, Entity entity, EquipmentSlot equipmentSlot) {
-		if (needsStackingRefresh(stack)) {
-			refreshStackingState(stack);
-		}
+		if (needsStackingRefresh(stack)) refreshStackingState(stack);
 	}
 
 	@Override

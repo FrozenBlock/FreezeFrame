@@ -29,6 +29,7 @@ import net.fabricmc.api.Environment;
 import net.fabricmc.fabric.api.client.networking.v1.ClientPlayNetworking;
 import net.lunade.camera.CameraPortConstants;
 import net.lunade.camera.client.photograph.PhotographHoverTooltipRenderer;
+import net.lunade.camera.client.photograph.PhotographLoader;
 import net.lunade.camera.client.photograph.PhotographRenderer;
 import net.lunade.camera.component.FilmContents;
 import net.lunade.camera.component.Photograph;
@@ -528,6 +529,7 @@ public class FilmScreen extends Screen {
 			this.selectedPhotographIndex = 0;
 			this.filmMaxPhotographs = FilmContents.BASE_MAX_PHOTOGRAPHS;
 		}
+		this.photographs.forEach(photograph -> PhotographLoader.getAndLoadPhotograph(photograph.identifier()));
 	}
 
 	private void setupOrClearFilmPhotographDisplays() {
