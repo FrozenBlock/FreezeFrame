@@ -45,8 +45,6 @@ public class CameraMixin {
 	@Nullable
 	private Entity entity;
 
-
-
 	@ModifyReturnValue(method = "isDetached", at = @At("RETURN"))
 	public boolean cameraPort$isDetached(boolean original) {
 		return original && !CameraScreenshotManager.isScreenshotting();

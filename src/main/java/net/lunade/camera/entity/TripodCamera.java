@@ -17,11 +17,18 @@
 
 package net.lunade.camera.entity;
 
+import net.frozenblock.lib.sound.impl.networking.FrozenLibSoundPackets;
+import net.lunade.camera.component.CameraContents;
+import net.lunade.camera.item.CameraItem;
 import net.lunade.camera.networking.packet.CameraTakeScreenshotPacket;
+import net.lunade.camera.registry.CameraPortDataComponents;
 import net.lunade.camera.registry.CameraPortSounds;
+import net.minecraft.core.component.DataComponentGetter;
+import net.minecraft.core.component.DataComponentType;
 import net.minecraft.core.component.DataComponents;
 import net.minecraft.core.particles.ItemParticleOption;
 import net.minecraft.core.particles.ParticleTypes;
+import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.network.syncher.EntityDataAccessor;
 import net.minecraft.network.syncher.EntityDataSerializers;
 import net.minecraft.network.syncher.SynchedEntityData;
@@ -40,7 +47,7 @@ import net.minecraft.world.entity.EntityDimensions;
 import net.minecraft.world.entity.EntityEvent;
 import net.minecraft.world.entity.EntityReference;
 import net.minecraft.world.entity.EntityType;
-import net.minecraft.world.entity.LivingEntity;
+import net.minecraft.world.entity.LightningBolt;
 import net.minecraft.world.entity.Mob;
 import net.minecraft.world.entity.Pose;
 import net.minecraft.world.entity.ai.attributes.AttributeSupplier;
@@ -54,10 +61,12 @@ import net.minecraft.world.level.gameevent.GameEvent;
 import net.minecraft.world.level.gamerules.GameRules;
 import net.minecraft.world.level.storage.ValueInput;
 import net.minecraft.world.level.storage.ValueOutput;
-import org.jetbrains.annotations.NotNull;
+import net.minecraft.world.phys.Vec3;
+import org.jspecify.annotations.Nullable;
 
 public class TripodCamera extends Mob {
 	private static final EntityDataAccessor<Float> TRACKED_HEIGHT = SynchedEntityData.defineId(TripodCamera.class, EntityDataSerializers.FLOAT);
+	private CameraContents cameraContents = CameraContents.EMPTY;
 	private EntityReference<Player> photographer = null;
 	public long lastHit;
 	private long photographAtTick;
@@ -65,19 +74,12 @@ public class TripodCamera extends Mob {
 	public float timer;
 	private boolean goingUp = false;
 
-	public TripodCamera(EntityType<? extends Mob> type, Level level) {
+	public TripodCamera(EntityType<? extends TripodCamera> type, Level level) {
 		super(type, level);
-		this.setPersistenceRequired();
-		this.getNavigation().setCanFloat(false);
 	}
 
 	public static AttributeSupplier.Builder createTripodCameraAttributes() {
-		return LivingEntity.createLivingAttributes()
-			.add(Attributes.FOLLOW_RANGE, 80D)
-			.add(Attributes.ATTACK_KNOCKBACK)
-			.add(Attributes.MOVEMENT_SPEED, 0D)
-			.add(Attributes.KNOCKBACK_RESISTANCE, 100D)
-			.add(Attributes.STEP_HEIGHT, 0D);
+		return createMobAttributes().add(Attributes.STEP_HEIGHT, 0D);
 	}
 
 	@Override
@@ -95,6 +97,28 @@ public class TripodCamera extends Mob {
 	public void onSyncedDataUpdated(EntityDataAccessor<?> accessor) {
 		super.onSyncedDataUpdated(accessor);
 		if (accessor == TRACKED_HEIGHT) this.refreshDimensions();
+	}
+
+	@Nullable
+	@Override
+	public <T> T get(DataComponentType<? extends T> type) {
+		if (type == CameraPortDataComponents.CAMERA_CONTENTS) return castComponentValue(type, this.cameraContents);
+		return super.get(type);
+	}
+
+	@Override
+	protected void applyImplicitComponents(DataComponentGetter components) {
+		this.applyImplicitComponentIfPresent(components, CameraPortDataComponents.CAMERA_CONTENTS);
+		super.applyImplicitComponents(components);
+	}
+
+	@Override
+	protected <T> boolean applyImplicitComponent(final DataComponentType<T> type, final T value) {
+		if (type == CameraPortDataComponents.CAMERA_CONTENTS) {
+			this.cameraContents = castComponentValue(CameraPortDataComponents.CAMERA_CONTENTS, value);
+			return true;
+		}
+		return super.applyImplicitComponent(type, value);
 	}
 
 	@Override
@@ -117,14 +141,40 @@ public class TripodCamera extends Mob {
 
 			this.photographer = null;
 			this.photographAtTick = 0L;
-			level.playSound(photographer, this.getX(), this.getY(), this.getZ(), CameraPortSounds.CAMERA_SNAP, this.getSoundSource(), 0.5F, 1F);
-			// TODO: film & photographer
-			CameraTakeScreenshotPacket.sendTo(photographer, this, "");
+
+			boolean isSuccess = true;
+			final String fileName = CameraItem.makeFileName(photographer);
+			final CameraContents cameraContents = CameraItem.addPhotograph(this.cameraContents, photographer, fileName);
+			if (cameraContents == null || cameraContents == this.cameraContents) isSuccess = false;
+
+			final float pitch = isSuccess ? 0.95F + level.getRandom().nextFloat() * 0.1F : 0.8F + level().getRandom().nextFloat() * 0.4F;
+			if (!this.isSilent()) {
+				level.playSound(
+					photographer,
+					this.getX(), this.getY(), this.getZ(),
+					isSuccess ? CameraPortSounds.CAMERA_SNAP : CameraPortSounds.CAMERA_SNAP_FAIL,
+					this.getSoundSource(),
+					0.5F,
+					pitch
+				);
+			}
+			FrozenLibSoundPackets.createAndSendLocalPlayerSound(
+				photographer,
+				BuiltInRegistries.SOUND_EVENT.wrapAsHolder(isSuccess ? CameraPortSounds.CAMERA_SNAP : CameraPortSounds.CAMERA_SNAP_FAIL),
+				0.5F,
+				pitch
+			);
+
+			if (isSuccess) {
+				CameraTakeScreenshotPacket.sendTo(photographer, this, fileName);
+				this.setComponent(CameraPortDataComponents.CAMERA_CONTENTS, cameraContents);
+			}
 		}
 	}
 
 	@Override
-	protected InteractionResult mobInteract(Player player, InteractionHand hand) {
+	public InteractionResult interact(Player player, InteractionHand hand, Vec3 location) {
+		if (player.isSpectator()) return InteractionResult.SUCCESS;
 		if (this.level().isClientSide()) return InteractionResult.SUCCESS;
 
 		if (player.isShiftKeyDown()) {
@@ -143,19 +193,66 @@ public class TripodCamera extends Mob {
 				return InteractionResult.SUCCESS;
 			}
 		} else if (this.photographAtTick == 0) {
+			if (this.cameraContents.isEmpty() && this.tryInsertItem(player.getItemInHand(hand))) {
+				CameraItem.playInsertSound(this);
+				return InteractionResult.SUCCESS;
+			} else if (!this.cameraContents.hasSpaceForPhotograph() && this.tryTakeItem(player, hand)) {
+				CameraItem.playRemoveOneSound(this);
+				return InteractionResult.SUCCESS;
+			}
+
+			final ItemStack pickResult = this.getPickResult();
+			if (!this.cameraContents.hasSpaceForPhotograph() || (pickResult != null && player.getCooldowns().isOnCooldown(pickResult))) {
+				this.playSound(CameraPortSounds.CAMERA_PRIME_FAIL, this.getSoundVolume(), 0.9F + this.level().getRandom().nextFloat() * 0.2F);
+				return InteractionResult.FAIL;
+			}
+
+			CameraItem.setAllCamerasOnCooldown(player, 60);
 			this.photographer = EntityReference.of(player);
 			this.photographAtTick = this.level().getGameTime() + 60L;
 			this.level().broadcastEntityEvent(this, EntityEvent.TENDRILS_SHIVER);
-			this.playSound(CameraPortSounds.CAMERA_PRIME, this.getSoundVolume(), this.getVoicePitch());
+			this.playSound(CameraPortSounds.CAMERA_PRIME, this.getSoundVolume(), this.getVoicePitch() + 0.2F);
 			return InteractionResult.SUCCESS;
+		} else {
+			this.playSound(CameraPortSounds.CAMERA_ALREADY_PRIMED, this.getSoundVolume(), 0.8F + this.level().getRandom().nextFloat() * 0.4F);
 		}
-		return InteractionResult.PASS;
+
+		return super.interact(player, hand, location);
+	}
+
+	public boolean tryInsertItem(ItemStack other) {
+		if (other.isEmpty()) return false;
+
+		final CameraContents initialContents = this.get(CameraPortDataComponents.CAMERA_CONTENTS);
+		if (initialContents == null) return false;
+
+		final CameraContents.Mutable contents = new CameraContents.Mutable(initialContents);
+		if (contents.tryInsert(other) <= 0) return false;
+
+		this.setComponent(CameraPortDataComponents.CAMERA_CONTENTS, contents.toImmutable());
+		return true;
+	}
+
+	public boolean tryTakeItem(Player player, InteractionHand hand) {
+		final ItemStack heldStack = player.getItemInHand(hand);
+		if (!heldStack.isEmpty()) return false;
+
+		final CameraContents initialContents = this.get(CameraPortDataComponents.CAMERA_CONTENTS);
+		if (initialContents == null) return false;
+
+		final CameraContents.Mutable contents = new CameraContents.Mutable(initialContents);
+		final ItemStack removed = contents.removeOne();
+		if (removed == null) return false;
+
+		player.setItemInHand(hand, removed);
+		this.setComponent(CameraPortDataComponents.CAMERA_CONTENTS, contents.toImmutable());
+		return true;
 	}
 
 	@Override
 	public void stopSeenByPlayer(ServerPlayer player) {
 		super.stopSeenByPlayer(player);
-		if (this.photographer.matches(player)) this.photographer = null;
+		if (this.photographer != null && this.photographer.matches(player)) this.photographer = null;
 	}
 
 	public float getMaxHeight() {
@@ -202,9 +299,9 @@ public class TripodCamera extends Mob {
 			return false;
 		}
 
-		boolean canBreak = source.is(DamageTypeTags.CAN_BREAK_ARMOR_STAND);
-		boolean alwaysKills = source.is(DamageTypeTags.ALWAYS_KILLS_ARMOR_STANDS);
-		if (!canBreak && !alwaysKills) return false;
+		boolean allowIncrementalBreaking = source.is(DamageTypeTags.CAN_BREAK_ARMOR_STAND);
+		boolean shouldKill = source.is(DamageTypeTags.ALWAYS_KILLS_ARMOR_STANDS);
+		if (!allowIncrementalBreaking && !shouldKill) return false;
 
 		if (source.getEntity() instanceof Player player && !player.getAbilities().mayBuild) return false;
 
@@ -215,11 +312,11 @@ public class TripodCamera extends Mob {
 			return true;
 		}
 
-		long gameTime = level.getGameTime();
-		if (gameTime - this.lastHit > 5L && !alwaysKills) {
+		long time = level.getGameTime();
+		if (time - this.lastHit > 5L && !shouldKill) {
 			level.broadcastEntityEvent(this, EntityEvent.ARMORSTAND_WOBBLE);
 			this.gameEvent(GameEvent.ENTITY_DAMAGE, source.getEntity());
-			this.lastHit = gameTime;
+			this.lastHit = time;
 		} else {
 			this.brokenByPlayer(level, source);
 			this.showBreakingParticles();
@@ -245,9 +342,9 @@ public class TripodCamera extends Mob {
 		);
 	}
 
-	private void causeDamage(ServerLevel level, DamageSource source, float amount) {
+	private void causeDamage(ServerLevel level, DamageSource source, float dmg) {
 		float health = this.getHealth();
-		health -= amount;
+		health -= dmg;
 		if (health <= 0.5F) {
 			this.brokenByAnything(level, source);
 			this.kill(level);
@@ -258,9 +355,9 @@ public class TripodCamera extends Mob {
 	}
 
 	private void brokenByPlayer(ServerLevel level, DamageSource source) {
-		ItemStack itemStack = this.getPickResult();
-		itemStack.set(DataComponents.CUSTOM_NAME, this.getCustomName());
-		Block.popResource(this.level(), this.blockPosition(), itemStack);
+		final ItemStack pickResult = this.getPickResult();
+		pickResult.set(DataComponents.CUSTOM_NAME, this.getCustomName());
+		Block.popResource(this.level(), this.blockPosition(), pickResult);
 		this.brokenByAnything(level, source);
 	}
 
@@ -309,12 +406,31 @@ public class TripodCamera extends Mob {
 	}
 
 	@Override
+	public boolean skipAttackInteraction(Entity source) {
+		return source instanceof Player player && !this.level().mayInteract(player, this.blockPosition());
+	}
+
+	@Override
+	public void thunderHit(ServerLevel level, LightningBolt lightningBolt) {
+	}
+
+	@Override
+	public boolean attackable() {
+		return false;
+	}
+
+	@Override
 	public void doPush(Entity entity) {
 	}
 
 	@Override
-	protected float getJumpPower() {
-		return 0F;
+	@Nullable
+	public ItemStack getPickResult() {
+		final ItemStack stack = super.getPickResult();
+		if (stack == null) return stack;
+		final CameraContents cameraContents = this.get(CameraPortDataComponents.CAMERA_CONTENTS);
+		if (cameraContents != null) stack.set(CameraPortDataComponents.CAMERA_CONTENTS, cameraContents);
+		return stack;
 	}
 
 	@Override
@@ -322,7 +438,6 @@ public class TripodCamera extends Mob {
 		return false;
 	}
 
-	@NotNull
 	@Override
 	public Fallsounds getFallSounds() {
 		return new Fallsounds(CameraPortSounds.CAMERA_FALL, CameraPortSounds.CAMERA_FALL);
@@ -349,15 +464,11 @@ public class TripodCamera extends Mob {
 	}
 
 	@Override
-	protected void customServerAiStep(ServerLevel level) {
-		super.customServerAiStep(level);
-	}
-
-	@Override
 	public void addAdditionalSaveData(ValueOutput output) {
 		super.addAdditionalSaveData(output);
 		output.putFloat("CurrentHeight", this.getTrackedHeight());
 		output.putBoolean("HeightAdjustmentMovesUp", this.goingUp);
+		output.store("CameraContents", CameraContents.CODEC, this.cameraContents);
 	}
 
 	@Override
@@ -365,6 +476,7 @@ public class TripodCamera extends Mob {
 		super.readAdditionalSaveData(input);
 		this.setTrackedHeight(input.getFloatOr("CurrentHeight", 1.75F));
 		this.goingUp = input.getBooleanOr("HeightAdjustmentMovesUp", false);
+		this.cameraContents = input.read("CameraContents", CameraContents.CODEC).orElse(CameraContents.EMPTY);
 	}
 
 	public float getLerpedTimer(float partialTicks) {

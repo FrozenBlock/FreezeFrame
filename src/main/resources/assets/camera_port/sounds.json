@@ -37,7 +37,24 @@
   "entity.camera.prime": {
     "subtitle": "subtitle.entity.camera.prime",
     "sounds": [
-      "camera_port:camera/prime"
+      "camera_port:camera/prime1",
+      "camera_port:camera/prime2",
+      "camera_port:camera/prime3"
+    ]
+  },
+  "entity.camera.already_primed": {
+    "subtitle": "subtitle.item.camera.already_primed",
+    "sounds": [
+      "camera_port:camera/snap_fail1",
+      "camera_port:camera/snap_fail2",
+      "camera_port:camera/snap_fail3"
+    ]
+  },
+  "entity.camera.prime_fail": {
+    "subtitle": "subtitle.entity.camera.prime_fail",
+    "sounds": [
+      "camera_port:camera/prime_fail1",
+      "camera_port:camera/prime_fail2"
     ]
   },
   "entity.camera.adjust": {
@@ -82,13 +99,6 @@
     "sounds": [
       "camera_port:camera/film_take1",
       "camera_port:camera/film_take2"
-    ]
-  },
-  "item.camera.remove_one_fail": {
-    "subtitle": "subtitle.item.camera.remove_one_fail",
-    "sounds": [
-      "camera_port:camera/film_take_fail1",
-      "camera_port:camera/film_take_fail2"
     ]
   },
   "item.camera.zoom_increase": {

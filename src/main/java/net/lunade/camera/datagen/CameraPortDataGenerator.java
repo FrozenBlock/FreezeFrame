@@ -28,12 +28,11 @@ import net.lunade.camera.datagen.tag.CameraPortBlockTagProvider;
 import net.lunade.camera.datagen.tag.CameraPortEntityTagProvider;
 import net.lunade.camera.datagen.tag.CameraPortItemTagProvider;
 import net.minecraft.core.RegistrySetBuilder;
-import org.jetbrains.annotations.NotNull;
 
 public final class CameraPortDataGenerator implements DataGeneratorEntrypoint {
 
 	@Override
-	public void onInitializeDataGenerator(@NotNull FabricDataGenerator dataGenerator) {
+	public void onInitializeDataGenerator(FabricDataGenerator dataGenerator) {
 		FeatureFlagApi.rebuild();
 		final FabricDataGenerator.Pack pack = dataGenerator.createPack();
 
@@ -51,11 +50,11 @@ public final class CameraPortDataGenerator implements DataGeneratorEntrypoint {
 	}
 
 	@Override
-	public void buildRegistry(@NotNull RegistrySetBuilder registryBuilder) {
+	public void buildRegistry(RegistrySetBuilder registryBuilder) {
 	}
 
 	@Override
-	public @NotNull String getEffectiveModId() {
+	public String getEffectiveModId() {
 		return CameraPortConstants.MOD_ID;
 	}
 }

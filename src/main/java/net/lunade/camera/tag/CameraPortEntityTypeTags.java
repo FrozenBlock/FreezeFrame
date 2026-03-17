@@ -17,16 +17,15 @@
 
 package net.lunade.camera.tag;
 
-
 import net.lunade.camera.CameraPortConstants;
 import net.minecraft.core.registries.Registries;
 import net.minecraft.tags.TagKey;
 import net.minecraft.world.entity.EntityType;
 
-public final class CameraPortEntityTags {
+public final class CameraPortEntityTypeTags {
 	public static final TagKey<EntityType<?>> CAMERAS = bind("cameras");
 
-	private CameraPortEntityTags() {
+	private CameraPortEntityTypeTags() {
 		throw new UnsupportedOperationException("CameraPortEntityTags contains only static declarations.");
 	}
 

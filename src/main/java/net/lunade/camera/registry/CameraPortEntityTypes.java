@@ -35,7 +35,7 @@ public class CameraPortEntityTypes {
 		EntityType.Builder.of(TripodCamera::new, MobCategory.MISC)
 			.sized(0.6F, 1.75F)
 			.eyeHeight(1.619999999999999F)
-			.clientTrackingRange(8)
+			.clientTrackingRange(10)
 	);
 
 	public static final EntityType<DiscCamera> DISC_CAMERA = register(
@@ -43,7 +43,7 @@ public class CameraPortEntityTypes {
 		EntityType.Builder.of(DiscCamera::new, MobCategory.MISC)
 			.sized(0.55F, 0.9F)
 			.eyeHeight(0.81F)
-			.clientTrackingRange(8)
+			.clientTrackingRange(10)
 	);
 
 	public static void init() {

@@ -30,7 +30,6 @@ public class CameraPortSounds {
 	public static final SoundEvent CAMERA_INSERT = register("item.camera.insert");
 	public static final SoundEvent CAMERA_INSERT_FAIL = register("item.camera.insert_fail");
 	public static final SoundEvent CAMERA_REMOVE_ONE = register("item.camera.remove_one");
-	public static final SoundEvent CAMERA_REMOVE_ONE_FAIL = register("item.camera.remove_one_fail");
 	public static final SoundEvent CAMERA_ZOOM_INCREASE = register("item.camera.zoom_increase");
 	public static final SoundEvent CAMERA_ZOOM_DECREASE = register("item.camera.zoom_decrease");
 
@@ -42,6 +41,8 @@ public class CameraPortSounds {
 	public static final SoundEvent CAMERA_HIT = register("entity.camera.hit");
 	public static final SoundEvent CAMERA_PLACE = register("entity.camera.place");
 	public static final SoundEvent CAMERA_PRIME = register("entity.camera.prime");
+	public static final SoundEvent CAMERA_ALREADY_PRIMED = register("entity.camera.already_primed");
+	public static final SoundEvent CAMERA_PRIME_FAIL = register("entity.camera.prime_fail");
 	public static final SoundEvent CAMERA_ADJUST = register("entity.camera.adjust");
 
 	public static final SoundEvent DEVELOPING_TABLE_TAKE_RESULT = register("ui.developing_table.take_result");

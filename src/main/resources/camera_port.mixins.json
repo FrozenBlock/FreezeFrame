@@ -6,9 +6,12 @@
   "mixins": [
     "camera.AbstractContainerMenuMixin",
     "camera.ContainerComponentManipulatorsMixin",
+    "camera.GoatAiMixin",
     "camera.ItemStackMixin",
     "camera.LivingEntityMixin",
+    "camera.NautilusAiMixin",
     "camera.PlayerMixin",
+    "camera.WolfMixin",
     "film.AbstractContainerMenuMixin"
   ],
   "client": [
@@ -20,13 +23,13 @@
     "client.camera.ItemInHandRendererMixin",
     "client.camera.LevelRendererMixin",
     "client.camera.MinecraftMixin",
-    "client.scope.MouseHandlerMixin",
     "client.camera.ScreenEffectRendererMixin",
     "client.film.AbstractContainerScreenMixin",
     "client.film.RangeSelectItemModelPropertiesMixin",
     "client.photograph.ItemFrameRendererMixin",
     "client.photograph.ItemInHandRendererMixin",
-    "client.photograph.NativeImageMixin"
+    "client.photograph.NativeImageMixin",
+    "client.scope.MouseHandlerMixin"
   ],
   "injectors": {
     "defaultRequire": 1

@@ -39,7 +39,6 @@ public record WritablePortfolioContent(List<ItemStack> pages) implements Portfol
 		.apply(ByteBufCodecs.list(MAX_PAGES))
 		.map(WritablePortfolioContent::new, WritablePortfolioContent::pages);
 
-
 	@Override
 	public WritablePortfolioContent withReplacedPages(List<ItemStack> newPages) {
 		return new WritablePortfolioContent(newPages);

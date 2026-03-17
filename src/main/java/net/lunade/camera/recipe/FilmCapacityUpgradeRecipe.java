@@ -30,7 +30,7 @@ import net.minecraft.world.item.crafting.RecipeSerializer;
 import net.minecraft.world.level.Level;
 
 public class FilmCapacityUpgradeRecipe extends CustomRecipe {
-	
+
 	public FilmCapacityUpgradeRecipe() {
 		super();
 	}

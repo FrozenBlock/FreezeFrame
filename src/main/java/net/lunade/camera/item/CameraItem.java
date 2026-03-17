@@ -28,10 +28,13 @@ import net.lunade.camera.component.tooltip.CameraTooltip;
 import net.lunade.camera.networking.packet.CameraTakeScreenshotPacket;
 import net.lunade.camera.registry.CameraPortDataComponents;
 import net.lunade.camera.registry.CameraPortSounds;
+import net.lunade.camera.tag.CameraPortItemTags;
 import net.lunade.camera.util.ScopeItemHelper;
 import net.lunade.camera.util.ScopeZoomHelper;
+import net.minecraft.core.Holder;
 import net.minecraft.core.component.DataComponents;
 import net.minecraft.core.registries.BuiltInRegistries;
+import net.minecraft.core.registries.Registries;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.util.ARGB;
 import net.minecraft.util.Mth;
@@ -46,6 +49,8 @@ import net.minecraft.world.inventory.AbstractContainerMenu;
 import net.minecraft.world.inventory.ClickAction;
 import net.minecraft.world.inventory.Slot;
 import net.minecraft.world.inventory.tooltip.TooltipComponent;
+import net.minecraft.world.item.Item;
+import net.minecraft.world.item.ItemCooldowns;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.ItemStackTemplate;
 import net.minecraft.world.item.ItemUseAnimation;
@@ -123,7 +128,7 @@ public class CameraItem extends SpawnEggItem {
 			return InteractionResult.FAIL;
 		}
 
-		player.getCooldowns().addCooldown(stack, 20);
+		setAllCamerasOnCooldown(player, 20);
 		if (player instanceof ServerPlayer serverPlayer) {
 			final String fileName = makeFileName(serverPlayer);
 			CameraTakeScreenshotPacket.sendToAsHandheld(serverPlayer, fileName, captureZoom);
@@ -132,6 +137,13 @@ public class CameraItem extends SpawnEggItem {
 
 		playSnapSound(player, playsSeparateClientSound);
 		return InteractionResult.SUCCESS;
+	}
+
+	public static void setAllCamerasOnCooldown(Player player, int cooldownTime) {
+		final ItemCooldowns cooldowns = player.getCooldowns();
+		for (Holder<Item> cameraItem : player.registryAccess().lookupOrThrow(Registries.ITEM).getTagOrEmpty(CameraPortItemTags.CAMERAS)) {
+			if (cameraItem.isBound()) cooldowns.addCooldown(BuiltInRegistries.ITEM.getKey(cameraItem.value()), cooldownTime);
+		}
 	}
 
 	private static Fraction getInsertedFilmWeightSafe(CameraContents contents) {
@@ -173,8 +185,6 @@ public class CameraItem extends SpawnEggItem {
 				} else {
 					playRemoveOneSound(player);
 				}
-			} else {
-				playRemoveOneFailSound(player);
 			}
 
 			self.set(CameraPortDataComponents.CAMERA_CONTENTS, contents.toImmutable());
@@ -291,20 +301,30 @@ public class CameraItem extends SpawnEggItem {
 		final CameraContents initialCameraContents = stack.get(CameraPortDataComponents.CAMERA_CONTENTS);
 		if (initialCameraContents == null) return;
 
+		final CameraContents cameraContents = addPhotograph(initialCameraContents, player, fileName);
+		if (initialCameraContents == cameraContents) return;
+
+		stack.set(CameraPortDataComponents.CAMERA_CONTENTS, cameraContents);
+		broadcastChangesOnContainerMenu(player);
+	}
+
+	@Nullable
+	public static CameraContents addPhotograph(CameraContents initialCameraContents, Player player, String fileName) {
+		if (initialCameraContents == null) return initialCameraContents;
+
 		final CameraContents.Mutable cameraContents = new CameraContents.Mutable(initialCameraContents);
 		final Optional<ItemStack> potentialFilm = cameraContents.findFirstWithSpaceForPhotograph();
-		if (potentialFilm.isEmpty()) return;
+		if (potentialFilm.isEmpty()) return initialCameraContents;
 
 		final ItemStack film = potentialFilm.get();
 		final int maxPhotographs = FilmItem.getMaxPhotographs(film);
 		final FilmContents.Mutable filmContents = new FilmContents.Mutable(film.getOrDefault(CameraPortDataComponents.FILM_CONTENTS, FilmContents.EMPTY), maxPhotographs);
 		final Photograph photograph = new Photograph(CameraPortConstants.id(fileName), player.getPlainTextName());
-		if (!filmContents.tryInsert(photograph)) return;
+		if (!filmContents.tryInsert(photograph)) return initialCameraContents;
 
 		film.set(CameraPortDataComponents.FILM_CONTENTS, filmContents.toImmutable());
 		FilmItem.refreshStackingState(film);
-		stack.set(CameraPortDataComponents.CAMERA_CONTENTS, cameraContents.toImmutable());
-		broadcastChangesOnContainerMenu(player);
+		return cameraContents.toImmutable();
 	}
 
 	private static void playSnapSound(Entity entity, boolean playsSeparateClientSound) {
@@ -339,7 +359,7 @@ public class CameraItem extends SpawnEggItem {
 		}
 	}
 
-	private static void playRemoveOneSound(Entity entity) {
+	public static void playRemoveOneSound(Entity entity) {
 		entity.playSound(
 			CameraPortSounds.CAMERA_REMOVE_ONE,
 			0.8F,
@@ -347,15 +367,7 @@ public class CameraItem extends SpawnEggItem {
 		);
 	}
 
-	private static void playRemoveOneFailSound(Entity entity) {
-		entity.playSound(
-			CameraPortSounds.CAMERA_REMOVE_ONE_FAIL,
-			0.8F,
-			0.8F + entity.level().getRandom().nextFloat() * 0.4F
-		);
-	}
-
-	private static void playInsertSound(Entity entity) {
+	public static void playInsertSound(Entity entity) {
 		entity.playSound(
 			CameraPortSounds.CAMERA_INSERT,
 			0.8F,

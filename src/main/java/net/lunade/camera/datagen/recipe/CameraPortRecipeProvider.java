@@ -35,7 +35,6 @@ import net.minecraft.tags.ItemTags;
 import net.minecraft.world.item.Items;
 import net.minecraft.world.item.crafting.Ingredient;
 import org.jetbrains.annotations.Contract;
-import org.jetbrains.annotations.NotNull;
 
 public final class CameraPortRecipeProvider extends FabricRecipeProvider {
 
@@ -85,7 +84,6 @@ public final class CameraPortRecipeProvider extends FabricRecipeProvider {
 	}
 
 	@Override
-	@NotNull
 	public String getName() {
 		return "Camera Port Recipes";
 	}
