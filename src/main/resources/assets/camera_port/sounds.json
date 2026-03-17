@@ -60,7 +60,12 @@
   "entity.camera.adjust": {
     "subtitle": "subtitle.entity.camera.adjust",
     "sounds": [
-      "minecraft:item/spyglass/use"
+      "camera_port:item/camera/zoom1",
+      "camera_port:item/camera/zoom2",
+      "camera_port:item/camera/zoom3",
+      "camera_port:item/camera/zoom4",
+      "camera_port:item/camera/zoom5",
+      "camera_port:item/camera/zoom6"
     ]
   },
 
