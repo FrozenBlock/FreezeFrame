@@ -42,7 +42,10 @@ public class CameraMixin {
 	private Minecraft minecraft;
 
 	@Shadow
-	private @Nullable Entity entity;
+	@Nullable
+	private Entity entity;
+
+
 
 	@ModifyReturnValue(method = "isDetached", at = @At("RETURN"))
 	public boolean cameraPort$isDetached(boolean original) {

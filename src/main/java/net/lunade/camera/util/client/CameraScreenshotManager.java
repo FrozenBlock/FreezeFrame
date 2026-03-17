@@ -18,6 +18,7 @@
 package net.lunade.camera.util.client;
 
 import com.mojang.blaze3d.pipeline.RenderTarget;
+import com.mojang.blaze3d.pipeline.TextureTarget;
 import com.mojang.blaze3d.platform.NativeImage;
 import com.mojang.blaze3d.platform.Window;
 import java.io.File;
@@ -51,11 +52,9 @@ import net.minecraft.ChatFormatting;
 public class CameraScreenshotManager {
 	private static final String PLAYER_UUID = Minecraft.getInstance().getGameProfile().id().toString();
 
-	private static boolean wasGuiHidden = false;
 	private static boolean possessingCamera = false;
 	private static boolean isCameraHandheld = false;
-	@Nullable
-	public static Entity previousCameraEntity = null;
+	private static RenderTarget renderTarget = null;
 
 	public static boolean isScreenshotting() {
 		return CameraScreenshotManager.possessingCamera;
@@ -75,10 +74,10 @@ public class CameraScreenshotManager {
 		if (handheldCapture) {
 			ScopeZoomManager.pushForcedZoom(zoom);
 		}
-		previousCameraEntity = minecraft.getCameraEntity();
+		final Entity previousCameraEntity = minecraft.getCameraEntity();
 		if (entity != null) minecraft.setCameraEntity(entity);
 
-		wasGuiHidden = minecraft.options.hideGui;
+		final boolean wasGuiHidden = minecraft.options.hideGui;
 		minecraft.options.hideGui = true;
 		possessingCamera = true;
 
@@ -88,7 +87,7 @@ public class CameraScreenshotManager {
 		makeSnapSoundAndSmoke: {
 			if (minecraft.level == null) break makeSnapSoundAndSmoke;
 
-			final Entity camEntity = minecraft.getCameraEntity();
+			final Entity camEntity = entity != null ? entity : minecraft.getCameraEntity();
 			if (camEntity == null) break makeSnapSoundAndSmoke;
 
 			final int smokeCount = minecraft.level.getRandom().nextInt(1, 5);
@@ -97,10 +96,7 @@ public class CameraScreenshotManager {
 			}
 		}
 
-		if (previousCameraEntity != null) {
-			minecraft.setCameraEntity(previousCameraEntity);
-			previousCameraEntity = null;
-		}
+		if (previousCameraEntity != null) minecraft.setCameraEntity(previousCameraEntity);
 
 		minecraft.options.hideGui = wasGuiHidden;
 		possessingCamera = false;
@@ -115,14 +111,13 @@ public class CameraScreenshotManager {
 		final int prevHeight = window.getHeight();
 		final GameRenderer gameRenderer = minecraft.gameRenderer;
 		final Camera camera = gameRenderer.getMainCamera();
-		final RenderTarget renderTarget = minecraft.getMainRenderTarget();
+		renderTarget = new TextureTarget("photograph", width, height, true);
 		gameRenderer.setRenderBlockOutline(false);
 
 		try {
 			if (usePanoramicMode) camera.enablePanoramicMode();
 			window.setWidth(width);
 			window.setHeight(height);
-			renderTarget.resize(width, height);
 			gameRenderer.update(DeltaTracker.ONE, true);
 			gameRenderer.extract(DeltaTracker.ONE, true);
 			gameRenderer.renderLevel(DeltaTracker.ONE);
@@ -132,7 +127,7 @@ public class CameraScreenshotManager {
 			gameRenderer.setRenderBlockOutline(true);
 			window.setWidth(prevWidth);
 			window.setHeight(prevHeight);
-			renderTarget.resize(prevWidth, prevHeight);
+			renderTarget = null;
 			if (usePanoramicMode) camera.disablePanoramicMode();
 		}
 	}
@@ -224,5 +219,10 @@ public class CameraScreenshotManager {
 			if (!file.exists()) return file;
 			++fileIndex;
 		}
+	}
+
+	@Nullable
+	public static RenderTarget getRenderTarget() {
+		return renderTarget;
 	}
 }

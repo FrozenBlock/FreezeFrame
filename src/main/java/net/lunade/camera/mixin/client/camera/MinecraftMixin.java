@@ -17,12 +17,15 @@
 
 package net.lunade.camera.mixin.client.camera;
 
+import com.llamalad7.mixinextras.injector.ModifyReturnValue;
 import com.llamalad7.mixinextras.injector.wrapoperation.Operation;
 import com.llamalad7.mixinextras.injector.wrapoperation.WrapOperation;
 import com.llamalad7.mixinextras.sugar.Local;
+import com.mojang.blaze3d.pipeline.RenderTarget;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 import net.lunade.camera.util.ScopeItemHelper;
+import net.lunade.camera.util.client.CameraScreenshotManager;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.player.LocalPlayer;
 import net.minecraft.world.InteractionHand;
@@ -71,5 +74,13 @@ public class MinecraftMixin {
 	) {
 		if (!original.call(instance, enabledFeatures)) return false;
 		return this.player == null || hand != InteractionHand.OFF_HAND || !ScopeItemHelper.isPlayerHoldingPhotoTakingCamera(this.player);
+	}
+
+	// TODO: see if this actually fixes anything with Iris.
+	@ModifyReturnValue(method = "getMainRenderTarget", at = @At("RETURN"))
+	public RenderTarget cameraPort$getMainRenderTarget(RenderTarget original) {
+		if (!CameraScreenshotManager.isScreenshotting()) return original;
+		final RenderTarget cameraTarget = CameraScreenshotManager.getRenderTarget();
+		return cameraTarget != null ? cameraTarget : original;
 	}
 }
