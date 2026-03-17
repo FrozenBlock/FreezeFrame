@@ -104,7 +104,7 @@ public class CameraScreenshotManager {
 		if (handheldCapture) ScopeZoomManager.clearForcedZoom();
 	}
 
-	public static void grabCameraScreenshot(File workDir, int width, int height, @Nullable String fileName, boolean usePanoramicMode) {
+	public static void grabCameraScreenshot(File workDir, int width, int height, @Nullable String fileName, boolean handheldCapture) {
 		final Minecraft minecraft = Minecraft.getInstance();
 		final Window window = minecraft.getWindow();
 		final int prevWidth = window.getWidth();
@@ -115,12 +115,16 @@ public class CameraScreenshotManager {
 		gameRenderer.setRenderBlockOutline(false);
 
 		try {
-			if (usePanoramicMode) camera.enablePanoramicMode();
+			camera.enablePanoramicMode();
 			window.setWidth(width);
 			window.setHeight(height);
 			gameRenderer.update(DeltaTracker.ONE, true);
 			gameRenderer.extract(DeltaTracker.ONE, true);
-			gameRenderer.render(DeltaTracker.ONE, true);
+			if (handheldCapture) {
+				gameRenderer.render(DeltaTracker.ONE, true);
+			} else {
+				gameRenderer.renderLevel(DeltaTracker.ONE);
+			}
 			grab(workDir, fileName, renderTarget, (text) -> minecraft.execute(() -> minecraft.gui.getChat().addClientSystemMessage(text)));
 		} catch (Exception ignored) {
 		} finally {
@@ -128,7 +132,7 @@ public class CameraScreenshotManager {
 			window.setWidth(prevWidth);
 			window.setHeight(prevHeight);
 			renderTarget = null;
-			if (usePanoramicMode) camera.disablePanoramicMode();
+			camera.disablePanoramicMode();
 		}
 	}
 
