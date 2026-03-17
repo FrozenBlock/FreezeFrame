@@ -95,19 +95,10 @@ public class DevelopingTableMenu extends AbstractContainerMenu {
 
 	@Override
 	public void slotsChanged(Container container) {
-		super.slotsChanged(container);
 		this.setupResultSlot();
-		this.broadcastChanges();
 	}
 
 	void setupResultSlot() {
-		if (!this.hasPaper() || !this.hasSourceItem()) {
-			this.photographIndex.set(0);
-			this.resultSlot.set(ItemStack.EMPTY);
-			this.broadcastChanges();
-			return;
-		}
-
 		final ItemStack sourceStack = this.getSourceItem();
 		ItemStack stack = ItemStack.EMPTY;
 		if (sourceStack.is(CameraPortItems.PHOTOGRAPH)) {
@@ -173,7 +164,6 @@ public class DevelopingTableMenu extends AbstractContainerMenu {
 
 		slot.onTake(player, item);
 		this.setupResultSlot();
-		this.broadcastChanges();
 
 		return clicked;
 	}
@@ -181,7 +171,7 @@ public class DevelopingTableMenu extends AbstractContainerMenu {
 	@Override
 	public void removed(Player player) {
 		super.removed(player);
-		this.resultContainer.removeItemNoUpdate(1);
+		this.resultContainer.removeItemNoUpdate(RESULT_SLOT);
 		this.access.execute((level, pos) -> this.clearContainer(player, this.inputContainer));
 	}
 
