@@ -19,7 +19,6 @@ package net.lunade.camera.entity;
 
 import net.lunade.camera.networking.packet.CameraTakeScreenshotPacket;
 import net.lunade.camera.registry.CameraPortSounds;
-import net.minecraft.core.UUIDUtil;
 import net.minecraft.core.component.DataComponents;
 import net.minecraft.core.particles.ItemParticleOption;
 import net.minecraft.core.particles.ParticleTypes;
@@ -59,9 +58,9 @@ import org.jetbrains.annotations.NotNull;
 
 public class TripodCamera extends Mob {
 	private static final EntityDataAccessor<Float> TRACKED_HEIGHT = SynchedEntityData.defineId(TripodCamera.class, EntityDataSerializers.FLOAT);
-	private static final EntityDataAccessor<Integer> TIMER = SynchedEntityData.defineId(TripodCamera.class, EntityDataSerializers.INT);
 	private EntityReference<Player> photographer = null;
 	public long lastHit;
+	private long photographAtTick;
 	public float prevTimer;
 	public float timer;
 	private boolean goingUp = false;
@@ -90,7 +89,6 @@ public class TripodCamera extends Mob {
 	protected void defineSynchedData(SynchedEntityData.Builder entityData) {
 		super.defineSynchedData(entityData);
 		entityData.define(TRACKED_HEIGHT, 1.75F);
-		entityData.define(TIMER, 0);
 	}
 
 	@Override
@@ -102,28 +100,27 @@ public class TripodCamera extends Mob {
 	@Override
 	public void tick() {
 		super.tick();
-		this.prevTimer = this.getTimer();
+		this.prevTimer = this.timer;
+		this.timer = Math.max(0, this.prevTimer -= 1);
 
 		handlePhotograph: {
-			if (!(this.level() instanceof ServerLevel level) || this.getTimer() <= 0) break handlePhotograph;
+			if (!(this.level() instanceof ServerLevel level) || this.photographAtTick == 0L) break handlePhotograph;
 
-			this.setTimer(this.getTimer() - 1);
 			if (!(EntityReference.getPlayer(this.photographer, this.level()) instanceof ServerPlayer photographer)) {
-				this.setTimer(0);
+				this.photographAtTick = 0L;
 				this.photographer = null;
 				break handlePhotograph;
 			}
 
 			this.getLookControl().setLookAt(photographer);
-			if (this.getTimer() != 1) break handlePhotograph;
+			if (level.getGameTime() < this.photographAtTick) break handlePhotograph;
 
 			this.photographer = null;
+			this.photographAtTick = 0L;
 			level.playSound(photographer, this.getX(), this.getY(), this.getZ(), CameraPortSounds.CAMERA_SNAP, this.getSoundSource(), 0.5F, 1F);
 			// TODO: film & photographer
 			CameraTakeScreenshotPacket.sendTo(photographer, this, "");
 		}
-
-		this.timer = Math.max(0, this.prevTimer -= 1);
 	}
 
 	@Override
@@ -145,9 +142,10 @@ public class TripodCamera extends Mob {
 				this.level().playSound(null, getX(), getEyeY(), getZ(), CameraPortSounds.CAMERA_ADJUST, SoundSource.NEUTRAL, this.getSoundVolume(), this.getTrackedHeight());
 				return InteractionResult.SUCCESS;
 			}
-		} else if (this.getTimer() <= 0) {
-			this.setTimer(60);
+		} else if (this.photographAtTick == 0) {
 			this.photographer = EntityReference.of(player);
+			this.photographAtTick = this.level().getGameTime() + 60L;
+			this.level().broadcastEntityEvent(this, EntityEvent.TENDRILS_SHIVER);
 			this.playSound(CameraPortSounds.CAMERA_PRIME, this.getSoundVolume(), this.getVoicePitch());
 			return InteractionResult.SUCCESS;
 		}
@@ -271,24 +269,31 @@ public class TripodCamera extends Mob {
 
 	@Override
 	public void handleEntityEvent(byte id) {
-		if (id != EntityEvent.ARMORSTAND_WOBBLE) {
-			super.handleEntityEvent(id);
+		if (id == EntityEvent.ARMORSTAND_WOBBLE) {
+			if (!this.level().isClientSide()) return;
+
+			this.level().playLocalSound(
+				this.getX(),
+				this.getY(),
+				this.getZ(),
+				CameraPortSounds.CAMERA_HIT,
+				this.getSoundSource(),
+				0.3F,
+				1F,
+				false
+			);
+			this.lastHit = this.level().getGameTime();
 			return;
 		}
 
-		if (!this.level().isClientSide()) return;
+		if (id == EntityEvent.TENDRILS_SHIVER) {
+			if (!this.level().isClientSide()) return;
+			this.timer = 60F;
+			this.prevTimer = 60F;
+			return;
+		}
 
-		this.level().playLocalSound(
-			this.getX(),
-			this.getY(),
-			this.getZ(),
-			CameraPortSounds.CAMERA_HIT,
-			this.getSoundSource(),
-			0.3F,
-			1F,
-			false
-		);
-		this.lastHit = this.level().getGameTime();
+		super.handleEntityEvent(id);
 	}
 
 	@Override
@@ -345,19 +350,15 @@ public class TripodCamera extends Mob {
 	@Override
 	public void addAdditionalSaveData(ValueOutput output) {
 		super.addAdditionalSaveData(output);
-		output.putInt("ticksToPhoto", this.getTimer());
-		if (this.photographer != null) output.store("photographer", UUIDUtil.CODEC, this.photographer.getUUID());
-		output.putFloat("currentHeight", this.getTrackedHeight());
-		output.putBoolean("goingUp", this.goingUp);
+		output.putFloat("CurrentHeight", this.getTrackedHeight());
+		output.putBoolean("HeightAdjustmentMovesUp", this.goingUp);
 	}
 
 	@Override
 	public void readAdditionalSaveData(ValueInput input) {
 		super.readAdditionalSaveData(input);
-		this.setTimer(input.getIntOr("ticksToPhoto", 0));
-		this.photographer = EntityReference.read(input, "photographer");
-		this.setTrackedHeight(input.getFloatOr("currentHeight", 1.75F));
-		this.goingUp = input.getBooleanOr("goingUp", false);
+		this.setTrackedHeight(input.getFloatOr("CurrentHeight", 1.75F));
+		this.goingUp = input.getBooleanOr("HeightAdjustmentMovesUp", false);
 	}
 
 	public float getLerpedTimer(float partialTicks) {
@@ -370,13 +371,5 @@ public class TripodCamera extends Mob {
 
 	public void setTrackedHeight(float value) {
 		this.entityData.set(TRACKED_HEIGHT, value);
-	}
-
-	public int getTimer() {
-		return this.entityData.get(TIMER);
-	}
-
-	public void setTimer(int value) {
-		this.entityData.set(TIMER, value);
 	}
 }
