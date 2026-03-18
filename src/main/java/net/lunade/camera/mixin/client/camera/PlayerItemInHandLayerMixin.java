@@ -22,10 +22,10 @@ import com.llamalad7.mixinextras.injector.wrapoperation.WrapOperation;
 import com.mojang.blaze3d.vertex.PoseStack;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
-import net.lunade.camera.client.model.object.camera.CameraPortArmPoses;
-import net.lunade.camera.tag.CameraPortItemTags;
+import net.lunade.camera.client.model.CameraPortArmPoses;
 import net.minecraft.client.model.EntityModel;
 import net.minecraft.client.model.HeadedModel;
+import net.minecraft.client.model.HumanoidModel;
 import net.minecraft.client.model.geom.ModelPart;
 import net.minecraft.client.renderer.SubmitNodeCollector;
 import net.minecraft.client.renderer.entity.layers.CustomHeadLayer;
@@ -34,6 +34,7 @@ import net.minecraft.client.renderer.entity.state.ArmedEntityRenderState;
 import net.minecraft.client.renderer.entity.state.AvatarRenderState;
 import net.minecraft.client.renderer.item.ItemStackRenderState;
 import net.minecraft.client.renderer.texture.OverlayTexture;
+import net.minecraft.util.Mth;
 import net.minecraft.world.entity.HumanoidArm;
 import net.minecraft.world.item.ItemStack;
 import org.spongepowered.asm.mixin.Mixin;
@@ -62,7 +63,8 @@ public abstract class PlayerItemInHandLayerMixin {
 		int lightCoords,
 		Operation<Void> original
 	) {
-		if ((state.rightArmPose == CameraPortArmPoses.CAMERA || state.leftArmPose == CameraPortArmPoses.CAMERA) && itemStack.is(CameraPortItemTags.CAMERAS) && arm == state.mainArm) {
+		final HumanoidModel.ArmPose armPose = arm == HumanoidArm.RIGHT ? state.rightArmPose : state.leftArmPose;
+		if (arm == state.mainArm && (armPose == CameraPortArmPoses.CAMERA || armPose == CameraPortArmPoses.CAMERA_ONE_ARM)) {
 			this.cameraPort$renderHeldCamera((AvatarRenderState) state, item, arm, poseStack, submitNodeCollector, lightCoords);
 			return;
 		}
@@ -74,13 +76,20 @@ public abstract class PlayerItemInHandLayerMixin {
 		poseStack.pushPose();
 		final EntityModel model = PlayerItemInHandLayer.class.cast(this).getParentModel();
 		model.root().translateAndRotate(poseStack);
-		ModelPart head = ((HeadedModel) model).getHead();
-		head.translateAndRotate(poseStack);
+		final ModelPart head = ((HeadedModel) model).getHead();
+		if (!state.isUsingItem) {
+			final float previousXRot = head.xRot;
+			head.xRot = Mth.clamp(previousXRot, -Mth.TWO_PI, CameraPortArmPoses.HIGHEST_LOOK_ROT);
+			head.translateAndRotate(poseStack);
+			head.xRot = previousXRot;
+		} else {
+			head.translateAndRotate(poseStack);
+		}
 		CustomHeadLayer.translateToHead(poseStack, CustomHeadLayer.Transforms.DEFAULT);
 		final boolean isLeftHand = arm == HumanoidArm.LEFT;
 		final float xOffset = state.isUsingItem ? 7.5F : 5F;
-		poseStack.translate((isLeftHand ? -xOffset : xOffset) / 16F, state.isUsingItem ? -0.125F : -0.4F, state.isUsingItem ? -0.6F : -1F);
-		poseStack.scale( 1.73913043478F, 1.73913043478F, 1.73913043478F);
+		poseStack.translate((isLeftHand ? -xOffset : xOffset) / 16F, (state.isUsingItem ? -0.125F : -0.6F), state.isUsingItem ? -0.6F : -1F);
+		poseStack.scale(1.73913043478F, 1.73913043478F, 1.73913043478F);
 		item.submit(poseStack, submitNodeCollector, lightCoords, OverlayTexture.NO_OVERLAY, state.outlineColor);
 		poseStack.popPose();
 	}

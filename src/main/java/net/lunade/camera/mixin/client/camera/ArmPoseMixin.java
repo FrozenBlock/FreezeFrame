@@ -21,7 +21,7 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
-import net.lunade.camera.client.model.object.camera.CameraPortArmPoses;
+import net.lunade.camera.client.model.CameraPortArmPoses;
 import net.minecraft.client.model.HumanoidModel;
 import org.objectweb.asm.Opcodes;
 import org.spongepowered.asm.mixin.Final;
@@ -71,6 +71,15 @@ public class ArmPoseMixin {
 		);
 		CameraPortArmPoses.CAMERA = camera;
 		armPoses.add(camera);
+
+		final var cameraOneArm = cameraPort$newArmPose(
+			"CAMERAPORTCAMERA_ONE_ARM",
+			last.ordinal() + 2,
+			false,
+			false
+		);
+		CameraPortArmPoses.CAMERA_ONE_ARM = cameraOneArm;
+		armPoses.add(cameraOneArm);
 
 		$VALUES = armPoses.toArray(new HumanoidModel.ArmPose[0]);
 	}

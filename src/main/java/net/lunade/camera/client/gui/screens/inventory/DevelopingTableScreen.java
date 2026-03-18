@@ -171,7 +171,7 @@ public class DevelopingTableScreen extends AbstractContainerScreen<DevelopingTab
 					graphics,
 					this.middlePhotograph,
 					FILM_PHOTOGRAPH_SIZE,
-					PhotographRenderer.FrameType.FILM_EMBED
+					PhotographRenderer.FrameType.NONE
 				);
 				if (hoveredOffset == 0 || hoveringResultSlot) {
 					graphics.blitSprite(
@@ -198,7 +198,7 @@ public class DevelopingTableScreen extends AbstractContainerScreen<DevelopingTab
 						graphics,
 						this.rightPhotograph,
 						FILM_PHOTOGRAPH_SIZE,
-						PhotographRenderer.FrameType.FILM_EMBED
+						PhotographRenderer.FrameType.NONE
 					);
 					if (hoveredOffset == 1) {
 						graphics.blitSprite(
@@ -222,7 +222,7 @@ public class DevelopingTableScreen extends AbstractContainerScreen<DevelopingTab
 						graphics,
 						this.leftPhotograph,
 						FILM_PHOTOGRAPH_SIZE,
-						PhotographRenderer.FrameType.FILM_EMBED
+						PhotographRenderer.FrameType.NONE
 					);
 					if (hoveredOffset == -1) {
 						graphics.blitSprite(

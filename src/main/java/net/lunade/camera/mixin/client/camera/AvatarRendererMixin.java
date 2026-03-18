@@ -19,7 +19,7 @@ package net.lunade.camera.mixin.client.camera;
 
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
-import net.lunade.camera.client.model.object.camera.CameraPortArmPoses;
+import net.lunade.camera.client.model.CameraPortArmPoses;
 import net.lunade.camera.item.CameraItem;
 import net.lunade.camera.tag.CameraPortItemTags;
 import net.minecraft.client.model.HumanoidModel;
@@ -47,7 +47,11 @@ public class AvatarRendererMixin {
 		cancellable = true
 	)
 	private static void cameraPort$setArmPoseToCamera(Avatar avatar, ItemStack itemInHand, InteractionHand hand, CallbackInfoReturnable<HumanoidModel.ArmPose> info) {
-		if (avatar.swinging || hand != InteractionHand.MAIN_HAND || !itemInHand.is(CameraPortItemTags.CAMERAS) || !CameraItem.isCapableOfTakingPhotos(itemInHand)) return;
-		info.setReturnValue(CameraPortArmPoses.CAMERA);
+		if (avatar.swinging || hand != InteractionHand.MAIN_HAND || !itemInHand.is(CameraPortItemTags.CAMERAS)) return;
+		if (CameraItem.isCapableOfTakingPhotos(itemInHand)) {
+			info.setReturnValue(CameraPortArmPoses.CAMERA);
+		} else if (avatar.isUsingItem() && avatar.getUsedItemHand() == hand) {
+			info.setReturnValue(CameraPortArmPoses.CAMERA_ONE_ARM);
+		}
 	}
 }

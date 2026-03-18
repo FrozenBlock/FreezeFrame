@@ -15,15 +15,18 @@
  * along with this program; if not, see <https://github.com/FrozenBlock/Licenses>.
  */
 
-package net.lunade.camera.client.model.object.camera;
+package net.lunade.camera.client.model;
 
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 import net.minecraft.client.model.HumanoidModel;
+import net.minecraft.util.Mth;
 
 @Environment(EnvType.CLIENT)
 public class CameraPortArmPoses {
+	public static final float HIGHEST_LOOK_ROT = Mth.HALF_PI * 0.75F;
 	public static HumanoidModel.ArmPose CAMERA;
+	public static HumanoidModel.ArmPose CAMERA_ONE_ARM;
 
 	static {
 		HumanoidModel.ArmPose.values();

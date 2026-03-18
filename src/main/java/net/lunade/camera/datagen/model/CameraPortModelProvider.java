@@ -33,6 +33,7 @@ import net.minecraft.client.data.models.model.TextureMapping;
 import net.minecraft.client.data.models.model.TextureSlot;
 import net.minecraft.client.data.models.model.TexturedModel;
 import net.minecraft.client.renderer.item.ItemModel;
+import net.minecraft.client.renderer.item.properties.conditional.IsUsingItem;
 import net.minecraft.world.item.Item;
 
 @Environment(EnvType.CLIENT)
@@ -72,6 +73,15 @@ public final class CameraPortModelProvider extends FabricModelProvider {
 	private static void generateCamera(ItemModelGenerators generator, Item camera) {
 		final ItemModel.Unbaked inactiveModel = ItemModelUtils.plainModel(ModelLocationUtils.getModelLocation(camera, "_inactive"));
 		final ItemModel.Unbaked activeModel = ItemModelUtils.plainModel(ModelLocationUtils.getModelLocation(camera, "_active"));
-		generator.generateBooleanDispatch(camera, new CanTakePhoto(), activeModel, inactiveModel);
+		generator.generateBooleanDispatch(
+			camera,
+			new CanTakePhoto(),
+			activeModel,
+			ItemModelUtils.conditional(
+				new IsUsingItem(),
+				activeModel,
+				inactiveModel
+			)
+		);
 	}
 }

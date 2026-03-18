@@ -233,7 +233,7 @@ public class FilmScreen extends Screen {
 				graphics,
 				this.middlePhotograph,
 				FILM_PHOTOGRAPH_SIZE,
-				PhotographRenderer.FrameType.FILM_EMBED
+				PhotographRenderer.FrameType.NONE
 			);
 
 			if (hoveringDeleteButton) {
@@ -259,7 +259,7 @@ public class FilmScreen extends Screen {
 					graphics,
 					this.rightPhotograph,
 					FILM_PHOTOGRAPH_SIZE,
-					PhotographRenderer.FrameType.FILM_EMBED
+					PhotographRenderer.FrameType.NONE
 				);
 				if (hoveredOffset == 1) {
 					graphics.requestCursor(CursorTypes.POINTING_HAND);
@@ -281,7 +281,7 @@ public class FilmScreen extends Screen {
 					graphics,
 					this.leftPhotograph,
 					FILM_PHOTOGRAPH_SIZE,
-					PhotographRenderer.FrameType.FILM_EMBED
+					PhotographRenderer.FrameType.NONE
 				);
 				if (hoveredOffset == -1) {
 					graphics.requestCursor(CursorTypes.POINTING_HAND);

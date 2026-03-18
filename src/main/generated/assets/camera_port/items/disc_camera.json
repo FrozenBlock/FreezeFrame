@@ -2,8 +2,16 @@
   "model": {
     "type": "minecraft:condition",
     "on_false": {
-      "type": "minecraft:model",
-      "model": "camera_port:item/disc_camera_inactive"
+      "type": "minecraft:condition",
+      "on_false": {
+        "type": "minecraft:model",
+        "model": "camera_port:item/disc_camera_inactive"
+      },
+      "on_true": {
+        "type": "minecraft:model",
+        "model": "camera_port:item/disc_camera_active"
+      },
+      "property": "minecraft:using_item"
     },
     "on_true": {
       "type": "minecraft:model",
