@@ -99,25 +99,25 @@ public abstract class ItemInHandRendererMixin {
 	) {
 		poseStack.pushPose();
 
-		float armOffset = arm == HumanoidArm.RIGHT ? 1F : -1F;
-		poseStack.translate(armOffset * 0.125F, -0.125F, 0F);
+		final float invert = arm == HumanoidArm.RIGHT ? 1F : -1F;
+		poseStack.translate(invert * 0.125F, -0.125F, 0F);
 		if (!this.minecraft.player.isInvisible()) {
 			poseStack.pushPose();
-			poseStack.mulPose(Axis.ZP.rotationDegrees(armOffset * 10F));
+			poseStack.mulPose(Axis.ZP.rotationDegrees(invert * 10F));
 			this.renderPlayerArm(poseStack, collector, lightCoords, inverseArmHeight, attackValue, arm);
 			poseStack.popPose();
 		}
 
 		poseStack.pushPose();
-		poseStack.translate(armOffset * 0.51F, -0.08F + inverseArmHeight * -1.2F, -0.75F);
-		float g = Mth.sqrt(attackValue);
-		float h = Mth.sin(g * Mth.PI);
-		float i = -0.5F * h;
-		float j = 0.4F * Mth.sin(g * (Mth.PI * 2F));
-		float k = -0.3F * Mth.sin(attackValue * Mth.PI);
-		poseStack.translate(armOffset * i, j - 0.3F * h, k);
-		poseStack.mulPose(Axis.XP.rotationDegrees(h * -45F));
-		poseStack.mulPose(Axis.YP.rotationDegrees(armOffset * h * -30F));
+		poseStack.translate(invert * 0.51F, -0.08F + inverseArmHeight * -1.2F, -0.75F);
+		final float sqrtAttackValue = Mth.sqrt(attackValue);
+		final float xSwing = Mth.sin(sqrtAttackValue * Mth.PI);
+		final float xSwingPosition = -0.5F * xSwing;
+		final float ySwingPosition = 0.4F * Mth.sin(sqrtAttackValue * (Mth.PI * 2F));
+		final float zSwingPosition = -0.3F * Mth.sin(attackValue * Mth.PI);
+		poseStack.translate(invert * xSwingPosition, ySwingPosition - 0.3F * xSwing, zSwingPosition);
+		poseStack.mulPose(Axis.XP.rotationDegrees(xSwing * -45F));
+		poseStack.mulPose(Axis.YP.rotationDegrees(invert * xSwing * -30F));
 		this.cameraPort$renderPhotograph(poseStack, collector, lightCoords, photographId);
 		poseStack.popPose();
 
@@ -128,6 +128,6 @@ public abstract class ItemInHandRendererMixin {
 	private void cameraPort$renderPhotograph(PoseStack poseStack, SubmitNodeCollector collector, int lightCoords, Identifier photographId) {
 		poseStack.mulPose(Axis.YP.rotationDegrees(180F));
 		poseStack.scale(0.38F, 0.38F, 0.38F);
-		PhotographRenderer.submit(poseStack, collector, photographId, lightCoords, PhotographRenderer.FrameType.FRAME);
+		PhotographRenderer.submit(poseStack, collector, photographId, lightCoords, PhotographRenderer.FrameType.FRAME_FULL);
 	}
 }

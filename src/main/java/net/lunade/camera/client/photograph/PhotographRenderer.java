@@ -31,9 +31,15 @@ import net.minecraft.resources.Identifier;
 
 @Environment(EnvType.CLIENT)
 public class PhotographRenderer {
+	private static final float IN_WORLD_FRAME_EXTENSION = 1.125F / 16F;
+	private static final float IN_WORLD_FRAME_MAX = 1F + IN_WORLD_FRAME_EXTENSION;
+	private static final float IN_WORLD_FRAME_MIN = -IN_WORLD_FRAME_EXTENSION;
 	private static final Identifier FRAME = CameraPortConstants.id("textures/gui/sprites/photograph/frame.png");
 	private static final RenderType FRAME_RENDER_TYPE = RenderTypes.text(FRAME);
 	private static final Identifier GUI_FRAME = CameraPortConstants.id("photograph/frame");
+	private static final Identifier FRAME_FULL = CameraPortConstants.id("textures/gui/sprites/photograph/frame_full.png");
+	private static final RenderType FRAME_FULL_RENDER_TYPE = RenderTypes.text(FRAME_FULL);
+	private static final Identifier GUI_FRAME_FULL = CameraPortConstants.id("photograph/frame_full");
 	private static final Identifier FILM_EMBED = CameraPortConstants.id("textures/gui/sprites/photograph/film_embed.png");
 	private static final RenderType FILM_EMBED_RENDER_TYPE = RenderTypes.text(FILM_EMBED);
 	private static final Identifier GUI_FILM_EMBED = CameraPortConstants.id("photograph/film_embed");
@@ -48,10 +54,10 @@ public class PhotographRenderer {
 				poseStack,
 				frameRenderType,
 				(pose, buffer) -> {
-					buffer.addVertex(pose, -0.0625F, 1.0625F, 0F).setColor(-1).setUv(0F, 1F).setLight(lightCoords);
-					buffer.addVertex(pose, 1.0625F, 1.0625F, 0F).setColor(-1).setUv(1F, 1F).setLight(lightCoords);
-					buffer.addVertex(pose, 1.0625F, -0.0625F, 0F).setColor(-1).setUv(1F, 0F).setLight(lightCoords);
-					buffer.addVertex(pose, -0.0625F, -0.0625F, 0F).setColor(-1).setUv(0F, 0F).setLight(lightCoords);
+					buffer.addVertex(pose, IN_WORLD_FRAME_MIN, IN_WORLD_FRAME_MAX, 0F).setColor(-1).setUv(0F, 1F).setLight(lightCoords);
+					buffer.addVertex(pose, IN_WORLD_FRAME_MAX, IN_WORLD_FRAME_MAX, 0F).setColor(-1).setUv(1F, 1F).setLight(lightCoords);
+					buffer.addVertex(pose, IN_WORLD_FRAME_MAX, IN_WORLD_FRAME_MIN, 0F).setColor(-1).setUv(1F, 0F).setLight(lightCoords);
+					buffer.addVertex(pose, IN_WORLD_FRAME_MIN, IN_WORLD_FRAME_MIN, 0F).setColor(-1).setUv(0F, 0F).setLight(lightCoords);
 				}
 			);
 		}
@@ -101,6 +107,7 @@ public class PhotographRenderer {
 	public static enum FrameType {
 		NONE(null,  null),
 		FRAME(FRAME_RENDER_TYPE, GUI_FRAME),
+		FRAME_FULL(FRAME_FULL_RENDER_TYPE, GUI_FRAME_FULL),
 		FILM_EMBED(FILM_EMBED_RENDER_TYPE, GUI_FILM_EMBED);
 		private final RenderType renderType;
 		private final Identifier guiSprite;

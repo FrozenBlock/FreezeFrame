@@ -99,25 +99,28 @@ public class DevelopingTableMenu extends AbstractContainerMenu {
 	}
 
 	void setupResultSlot() {
-		final ItemStack sourceStack = this.getSourceItem();
 		ItemStack stack = ItemStack.EMPTY;
-		if (sourceStack.is(CameraPortItems.PHOTOGRAPH)) {
-			this.photographIndex.set(0);
-			final Photograph photograph = sourceStack.get(CameraPortDataComponents.PHOTOGRAPH);
-			if (photograph != null && photograph.canCopy()) {
-				stack = TransmuteRecipe.createWithOriginalComponents(PHOTOGRAPH_COPY_TEMPLATE, sourceStack);
-				stack.set(CameraPortDataComponents.PHOTOGRAPH, photograph.asCopy());
+
+		if (this.hasPaper()) {
+			final ItemStack sourceStack = this.getSourceItem();
+			if (sourceStack.is(CameraPortItems.PHOTOGRAPH)) {
+				this.photographIndex.set(0);
+				final Photograph photograph = sourceStack.get(CameraPortDataComponents.PHOTOGRAPH);
+				if (photograph != null && photograph.canCopy()) {
+					stack = TransmuteRecipe.createWithOriginalComponents(PHOTOGRAPH_COPY_TEMPLATE, sourceStack);
+					stack.set(CameraPortDataComponents.PHOTOGRAPH, photograph.asCopy());
+				}
+			} else if (sourceStack.is(CameraPortItems.FILM) && sourceStack.has(CameraPortDataComponents.FILM_CONTENTS)) {
+				final int clampedIndex = Math.max(0, Math.min(this.photographIndex.get(), sourceStack.get(CameraPortDataComponents.FILM_CONTENTS).size() - 1));
+				this.photographIndex.set(clampedIndex);
+				final Photograph photograph = sourceStack.get(CameraPortDataComponents.FILM_CONTENTS).getPhotographAtIndex(this.photographIndex.get());
+				if (photograph != null) {
+					stack = new ItemStack(CameraPortItems.PHOTOGRAPH);
+					stack.set(CameraPortDataComponents.PHOTOGRAPH, photograph);
+				}
+			} else {
+				this.photographIndex.set(0);
 			}
-		} else if (sourceStack.is(CameraPortItems.FILM) && sourceStack.has(CameraPortDataComponents.FILM_CONTENTS)) {
-			final int clampedIndex = Math.max(0, Math.min(this.photographIndex.get(), sourceStack.get(CameraPortDataComponents.FILM_CONTENTS).size() - 1));
-			this.photographIndex.set(clampedIndex);
-			final Photograph photograph = sourceStack.get(CameraPortDataComponents.FILM_CONTENTS).getPhotographAtIndex(this.photographIndex.get());
-			if (photograph != null) {
-				stack = new ItemStack(CameraPortItems.PHOTOGRAPH);
-				stack.set(CameraPortDataComponents.PHOTOGRAPH, photograph);
-			}
-		} else {
-			this.photographIndex.set(0);
 		}
 
 		this.resultSlot.set(stack);
