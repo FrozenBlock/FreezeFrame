@@ -62,7 +62,7 @@ public abstract class PlayerItemInHandLayerMixin {
 		int lightCoords,
 		Operation<Void> original
 	) {
-		if ((state.rightArmPose == CameraPortArmPoses.CAMERA || state.leftArmPose == CameraPortArmPoses.CAMERA) && itemStack.is(CameraPortItemTags.CAMERAS)) {
+		if ((state.rightArmPose == CameraPortArmPoses.CAMERA || state.leftArmPose == CameraPortArmPoses.CAMERA) && itemStack.is(CameraPortItemTags.CAMERAS) && arm == state.mainArm) {
 			this.cameraPort$renderHeldCamera((AvatarRenderState) state, item, arm, poseStack, submitNodeCollector, lightCoords);
 			return;
 		}
