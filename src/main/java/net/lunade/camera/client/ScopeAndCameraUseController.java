@@ -61,7 +61,7 @@ public final class ScopeAndCameraUseController {
 		final boolean usingScopeItem = ScopeItemHelper.isPlayerUsingScopeItem(player);
 		final boolean holdingCamera = ScopeItemHelper.isPlayerHoldingCamera(player);
 		if (usingScopeItem) {
-			ensureFirstPerson(minecraft);
+			//ensureFirstPerson(minecraft);
 		} else {
 			restoreCameraType(minecraft);
 		}

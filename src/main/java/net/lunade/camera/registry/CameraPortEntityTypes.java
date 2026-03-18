@@ -19,8 +19,8 @@ package net.lunade.camera.registry;
 
 import net.fabricmc.fabric.api.object.builder.v1.entity.FabricDefaultAttributeRegistry;
 import net.lunade.camera.CameraPortConstants;
-import net.lunade.camera.entity.TripodCamera;
 import net.lunade.camera.entity.DiscCamera;
+import net.lunade.camera.entity.TripodCamera;
 import net.minecraft.core.Registry;
 import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.core.registries.Registries;

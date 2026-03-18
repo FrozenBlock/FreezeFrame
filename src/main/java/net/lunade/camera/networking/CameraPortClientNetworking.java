@@ -19,9 +19,9 @@ package net.lunade.camera.networking;
 
 import net.fabricmc.fabric.api.client.networking.v1.ClientPlayNetworking;
 import net.lunade.camera.client.gui.screens.inventory.FilmScreen;
+import net.lunade.camera.networking.packet.CameraTakeScreenshotPacket;
 import net.lunade.camera.networking.packet.OpenFilmScreenPacket;
 import net.lunade.camera.util.client.CameraScreenshotManager;
-import net.lunade.camera.networking.packet.CameraTakeScreenshotPacket;
 import net.minecraft.world.entity.Entity;
 
 public class CameraPortClientNetworking {

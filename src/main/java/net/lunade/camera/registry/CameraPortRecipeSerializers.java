@@ -20,9 +20,9 @@ package net.lunade.camera.registry;
 import com.mojang.serialization.MapCodec;
 import net.lunade.camera.CameraPortConstants;
 import net.lunade.camera.recipe.FilmCapacityUpgradeRecipe;
-import net.minecraft.network.codec.StreamCodec;
 import net.minecraft.core.Registry;
 import net.minecraft.core.registries.BuiltInRegistries;
+import net.minecraft.network.codec.StreamCodec;
 import net.minecraft.world.item.crafting.RecipeSerializer;
 
 public class CameraPortRecipeSerializers {

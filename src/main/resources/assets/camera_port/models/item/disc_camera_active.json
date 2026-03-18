@@ -2,13 +2,13 @@
   "parent": "camera_port:item/disc_camera_inactive",
 	"display": {
 		"thirdperson_righthand": {
-			"rotation": [80, 0, 0],
-			"translation": [-1, -0.8, -4.35],
+		"rotation": [0, 0, 0],
+			"translation": [-2.75, 0.2, -4.35],
 			"scale": [0.575, 0.575, 0.575]
 		},
 		"thirdperson_lefthand": {
-			"rotation": [80, 0, 0],
-			"translation": [-1, -0.8, -4.35],
+		"rotation": [0, 0, 0],
+			"translation": [-2.75, 0.2, -4.35],
 			"scale": [0.575, 0.575, 0.575]
 		},
 		"firstperson_righthand": {

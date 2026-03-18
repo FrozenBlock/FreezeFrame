@@ -53,7 +53,6 @@ import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemCooldowns;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.ItemStackTemplate;
-import net.minecraft.world.item.ItemUseAnimation;
 import net.minecraft.world.item.ItemUtils;
 import net.minecraft.world.item.SpawnEggItem;
 import net.minecraft.world.item.component.TooltipDisplay;
@@ -96,11 +95,6 @@ public class CameraItem extends SpawnEggItem {
 	@Override
 	public int getUseDuration(ItemStack stack, LivingEntity entity) {
 		return APPROXIMATELY_INFINITE_USE_DURATION;
-	}
-
-	@Override
-	public ItemUseAnimation getUseAnimation(ItemStack stack) {
-		return ItemUseAnimation.SPYGLASS;
 	}
 
 	public static String makeFileName(Player player) {
