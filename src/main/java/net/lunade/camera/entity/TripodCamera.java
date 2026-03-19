@@ -236,7 +236,6 @@ public class TripodCamera extends Mob {
 					true
 				);
 			}
-			this.playSound(CameraPortSounds.CAMERA_PRIME, this.getSoundVolume(), 1F);
 			return InteractionResult.SUCCESS;
 		} else {
 			this.playSound(CameraPortSounds.CAMERA_ALREADY_PRIMED, this.getSoundVolume(), 0.8F + this.level().getRandom().nextFloat() * 0.4F);
