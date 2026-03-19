@@ -11,6 +11,7 @@
     "camera.LivingEntityMixin",
     "camera.NautilusAiMixin",
     "camera.PlayerMixin",
+    "camera.SpawnEggItemMixin",
     "camera.WolfMixin",
     "film.AbstractContainerMenuMixin"
   ],
