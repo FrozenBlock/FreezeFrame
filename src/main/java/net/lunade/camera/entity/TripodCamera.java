@@ -17,6 +17,7 @@
 
 package net.lunade.camera.entity;
 
+import net.frozenblock.lib.sound.api.predicate.SoundPredicate;
 import net.frozenblock.lib.sound.impl.networking.FrozenLibSoundPackets;
 import net.lunade.camera.component.CameraContents;
 import net.lunade.camera.item.CameraItem;
@@ -223,6 +224,18 @@ public class TripodCamera extends Mob {
 			this.photographer = EntityReference.of(player);
 			this.photographAtTick = this.level().getGameTime() + 60L;
 			this.level().broadcastEntityEvent(this, EntityEvent.TENDRILS_SHIVER);
+			if (!this.isSilent()) {
+				FrozenLibSoundPackets.createAndSendMovingRestrictionSound(
+					this.level(),
+					this,
+					BuiltInRegistries.SOUND_EVENT.wrapAsHolder(CameraPortSounds.CAMERA_PRIME),
+					this.getSoundSource(),
+					this.getSoundVolume(),
+					1F,
+					SoundPredicate.NOT_SILENT_AND_ALIVE_ID,
+					true
+				);
+			}
 			this.playSound(CameraPortSounds.CAMERA_PRIME, this.getSoundVolume(), 1F);
 			return InteractionResult.SUCCESS;
 		} else {
