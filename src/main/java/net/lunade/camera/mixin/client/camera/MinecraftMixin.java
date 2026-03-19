@@ -47,10 +47,14 @@ public class MinecraftMixin {
 	@Nullable
 	public LocalPlayer player;
 
+	@Shadow
+	public int missTime;
+
 	@Inject(method = "startAttack", at = @At("HEAD"), cancellable = true)
 	private void cameraPort$cancelAttackWhileUsingCamera(CallbackInfoReturnable<Boolean> info) {
 		final LocalPlayer player = Minecraft.class.cast(this).player;
 		if (player == null || !ScopeItemHelper.isPlayerHoldingPhotoTakingCamera(player)) return;
+		this.missTime = 10;
 		info.setReturnValue(false);
 	}
 
