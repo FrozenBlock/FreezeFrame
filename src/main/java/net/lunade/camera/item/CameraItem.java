@@ -324,14 +324,14 @@ public class CameraItem extends SpawnEggItem {
 	private static void playSnapSound(Entity entity, boolean playsSeparateClientSound) {
 		entity.playSound(
 			CameraPortSounds.CAMERA_SNAP,
-			0.8F,
+			1F,
 			0.95F + entity.level().getRandom().nextFloat() * 0.1F
 		);
 		if (playsSeparateClientSound && entity instanceof ServerPlayer serverPlayer) {
 			FrozenLibSoundPackets.createAndSendLocalPlayerSound(
 				serverPlayer,
 				BuiltInRegistries.SOUND_EVENT.wrapAsHolder(CameraPortSounds.CAMERA_SNAP),
-				0.8F,
+				1F,
 				0.95F + entity.level().getRandom().nextFloat() * 0.1F
 			);
 		}
@@ -340,14 +340,14 @@ public class CameraItem extends SpawnEggItem {
 	private static void playSnapFailSound(Entity entity, boolean playsSeparateClientSound) {
 		entity.playSound(
 			CameraPortSounds.CAMERA_SNAP_FAIL,
-			0.8F,
+			1F,
 			0.8F + entity.level().getRandom().nextFloat() * 0.4F
 		);
 		if (playsSeparateClientSound && entity instanceof ServerPlayer serverPlayer) {
 			FrozenLibSoundPackets.createAndSendLocalPlayerSound(
 				serverPlayer,
 				BuiltInRegistries.SOUND_EVENT.wrapAsHolder(CameraPortSounds.CAMERA_SNAP_FAIL),
-				0.8F,
+				1F,
 				0.8F + entity.level().getRandom().nextFloat() * 0.4F
 			);
 		}

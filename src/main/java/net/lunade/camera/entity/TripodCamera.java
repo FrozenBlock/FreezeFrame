@@ -35,7 +35,6 @@ import net.minecraft.network.syncher.SynchedEntityData;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.sounds.SoundEvent;
-import net.minecraft.sounds.SoundSource;
 import net.minecraft.tags.DamageTypeTags;
 import net.minecraft.util.Mth;
 import net.minecraft.world.InteractionHand;
@@ -154,7 +153,7 @@ public class TripodCamera extends Mob {
 					this.getX(), this.getY(), this.getZ(),
 					isSuccess ? CameraPortSounds.CAMERA_SNAP : CameraPortSounds.CAMERA_SNAP_FAIL,
 					this.getSoundSource(),
-					0.5F,
+					this.getSoundVolume(),
 					pitch
 				);
 			}
@@ -189,7 +188,7 @@ public class TripodCamera extends Mob {
 					newHeight = this.getMinHeight();
 				}
 				this.setTrackedHeight(newHeight);
-				this.level().playSound(null, getX(), getEyeY(), getZ(), CameraPortSounds.CAMERA_ADJUST, SoundSource.NEUTRAL, this.getSoundVolume(), this.getTrackedHeight());
+				this.playSound(CameraPortSounds.CAMERA_ADJUST, this.getSoundVolume(), 0.9F + (this.getTrackedHeight() * 0.1F));
 				return InteractionResult.SUCCESS;
 			}
 		} else if (this.photographAtTick == 0) {
@@ -202,8 +201,21 @@ public class TripodCamera extends Mob {
 			}
 
 			final ItemStack pickResult = this.getPickResult();
-			if (!this.cameraContents.hasSpaceForPhotograph() || (pickResult != null && player.getCooldowns().isOnCooldown(pickResult))) {
-				this.playSound(CameraPortSounds.CAMERA_PRIME_FAIL, this.getSoundVolume(), 0.9F + this.level().getRandom().nextFloat() * 0.2F);
+			if (pickResult != null && player.getCooldowns().isOnCooldown(pickResult)) {
+				this.playSound(
+					this.cameraContents.isEmpty() || this.cameraContents.hasSpaceForPhotograph() ? CameraPortSounds.CAMERA_PRIME_FAIL : CameraPortSounds.CAMERA_PRIME_FAIL_FULL,
+					this.getSoundVolume(),
+					0.9F + this.level().getRandom().nextFloat() * 0.2F
+				);
+				return InteractionResult.FAIL;
+			}
+
+			if (!this.cameraContents.hasSpaceForPhotograph()) {
+				this.playSound(
+					this.cameraContents.isEmpty() ? CameraPortSounds.CAMERA_PRIME_FAIL : CameraPortSounds.CAMERA_PRIME_FAIL_FULL,
+					this.getSoundVolume(),
+					0.9F + this.level().getRandom().nextFloat() * 0.2F
+				);
 				return InteractionResult.FAIL;
 			}
 
@@ -211,7 +223,7 @@ public class TripodCamera extends Mob {
 			this.photographer = EntityReference.of(player);
 			this.photographAtTick = this.level().getGameTime() + 60L;
 			this.level().broadcastEntityEvent(this, EntityEvent.TENDRILS_SHIVER);
-			this.playSound(CameraPortSounds.CAMERA_PRIME, this.getSoundVolume(), this.getVoicePitch() + 0.2F);
+			this.playSound(CameraPortSounds.CAMERA_PRIME, this.getSoundVolume(), 1F);
 			return InteractionResult.SUCCESS;
 		} else {
 			this.playSound(CameraPortSounds.CAMERA_ALREADY_PRIMED, this.getSoundVolume(), 0.8F + this.level().getRandom().nextFloat() * 0.4F);

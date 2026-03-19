@@ -37,9 +37,42 @@
   "entity.camera.prime": {
     "subtitle": "subtitle.entity.camera.prime",
     "sounds": [
-      "camera_port:camera/prime1",
-      "camera_port:camera/prime2",
-      "camera_port:camera/prime3"
+      {
+        "name":  "camera_port:camera/prime1",
+        "volume": 1.5
+      },
+      {
+        "name":  "camera_port:camera/prime2",
+        "volume": 1.5
+      },
+      {
+        "name":  "camera_port:camera/prime3",
+        "volume": 1.5
+      },
+      {
+        "name":  "camera_port:camera/prime4",
+        "volume": 1.5
+      },
+      {
+        "name":  "camera_port:camera/prime5",
+        "volume": 1.5
+      },
+      {
+        "name":  "camera_port:camera/prime6",
+        "volume": 1.5
+      },
+      {
+        "name":  "camera_port:camera/prime7",
+        "volume": 1.5
+      },
+      {
+        "name":  "camera_port:camera/prime8",
+        "volume": 1.5
+      },
+      {
+        "name":  "camera_port:camera/prime9",
+        "volume": 1.5
+      }
     ]
   },
   "entity.camera.already_primed": {
@@ -57,15 +90,29 @@
       "camera_port:camera/prime_fail2"
     ]
   },
+  "entity.camera.prime_fail_full": {
+    "subtitle": "subtitle.entity.camera.prime_fail",
+    "sounds": [
+      "camera_port:camera/prime_fail_full1",
+      "camera_port:camera/prime_fail_full2",
+      "camera_port:camera/prime_fail_full3"
+    ]
+  },
   "entity.camera.adjust": {
     "subtitle": "subtitle.entity.camera.adjust",
     "sounds": [
-      "camera_port:item/camera/zoom1",
-      "camera_port:item/camera/zoom2",
-      "camera_port:item/camera/zoom3",
-      "camera_port:item/camera/zoom4",
-      "camera_port:item/camera/zoom5",
-      "camera_port:item/camera/zoom6"
+      {
+        "name":  "camera_port:camera/tripod_adjust1",
+        "volume": 0.45
+      },
+      {
+        "name":  "camera_port:camera/tripod_adjust2",
+        "volume": 0.45
+      },
+      {
+        "name":  "camera_port:camera/tripod_adjust3",
+        "volume": 0.45
+      }
     ]
   },
 
