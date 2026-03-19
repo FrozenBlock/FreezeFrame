@@ -17,8 +17,6 @@
 
 package net.lunade.camera.client.model.object.camera;
 
-import net.lunade.camera.client.renderer.entity.state.TripodCameraRenderState;
-import net.minecraft.client.model.EntityModel;
 import net.minecraft.client.model.geom.ModelPart;
 import net.minecraft.client.model.geom.PartPose;
 import net.minecraft.client.model.geom.builders.CubeListBuilder;
@@ -27,15 +25,13 @@ import net.minecraft.client.model.geom.builders.MeshDefinition;
 import net.minecraft.client.model.geom.builders.PartDefinition;
 import net.minecraft.util.Mth;
 
-public class DiscCameraModel extends EntityModel<TripodCameraRenderState> {
+public class DiscCameraModel extends TripodCameraModel {
 	final ModelPart head;
 	final ModelPart disc;
-	final ModelPart disc2;
 
 	public DiscCameraModel(ModelPart root) {
 		super(root);
-		this.disc = root.getChild("disc1");
-		this.disc2 = root.getChild("disc2");
+		this.disc = root.getChild("disc");
 		this.head = root.getChild("head");
 	}
 
@@ -43,30 +39,30 @@ public class DiscCameraModel extends EntityModel<TripodCameraRenderState> {
 		final MeshDefinition mesh = new MeshDefinition();
 		final PartDefinition root = mesh.getRoot();
 
-		CameraModel.createHead(root, 15F);
+		TripodCameraModel.createHead(root, 15F);
 
-		CubeListBuilder discCube = createDiscCube();
-		createDisc(root, 1, discCube, 45F * Mth.DEG_TO_RAD);
-		createDisc(root, 2, discCube, -45F * Mth.DEG_TO_RAD);
+		root.addOrReplaceChild(
+			"disc",
+			CubeListBuilder.create()
+				.texOffs(0, 18)
+				.addBox(-7.5F, 0F, 0F, 15F, 10F, 0F)
+				.texOffs(0, 3)
+				.addBox(0F, 0F, -7.5F, 0F, 10F, 15F)
+				.mirror(),
+			PartPose.offsetAndRotation(0F, 16.5F, 0F, 0F, Mth.DEG_TO_RAD * 45F, 0F)
+				.scaled(1.3F, 0.9F, 1.3F)
+		);
 
-		return LayerDefinition.create(mesh, 64, 32);
-	}
 
-	public static CubeListBuilder createDiscCube() {
-		return CubeListBuilder.create().texOffs(0, 18).addBox(-7.5F, 0F, 0F, 15F, 10F, 0F);
-	}
+		createLeg(root, 1, CubeListBuilder.create(), 0F, 0F);
+		createLeg(root, 2, CubeListBuilder.create(), 0F, 0F);
+		createLeg(root, 3, CubeListBuilder.create(), 0F, 0F);
+		createLeg(root, 4, CubeListBuilder.create(), 0F, 0F);
 
-	public static PartDefinition createDisc(PartDefinition root, int index, CubeListBuilder cubeListBuilder, float yRot) {
-		return root.addOrReplaceChild("disc" + index, cubeListBuilder, PartPose.offsetAndRotation(0F, 16.5F, 0F, 0F, yRot, 0F).scaled(1.3F, 0.9F, 1.3F));
+		return LayerDefinition.create(mesh, 40, 40);
 	}
 
 	@Override
-	public void setupAnim(TripodCameraRenderState renderState) {
-		super.setupAnim(renderState);
-		this.disc.yRot = 45F * Mth.DEG_TO_RAD;
-		this.disc2.yRot = -45F * Mth.DEG_TO_RAD;
-
-		this.head.yRot = renderState.yRot * Mth.DEG_TO_RAD;
-		this.head.xRot = renderState.xRot * Mth.DEG_TO_RAD;
+	protected void setRootYOffset(float offset) {
 	}
 }

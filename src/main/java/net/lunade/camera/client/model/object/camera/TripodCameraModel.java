@@ -27,7 +27,7 @@ import net.minecraft.client.model.geom.builders.MeshDefinition;
 import net.minecraft.client.model.geom.builders.PartDefinition;
 import net.minecraft.util.Mth;
 
-public class CameraModel extends EntityModel<TripodCameraRenderState> {
+public class TripodCameraModel extends EntityModel<TripodCameraRenderState> {
 	private static final float HEIGHT_INCREMENT = 1.75F;
 	private static final float HEIGHT_SCALE = 15F / HEIGHT_INCREMENT;
 	private static final float LEG_ANGLE_MULTIPLIER = 6.7F;
@@ -38,7 +38,7 @@ public class CameraModel extends EntityModel<TripodCameraRenderState> {
 	private final ModelPart leg3;
 	private final ModelPart leg4;
 
-	public CameraModel(ModelPart root) {
+	public TripodCameraModel(ModelPart root) {
 		super(root);
 		this.leg1 = root.getChild("leg1");
 		this.leg2 = root.getChild("leg2");
@@ -53,13 +53,13 @@ public class CameraModel extends EntityModel<TripodCameraRenderState> {
 
 		createHead(root, 2F);
 
-		CubeListBuilder legCube = createLegCube();
+		final CubeListBuilder legCube = createLegCube();
 		createLeg(root, 1, legCube, 0F, 1F);
 		createLeg(root, 2, legCube, 0F, -1F);
 		createLeg(root, 3, legCube, 1F, 0F);
 		createLeg(root, 4, legCube, -1F, 0F);
 
-		return LayerDefinition.create(mesh, 64, 32);
+		return LayerDefinition.create(mesh, 40, 40);
 	}
 
 	public static PartDefinition createHead(PartDefinition root, float verticalOffset) {
@@ -85,15 +85,19 @@ public class CameraModel extends EntityModel<TripodCameraRenderState> {
 		super.setupAnim(renderState);
 
 		float inverseHeight = (HEIGHT_INCREMENT - renderState.trackedHeight) * HEIGHT_SCALE;
-		this.root().y += inverseHeight * ROOT_ADJUSTMENT_BY_HEIGHT;
+		this.setRootYOffset(inverseHeight * ROOT_ADJUSTMENT_BY_HEIGHT);
 
-		float angle = (15F + (inverseHeight * LEG_ANGLE_MULTIPLIER)) * Mth.DEG_TO_RAD;
-		this.leg1.xRot = angle;
-		this.leg2.xRot = -angle;
-		this.leg3.zRot = -angle;
-		this.leg4.zRot = angle;
+		final float legAngle = (15F + (inverseHeight * LEG_ANGLE_MULTIPLIER)) * Mth.DEG_TO_RAD;
+		this.leg1.xRot = legAngle;
+		this.leg2.xRot = -legAngle;
+		this.leg3.zRot = -legAngle;
+		this.leg4.zRot = legAngle;
 
 		this.head.yRot = renderState.yRot * Mth.DEG_TO_RAD;
 		this.head.xRot = renderState.xRot * Mth.DEG_TO_RAD;
+	}
+
+	protected void setRootYOffset(float offset) {
+		this.root.y += offset;
 	}
 }

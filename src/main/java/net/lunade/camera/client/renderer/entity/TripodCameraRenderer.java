@@ -17,23 +17,26 @@
 
 package net.lunade.camera.client.renderer.entity;
 
+import com.mojang.blaze3d.vertex.PoseStack;
+import com.mojang.math.Axis;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 import net.lunade.camera.CameraPortClient;
 import net.lunade.camera.CameraPortConstants;
-import net.lunade.camera.client.model.object.camera.CameraModel;
+import net.lunade.camera.client.model.object.camera.TripodCameraModel;
 import net.lunade.camera.client.renderer.entity.state.TripodCameraRenderState;
 import net.lunade.camera.entity.TripodCamera;
 import net.minecraft.client.renderer.entity.EntityRendererProvider;
 import net.minecraft.client.renderer.entity.MobRenderer;
 import net.minecraft.resources.Identifier;
+import net.minecraft.util.Mth;
 
 @Environment(EnvType.CLIENT)
-public class TripodCameraRenderer extends MobRenderer<TripodCamera, TripodCameraRenderState, CameraModel> {
+public class TripodCameraRenderer extends MobRenderer<TripodCamera, TripodCameraRenderState, TripodCameraModel> {
 	private static final Identifier TEXTURE = CameraPortConstants.id("textures/entity/camera.png");
 
 	public TripodCameraRenderer(EntityRendererProvider.Context context) {
-		super(context, new CameraModel(context.bakeLayer(CameraPortClient.CAMERA_MODEL_LAYER)), 0.5F);
+		super(context, new TripodCameraModel(context.bakeLayer(CameraPortClient.CAMERA_MODEL_LAYER)), 0.5F);
 	}
 
 	@Override
@@ -46,14 +49,21 @@ public class TripodCameraRenderer extends MobRenderer<TripodCamera, TripodCamera
 		super.extractRenderState(entity, renderState, partialTicks);
 		renderState.trackedHeight = entity.getTrackedHeight();
 		renderState.lerpedTimer = entity.getLerpedTimer(partialTicks);
+		renderState.wiggle = (float)(entity.level().getGameTime() - entity.lastHit) + partialTicks;
 	}
 
 	@Override
 	protected float getWhiteOverlayProgress(TripodCameraRenderState renderState) {
-		float timer = renderState.lerpedTimer;
-		float timedTimer = (timer * (float) Math.PI) * 0.1F;
-		float sin = (float) (Math.sin(timedTimer - (float) Math.PI * 0.5F) + 1F) * 0.5F;
+		final float timer = renderState.lerpedTimer;
+		final float timedTimer = (timer * (float) Math.PI) * 0.1F;
+		final float sin = (float) (Math.sin(timedTimer - (float) Math.PI * 0.5F) + 1F) * 0.5F;
 		return sin;
+	}
+
+	@Override
+	protected void setupRotations(TripodCameraRenderState renderState, PoseStack poseStack, float bodyRot, float entityScale) {
+		super.setupRotations(renderState, poseStack, bodyRot, entityScale);
+		if (renderState.wiggle < 5F) poseStack.mulPose(Axis.YP.rotationDegrees(Mth.sin(renderState.wiggle / 1.5F * Mth.PI) * 3F));
 	}
 
 	@Override

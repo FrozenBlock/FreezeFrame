@@ -23,7 +23,7 @@ import net.fabricmc.api.Environment;
 import net.fabricmc.fabric.api.client.rendering.v1.ClientTooltipComponentCallback;
 import net.fabricmc.fabric.api.client.rendering.v1.ModelLayerRegistry;
 import net.lunade.camera.client.ScopeAndCameraUseController;
-import net.lunade.camera.client.model.object.camera.CameraModel;
+import net.lunade.camera.client.model.object.camera.TripodCameraModel;
 import net.lunade.camera.client.model.object.camera.DiscCameraModel;
 import net.lunade.camera.client.renderer.entity.DiscCameraRenderer;
 import net.lunade.camera.client.renderer.entity.TripodCameraRenderer;
@@ -47,7 +47,7 @@ public class CameraPortClient implements ClientModInitializer {
 	@Override
 	public void onInitializeClient() {
 		EntityRenderers.register(CameraPortEntityTypes.CAMERA, TripodCameraRenderer::new);
-		ModelLayerRegistry.registerModelLayer(CAMERA_MODEL_LAYER, CameraModel::createBodyLayer);
+		ModelLayerRegistry.registerModelLayer(CAMERA_MODEL_LAYER, TripodCameraModel::createBodyLayer);
 		EntityRenderers.register(CameraPortEntityTypes.DISC_CAMERA, DiscCameraRenderer::new);
 		ModelLayerRegistry.registerModelLayer(DISC_CAMERA_MODEL_LAYER, DiscCameraModel::getTexturedModelData);
 

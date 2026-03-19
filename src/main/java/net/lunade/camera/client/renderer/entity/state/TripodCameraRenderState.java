@@ -25,4 +25,5 @@ import net.minecraft.client.renderer.entity.state.LivingEntityRenderState;
 public class TripodCameraRenderState extends LivingEntityRenderState {
 	public float trackedHeight;
 	public float lerpedTimer;
+	public float wiggle;
 }
