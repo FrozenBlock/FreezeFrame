@@ -46,7 +46,7 @@ public class GuiMixin {
 	private Minecraft minecraft;
 
 	@Unique
-	private static final Identifier CAMERA_PORT$CAMERA_ZOOM = CameraPortConstants.id("textures/misc/camera_zoom.png");
+	private static final Identifier CAMERA_PORT$CAMERA_SCOPE = CameraPortConstants.id("textures/misc/camera_scope.png");
 
 	@Inject(method = "extractRenderState", at = @At("HEAD"), cancellable = true)
 	public void cameraPort$removeOverlays(GuiGraphicsExtractor graphics, DeltaTracker deltaTracker, CallbackInfo info) {
@@ -63,7 +63,7 @@ public class GuiMixin {
 	)
 	private Identifier cameraPort$useCameraOverlay(Identifier original) {
 		if (this.minecraft.player == null || !ScopeItemHelper.isCameraItem(this.minecraft.player.getUseItem())) return original;
-		return CAMERA_PORT$CAMERA_ZOOM;
+		return CAMERA_PORT$CAMERA_SCOPE;
 	}
 
 }

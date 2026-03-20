@@ -30,9 +30,10 @@ public class CameraPortSounds {
 	public static final SoundEvent CAMERA_INSERT = register("item.camera.insert");
 	public static final SoundEvent CAMERA_INSERT_FAIL = register("item.camera.insert_fail");
 	public static final SoundEvent CAMERA_REMOVE_ONE = register("item.camera.remove_one");
+	public static final SoundEvent CAMERA_SCOPE_START = register("item.camera.scope_start");
+	public static final SoundEvent CAMERA_SCOPE_END = register("item.camera.scope_end");
 	public static final SoundEvent CAMERA_ZOOM_INCREASE = register("item.camera.zoom_increase");
 	public static final SoundEvent CAMERA_ZOOM_DECREASE = register("item.camera.zoom_decrease");
-
 	public static final SoundEvent SPYGLASS_ZOOM_INCREASE = register("item.spyglass.zoom_increase");
 	public static final SoundEvent SPYGLASS_ZOOM_DECREASE = register("item.spyglass.zoom_decrease");
 

@@ -153,6 +153,38 @@
       "camera_port:camera/film_take2"
     ]
   },
+  "item.camera.scope_start": {
+    "sounds": [
+      {
+        "name": "camera_port:item/camera/scope_start1",
+        "volume": 0.45
+      },
+      {
+        "name": "camera_port:item/camera/scope_start2",
+        "volume": 0.45
+      },
+      {
+        "name": "camera_port:item/camera/scope_start3",
+        "volume": 0.45
+      }
+    ]
+  },
+  "item.camera.scope_end": {
+    "sounds": [
+      {
+        "name": "camera_port:item/camera/scope_end1",
+        "volume": 0.15
+      },
+      {
+        "name": "camera_port:item/camera/scope_end2",
+        "volume": 0.15
+      },
+      {
+        "name": "camera_port:item/camera/scope_end3",
+        "volume": 0.15
+      }
+    ]
+  },
   "item.camera.zoom_increase": {
     "sounds": [
       "camera_port:item/camera/zoom1",

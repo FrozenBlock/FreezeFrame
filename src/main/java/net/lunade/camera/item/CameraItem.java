@@ -36,6 +36,7 @@ import net.minecraft.core.component.DataComponents;
 import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.core.registries.Registries;
 import net.minecraft.server.level.ServerPlayer;
+import net.minecraft.stats.Stats;
 import net.minecraft.util.ARGB;
 import net.minecraft.util.Mth;
 import net.minecraft.world.InteractionHand;
@@ -78,8 +79,9 @@ public class CameraItem extends SpawnEggItem {
 
 		if (player.isShiftKeyDown()) return super.use(level, player, hand);
 		if (hand != InteractionHand.OFF_HAND) {
-			player.startUsingItem(hand);
-			return InteractionResult.CONSUME;
+			player.playSound(CameraPortSounds.CAMERA_SCOPE_START, 1F, 1F + (player.level().getRandom().nextFloat() * 0.5F));
+			player.awardStat(Stats.ITEM_USED.get(this));
+			return ItemUtils.startUsingInstantly(level, player, hand);
 		}
 
 		return InteractionResult.PASS;
@@ -90,6 +92,22 @@ public class CameraItem extends SpawnEggItem {
 		final Player player = useOnContext.getPlayer();
 		if (player != null && !player.isShiftKeyDown()) return InteractionResult.PASS;
 		return super.useOn(useOnContext);
+	}
+
+	@Override
+	public ItemStack finishUsingItem(ItemStack stack, Level level, LivingEntity entity) {
+		this.stopUsing(entity);
+		return stack;
+	}
+
+	@Override
+	public boolean releaseUsing(ItemStack stack, Level level, LivingEntity entity, int remainingTime) {
+		this.stopUsing(entity);
+		return true;
+	}
+
+	private void stopUsing(LivingEntity entity) {
+		entity.playSound(CameraPortSounds.CAMERA_SCOPE_END, 1F, 0.8F + (entity.level().getRandom().nextFloat() * 0.2F));
 	}
 
 	@Override
