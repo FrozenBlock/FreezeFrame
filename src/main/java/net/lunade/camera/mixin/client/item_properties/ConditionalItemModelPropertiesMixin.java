@@ -15,7 +15,7 @@
  * along with this program; if not, see <https://github.com/FrozenBlock/Licenses>.
  */
 
-package net.lunade.camera.mixin.client.camera;
+package net.lunade.camera.mixin.client.item_properties;
 
 import com.mojang.serialization.MapCodec;
 import net.fabricmc.api.EnvType;

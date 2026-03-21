@@ -35,7 +35,7 @@ public class DiscCameraModel extends TripodCameraModel {
 		this.head = root.getChild("head");
 	}
 
-	public static LayerDefinition getTexturedModelData() {
+	public static LayerDefinition createBodyLayer() {
 		final MeshDefinition mesh = new MeshDefinition();
 		final PartDefinition root = mesh.getRoot();
 

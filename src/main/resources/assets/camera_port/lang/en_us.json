@@ -57,6 +57,8 @@
   "subtitles.item.film.rename": "Film contents renamed",
   "subtitles.item.film.tear": "Film trimmed",
 
+  "key.resetScopeZoom": "Reset Item Zoom",
+
   "option.camera_port.component.title": "Camera Port Options",
   "option.camera_port.config": "Config",
   "option.camera_port.use_as_world_icon": "Use Photos As World Icons",

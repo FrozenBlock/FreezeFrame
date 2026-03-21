@@ -41,6 +41,7 @@ public final class ScopeZoomManager {
 	private static float zoom = BASE_ZOOM;
 	private static float activeMinZoom = MIN_ZOOM;
 	private static float activeMaxZoom = MAX_ZOOM;
+	private static float activeDefaultZoom = BASE_ZOOM;
 	private static float activeZoomStep = DEFAULT_ZOOM_STEP;
 	private static Optional<Holder<SoundEvent>> activeZoomInSound = Optional.empty();
 	private static Optional<Holder<SoundEvent>> activeZoomOutSound = Optional.empty();
@@ -58,9 +59,10 @@ public final class ScopeZoomManager {
 		zoom = BASE_ZOOM;
 	}
 
-	public static void setActiveZoomProfile(float minZoom, float maxZoom, Optional<Holder<SoundEvent>> zoomInSound, Optional<Holder<SoundEvent>> zoomOutSound) {
+	public static void setActiveZoomProfile(float minZoom, float maxZoom, float defaultZoom, Optional<Holder<SoundEvent>> zoomInSound, Optional<Holder<SoundEvent>> zoomOutSound) {
 		activeMinZoom = Mth.clamp(minZoom, MIN_ZOOM, MAX_ZOOM);
 		activeMaxZoom = Mth.clamp(maxZoom, MIN_ZOOM, MAX_ZOOM);
+		activeDefaultZoom =  Mth.clamp(defaultZoom, MIN_ZOOM, MAX_ZOOM);
 		if (activeMinZoom > activeMaxZoom) {
 			final float previousMin = activeMinZoom;
 			activeMinZoom = activeMaxZoom;
@@ -75,6 +77,7 @@ public final class ScopeZoomManager {
 		activeMinZoom = MIN_ZOOM;
 		activeMaxZoom = MAX_ZOOM;
 		activeZoomStep = DEFAULT_ZOOM_STEP;
+		activeDefaultZoom = BASE_ZOOM;
 		activeZoomInSound = Optional.empty();
 		activeZoomOutSound = Optional.empty();
 	}
@@ -106,6 +109,21 @@ public final class ScopeZoomManager {
 		} else {
 			zoom = Mth.clamp(zoom + activeZoomStep, activeMinZoom, activeMaxZoom);
 		}
+
+		if (initalZoom != zoom) {
+			final float zoomProgress = zoom / activeMaxZoom;
+			final Optional<Holder<SoundEvent>> zoomSound = increase ? activeZoomInSound : activeZoomOutSound;
+			zoomSound.ifPresent(soundEventHolder -> minecraft.getSoundManager().play(SimpleSoundInstance.forUI(soundEventHolder.value(), 0.9F + zoomProgress)));
+			ClientPlayNetworking.send(new ChangeScopeZoomPacket(player.getUsedItemHand(), zoom));
+		}
+
+		return initalZoom != zoom;
+	}
+
+	public static boolean setZoomToDefault(Minecraft minecraft, Player player) {
+		final float initalZoom = zoom;
+		final boolean increase = initalZoom < activeDefaultZoom;
+		zoom = activeDefaultZoom;
 
 		if (initalZoom != zoom) {
 			final float zoomProgress = zoom / activeMaxZoom;

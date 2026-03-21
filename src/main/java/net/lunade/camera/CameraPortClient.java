@@ -17,9 +17,11 @@
 
 package net.lunade.camera;
 
+import com.mojang.blaze3d.platform.InputConstants;
 import net.fabricmc.api.ClientModInitializer;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
+import net.fabricmc.fabric.api.client.keymapping.v1.KeyMappingHelper;
 import net.fabricmc.fabric.api.client.rendering.v1.ClientTooltipComponentCallback;
 import net.fabricmc.fabric.api.client.rendering.v1.ModelLayerRegistry;
 import net.lunade.camera.client.ScopeAndCameraUseController;
@@ -36,6 +38,7 @@ import net.lunade.camera.component.tooltip.client.ClientPhotographTooltip;
 import net.lunade.camera.networking.CameraPortClientNetworking;
 import net.lunade.camera.registry.CameraPortEntityTypes;
 import net.lunade.camera.registry.CameraPortScreens;
+import net.minecraft.client.KeyMapping;
 import net.minecraft.client.model.geom.ModelLayerLocation;
 import net.minecraft.client.renderer.entity.EntityRenderers;
 
@@ -43,13 +46,16 @@ import net.minecraft.client.renderer.entity.EntityRenderers;
 public class CameraPortClient implements ClientModInitializer {
 	public static final ModelLayerLocation CAMERA_MODEL_LAYER = new ModelLayerLocation(CameraPortConstants.id("camera"), "main");
 	public static final ModelLayerLocation DISC_CAMERA_MODEL_LAYER = new ModelLayerLocation(CameraPortConstants.id("disc_camera"), "main");
+	public static final KeyMapping RESET_SCOPE_ZOOM = new KeyMapping("key.resetScopeZoom", InputConstants.Type.MOUSE, 2, KeyMapping.Category.GAMEPLAY, 1);
 
 	@Override
 	public void onInitializeClient() {
 		EntityRenderers.register(CameraPortEntityTypes.CAMERA, TripodCameraRenderer::new);
 		ModelLayerRegistry.registerModelLayer(CAMERA_MODEL_LAYER, TripodCameraModel::createBodyLayer);
 		EntityRenderers.register(CameraPortEntityTypes.DISC_CAMERA, DiscCameraRenderer::new);
-		ModelLayerRegistry.registerModelLayer(DISC_CAMERA_MODEL_LAYER, DiscCameraModel::getTexturedModelData);
+		ModelLayerRegistry.registerModelLayer(DISC_CAMERA_MODEL_LAYER, DiscCameraModel::createBodyLayer);
+
+		KeyMappingHelper.registerKeyMapping(RESET_SCOPE_ZOOM);
 
 		CameraPortScreens.init();
 		ScopeAndCameraUseController.init();

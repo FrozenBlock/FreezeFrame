@@ -21,6 +21,7 @@ import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 import net.fabricmc.fabric.api.client.event.lifecycle.v1.ClientTickEvents;
 import net.fabricmc.fabric.api.client.networking.v1.ClientPlayNetworking;
+import net.lunade.camera.CameraPortClient;
 import net.lunade.camera.component.ScopeZoomConfig;
 import net.lunade.camera.networking.packet.ChangeScopeZoomPacket;
 import net.lunade.camera.networking.packet.QuickCameraPhotographPacket;
@@ -30,7 +31,6 @@ import net.lunade.camera.util.ScopeZoomHelper;
 import net.lunade.camera.util.client.ScopeZoomManager;
 import net.minecraft.client.CameraType;
 import net.minecraft.client.Minecraft;
-import net.minecraft.client.multiplayer.MultiPlayerGameMode;
 import net.minecraft.client.player.LocalPlayer;
 import net.minecraft.world.item.ItemStack;
 
@@ -38,6 +38,7 @@ import net.minecraft.world.item.ItemStack;
 public final class ScopeAndCameraUseController {
 	private static boolean wasPlayerNull;
 	private static boolean wasAttackDown = false;
+	private static boolean wasResetZoomDown = false;
 	private static ItemStack previousScopeItem = ItemStack.EMPTY;
 	private static boolean forcedFirstPerson = false;
 	private static CameraType previousCameraType = CameraType.FIRST_PERSON;
@@ -76,20 +77,21 @@ public final class ScopeAndCameraUseController {
 
 		if (usingScopeItem && isScopeConfigDifferent) applyZoomProfile(scopeItem);
 
+		final boolean resetZoomDown = CameraPortClient.RESET_SCOPE_ZOOM.isDown();
+		if (resetZoomDown && !wasResetZoomDown) ScopeZoomManager.setZoomToDefault(minecraft, player);
+
 		final boolean attackDown = minecraft.options.keyAttack.isDown();
-		if (attackDown && !wasAttackDown && holdingCamera) {
-			final MultiPlayerGameMode gameMode = minecraft.gameMode;
-			if (gameMode != null) {
-				if (ScopeItemHelper.isPlayerUsingCamera(player)) {
-					ClientPlayNetworking.send(new ChangeScopeZoomPacket(player.getUsedItemHand(), ScopeZoomManager.getZoom()));
-					gameMode.useItem(player, player.getUsedItemHand());
-				} else {
-					ClientPlayNetworking.send(new QuickCameraPhotographPacket());
-				}
+		if (attackDown && !wasAttackDown && minecraft.gameMode != null && holdingCamera) {
+			if (ScopeItemHelper.isPlayerUsingCamera(player)) {
+				ClientPlayNetworking.send(new ChangeScopeZoomPacket(player.getUsedItemHand(), ScopeZoomManager.getZoom()));
+				minecraft.gameMode.useItem(player, player.getUsedItemHand());
+			} else {
+				ClientPlayNetworking.send(new QuickCameraPhotographPacket());
 			}
 		}
 
 		wasAttackDown = attackDown;
+		wasResetZoomDown = resetZoomDown;
 		previousScopeItem = scopeItem;
 	}
 
@@ -118,6 +120,7 @@ public final class ScopeAndCameraUseController {
 		ScopeZoomManager.setActiveZoomProfile(
 			ScopeZoomHelper.getMinZoomFor(stack),
 			ScopeZoomHelper.getMaxZoomFor(stack),
+			ScopeZoomHelper.getDefaultZoomFor(stack),
 			ScopeZoomHelper.getZoomInSoundFor(stack),
 			ScopeZoomHelper.getZoomOutSoundFor(stack)
 		);
