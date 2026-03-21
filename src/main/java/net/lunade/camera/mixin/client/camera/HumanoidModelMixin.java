@@ -86,8 +86,8 @@ public class HumanoidModelMixin<T extends HumanoidRenderState> {
 	private void cameraPort$poseRightArm(T state, CallbackInfo info) {
 		final boolean oneArm = state.rightArmPose == CameraPortArmPoses.CAMERA_ONE_ARM;
 		if (state.rightArmPose != CameraPortArmPoses.CAMERA && !oneArm) return;
-		this.cameraPort$poseRightArmForCamera(state.isUsingItem);
-		if (!oneArm) this.cameraPort$poseLeftArmForCamera(state.isUsingItem);
+		this.cameraPort$poseArmForCamera(false, state.isUsingItem, state.isCrouching);
+		if (!oneArm) this.cameraPort$poseArmForCamera(true, state.isUsingItem, state.isCrouching);
 		info.cancel();
 	}
 
@@ -95,28 +95,19 @@ public class HumanoidModelMixin<T extends HumanoidRenderState> {
 	private void cameraPort$poseLeftArm(T state, CallbackInfo info) {
 		final boolean oneArm = state.leftArmPose == CameraPortArmPoses.CAMERA_ONE_ARM;
 		if (state.leftArmPose != CameraPortArmPoses.CAMERA && !oneArm) return;
-		this.cameraPort$poseLeftArmForCamera(state.isUsingItem);
-		if (!oneArm) this.cameraPort$poseRightArmForCamera(state.isUsingItem);
+		this.cameraPort$poseArmForCamera(true, state.isUsingItem, state.isCrouching);
+		if (!oneArm) this.cameraPort$poseArmForCamera(false, state.isUsingItem, state.isCrouching);
 		info.cancel();
 	}
 
 	@Unique
-	private void cameraPort$poseLeftArmForCamera(boolean using) {
-		this.leftArm.yRot = 0.3F + (this.head.yRot);
+	private void cameraPort$poseArmForCamera(boolean isLeftArm, boolean using, boolean crouching) {
+		final ModelPart arm = isLeftArm ? this.leftArm : this.rightArm;
+		arm.yRot = (isLeftArm ? 0.3F : -0.3F) + (this.head.yRot);
 
 		final float clampedHeadXRot = using ? this.head.xRot : Mth.clamp(this.head.xRot, -Mth.TWO_PI, CameraPortArmPoses.HIGHEST_LOOK_ROT);
 		final float zRotScale = clampedHeadXRot < 0 && using ? 0.3F : 0.15F;
-		this.leftArm.zRot = clampedHeadXRot * zRotScale;
-		this.leftArm.xRot = -Mth.HALF_PI + clampedHeadXRot + (using ? -0.45F : 0.1F);
-	}
-
-	@Unique
-	private void cameraPort$poseRightArmForCamera(boolean using) {
-		this.rightArm.yRot = -0.3F + (this.head.yRot);
-
-		final float clampedHeadXRot = using ? this.head.xRot : Mth.clamp(this.head.xRot, -Mth.TWO_PI, CameraPortArmPoses.HIGHEST_LOOK_ROT);
-		final float zRotScale = clampedHeadXRot < 0 && using ? 0.3F : 0.15F;
-		this.rightArm.zRot = clampedHeadXRot * -zRotScale;
-		this.rightArm.xRot = -Mth.HALF_PI + clampedHeadXRot + (using ? -0.45F : 0.1F);
+		arm.zRot = clampedHeadXRot * (isLeftArm ? zRotScale : -zRotScale);
+		arm.xRot = -Mth.HALF_PI + clampedHeadXRot + (using ? (crouching ? -0.75F : -0.45F) : (crouching ? -0.2F : 0.1F));
 	}
 }
