@@ -8,10 +8,18 @@
         "model": "camera_port:item/disc_camera_inactive"
       },
       "on_true": {
-        "type": "minecraft:model",
-        "model": "camera_port:item/disc_camera_active"
+        "type": "minecraft:condition",
+        "on_false": {
+          "type": "minecraft:model",
+          "model": "camera_port:item/disc_camera_inactive"
+        },
+        "on_true": {
+          "type": "minecraft:model",
+          "model": "camera_port:item/disc_camera_active"
+        },
+        "property": "minecraft:using_item"
       },
-      "property": "minecraft:using_item"
+      "property": "camera_port:in_main_hand"
     },
     "on_true": {
       "type": "minecraft:model",

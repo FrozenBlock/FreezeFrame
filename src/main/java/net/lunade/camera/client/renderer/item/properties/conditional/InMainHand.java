@@ -20,7 +20,6 @@ package net.lunade.camera.client.renderer.item.properties.conditional;
 import com.mojang.serialization.MapCodec;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
-import net.lunade.camera.item.CameraItem;
 import net.minecraft.client.multiplayer.ClientLevel;
 import net.minecraft.client.renderer.item.properties.conditional.ConditionalItemModelProperty;
 import net.minecraft.world.entity.LivingEntity;
@@ -29,20 +28,16 @@ import net.minecraft.world.item.ItemStack;
 import org.jspecify.annotations.Nullable;
 
 @Environment(EnvType.CLIENT)
-public class CanTakePhoto implements ConditionalItemModelProperty {
-	public static final MapCodec<CanTakePhoto> MAP_CODEC = MapCodec.unit(new CanTakePhoto());
+public class InMainHand implements ConditionalItemModelProperty {
+	public static final MapCodec<InMainHand> MAP_CODEC = MapCodec.unit(new InMainHand());
 
 	@Override
 	public boolean get(ItemStack stack, @Nullable ClientLevel level, @Nullable LivingEntity owner, int seed, ItemDisplayContext displayContext) {
-		return owner != null && isItemInHand(displayContext) && owner.getOffhandItem() != stack && CameraItem.isCapableOfTakingPhotos(stack);
-	}
-
-	private static boolean isItemInHand(ItemDisplayContext displayContext) {
-		return displayContext.firstPerson() || displayContext == ItemDisplayContext.THIRD_PERSON_LEFT_HAND || displayContext == ItemDisplayContext.THIRD_PERSON_RIGHT_HAND;
+		return owner != null && owner.getMainHandItem() == stack;
 	}
 
 	@Override
-	public MapCodec<CanTakePhoto> type() {
+	public MapCodec<InMainHand> type() {
 		return MAP_CODEC;
 	}
 }

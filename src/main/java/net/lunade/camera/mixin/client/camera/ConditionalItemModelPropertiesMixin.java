@@ -22,6 +22,7 @@ import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 import net.lunade.camera.CameraPortConstants;
 import net.lunade.camera.client.renderer.item.properties.conditional.CanTakePhoto;
+import net.lunade.camera.client.renderer.item.properties.conditional.InMainHand;
 import net.minecraft.client.renderer.item.properties.conditional.ConditionalItemModelProperties;
 import net.minecraft.client.renderer.item.properties.conditional.ConditionalItemModelProperty;
 import net.minecraft.resources.Identifier;
@@ -44,5 +45,6 @@ public class ConditionalItemModelPropertiesMixin {
 	@Inject(method = "bootstrap", at = @At("TAIL"))
 	private static void cameraPort$bootstrap(CallbackInfo info) {
 		ID_MAPPER.put(CameraPortConstants.id("can_take_photo"), CanTakePhoto.MAP_CODEC);
+		ID_MAPPER.put(CameraPortConstants.id("in_main_hand"), InMainHand.MAP_CODEC);
 	}
 }

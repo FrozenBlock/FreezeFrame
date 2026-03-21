@@ -22,6 +22,7 @@ import net.fabricmc.api.Environment;
 import net.fabricmc.fabric.api.client.datagen.v1.provider.FabricModelProvider;
 import net.fabricmc.fabric.api.datagen.v1.FabricPackOutput;
 import net.lunade.camera.client.renderer.item.properties.conditional.CanTakePhoto;
+import net.lunade.camera.client.renderer.item.properties.conditional.InMainHand;
 import net.lunade.camera.registry.CameraPortBlocks;
 import net.lunade.camera.registry.CameraPortItems;
 import net.minecraft.client.data.models.BlockModelGenerators;
@@ -78,8 +79,12 @@ public final class CameraPortModelProvider extends FabricModelProvider {
 			new CanTakePhoto(),
 			activeModel,
 			ItemModelUtils.conditional(
-				new IsUsingItem(),
-				activeModel,
+				new InMainHand(),
+				ItemModelUtils.conditional(
+					new IsUsingItem(),
+					activeModel,
+					inactiveModel
+				),
 				inactiveModel
 			)
 		);
