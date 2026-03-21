@@ -79,7 +79,7 @@ public class CameraItem extends SpawnEggItem {
 
 		if (player.isShiftKeyDown()) return super.use(level, player, hand);
 		if (hand != InteractionHand.OFF_HAND) {
-			player.playSound(CameraPortSounds.CAMERA_SCOPE_START, 1F, 1F + (player.level().getRandom().nextFloat() * 0.5F));
+			player.playSound(CameraPortSounds.CAMERA_SCOPE_START, 1F, 0.9F + (player.level().getRandom().nextFloat() * 0.5F));
 			player.awardStat(Stats.ITEM_USED.get(this));
 			return ItemUtils.startUsingInstantly(level, player, hand);
 		}
