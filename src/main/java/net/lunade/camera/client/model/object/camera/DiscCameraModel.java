@@ -53,7 +53,6 @@ public class DiscCameraModel extends TripodCameraModel {
 				.scaled(1.3F, 0.9F, 1.3F)
 		);
 
-
 		createLeg(root, 1, CubeListBuilder.create(), 0F, 0F);
 		createLeg(root, 2, CubeListBuilder.create(), 0F, 0F);
 		createLeg(root, 3, CubeListBuilder.create(), 0F, 0F);
