@@ -19,7 +19,7 @@ package net.frozenblock.freezeframe;
 
 import net.fabricmc.api.ModInitializer;
 import net.frozenblock.freezeframe.config.FFConfig;
-import net.frozenblock.freezeframe.networking.CameraPortNetworking;
+import net.frozenblock.freezeframe.networking.FFNetworking;
 import net.frozenblock.freezeframe.registry.FFBlocks;
 import net.frozenblock.freezeframe.registry.FFContainerComponentManipulators;
 import net.frozenblock.freezeframe.registry.FFDataComponentPredicates;
@@ -44,7 +44,7 @@ public class FreezeFrame implements ModInitializer {
 		FFRecipeSerializers.init();
 		FFMenuTypes.register();
 
-		CameraPortNetworking.init();
+		FFNetworking.init();
 
 		FFConfig.CONFIG.load(true);
 	}

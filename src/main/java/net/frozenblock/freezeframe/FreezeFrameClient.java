@@ -35,7 +35,7 @@ import net.frozenblock.freezeframe.component.tooltip.PhotographTooltip;
 import net.frozenblock.freezeframe.component.tooltip.client.ClientCameraTooltip;
 import net.frozenblock.freezeframe.component.tooltip.client.ClientFilmTooltip;
 import net.frozenblock.freezeframe.component.tooltip.client.ClientPhotographTooltip;
-import net.frozenblock.freezeframe.networking.CameraPortClientNetworking;
+import net.frozenblock.freezeframe.networking.FFClientNetworking;
 import net.frozenblock.freezeframe.registry.FFEntityTypes;
 import net.frozenblock.freezeframe.registry.FFScreens;
 import net.minecraft.client.KeyMapping;
@@ -60,7 +60,7 @@ public class FreezeFrameClient implements ClientModInitializer {
 		FFScreens.init();
 		ScopeAndCameraUseController.init();
 
-		CameraPortClientNetworking.init();
+		FFClientNetworking.init();
 
 		ClientTooltipComponentCallback.EVENT.register(component -> {
 			if (component instanceof PhotographTooltip tooltip) return new ClientPhotographTooltip(tooltip);

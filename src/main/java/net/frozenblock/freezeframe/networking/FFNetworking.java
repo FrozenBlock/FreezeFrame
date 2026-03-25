@@ -30,7 +30,7 @@ import net.frozenblock.freezeframe.networking.packet.SelectCameraFilmPacket;
 import net.frozenblock.freezeframe.networking.packet.SelectFilmPhotographPacket;
 import net.minecraft.network.RegistryFriendlyByteBuf;
 
-public class CameraPortNetworking {
+public class FFNetworking {
 
 	public static void init() {
 		PayloadTypeRegistry<RegistryFriendlyByteBuf> registry = PayloadTypeRegistry.clientboundPlay();

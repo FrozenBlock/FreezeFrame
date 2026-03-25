@@ -24,7 +24,7 @@ import net.frozenblock.freezeframe.networking.packet.OpenFilmScreenPacket;
 import net.frozenblock.freezeframe.util.client.CameraScreenshotManager;
 import net.minecraft.world.entity.Entity;
 
-public class CameraPortClientNetworking {
+public class FFClientNetworking {
 
 	public static void init() {
 		ClientPlayNetworking.registerGlobalReceiver(OpenFilmScreenPacket.PACKET_TYPE, (packet, ctx) -> {
