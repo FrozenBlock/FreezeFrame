@@ -12,7 +12,9 @@
     "zntm"
   ],
   "contact": {
-    "homepage": "https://modrinth.com/mod/freeze-frame"
+    "homepage": "https://modrinth.com/mod/freeze-frame",
+    "sources": "https://github.com/FrozenBlock/FreezeFrame",
+    "issues": "https://github.com/FrozenBlock/FreezeFrame/issues"
   },
   "license": "FrozenBlock Modding Oasis License v1.0",
   "icon": "assets/freezeframe/icon.png",
