@@ -64,7 +64,15 @@
   "option.camera_port.use_as_world_icon": "Use Photos As World Icons",
   "tooltip.camera_port.use_as_world_icon": "Whether the latest-taken Photo in a world should replace the world icon.",
   "option.camera_port.hide_film_photo_preview_and_info": "Hide Film Photo Preview & Info",
-  "tooltip.camera_port.hide_film_photo_preview_and_info": "Hides only the embedded photo preview and photo information text in Film Roll tooltips.",
-  "option.camera_port.hide_photograph_preview": "Hide Photograph Preview",
-  "tooltip.camera_port.hide_photograph_preview": "Hides only the Photograph image preview on photograph items."
+  "tooltip.camera_port.hide_film_photo_preview_and_info": "Hides only the embedded Photo preview and Photo information text in Film Roll tooltips.",
+  "option.camera_port.hide_photograph_preview": "Hide Photo Preview",
+  "tooltip.camera_port.hide_photograph_preview": "Hides only the Photo image preview on photograph items.",
+  "option.camera_port.photograph_resolution": "Photo Resolution",
+  "tooltip.camera_port.photograph_resolution": "The resolution Photos will be taken at.",
+  "enum.camera_port.photograph_format.png": "png",
+  "enum.camera_port.photograph_format.mcphoto_lossless": "mcphoto",
+  "enum.camera_port.photograph_format.mcphoto_compressed": "mcphoto (Compressed)",
+  "enum.camera_port.photograph_format.mcphoto_very_compressed": "mcphoto (Very Compressed)",
+  "option.camera_port.photograph_format": "Photo File Format",
+  "tooltip.camera_port.photograph_format": "The file format to use when saving Photos.\npng: Lossless, but uses more space.\nmcphoto: Lossless, and uses less space. Recommended for lower resolutions.\nmcphoto (Compressed): Contains visual artifacts.\nmcphoto (Very Compressed): Contains noticeably visual artifacts. Recommended only for higher resolutions.\nNote: mcphoto is an alias for jpeg."
 }

@@ -75,17 +75,15 @@ public final class CameraPortConstants {
 		return MOD_ID + "_" + path;
 	}
 
-	/**
-	 * @return A text component for use in a Config GUI
-	 */
 	public static Component text(String key) {
 		return Component.translatable("option." + MOD_ID + "." + key);
 	}
 
-	/**
-	 * @return A tooltip component for use in a Config GUI
-	 */
 	public static Component tooltip(String key) {
 		return Component.translatable("tooltip." + MOD_ID + "." + key);
+	}
+
+	public static Component enumNameProvider(String key) {
+		return Component.translatable("enum." + MOD_ID + "." + key);
 	}
 }

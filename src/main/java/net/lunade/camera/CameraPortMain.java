@@ -34,8 +34,6 @@ public class CameraPortMain implements ModInitializer {
 
 	@Override
 	public void onInitialize() {
-		CameraPortConfig.init();
-
 		CameraPortEntityTypes.init();
 		CameraPortBlocks.register();
 		CameraPortItems.init();
@@ -47,5 +45,7 @@ public class CameraPortMain implements ModInitializer {
 		CameraPortMenuTypes.register();
 
 		CameraPortNetworking.init();
+
+		CameraPortConfig.CONFIG.load(true);
 	}
 }

@@ -54,9 +54,6 @@ public class CameraPortConfig {
 		.comment("Dictates the file format to save photographs as. mcphoto is treated as jpeg. It is recommended to used mcphoto_very_compressed when using higher resolutions, and mcphoto_lossless when using lower resolutions.")
 		.build();
 
-    public static void init() {
-    }
-
 	public static enum PhotographFormat implements StringRepresentable {
 		PNG("png", "png"),
 		MCPHOTO_LOSSLESS("mcphoto_lossless", "mcphoto"),
