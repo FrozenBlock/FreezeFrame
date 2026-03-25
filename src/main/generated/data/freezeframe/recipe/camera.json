@@ -4,12 +4,13 @@
   "key": {
     "#": "#minecraft:planks",
     "A": "minecraft:amethyst_shard",
-    "S": "minecraft:stick"
+    "G": "minecraft:gold_ingot",
+    "R": "minecraft:redstone"
   },
   "pattern": [
-    "S#S",
-    "#A#",
-    "S#S"
+    "##G",
+    "R A",
+    "##G"
   ],
   "result": {
     "id": "freezeframe:camera"

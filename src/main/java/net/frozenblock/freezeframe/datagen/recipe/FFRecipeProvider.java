@@ -20,11 +20,11 @@ package net.frozenblock.freezeframe.datagen.recipe;
 import java.util.concurrent.CompletableFuture;
 import net.fabricmc.fabric.api.datagen.v1.FabricPackOutput;
 import net.fabricmc.fabric.api.datagen.v1.provider.FabricRecipeProvider;
-import net.fabricmc.fabric.api.tag.convention.v2.ConventionalItemTags;
-import net.frozenblock.lib.recipe.api.RecipeExportNamespaceFix;
 import net.frozenblock.freezeframe.FFConstants;
 import net.frozenblock.freezeframe.recipe.FilmCapacityUpgradeRecipe;
+import net.frozenblock.freezeframe.registry.FFBlocks;
 import net.frozenblock.freezeframe.registry.FFItems;
+import net.frozenblock.lib.recipe.api.RecipeExportNamespaceFix;
 import net.minecraft.core.HolderLookup;
 import net.minecraft.core.registries.Registries;
 import net.minecraft.data.recipes.RecipeCategory;
@@ -53,25 +53,31 @@ public final class FFRecipeProvider extends FabricRecipeProvider {
 				this.shapeless(RecipeCategory.TOOLS, FFItems.FILM)
 					.requires(Items.PAPER, 3)
 					.requires(Items.COPPER_INGOT)
-					.unlockedBy("has_camera", this.has(FFItems.CAMERA))
+					.unlockedBy(RecipeProvider.getHasName(FFItems.CAMERA), this.has(FFItems.CAMERA))
+					.unlockedBy(RecipeProvider.getHasName(Items.PAPER), this.has(Items.PAPER))
 					.save(this.output);
 
 				this.shaped(RecipeCategory.TOOLS, FFItems.CAMERA)
-					.define('S', Ingredient.of(Items.STICK))
 					.define('#', Ingredient.of(this.registries.lookupOrThrow(Registries.ITEM).getOrThrow(ItemTags.PLANKS)))
 					.define('A', Ingredient.of(Items.AMETHYST_SHARD))
-					.pattern("S#S")
-					.pattern("#A#")
-					.pattern("S#S")
+					.define('G', Ingredient.of(Items.GOLD_INGOT))
+					.define('R', Ingredient.of(Items.REDSTONE))
+					.pattern("##G")
+					.pattern("R A")
+					.pattern("##G")
 					.unlockedBy(RecipeProvider.getHasName(Items.AMETHYST_SHARD), this.has(Items.AMETHYST_SHARD))
 					.save(exporter);
 
-				this.shaped(RecipeCategory.TOOLS, FFItems.DISC_CAMERA)
-					.define('#', Ingredient.of(FFItems.CAMERA))
-					.define('X', Ingredient.of(this.registries.lookupOrThrow(Registries.ITEM).getOrThrow(ConventionalItemTags.MUSIC_DISCS)))
-					.pattern("#")
-					.pattern("X")
-					.unlockedBy(RecipeProvider.getHasName(FFItems.DISC_CAMERA), this.has(FFItems.DISC_CAMERA))
+				this.shaped(RecipeCategory.TOOLS, FFBlocks.DEVELOPING_TABLE)
+					.define('#', Ingredient.of(this.registries.lookupOrThrow(Registries.ITEM).getOrThrow(ItemTags.PLANKS)))
+					.define('S', Ingredient.of(Items.STONE))
+					.define('C', Ingredient.of(Items.CYAN_DYE))
+					.define('M', Ingredient.of(Items.MAGENTA_DYE))
+					.define('Y', Ingredient.of(Items.YELLOW_DYE))
+					.pattern("SSC")
+					.pattern("##M")
+					.pattern("##Y")
+					.unlockedBy(RecipeProvider.getHasName(Items.STONE), this.has(Items.STONE))
 					.save(exporter);
 
 				SpecialRecipeBuilder.special(FilmCapacityUpgradeRecipe::new)

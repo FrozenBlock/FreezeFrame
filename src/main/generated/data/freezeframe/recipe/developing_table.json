@@ -1,0 +1,19 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "category": "equipment",
+  "key": {
+    "#": "#minecraft:planks",
+    "C": "minecraft:cyan_dye",
+    "M": "minecraft:magenta_dye",
+    "S": "minecraft:stone",
+    "Y": "minecraft:yellow_dye"
+  },
+  "pattern": [
+    "SSC",
+    "##M",
+    "##Y"
+  ],
+  "result": {
+    "id": "freezeframe:developing_table"
+  }
+}

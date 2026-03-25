@@ -75,8 +75,7 @@ public class FFItems {
 		CreativeModeTabEvents.modifyOutputEvent(CreativeModeTabs.FUNCTIONAL_BLOCKS).register(
 			entries -> {
 				entries.insertAfter(Items.LODESTONE, CAMERA);
-				entries.insertAfter(CAMERA, DISC_CAMERA);
-				entries.insertAfter(DISC_CAMERA, FILM);
+				entries.insertAfter(CAMERA, FILM);
 				entries.insertAfter(FILM, PHOTOGRAPH);
 			}
 		);
