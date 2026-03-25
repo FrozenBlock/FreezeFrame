@@ -53,7 +53,9 @@ public class FFBlocks {
 	);
 
 	public static void register() {
-		CreativeModeTabEvents.modifyOutputEvent(CreativeModeTabs.FUNCTIONAL_BLOCKS).register((entries) -> entries.insertAfter(Items.LODESTONE, DEVELOPING_TABLE));
+		CreativeModeTabEvents.modifyOutputEvent(CreativeModeTabs.FUNCTIONAL_BLOCKS).register(
+			output -> output.insertAfter(Items.LOOM, DEVELOPING_TABLE)
+		);
 	}
 
 	private static <T extends Block> T registerWithoutItem(String path, Function<BlockBehaviour.Properties, T> block, BlockBehaviour.Properties properties) {

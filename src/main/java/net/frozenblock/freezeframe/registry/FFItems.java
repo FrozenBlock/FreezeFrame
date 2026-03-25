@@ -72,11 +72,10 @@ public class FFItems {
 	// public static final PortfolioItem PORTFOLIO = new PortfolioItem(new Item.Properties().stacksTo(1).component(WRITABLE_PORTFOLIO_CONTENT, WritablePortfolioContent.EMPTY));
 
 	public static void init() {
-		CreativeModeTabEvents.modifyOutputEvent(CreativeModeTabs.FUNCTIONAL_BLOCKS).register(
+		CreativeModeTabEvents.modifyOutputEvent(CreativeModeTabs.TOOLS_AND_UTILITIES).register(
 			entries -> {
-				entries.insertAfter(Items.LODESTONE, CAMERA);
+				entries.insertAfter(Items.SPYGLASS, CAMERA);
 				entries.insertAfter(CAMERA, FILM);
-				entries.insertAfter(FILM, PHOTOGRAPH);
 			}
 		);
 	}
