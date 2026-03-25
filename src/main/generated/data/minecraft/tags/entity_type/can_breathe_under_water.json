@@ -1,7 +1,7 @@
 {
   "values": [
     {
-      "id": "#camera_port:cameras",
+      "id": "#freezeframe:cameras",
       "required": false
     }
   ]

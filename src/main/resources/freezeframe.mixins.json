@@ -1,0 +1,44 @@
+{
+  "required": false,
+  "minVersion": "0.8.5",
+  "package": "net.frozenblock.freezeframe.mixin",
+  "compatibilityLevel": "JAVA_21",
+  "mixins": [
+    "camera.AbstractContainerMenuMixin",
+    "camera.ContainerComponentManipulatorsMixin",
+    "camera.GoatAiMixin",
+    "camera.ItemStackMixin",
+    "camera.LivingEntityMixin",
+    "camera.NautilusAiMixin",
+    "camera.PlayerMixin",
+    "camera.SpawnEggItemMixin",
+    "camera.WolfMixin",
+    "datafix.DataFixersMixin",
+    "datafix.V3328Mixin",
+    "film.AbstractContainerMenuMixin"
+  ],
+  "client": [
+    "client.camera.AbstractClientPlayerMixin",
+    "client.camera.AbstractContainerScreenMixin",
+    "client.camera.ArmPoseMixin",
+    "client.camera.AvatarRendererMixin",
+    "client.camera.CameraMixin",
+    "client.camera.GuiMixin",
+    "client.camera.HumanoidModelMixin",
+    "client.camera.ItemInHandRendererMixin",
+    "client.camera.LevelRendererMixin",
+    "client.camera.MinecraftMixin",
+    "client.camera.PlayerItemInHandLayerMixin",
+    "client.camera.ScreenEffectRendererMixin",
+    "client.film.AbstractContainerScreenMixin",
+    "client.item_properties.ConditionalItemModelPropertiesMixin",
+    "client.item_properties.RangeSelectItemModelPropertiesMixin",
+    "client.photograph.ItemFrameRendererMixin",
+    "client.photograph.ItemInHandRendererMixin",
+    "client.photograph.NativeImageMixin",
+    "client.scope.MouseHandlerMixin"
+  ],
+  "injectors": {
+    "defaultRequire": 1
+  }
+}

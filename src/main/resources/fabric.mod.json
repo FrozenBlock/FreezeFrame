@@ -2,8 +2,8 @@
   "schemaVersion": 1,
   "id": "${mod_id}",
   "version": "${version}",
-  "name": "Camera Port",
-  "description": "Ports Bedrock/Education Edition's Camera entity to Java Edition.",
+  "name": "Freeze Frame",
+  "description": "Adds Cameras to Minecraft in an intuitive and vanilla way.",
   "authors": [
     "Luna",
     "Lufurrius"
@@ -12,28 +12,29 @@
     "zntm"
   ],
   "contact": {
-    "homepage": "https://modrinth.com/mod/camera-port"
+    "homepage": "https://modrinth.com/mod/freeze-frame"
   },
   "license": "FrozenBlock Modding Oasis License v1.0",
-  "icon": "assets/camera_port/camera_icon.png",
+  "icon": "assets/freezeframe/icon.png",
   "environment": "*",
   "entrypoints": {
     "main": [
-      "net.lunade.camera.CameraPortMain"
+      "net.frozenblock.freezeframe.FreezeFrame"
     ],
     "client": [
-      "net.lunade.camera.CameraPortClient"
+      "net.frozenblock.freezeframe.FreezeFrameClient"
     ],
     "modmenu": [
-      "net.lunade.camera.config.gui.ModMenuIntegration"
+      "net.frozenblock.freezeframe.config.gui.ModMenuIntegration"
     ],
     "fabric-datagen": [
-      "net.lunade.camera.datagen.CameraPortDataGenerator"
+      "net.frozenblock.freezeframe.datagen.FFDataGenerator"
     ]
   },
   "mixins": [
-    "camera_port.mixins.json"
+    "freezeframe.mixins.json"
   ],
+  "accessWidener": "freezeframe.classtweaker",
   "depends": {
     "frozenlib": "${frozenlib_version}",
     "fabric-api": "*",

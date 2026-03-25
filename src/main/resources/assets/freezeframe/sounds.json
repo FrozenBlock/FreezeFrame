@@ -1,0 +1,271 @@
+{
+  "entity.camera.break": {
+    "subtitle": "subtitle.entity.camera.break",
+    "sounds": [
+      "freezeframe:camera/break1",
+      "freezeframe:camera/break2",
+      "freezeframe:camera/break3",
+      "freezeframe:camera/break4"
+    ]
+  },
+  "entity.camera.fall": {
+    "subtitle": "subtitle.entity.camera.fall",
+    "sounds": [
+      "minecraft:block/bamboo/place1",
+      "minecraft:block/bamboo/place2",
+      "minecraft:block/bamboo/place3",
+      "minecraft:block/bamboo/place4",
+      "minecraft:block/bamboo/place5",
+      "minecraft:block/bamboo/place6"
+    ]
+  },
+  "entity.camera.hit": {
+    "subtitle": "subtitle.entity.camera.hit",
+    "sounds": [
+      "freezeframe:camera/hit1",
+      "freezeframe:camera/hit2",
+      "freezeframe:camera/hit3",
+      "freezeframe:camera/hit4"
+    ]
+  },
+  "entity.camera.place": {
+    "subtitle": "subtitle.entity.camera.place",
+    "sounds": [
+      "freezeframe:camera/place"
+    ]
+  },
+  "entity.camera.prime": {
+    "subtitle": "subtitle.entity.camera.prime",
+    "sounds": [
+      {
+        "name":  "freezeframe:camera/prime1",
+        "volume": 1.5
+      },
+      {
+        "name":  "freezeframe:camera/prime2",
+        "volume": 1.5
+      },
+      {
+        "name":  "freezeframe:camera/prime3",
+        "volume": 1.5
+      },
+      {
+        "name":  "freezeframe:camera/prime4",
+        "volume": 1.5
+      },
+      {
+        "name":  "freezeframe:camera/prime5",
+        "volume": 1.5
+      },
+      {
+        "name":  "freezeframe:camera/prime6",
+        "volume": 1.5
+      },
+      {
+        "name":  "freezeframe:camera/prime7",
+        "volume": 1.5
+      },
+      {
+        "name":  "freezeframe:camera/prime8",
+        "volume": 1.5
+      },
+      {
+        "name":  "freezeframe:camera/prime9",
+        "volume": 1.5
+      }
+    ]
+  },
+  "entity.camera.already_primed": {
+    "subtitle": "subtitle.item.camera.already_primed",
+    "sounds": [
+      "freezeframe:camera/snap_fail1",
+      "freezeframe:camera/snap_fail2",
+      "freezeframe:camera/snap_fail3"
+    ]
+  },
+  "entity.camera.prime_fail": {
+    "subtitle": "subtitle.entity.camera.prime_fail",
+    "sounds": [
+      "freezeframe:camera/prime_fail1",
+      "freezeframe:camera/prime_fail2"
+    ]
+  },
+  "entity.camera.prime_fail_full": {
+    "subtitle": "subtitle.entity.camera.prime_fail",
+    "sounds": [
+      "freezeframe:camera/prime_fail_full1",
+      "freezeframe:camera/prime_fail_full2",
+      "freezeframe:camera/prime_fail_full3"
+    ]
+  },
+  "entity.camera.adjust": {
+    "subtitle": "subtitle.entity.camera.adjust",
+    "sounds": [
+      {
+        "name":  "freezeframe:camera/tripod_adjust1",
+        "volume": 0.45
+      },
+      {
+        "name":  "freezeframe:camera/tripod_adjust2",
+        "volume": 0.45
+      },
+      {
+        "name":  "freezeframe:camera/tripod_adjust3",
+        "volume": 0.45
+      }
+    ]
+  },
+
+  "item.camera.snap": {
+    "subtitle": "subtitle.item.camera.snap",
+    "sounds": [
+      "freezeframe:camera/snap1",
+      "freezeframe:camera/snap2",
+      "freezeframe:camera/snap3"
+    ]
+  },
+  "item.camera.snap_fail": {
+    "subtitle": "subtitle.item.camera.snap_fail",
+    "sounds": [
+      "freezeframe:camera/snap_fail1",
+      "freezeframe:camera/snap_fail2",
+      "freezeframe:camera/snap_fail3"
+    ]
+  },
+  "item.camera.insert": {
+    "subtitle": "subtitle.item.camera.insert",
+    "sounds": [
+      "freezeframe:camera/film_insert1",
+      "freezeframe:camera/film_insert2"
+    ]
+  },
+  "item.camera.insert_fail": {
+    "subtitle": "subtitle.item.camera.insert_fail",
+    "sounds": [
+      "freezeframe:camera/film_insert_fail1",
+      "freezeframe:camera/film_insert_fail2"
+    ]
+  },
+  "item.camera.remove_one": {
+    "subtitle": "subtitle.item.camera.remove_one",
+    "sounds": [
+      "freezeframe:camera/film_take1",
+      "freezeframe:camera/film_take2"
+    ]
+  },
+  "item.camera.scope_start": {
+    "sounds": [
+      {
+        "name": "freezeframe:item/camera/scope_start1",
+        "volume": 0.45
+      },
+      {
+        "name": "freezeframe:item/camera/scope_start2",
+        "volume": 0.45
+      },
+      {
+        "name": "freezeframe:item/camera/scope_start3",
+        "volume": 0.45
+      }
+    ]
+  },
+  "item.camera.scope_end": {
+    "sounds": [
+      {
+        "name": "freezeframe:item/camera/scope_end1",
+        "volume": 0.15
+      },
+      {
+        "name": "freezeframe:item/camera/scope_end2",
+        "volume": 0.15
+      },
+      {
+        "name": "freezeframe:item/camera/scope_end3",
+        "volume": 0.15
+      }
+    ]
+  },
+  "item.camera.zoom_increase": {
+    "sounds": [
+      "freezeframe:item/camera/zoom1",
+      "freezeframe:item/camera/zoom2",
+      "freezeframe:item/camera/zoom3",
+      "freezeframe:item/camera/zoom4",
+      "freezeframe:item/camera/zoom5",
+      "freezeframe:item/camera/zoom6"
+    ]
+  },
+  "item.camera.zoom_decrease": {
+    "sounds": [
+      "freezeframe:item/camera/zoom1",
+      "freezeframe:item/camera/zoom2",
+      "freezeframe:item/camera/zoom3",
+      "freezeframe:item/camera/zoom4",
+      "freezeframe:item/camera/zoom5",
+      "freezeframe:item/camera/zoom6"
+    ]
+  },
+
+  "item.spyglass.zoom_increase": {
+    "sounds": [
+      "freezeframe:item/spyglass/zoom1",
+      "freezeframe:item/spyglass/zoom2",
+      "freezeframe:item/spyglass/zoom3",
+      "freezeframe:item/spyglass/zoom4",
+      "freezeframe:item/spyglass/zoom5",
+      "freezeframe:item/spyglass/zoom6"
+    ]
+  },
+  "item.spyglass.zoom_decrease": {
+    "sounds": [
+      "freezeframe:item/spyglass/zoom1",
+      "freezeframe:item/spyglass/zoom2",
+      "freezeframe:item/spyglass/zoom3",
+      "freezeframe:item/spyglass/zoom4",
+      "freezeframe:item/spyglass/zoom5",
+      "freezeframe:item/spyglass/zoom6"
+    ]
+  },
+
+  "ui.developing_table.take_result": {
+    "sounds": [
+      "freezeframe:ui/developing_table/take_result1",
+      "freezeframe:ui/developing_table/take_result2",
+      "freezeframe:ui/developing_table/take_result3",
+      "freezeframe:ui/developing_table/take_result4"
+    ],
+    "subtitle": "subtitles.ui.developing_table.take_result"
+  },
+
+  "ui.film.rename": {
+    "sounds": [
+      "freezeframe:ui/film/rename1",
+      "freezeframe:ui/film/rename2",
+      "freezeframe:ui/film/rename3"
+    ],
+    "subtitle": "subtitles.ui.film.rename"
+  },
+  "ui.film.roll": {
+    "sounds": [
+      "freezeframe:ui/film/roll1",
+      "freezeframe:ui/film/roll2",
+      "freezeframe:ui/film/roll3",
+      "freezeframe:ui/film/roll4"
+    ]
+  },
+  "ui.film.tear": {
+    "sounds": [
+      "freezeframe:ui/film/tear1",
+      "freezeframe:ui/film/tear2",
+      "freezeframe:ui/film/tear3"
+    ]
+  },
+  "ui.film.tear_finish": {
+    "sounds": [
+      "freezeframe:ui/film/tear1",
+      "freezeframe:ui/film/tear2",
+      "freezeframe:ui/film/tear3"
+    ],
+    "subtitle": "subtitles.ui.film.tear"
+  }
+}

@@ -1,0 +1,19 @@
+{
+  "variants": {
+    "facing=east": {
+      "model": "freezeframe:block/developing_table",
+      "y": 90
+    },
+    "facing=north": {
+      "model": "freezeframe:block/developing_table"
+    },
+    "facing=south": {
+      "model": "freezeframe:block/developing_table",
+      "y": 180
+    },
+    "facing=west": {
+      "model": "freezeframe:block/developing_table",
+      "y": 270
+    }
+  }
+}

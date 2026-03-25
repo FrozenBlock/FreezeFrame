@@ -1,0 +1,403 @@
+/*
+ * Copyright 2026 FrozenBlock
+ * This file is part of Camera Port.
+ *
+ * This program is free software; you can modify it under
+ * the terms of version 1 of the FrozenBlock Modding Oasis License
+ * as published by FrozenBlock Modding Oasis.
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
+ * FrozenBlock Modding Oasis License for more details.
+ *
+ * You should have received a copy of the FrozenBlock Modding Oasis License
+ * along with this program; if not, see <https://github.com/FrozenBlock/Licenses>.
+ */
+
+package net.frozenblock.freezeframe.item;
+
+import java.util.Objects;
+import java.util.Optional;
+import net.frozenblock.lib.sound.impl.networking.FrozenLibSoundPackets;
+import net.frozenblock.freezeframe.FFConstants;
+import net.frozenblock.freezeframe.component.CameraContents;
+import net.frozenblock.freezeframe.component.FilmContents;
+import net.frozenblock.freezeframe.component.Photograph;
+import net.frozenblock.freezeframe.component.tooltip.CameraTooltip;
+import net.frozenblock.freezeframe.networking.packet.CameraTakeScreenshotPacket;
+import net.frozenblock.freezeframe.registry.FFDataComponents;
+import net.frozenblock.freezeframe.registry.FFSounds;
+import net.frozenblock.freezeframe.tag.CameraPortItemTags;
+import net.frozenblock.freezeframe.util.ScopeItemHelper;
+import net.frozenblock.freezeframe.util.ScopeZoomHelper;
+import net.minecraft.core.Holder;
+import net.minecraft.core.component.DataComponents;
+import net.minecraft.core.registries.BuiltInRegistries;
+import net.minecraft.core.registries.Registries;
+import net.minecraft.server.level.ServerPlayer;
+import net.minecraft.stats.Stats;
+import net.minecraft.util.ARGB;
+import net.minecraft.util.Mth;
+import net.minecraft.world.InteractionHand;
+import net.minecraft.world.InteractionResult;
+import net.minecraft.world.entity.Entity;
+import net.minecraft.world.entity.LivingEntity;
+import net.minecraft.world.entity.SlotAccess;
+import net.minecraft.world.entity.item.ItemEntity;
+import net.minecraft.world.entity.player.Player;
+import net.minecraft.world.inventory.AbstractContainerMenu;
+import net.minecraft.world.inventory.ClickAction;
+import net.minecraft.world.inventory.Slot;
+import net.minecraft.world.inventory.tooltip.TooltipComponent;
+import net.minecraft.world.item.Item;
+import net.minecraft.world.item.ItemCooldowns;
+import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.item.ItemStackTemplate;
+import net.minecraft.world.item.ItemUtils;
+import net.minecraft.world.item.SpawnEggItem;
+import net.minecraft.world.item.component.TooltipDisplay;
+import net.minecraft.world.item.context.UseOnContext;
+import net.minecraft.world.level.Level;
+import org.apache.commons.lang3.math.Fraction;
+import org.jspecify.annotations.Nullable;
+
+public class CameraItem extends SpawnEggItem {
+	private static final int FULL_BAR_COLOR = ARGB.colorFromFloat(1F, 1F, 0.33F, 0.33F);
+	private static final int BAR_COLOR = 0xFFB8895F;
+
+	public CameraItem(Properties properties) {
+		super(properties);
+	}
+
+	@Override
+	public InteractionResult use(Level level, Player player, InteractionHand hand) {
+		final ItemStack stack = player.getItemInHand(hand);
+		if (player.isUsingItem() && ItemStack.isSameItemSameComponents(player.getUseItem(), stack)) {
+			return takePhotograph(player, stack, false);
+		}
+
+		if (player.isShiftKeyDown()) return super.use(level, player, hand);
+		if (hand != InteractionHand.OFF_HAND) {
+			player.playSound(FFSounds.CAMERA_SCOPE_START, 1F, 0.85F + (player.level().getRandom().nextFloat() * 0.5F));
+			player.awardStat(Stats.ITEM_USED.get(this));
+			return ItemUtils.startUsingInstantly(level, player, hand);
+		}
+
+		return InteractionResult.PASS;
+	}
+
+	@Override
+	public InteractionResult useOn(UseOnContext useOnContext) {
+		final Player player = useOnContext.getPlayer();
+		if (player != null && !player.isShiftKeyDown()) return InteractionResult.PASS;
+		return super.useOn(useOnContext);
+	}
+
+	@Override
+	public ItemStack finishUsingItem(ItemStack stack, Level level, LivingEntity entity) {
+		this.stopUsing(entity);
+		return stack;
+	}
+
+	@Override
+	public boolean releaseUsing(ItemStack stack, Level level, LivingEntity entity, int remainingTime) {
+		this.stopUsing(entity);
+		return true;
+	}
+
+	private void stopUsing(LivingEntity entity) {
+		entity.playSound(FFSounds.CAMERA_SCOPE_END, 1F, 0.8F + (entity.level().getRandom().nextFloat() * 0.2F));
+	}
+
+	@Override
+	public int getUseDuration(ItemStack stack, LivingEntity entity) {
+		return APPROXIMATELY_INFINITE_USE_DURATION;
+	}
+
+	public static String makeFileName(Player player) {
+		return player.getStringUUID() + "_" + System.currentTimeMillis();
+	}
+
+	public static boolean tryTakeInstantPhotograph(ServerPlayer player, boolean playsSeparateClientSound) {
+		final ItemStack stack = player.getMainHandItem();
+		if (!ScopeItemHelper.isCameraItem(stack)) return false;
+		return takePhotograph(player, stack, ScopeZoomHelper.getDefaultZoomFor(stack), playsSeparateClientSound) == InteractionResult.SUCCESS;
+	}
+
+	private static InteractionResult takePhotograph(Player player, ItemStack stack, boolean playsSeparateClientSound) {
+		return takePhotograph(player, stack, ScopeZoomHelper.getStoredZoom(stack), playsSeparateClientSound);
+	}
+
+	private static InteractionResult takePhotograph(Player player, ItemStack stack, float captureZoom, boolean playsSeparateClientSound) {
+		if (player.getCooldowns().isOnCooldown(stack)) return InteractionResult.FAIL;
+
+		final CameraContents initialContents = stack.get(FFDataComponents.CAMERA_CONTENTS);
+		if (initialContents == null) return InteractionResult.FAIL;
+
+		if (!initialContents.hasSpaceForPhotograph()) {
+			playSnapFailSound(player, playsSeparateClientSound);
+			return InteractionResult.FAIL;
+		}
+
+		setAllCamerasOnCooldown(player, 20);
+		if (player instanceof ServerPlayer serverPlayer) {
+			final String fileName = makeFileName(serverPlayer);
+			CameraTakeScreenshotPacket.sendToAsHandheld(serverPlayer, fileName, captureZoom);
+			addPhotograph(stack, player, fileName);
+		}
+
+		playSnapSound(player, playsSeparateClientSound);
+		return InteractionResult.SUCCESS;
+	}
+
+	public static void setAllCamerasOnCooldown(Player player, int cooldownTime) {
+		final ItemCooldowns cooldowns = player.getCooldowns();
+		for (Holder<Item> cameraItem : player.registryAccess().lookupOrThrow(Registries.ITEM).getTagOrEmpty(CameraPortItemTags.CAMERAS)) {
+			if (cameraItem.isBound()) cooldowns.addCooldown(BuiltInRegistries.ITEM.getKey(cameraItem.value()), cooldownTime);
+		}
+	}
+
+	private static Fraction getInsertedFilmWeightSafe(CameraContents contents) {
+		if (contents.isEmpty()) return Fraction.ZERO;
+
+		final ItemStackTemplate filmStack = contents.items().get(0);
+		final FilmContents filmContents = Objects.requireNonNullElse(filmStack.get(FFDataComponents.FILM_CONTENTS), FilmContents.EMPTY);
+		return FilmItem.getWeightSafe(filmContents, filmStack);
+	}
+
+	public static float getFullnessDisplay(ItemStack stack) {
+		final CameraContents contents = stack.getOrDefault(FFDataComponents.CAMERA_CONTENTS, CameraContents.EMPTY);
+		return getInsertedFilmWeightSafe(contents).floatValue();
+	}
+
+	@Override
+	public boolean overrideStackedOnOther(ItemStack self, Slot slot, ClickAction clickAction, Player player) {
+		final CameraContents initialContents = self.get(FFDataComponents.CAMERA_CONTENTS);
+		if (initialContents == null) return false;
+
+		final ItemStack other = slot.getItem();
+		final CameraContents.Mutable contents = new CameraContents.Mutable(initialContents);
+		if (clickAction == ClickAction.PRIMARY && !other.isEmpty()) {
+			if (contents.tryTransfer(slot, player) > 0) {
+				playInsertSound(player);
+			} else {
+				playInsertFailSound(player);
+			}
+
+			self.set(FFDataComponents.CAMERA_CONTENTS, contents.toImmutable());
+			broadcastChangesOnContainerMenu(player);
+			return true;
+		} else if (clickAction == ClickAction.SECONDARY && other.isEmpty()) {
+			final ItemStack removed = contents.removeOne();
+			if (removed != null) {
+				final ItemStack remainder = slot.safeInsert(removed);
+				if (remainder.getCount() > 0) {
+					contents.tryInsert(remainder);
+				} else {
+					playRemoveOneSound(player);
+				}
+			}
+
+			self.set(FFDataComponents.CAMERA_CONTENTS, contents.toImmutable());
+			broadcastChangesOnContainerMenu(player);
+			return true;
+		}
+
+		return false;
+	}
+
+	@Override
+	public boolean overrideOtherStackedOnMe(ItemStack self, ItemStack other, Slot slot, ClickAction clickAction, Player player, SlotAccess carriedItem) {
+		if (clickAction == ClickAction.PRIMARY && other.isEmpty()) {
+			toggleSelectedItem(self, -1);
+			return false;
+		}
+
+		final CameraContents initialContents = self.get(FFDataComponents.CAMERA_CONTENTS);
+		if (initialContents == null) return false;
+
+		final CameraContents.Mutable contents = new CameraContents.Mutable(initialContents);
+		if (clickAction == ClickAction.PRIMARY && !other.isEmpty()) {
+			if (slot.allowModification(player) && contents.tryInsert(other) > 0) {
+				playInsertSound(player);
+			} else {
+				playInsertFailSound(player);
+			}
+
+			self.set(FFDataComponents.CAMERA_CONTENTS, contents.toImmutable());
+			broadcastChangesOnContainerMenu(player);
+			return true;
+		} else if (clickAction == ClickAction.SECONDARY && other.isEmpty()) {
+			if (slot.allowModification(player)) {
+				final ItemStack removed = contents.removeOne();
+				if (removed != null) {
+					playRemoveOneSound(player);
+					carriedItem.set(removed);
+				}
+			}
+
+			self.set(FFDataComponents.CAMERA_CONTENTS, contents.toImmutable());
+			broadcastChangesOnContainerMenu(player);
+			return true;
+		}
+
+		toggleSelectedItem(self, -1);
+		return false;
+	}
+
+	@Override
+	public boolean isBarVisible(ItemStack stack) {
+		final CameraContents contents = stack.getOrDefault(FFDataComponents.CAMERA_CONTENTS, CameraContents.EMPTY);
+		return !contents.isEmpty();
+	}
+
+	@Override
+	public int getBarWidth(ItemStack stack) {
+		final CameraContents contents = stack.getOrDefault(FFDataComponents.CAMERA_CONTENTS, CameraContents.EMPTY);
+		final Fraction insertedFilmWeight = getInsertedFilmWeightSafe(contents);
+		if (insertedFilmWeight.compareTo(Fraction.ZERO) <= 0) return 0;
+		return Math.min(1 + Mth.mulAndTruncate(insertedFilmWeight, 12), 13);
+	}
+
+	@Override
+	public int getBarColor(ItemStack stack) {
+		final CameraContents contents = stack.getOrDefault(FFDataComponents.CAMERA_CONTENTS, CameraContents.EMPTY);
+		return getInsertedFilmWeightSafe(contents).compareTo(Fraction.ONE) >= 0 ? FULL_BAR_COLOR : BAR_COLOR;
+	}
+
+	public static void toggleSelectedItem(ItemStack stack, int selectedItem) {
+		final CameraContents initialContents = stack.get(FFDataComponents.CAMERA_CONTENTS);
+		if (initialContents == null) return;
+
+		final CameraContents.Mutable contents = new CameraContents.Mutable(initialContents);
+		contents.toggleSelectedItem(selectedItem);
+		stack.set(FFDataComponents.CAMERA_CONTENTS, contents.toImmutable());
+	}
+
+	public static int getSelectedItemIndex(ItemStack stack) {
+		return stack.getOrDefault(FFDataComponents.CAMERA_CONTENTS, CameraContents.EMPTY).getSelectedItemIndex();
+	}
+
+	@Nullable
+	public static ItemStackTemplate getSelectedItem(ItemStack stack) {
+		return stack.getOrDefault(FFDataComponents.CAMERA_CONTENTS, CameraContents.EMPTY).getSelectedItem();
+	}
+
+	public static int getNumberOfItemsToShow(ItemStack stack) {
+		final CameraContents contents = stack.getOrDefault(FFDataComponents.CAMERA_CONTENTS, CameraContents.EMPTY);
+		return contents.getNumberOfItemsToShow();
+	}
+
+	public static boolean isCapableOfTakingPhotos(ItemStack stack) {
+		return stack.getOrDefault(FFDataComponents.CAMERA_CONTENTS, CameraContents.EMPTY).hasSpaceForPhotograph();
+	}
+
+	@Override
+	public Optional<TooltipComponent> getTooltipImage(ItemStack camera) {
+		final TooltipDisplay display = camera.getOrDefault(DataComponents.TOOLTIP_DISPLAY, TooltipDisplay.DEFAULT);
+		return !display.shows(FFDataComponents.CAMERA_CONTENTS)
+			? Optional.empty()
+			: Optional.ofNullable(camera.get(FFDataComponents.CAMERA_CONTENTS)).map(CameraTooltip::new);
+	}
+
+	@Override
+	public void onDestroyed(ItemEntity entity) {
+		final CameraContents contents = entity.getItem().get(FFDataComponents.CAMERA_CONTENTS);
+		if (contents == null) return;
+		entity.getItem().set(FFDataComponents.CAMERA_CONTENTS, CameraContents.EMPTY);
+		ItemUtils.onContainerDestroyed(entity, contents.itemCopyStream());
+	}
+
+	public static void addPhotograph(ItemStack stack, Player player, String fileName) {
+		final CameraContents initialCameraContents = stack.get(FFDataComponents.CAMERA_CONTENTS);
+		if (initialCameraContents == null) return;
+
+		final CameraContents cameraContents = addPhotograph(initialCameraContents, player, fileName);
+		if (initialCameraContents == cameraContents) return;
+
+		stack.set(FFDataComponents.CAMERA_CONTENTS, cameraContents);
+		broadcastChangesOnContainerMenu(player);
+	}
+
+	@Nullable
+	public static CameraContents addPhotograph(CameraContents initialCameraContents, Player player, String fileName) {
+		if (initialCameraContents == null) return initialCameraContents;
+
+		final CameraContents.Mutable cameraContents = new CameraContents.Mutable(initialCameraContents);
+		final Optional<ItemStack> potentialFilm = cameraContents.findFirstWithSpaceForPhotograph();
+		if (potentialFilm.isEmpty()) return initialCameraContents;
+
+		final ItemStack film = potentialFilm.get();
+		final int maxPhotographs = FilmItem.getMaxPhotographs(film);
+		final FilmContents.Mutable filmContents = new FilmContents.Mutable(film.getOrDefault(FFDataComponents.FILM_CONTENTS, FilmContents.EMPTY), maxPhotographs);
+		final Photograph photograph = new Photograph(FFConstants.id(fileName), player.getPlainTextName());
+		if (!filmContents.tryInsert(photograph)) return initialCameraContents;
+
+		film.set(FFDataComponents.FILM_CONTENTS, filmContents.toImmutable());
+		FilmItem.refreshStackingState(film);
+		return cameraContents.toImmutable();
+	}
+
+	private static void playSnapSound(Entity entity, boolean playsSeparateClientSound) {
+		entity.playSound(
+			FFSounds.CAMERA_SNAP,
+			1F,
+			0.95F + entity.level().getRandom().nextFloat() * 0.1F
+		);
+		if (playsSeparateClientSound && entity instanceof ServerPlayer serverPlayer) {
+			FrozenLibSoundPackets.createAndSendLocalPlayerSound(
+				serverPlayer,
+				BuiltInRegistries.SOUND_EVENT.wrapAsHolder(FFSounds.CAMERA_SNAP),
+				1F,
+				0.95F + entity.level().getRandom().nextFloat() * 0.1F
+			);
+		}
+	}
+
+	private static void playSnapFailSound(Entity entity, boolean playsSeparateClientSound) {
+		entity.playSound(
+			FFSounds.CAMERA_SNAP_FAIL,
+			1F,
+			0.8F + entity.level().getRandom().nextFloat() * 0.4F
+		);
+		if (playsSeparateClientSound && entity instanceof ServerPlayer serverPlayer) {
+			FrozenLibSoundPackets.createAndSendLocalPlayerSound(
+				serverPlayer,
+				BuiltInRegistries.SOUND_EVENT.wrapAsHolder(FFSounds.CAMERA_SNAP_FAIL),
+				1F,
+				0.8F + entity.level().getRandom().nextFloat() * 0.4F
+			);
+		}
+	}
+
+	public static void playRemoveOneSound(Entity entity) {
+		entity.playSound(
+			FFSounds.CAMERA_REMOVE_ONE,
+			0.8F,
+			0.8F + entity.level().getRandom().nextFloat() * 0.4F
+		);
+	}
+
+	public static void playInsertSound(Entity entity) {
+		entity.playSound(
+			FFSounds.CAMERA_INSERT,
+			0.8F,
+			0.8F + entity.level().getRandom().nextFloat() * 0.4F
+		);
+	}
+
+	private static void playInsertFailSound(Entity entity) {
+		entity.playSound(
+			FFSounds.CAMERA_INSERT_FAIL,
+			0.8F,
+			0.95F + entity.level().getRandom().nextFloat() * 0.1F
+		);
+	}
+
+	private static void broadcastChangesOnContainerMenu(Player player) {
+		final AbstractContainerMenu containerMenu = player.containerMenu;
+		if (containerMenu != null) containerMenu.slotsChanged(player.getInventory());
+	}
+
+}

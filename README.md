@@ -1,1 +1,1 @@
-Ports Bedrock Edition's/Education Edition's Camera entity to Java Edition!
+Adds Cameras to Minecraft in an intuitive and vanilla way.

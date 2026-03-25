@@ -1,0 +1,32 @@
+{
+  "parent": "minecraft:recipes/root",
+  "criteria": {
+    "has_disc_camera": {
+      "conditions": {
+        "items": [
+          {
+            "items": "freezeframe:disc_camera"
+          }
+        ]
+      },
+      "trigger": "minecraft:inventory_changed"
+    },
+    "has_the_recipe": {
+      "conditions": {
+        "recipe": "freezeframe:disc_camera"
+      },
+      "trigger": "minecraft:recipe_unlocked"
+    }
+  },
+  "requirements": [
+    [
+      "has_the_recipe",
+      "has_disc_camera"
+    ]
+  ],
+  "rewards": {
+    "recipes": [
+      "freezeframe:disc_camera"
+    ]
+  }
+}

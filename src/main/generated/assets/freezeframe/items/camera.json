@@ -1,0 +1,30 @@
+{
+  "model": {
+    "type": "minecraft:condition",
+    "on_false": {
+      "type": "minecraft:condition",
+      "on_false": {
+        "type": "minecraft:model",
+        "model": "freezeframe:item/camera_inactive"
+      },
+      "on_true": {
+        "type": "minecraft:condition",
+        "on_false": {
+          "type": "minecraft:model",
+          "model": "freezeframe:item/camera_inactive"
+        },
+        "on_true": {
+          "type": "minecraft:model",
+          "model": "freezeframe:item/camera_active"
+        },
+        "property": "minecraft:using_item"
+      },
+      "property": "freezeframe:in_main_hand"
+    },
+    "on_true": {
+      "type": "minecraft:model",
+      "model": "freezeframe:item/camera_active"
+    },
+    "property": "freezeframe:can_take_photo"
+  }
+}
