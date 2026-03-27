@@ -18,7 +18,7 @@
 package net.frozenblock.freezeframe.util;
 
 import net.frozenblock.freezeframe.item.CameraItem;
-import net.frozenblock.freezeframe.tag.CameraPortItemTags;
+import net.frozenblock.freezeframe.tag.FFItemTags;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.ItemStack;
 
@@ -28,7 +28,7 @@ public final class ScopeItemHelper {
 	}
 
 	public static boolean isCameraItem(ItemStack stack) {
-		return stack.is(CameraPortItemTags.CAMERAS);
+		return stack.is(FFItemTags.CAMERAS);
 	}
 
 	public static boolean isScopeItem(ItemStack stack) {

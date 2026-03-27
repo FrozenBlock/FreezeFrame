@@ -21,7 +21,7 @@ import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 import net.frozenblock.freezeframe.client.model.FreezeFrameArmPoses;
 import net.frozenblock.freezeframe.item.CameraItem;
-import net.frozenblock.freezeframe.tag.CameraPortItemTags;
+import net.frozenblock.freezeframe.tag.FFItemTags;
 import net.minecraft.client.model.HumanoidModel;
 import net.minecraft.client.renderer.entity.player.AvatarRenderer;
 import net.minecraft.world.InteractionHand;
@@ -47,7 +47,7 @@ public class AvatarRendererMixin {
 		cancellable = true
 	)
 	private static void freezeFrame$setArmPoseToCamera(Avatar avatar, ItemStack itemInHand, InteractionHand hand, CallbackInfoReturnable<HumanoidModel.ArmPose> info) {
-		if (avatar.swinging || hand != InteractionHand.MAIN_HAND || !itemInHand.is(CameraPortItemTags.CAMERAS)) return;
+		if (avatar.swinging || hand != InteractionHand.MAIN_HAND || !itemInHand.is(FFItemTags.CAMERAS)) return;
 		if (CameraItem.isCapableOfTakingPhotos(itemInHand)) {
 			info.setReturnValue(FreezeFrameArmPoses.CAMERA);
 		} else if (avatar.isUsingItem() && avatar.getUsedItemHand() == hand) {

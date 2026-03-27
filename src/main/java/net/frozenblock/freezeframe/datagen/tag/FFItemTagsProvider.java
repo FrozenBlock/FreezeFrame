@@ -21,7 +21,7 @@ import java.util.concurrent.CompletableFuture;
 import net.fabricmc.fabric.api.datagen.v1.FabricPackOutput;
 import net.fabricmc.fabric.api.datagen.v1.provider.FabricTagsProvider;
 import net.frozenblock.freezeframe.registry.FFItems;
-import net.frozenblock.freezeframe.tag.CameraPortItemTags;
+import net.frozenblock.freezeframe.tag.FFItemTags;
 import net.minecraft.core.HolderLookup;
 import net.minecraft.resources.Identifier;
 import net.minecraft.resources.ResourceKey;
@@ -44,7 +44,7 @@ public final class FFItemTagsProvider extends FabricTagsProvider.ItemTagsProvide
 
 	@Override
 	protected void addTags(HolderLookup.Provider arg) {
-		this.valueLookupBuilder(CameraPortItemTags.CAMERAS)
+		this.valueLookupBuilder(FFItemTags.CAMERAS)
 			.add(FFItems.CAMERA, FFItems.DISC_CAMERA);
 	}
 }

@@ -20,16 +20,15 @@ package net.frozenblock.freezeframe.tag;
 import net.frozenblock.freezeframe.FFConstants;
 import net.minecraft.core.registries.Registries;
 import net.minecraft.tags.TagKey;
-import net.minecraft.world.item.Item;
+import net.minecraft.world.level.block.Block;
 
-public final class CameraPortItemTags {
-	public static final TagKey<Item> CAMERAS = bind("cameras");
+public final class FFBlockTags {
 
-	private CameraPortItemTags() {
-		throw new UnsupportedOperationException("CameraPortItemTags contains only static declarations.");
+	private FFBlockTags() {
+		throw new UnsupportedOperationException("CameraPortBlockTags contains only static declarations.");
 	}
 
-	private static TagKey<Item> bind(String path) {
-		return TagKey.create(Registries.ITEM, FFConstants.id(path));
+	private static TagKey<Block> bind(String path) {
+		return TagKey.create(Registries.BLOCK, FFConstants.id(path));
 	}
 }

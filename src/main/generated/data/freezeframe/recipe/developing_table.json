@@ -3,14 +3,14 @@
   "category": "equipment",
   "key": {
     "#": "#minecraft:planks",
-    "C": "minecraft:cyan_dye",
-    "M": "minecraft:magenta_dye",
+    "B": "minecraft:blue_dye",
+    "R": "minecraft:red_dye",
     "S": "minecraft:stone",
     "Y": "minecraft:yellow_dye"
   },
   "pattern": [
-    "SSC",
-    "##M",
+    "SSR",
+    "##B",
     "##Y"
   ],
   "result": {

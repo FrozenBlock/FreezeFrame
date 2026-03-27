@@ -28,7 +28,7 @@ import net.frozenblock.freezeframe.component.tooltip.CameraTooltip;
 import net.frozenblock.freezeframe.networking.packet.CameraTakeScreenshotPacket;
 import net.frozenblock.freezeframe.registry.FFDataComponents;
 import net.frozenblock.freezeframe.registry.FFSounds;
-import net.frozenblock.freezeframe.tag.CameraPortItemTags;
+import net.frozenblock.freezeframe.tag.FFItemTags;
 import net.frozenblock.freezeframe.util.ScopeItemHelper;
 import net.frozenblock.freezeframe.util.ScopeZoomHelper;
 import net.minecraft.core.Holder;
@@ -153,7 +153,7 @@ public class CameraItem extends SpawnEggItem {
 
 	public static void setAllCamerasOnCooldown(Player player, int cooldownTime) {
 		final ItemCooldowns cooldowns = player.getCooldowns();
-		for (Holder<Item> cameraItem : player.registryAccess().lookupOrThrow(Registries.ITEM).getTagOrEmpty(CameraPortItemTags.CAMERAS)) {
+		for (Holder<Item> cameraItem : player.registryAccess().lookupOrThrow(Registries.ITEM).getTagOrEmpty(FFItemTags.CAMERAS)) {
 			if (cameraItem.isBound()) cooldowns.addCooldown(BuiltInRegistries.ITEM.getKey(cameraItem.value()), cooldownTime);
 		}
 	}

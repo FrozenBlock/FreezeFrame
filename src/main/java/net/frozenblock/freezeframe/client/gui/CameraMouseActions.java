@@ -21,7 +21,7 @@ import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 import net.frozenblock.freezeframe.item.CameraItem;
 import net.frozenblock.freezeframe.networking.packet.SelectCameraFilmPacket;
-import net.frozenblock.freezeframe.tag.CameraPortItemTags;
+import net.frozenblock.freezeframe.tag.FFItemTags;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.ScrollWheelHandler;
 import net.minecraft.client.gui.ItemSlotMouseAction;
@@ -44,7 +44,7 @@ public class CameraMouseActions implements ItemSlotMouseAction {
 
 	@Override
 	public boolean matches(Slot slot) {
-		return slot.getItem().is(CameraPortItemTags.CAMERAS);
+		return slot.getItem().is(FFItemTags.CAMERAS);
 	}
 
 	@Override

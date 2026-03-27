@@ -21,7 +21,7 @@ import java.util.concurrent.CompletableFuture;
 import net.fabricmc.fabric.api.datagen.v1.FabricPackOutput;
 import net.fabricmc.fabric.api.datagen.v1.provider.FabricTagsProvider;
 import net.frozenblock.freezeframe.registry.FFEntityTypes;
-import net.frozenblock.freezeframe.tag.CameraPortEntityTypeTags;
+import net.frozenblock.freezeframe.tag.FFEntityTypeTags;
 import net.minecraft.core.HolderLookup;
 import net.minecraft.tags.EntityTypeTags;
 import net.minecraft.tags.TagEntry;
@@ -34,11 +34,11 @@ public final class FFEntityTagsProvider extends FabricTagsProvider.EntityTypeTag
 
 	@Override
 	protected void addTags(HolderLookup.Provider arg) {
-		this.valueLookupBuilder(CameraPortEntityTypeTags.CAMERAS)
+		this.valueLookupBuilder(FFEntityTypeTags.CAMERAS)
 			.add(FFEntityTypes.CAMERA)
 			.add(FFEntityTypes.DISC_CAMERA);
 
 		this.getOrCreateRawBuilder(EntityTypeTags.CAN_BREATHE_UNDER_WATER)
-			.add(TagEntry.optionalTag(CameraPortEntityTypeTags.CAMERAS.location()));
+			.add(TagEntry.optionalTag(FFEntityTypeTags.CAMERAS.location()));
 	}
 }
