@@ -17,6 +17,9 @@
 
 package net.lunade.camera.menu;
 
+import java.util.ArrayList;
+import java.util.List;
+import net.lunade.camera.component.BookPagePhotographs;
 import net.lunade.camera.component.Photograph;
 import net.lunade.camera.registry.CameraPortBlocks;
 import net.lunade.camera.registry.CameraPortDataComponents;
@@ -118,6 +121,19 @@ public class DevelopingTableMenu extends AbstractContainerMenu {
 					stack = new ItemStack(CameraPortItems.PHOTOGRAPH);
 					stack.set(CameraPortDataComponents.PHOTOGRAPH, photograph);
 				}
+			} else if (DevelopingTableSourceSlot.isValidBookSource(sourceStack)) {
+				final List<Photograph> photographs = this.getBookPhotographs(sourceStack);
+				if (!photographs.isEmpty()) {
+					final int clampedIndex = Math.max(0, Math.min(this.photographIndex.get(), photographs.size() - 1));
+					this.photographIndex.set(clampedIndex);
+					final Photograph photograph = photographs.get(clampedIndex);
+					if (photograph != null && photograph.canCopy()) {
+						stack = new ItemStack(CameraPortItems.PHOTOGRAPH);
+						stack.set(CameraPortDataComponents.PHOTOGRAPH, photograph.asCopy());
+					}
+				} else {
+					this.photographIndex.set(0);
+				}
 			} else {
 				this.photographIndex.set(0);
 			}
@@ -181,5 +197,19 @@ public class DevelopingTableMenu extends AbstractContainerMenu {
 	public void setupDataAndResultSlot(int photographIndex) {
 		this.photographIndex.set(photographIndex);
 		this.setupResultSlot();
+	}
+
+	private List<Photograph> getBookPhotographs(ItemStack sourceStack) {
+		final BookPagePhotographs pagePhotographs = sourceStack.get(CameraPortDataComponents.BOOK_PAGE_PHOTOGRAPHS);
+		if (pagePhotographs == null || pagePhotographs.photographs().isEmpty()) return List.of();
+
+		final List<Photograph> photographs = new ArrayList<>();
+		for (BookPagePhotographs.PagePhotograph pagePhotograph : pagePhotographs.photographs()) {
+			final ItemStack photoStack = pagePhotograph.photograph();
+			if (!photoStack.is(CameraPortItems.PHOTOGRAPH)) continue;
+			final Photograph photograph = photoStack.get(CameraPortDataComponents.PHOTOGRAPH);
+			if (photograph != null) photographs.add(photograph);
+		}
+		return photographs;
 	}
 }

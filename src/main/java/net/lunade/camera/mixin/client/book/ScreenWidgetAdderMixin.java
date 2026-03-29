@@ -15,19 +15,23 @@
  * along with this program; if not, see <https://github.com/FrozenBlock/Licenses>.
  */
 
-package net.lunade.camera.registry;
+package net.lunade.camera.mixin.client.book;
 
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
-import net.lunade.camera.client.gui.screens.inventory.BookPagePhotographScreen;
-import net.lunade.camera.client.gui.screens.inventory.DevelopingTableScreen;
-import net.minecraft.client.gui.screens.MenuScreens;
+import net.minecraft.client.gui.components.Renderable;
+import net.minecraft.client.gui.components.events.GuiEventListener;
+import net.minecraft.client.gui.narration.NarratableEntry;
+import net.minecraft.client.gui.screens.Screen;
+import org.spongepowered.asm.mixin.Mixin;
+import org.spongepowered.asm.mixin.gen.Invoker;
 
 @Environment(EnvType.CLIENT)
-public class CameraPortScreens {
+@Mixin(Screen.class)
+public interface ScreenWidgetAdderMixin {
+	@Invoker("addRenderableWidget")
+	<T extends GuiEventListener & Renderable & NarratableEntry> T cameraPort$addRenderableWidget(T widget);
 
-	public static void init() {
-		MenuScreens.register(CameraPortMenuTypes.DEVELOPING_TABLE, DevelopingTableScreen::new);
-		MenuScreens.register(CameraPortMenuTypes.BOOK_PAGE_PHOTOGRAPH, BookPagePhotographScreen::new);
-	}
+	@Invoker("addWidget")
+	<T extends GuiEventListener & NarratableEntry> T cameraPort$addWidget(T widget);
 }

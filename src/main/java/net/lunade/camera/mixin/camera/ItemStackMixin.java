@@ -18,6 +18,7 @@
 package net.lunade.camera.mixin.camera;
 
 import com.mojang.serialization.DataResult;
+import net.lunade.camera.component.BookPagePhotographs;
 import net.lunade.camera.component.CameraContents;
 import net.lunade.camera.registry.CameraPortDataComponents;
 import net.minecraft.core.component.DataComponentMap;
@@ -40,9 +41,18 @@ public abstract class ItemStackMixin {
 	@Inject(method = "validateComponents", at = @At("TAIL"), cancellable = true)
 	private static void cameraPort$validateCameraContentsComponent(DataComponentMap components, CallbackInfoReturnable<DataResult<?>> info) {
 		final CameraContents cameraContents = components.get(CameraPortDataComponents.CAMERA_CONTENTS);
-		if (cameraContents == null) return;
+		if (cameraContents != null) {
+			final DataResult<?> result = validateContainedItemSizes(cameraContents.items());
+			if (result.isError()) {
+				info.setReturnValue(result);
+				return;
+			}
+		}
 
-		final DataResult<?> result = validateContainedItemSizes(cameraContents.items());
+		final BookPagePhotographs bookPagePhotographs = components.get(CameraPortDataComponents.BOOK_PAGE_PHOTOGRAPHS);
+		if (bookPagePhotographs == null) return;
+
+		final DataResult<?> result = validateContainedItemSizes(bookPagePhotographs.photographs().stream().map(BookPagePhotographs.PagePhotograph::photograph).toList());
 		if (result.isError()) info.setReturnValue(result);
 	}
 

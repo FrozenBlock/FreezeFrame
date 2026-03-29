@@ -23,11 +23,13 @@ import net.frozenblock.lib.file.transfer.FileTransferFilter;
 import net.lunade.camera.networking.packet.CameraTakeScreenshotPacket;
 import net.lunade.camera.networking.packet.ChangeScopeZoomPacket;
 import net.lunade.camera.networking.packet.DevelopingTableSyncSelectPhotographIndexPacket;
+import net.lunade.camera.networking.packet.OpenBookPagePhotographInventoryPacket;
 import net.lunade.camera.networking.packet.OpenFilmScreenPacket;
 import net.lunade.camera.networking.packet.QuickCameraPhotographPacket;
 import net.lunade.camera.networking.packet.SaveFilmChangesPacket;
 import net.lunade.camera.networking.packet.SelectCameraFilmPacket;
 import net.lunade.camera.networking.packet.SelectFilmPhotographPacket;
+import net.lunade.camera.networking.packet.SetBookPagePhotographPacket;
 import net.minecraft.network.RegistryFriendlyByteBuf;
 
 public class CameraPortNetworking {
@@ -56,6 +58,12 @@ public class CameraPortNetworking {
 
 		c2sRegistry.register(ChangeScopeZoomPacket.PACKET_TYPE, ChangeScopeZoomPacket.CODEC);
 		ServerPlayNetworking.registerGlobalReceiver(ChangeScopeZoomPacket.PACKET_TYPE, ChangeScopeZoomPacket::handle);
+
+		c2sRegistry.register(SetBookPagePhotographPacket.PACKET_TYPE, SetBookPagePhotographPacket.CODEC);
+		ServerPlayNetworking.registerGlobalReceiver(SetBookPagePhotographPacket.PACKET_TYPE, SetBookPagePhotographPacket::handle);
+
+		c2sRegistry.register(OpenBookPagePhotographInventoryPacket.PACKET_TYPE, OpenBookPagePhotographInventoryPacket.CODEC);
+		ServerPlayNetworking.registerGlobalReceiver(OpenBookPagePhotographInventoryPacket.PACKET_TYPE, OpenBookPagePhotographInventoryPacket::handle);
 
 		FileTransferFilter.whitelistDestinationPath("photographs", false);
 		FileTransferFilter.whitelistDestinationPath("photographs", true);

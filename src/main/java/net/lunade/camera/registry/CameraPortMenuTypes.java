@@ -18,6 +18,7 @@
 package net.lunade.camera.registry;
 
 import net.lunade.camera.CameraPortConstants;
+import net.lunade.camera.menu.BookPagePhotographMenu;
 import net.lunade.camera.menu.DevelopingTableMenu;
 import net.minecraft.core.Registry;
 import net.minecraft.core.registries.BuiltInRegistries;
@@ -26,8 +27,10 @@ import net.minecraft.world.inventory.MenuType;
 
 public class CameraPortMenuTypes {
 	public static final MenuType<DevelopingTableMenu> DEVELOPING_TABLE = new MenuType<>(DevelopingTableMenu::new, FeatureFlags.DEFAULT_FLAGS);
+	public static final MenuType<BookPagePhotographMenu> BOOK_PAGE_PHOTOGRAPH = new MenuType<>(BookPagePhotographMenu::new, FeatureFlags.DEFAULT_FLAGS);
 
 	public static void register() {
 		Registry.register(BuiltInRegistries.MENU, CameraPortConstants.id("developing_table"), DEVELOPING_TABLE);
+		Registry.register(BuiltInRegistries.MENU, CameraPortConstants.id("book_page_photograph"), BOOK_PAGE_PHOTOGRAPH);
 	}
 }

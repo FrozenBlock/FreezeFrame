@@ -17,7 +17,6 @@
 
 package net.lunade.camera.networking.packet;
 
-import java.util.OptionalInt;
 import net.fabricmc.fabric.api.networking.v1.ServerPlayNetworking;
 import net.lunade.camera.CameraPortConstants;
 import net.lunade.camera.entity.TripodCamera;
@@ -26,6 +25,7 @@ import net.minecraft.network.codec.ByteBufCodecs;
 import net.minecraft.network.codec.StreamCodec;
 import net.minecraft.network.protocol.common.custom.CustomPacketPayload;
 import net.minecraft.server.level.ServerPlayer;
+import java.util.OptionalInt;
 
 public record CameraTakeScreenshotPacket(OptionalInt entityId, boolean handheldCapture, float zoom, String fileName) implements CustomPacketPayload {
 	public static final Type<CameraTakeScreenshotPacket> PACKET_TYPE = CustomPacketPayload.createType(CameraPortConstants.safeString("camera_take_screenshot"));

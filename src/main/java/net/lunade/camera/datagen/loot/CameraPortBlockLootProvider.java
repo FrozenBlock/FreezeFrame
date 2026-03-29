@@ -24,18 +24,19 @@ import net.lunade.camera.registry.CameraPortBlocks;
 import net.minecraft.core.HolderLookup;
 import net.minecraft.core.registries.Registries;
 import net.minecraft.world.item.enchantment.Enchantment;
+import org.jetbrains.annotations.NotNull;
 
 public final class CameraPortBlockLootProvider extends FabricBlockLootSubProvider {
 
-	public CameraPortBlockLootProvider(FabricPackOutput dataOutput, CompletableFuture<HolderLookup.Provider> registries) {
+	public CameraPortBlockLootProvider(@NotNull FabricPackOutput dataOutput, CompletableFuture<HolderLookup.Provider> registries) {
 		super(dataOutput, registries);
 	}
 
 	@Override
 	public void generate() {
-		final HolderLookup.RegistryLookup<Enchantment> enchantments = this.registries.lookupOrThrow(Registries.ENCHANTMENT);
+		HolderLookup.RegistryLookup<Enchantment> registryLookup = this.registries.lookupOrThrow(Registries.ENCHANTMENT);
 
-		this.dropSelf(CameraPortBlocks.DEVELOPING_TABLE);
+		this.dropSelf(CameraPortBlocks.DEVELOPMENT_TABLE);
 	}
 
 }

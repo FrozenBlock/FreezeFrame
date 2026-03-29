@@ -28,6 +28,7 @@ public record Photograph(Identifier identifier, String photographer, String name
 	public static final int ORIGINAL = 0;
 	public static final int COPY = 1;
 	public static final int COPY_OF_COPY = 2;
+	public static final int DEGRADED = 3;
 	public static final int MAX_COPY_GENERATION = COPY_OF_COPY;
 
 	public static final Codec<Photograph> CODEC = RecordCodecBuilder.create(instance -> instance
@@ -63,8 +64,16 @@ public record Photograph(Identifier identifier, String photographer, String name
 		return this.generation < MAX_COPY_GENERATION;
 	}
 
+	public boolean isDegraded() {
+		return this.generation >= DEGRADED;
+	}
+
 	public Photograph asCopy() {
 		return new Photograph(this.identifier, this.photographer, this.name, Math.min(this.generation + 1, MAX_COPY_GENERATION));
+	}
+
+	public Photograph asBookCopy() {
+		return new Photograph(this.identifier, this.photographer, this.name, Math.min(this.generation + 1, DEGRADED));
 	}
 
 	public Photograph withName(String newName) {

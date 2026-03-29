@@ -24,10 +24,13 @@ import com.llamalad7.mixinextras.sugar.Local;
 import com.mojang.blaze3d.pipeline.RenderTarget;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
+import net.lunade.camera.client.BookPagePhotographUiState;
+import net.lunade.camera.client.gui.screens.inventory.BookPagePhotographScreen;
 import net.lunade.camera.util.ScopeItemHelper;
 import net.lunade.camera.util.client.CameraScreenshotManager;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.player.LocalPlayer;
+import net.minecraft.client.gui.screens.Screen;
 import net.minecraft.world.InteractionHand;
 import net.minecraft.world.flag.FeatureFlagSet;
 import net.minecraft.world.item.ItemStack;
@@ -86,5 +89,12 @@ public class MinecraftMixin {
 		if (!CameraScreenshotManager.isScreenshotting()) return original;
 		final RenderTarget cameraTarget = CameraScreenshotManager.getRenderTarget();
 		return cameraTarget != null ? cameraTarget : original;
+	}
+
+	@Inject(method = "setScreen", at = @At("HEAD"))
+	private void cameraPort$clearBookPhotoSuppressionOnScreenSwap(@Nullable Screen screen, CallbackInfo info) {
+		if (!(screen instanceof BookPagePhotographScreen)) {
+			BookPagePhotographUiState.setSuppressBookEditorPhotoControls(false);
+		}
 	}
 }

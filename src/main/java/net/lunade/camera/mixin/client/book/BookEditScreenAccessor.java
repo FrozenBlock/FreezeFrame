@@ -15,19 +15,21 @@
  * along with this program; if not, see <https://github.com/FrozenBlock/Licenses>.
  */
 
-package net.lunade.camera.registry;
+package net.lunade.camera.mixin.client.book;
 
-import net.fabricmc.api.EnvType;
-import net.fabricmc.api.Environment;
-import net.lunade.camera.client.gui.screens.inventory.BookPagePhotographScreen;
-import net.lunade.camera.client.gui.screens.inventory.DevelopingTableScreen;
-import net.minecraft.client.gui.screens.MenuScreens;
+import net.minecraft.client.gui.screens.inventory.BookEditScreen;
+import org.spongepowered.asm.mixin.Mixin;
+import org.spongepowered.asm.mixin.gen.Accessor;
+import org.spongepowered.asm.mixin.gen.Invoker;
 
-@Environment(EnvType.CLIENT)
-public class CameraPortScreens {
+@Mixin(BookEditScreen.class)
+public interface BookEditScreenAccessor {
+	@Invoker("saveChanges")
+	void cameraPort$invokeSaveChanges();
 
-	public static void init() {
-		MenuScreens.register(CameraPortMenuTypes.DEVELOPING_TABLE, DevelopingTableScreen::new);
-		MenuScreens.register(CameraPortMenuTypes.BOOK_PAGE_PHOTOGRAPH, BookPagePhotographScreen::new);
-	}
+	@Accessor("currentPage")
+	void cameraPort$setCurrentPage(int currentPage);
+
+	@Invoker("updatePageContent")
+	void cameraPort$invokeUpdatePageContent();
 }

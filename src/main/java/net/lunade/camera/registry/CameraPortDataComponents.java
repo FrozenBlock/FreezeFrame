@@ -20,6 +20,7 @@ package net.lunade.camera.registry;
 import com.mojang.serialization.Codec;
 import java.util.function.UnaryOperator;
 import net.fabricmc.fabric.api.item.v1.DefaultItemComponentEvents;
+import net.lunade.camera.component.BookPagePhotographs;
 import net.lunade.camera.CameraPortConstants;
 import net.lunade.camera.component.CameraContents;
 import net.lunade.camera.component.FilmContents;
@@ -53,6 +54,10 @@ public class CameraPortDataComponents {
 	public static final DataComponentType<WritablePortfolioContent> WRITABLE_PORTFOLIO_CONTENT = register(
 		"writable_portfolio_content",
 		builder -> builder.persistent(WritablePortfolioContent.CODEC).networkSynchronized(WritablePortfolioContent.STREAM_CODEC)
+	);
+	public static final DataComponentType<BookPagePhotographs> BOOK_PAGE_PHOTOGRAPHS = register(
+		"book_page_photographs",
+		builder -> builder.persistent(BookPagePhotographs.CODEC).networkSynchronized(BookPagePhotographs.STREAM_CODEC)
 	);
 	public static final DataComponentType<Float> SCOPE_ZOOM = register(
 		"scope_zoom",
