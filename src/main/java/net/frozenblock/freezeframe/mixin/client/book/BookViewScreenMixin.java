@@ -44,15 +44,15 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 @Mixin(BookViewScreen.class)
 public abstract class BookViewScreenMixin {
 	@Unique
-	private static final Identifier CAMERA_PORT$PHOTO_FRAME = FFConstants.id("container/written_book/photograph");
+	private static final Identifier FREEZE_FRAME$PHOTO_FRAME = FFConstants.id("container/written_book/photograph");
 	@Unique
-	private static final int CAMERA_PORT$PHOTO_SIZE = 84;
+	private static final int FREEZE_FRAME$PHOTO_SIZE = 84;
 	@Unique
-	private static final int CAMERA_PORT$PHOTO_X_OFFSET = 51;
+	private static final int FREEZE_FRAME$PHOTO_X_OFFSET = 51;
 	@Unique
-	private static final int CAMERA_PORT$PHOTO_Y_OFFSET = 30;
+	private static final int FREEZE_FRAME$PHOTO_Y_OFFSET = 30;
 	@Unique
-	private static final int CAMERA_PORT$PHOTO_TEXT_Y_SHIFT = 81;
+	private static final int FREEZE_FRAME$PHOTO_TEXT_Y_SHIFT = 81;
 
 	@Shadow
 	private BookViewScreen.BookAccess bookAccess;
@@ -65,7 +65,7 @@ public abstract class BookViewScreenMixin {
 
 	@ModifyConstant(method = "visitText", constant = @Constant(intValue = 30), require = 0)
 	private int freezeFrame$shiftWrittenBookTextForPhotos(int original) {
-		return BookPagePhotographCache.getPhoto(this.bookAccess, this.currentPage).isEmpty() ? original : original + CAMERA_PORT$PHOTO_TEXT_Y_SHIFT;
+		return BookPagePhotographCache.getPhoto(this.bookAccess, this.currentPage).isEmpty() ? original : original + FREEZE_FRAME$PHOTO_TEXT_Y_SHIFT;
 	}
 
 	@Inject(method = "extractRenderState", at = @At("TAIL"))
@@ -74,16 +74,16 @@ public abstract class BookViewScreenMixin {
 		if (photo.isEmpty()) return;
 
 		final int backgroundLeft = this.backgroundLeft();
-		final int x = backgroundLeft + CAMERA_PORT$PHOTO_X_OFFSET;
-		final int y = 2 + CAMERA_PORT$PHOTO_Y_OFFSET;
+		final int x = backgroundLeft + FREEZE_FRAME$PHOTO_X_OFFSET;
+		final int y = 2 + FREEZE_FRAME$PHOTO_Y_OFFSET;
 		final Photograph photograph = photo.get(FFDataComponents.PHOTOGRAPH);
 		final Identifier photoId = photograph == null ? null : photograph.identifier();
 		if (photoId == null) return;
 
-		PhotographRenderer.blit(0, 0, x, y, graphics, photoId, CAMERA_PORT$PHOTO_SIZE, PhotographRenderer.FrameType.NONE);
-		graphics.blitSprite(RenderPipelines.GUI_TEXTURED, CAMERA_PORT$PHOTO_FRAME, x, y, CAMERA_PORT$PHOTO_SIZE, CAMERA_PORT$PHOTO_SIZE);
+		PhotographRenderer.blit(0, 0, x, y, graphics, photoId, FREEZE_FRAME$PHOTO_SIZE, PhotographRenderer.FrameType.NONE);
+		graphics.blitSprite(RenderPipelines.GUI_TEXTURED, FREEZE_FRAME$PHOTO_FRAME, x, y, FREEZE_FRAME$PHOTO_SIZE, FREEZE_FRAME$PHOTO_SIZE);
 
-		if (mouseX >= x && mouseX < x + CAMERA_PORT$PHOTO_SIZE && mouseY >= y && mouseY < y + CAMERA_PORT$PHOTO_SIZE) {
+		if (mouseX >= x && mouseX < x + FREEZE_FRAME$PHOTO_SIZE && mouseY >= y && mouseY < y + FREEZE_FRAME$PHOTO_SIZE) {
 			final Minecraft minecraft = Minecraft.getInstance();
 			PhotographHoverTooltipRenderer.extractRenderState(
 				graphics,

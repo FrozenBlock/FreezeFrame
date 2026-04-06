@@ -51,31 +51,31 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 @Mixin(BookEditScreen.class)
 public abstract class BookEditScreenMixin {
 	@Unique
-	private static final Identifier CAMERA_PORT$ADD_PHOTO = FFConstants.id("container/written_book/add_photo");
+	private static final Identifier FREEZE_FRAME$ADD_PHOTO = FFConstants.id("container/written_book/add_photo");
 	@Unique
-	private static final Identifier CAMERA_PORT$ADD_PHOTO_HOVER = FFConstants.id("container/written_book/add_photo_hover");
+	private static final Identifier FREEZE_FRAME$ADD_PHOTO_HOVER = FFConstants.id("container/written_book/add_photo_hover");
 	@Unique
-	private static final Identifier CAMERA_PORT$PHOTO_FRAME = FFConstants.id("container/written_book/photograph");
+	private static final Identifier FREEZE_FRAME$PHOTO_FRAME = FFConstants.id("container/written_book/photograph");
 	@Unique
-	private static final int CAMERA_PORT$PHOTO_SIZE = 84;
+	private static final int FREEZE_FRAME$PHOTO_SIZE = 84;
 	@Unique
-	private static final int CAMERA_PORT$PHOTO_X_OFFSET = 51;
+	private static final int FREEZE_FRAME$PHOTO_X_OFFSET = 51;
 	@Unique
-	private static final int CAMERA_PORT$PHOTO_Y_OFFSET = 30;
+	private static final int FREEZE_FRAME$PHOTO_Y_OFFSET = 30;
 	@Unique
-	private static final int CAMERA_PORT$ADD_BUTTON_SIZE = 16;
+	private static final int FREEZE_FRAME$ADD_BUTTON_SIZE = 16;
 	@Unique
-	private static final int CAMERA_PORT$ADD_BUTTON_X_OFFSET = 84;
+	private static final int FREEZE_FRAME$ADD_BUTTON_X_OFFSET = 84;
 	@Unique
-	private static final int CAMERA_PORT$ADD_BUTTON_Y_OFFSET = 155;
+	private static final int FREEZE_FRAME$ADD_BUTTON_Y_OFFSET = 155;
 	@Unique
-	private static final int CAMERA_PORT$TEXT_WIDTH = 114;
+	private static final int FREEZE_FRAME$TEXT_WIDTH = 114;
 	@Unique
-	private static final int CAMERA_PORT$TEXT_LINE_HEIGHT = 9;
+	private static final int FREEZE_FRAME$TEXT_LINE_HEIGHT = 9;
 	@Unique
-	private static final int CAMERA_PORT$PHOTO_TEXT_LINES = 3;
+	private static final int FREEZE_FRAME$PHOTO_TEXT_LINES = 3;
 	@Unique
-	private static final int CAMERA_PORT$DEFAULT_TEXT_LINES = 14;
+	private static final int FREEZE_FRAME$DEFAULT_TEXT_LINES = 14;
 
 	@Shadow
 	private ItemStack book;
@@ -105,18 +105,18 @@ public abstract class BookEditScreenMixin {
 	@Unique
 	private int freezeFrame$defaultPageHeight;
 	@Unique
-	private int freezeFrame$defaultPageLineLimit = CAMERA_PORT$DEFAULT_TEXT_LINES;
+	private int freezeFrame$defaultPageLineLimit = FREEZE_FRAME$DEFAULT_TEXT_LINES;
 	@Unique
 	private boolean freezeFrame$wasPhotoLayout;
 
 	@Inject(method = "init", at = @At("TAIL"))
 	private void freezeFrame$initPhotoControls(CallbackInfo info) {
 		if (BookPagePhotographUiState.suppressBookEditorPhotoControls()) return;
-		final int addButtonX = this.freezeFrame$backgroundLeft() + CAMERA_PORT$ADD_BUTTON_X_OFFSET;
-		final int addButtonY = this.freezeFrame$backgroundTop() + CAMERA_PORT$ADD_BUTTON_Y_OFFSET;
+		final int addButtonX = this.freezeFrame$backgroundLeft() + FREEZE_FRAME$ADD_BUTTON_X_OFFSET;
+		final int addButtonY = this.freezeFrame$backgroundTop() + FREEZE_FRAME$ADD_BUTTON_Y_OFFSET;
 		this.freezeFrame$addPhotoButton = ((ScreenWidgetAdderMixin) this).freezeFrame$addWidget(
 			Button.builder(Component.empty(), button -> this.freezeFrame$openPhotoInventory())
-				.bounds(addButtonX, addButtonY, CAMERA_PORT$ADD_BUTTON_SIZE, CAMERA_PORT$ADD_BUTTON_SIZE)
+				.bounds(addButtonX, addButtonY, FREEZE_FRAME$ADD_BUTTON_SIZE, FREEZE_FRAME$ADD_BUTTON_SIZE)
 				.build()
 		);
 		this.freezeFrame$captureDefaultPageBox();
@@ -179,12 +179,12 @@ public abstract class BookEditScreenMixin {
 		final Photograph photograph = photoStack.get(FFDataComponents.PHOTOGRAPH);
 		if (photograph == null) return;
 
-		final int x = this.freezeFrame$backgroundLeft() + CAMERA_PORT$PHOTO_X_OFFSET;
-		final int y = this.freezeFrame$backgroundTop() + CAMERA_PORT$PHOTO_Y_OFFSET;
-		PhotographRenderer.blit(0, 0, x, y, graphics, photograph.identifier(), CAMERA_PORT$PHOTO_SIZE, PhotographRenderer.FrameType.NONE);
-		graphics.blitSprite(RenderPipelines.GUI_TEXTURED, CAMERA_PORT$PHOTO_FRAME, x, y, CAMERA_PORT$PHOTO_SIZE, CAMERA_PORT$PHOTO_SIZE);
+		final int x = this.freezeFrame$backgroundLeft() + FREEZE_FRAME$PHOTO_X_OFFSET;
+		final int y = this.freezeFrame$backgroundTop() + FREEZE_FRAME$PHOTO_Y_OFFSET;
+		PhotographRenderer.blit(0, 0, x, y, graphics, photograph.identifier(), FREEZE_FRAME$PHOTO_SIZE, PhotographRenderer.FrameType.NONE);
+		graphics.blitSprite(RenderPipelines.GUI_TEXTURED, FREEZE_FRAME$PHOTO_FRAME, x, y, FREEZE_FRAME$PHOTO_SIZE, FREEZE_FRAME$PHOTO_SIZE);
 
-		if (this.freezeFrame$isWithin(mouseX, mouseY, x, y, CAMERA_PORT$PHOTO_SIZE, CAMERA_PORT$PHOTO_SIZE)) {
+		if (this.freezeFrame$isWithin(mouseX, mouseY, x, y, FREEZE_FRAME$PHOTO_SIZE, FREEZE_FRAME$PHOTO_SIZE)) {
 			final Minecraft minecraft = Minecraft.getInstance();
 			PhotographHoverTooltipRenderer.extractRenderState(
 				graphics,
@@ -201,11 +201,11 @@ public abstract class BookEditScreenMixin {
 	@Unique
 	private void freezeFrame$renderAddPhotoButton(GuiGraphicsExtractor graphics, int mouseX, int mouseY) {
 		final boolean canOpen = this.freezeFrame$canOpenPhotoInventory();
-		final int x = this.freezeFrame$backgroundLeft() + CAMERA_PORT$ADD_BUTTON_X_OFFSET;
-		final int y = this.freezeFrame$backgroundTop() + CAMERA_PORT$ADD_BUTTON_Y_OFFSET;
-		final boolean hovered = this.freezeFrame$isWithin(mouseX, mouseY, x, y, CAMERA_PORT$ADD_BUTTON_SIZE, CAMERA_PORT$ADD_BUTTON_SIZE);
-		final Identifier sprite = hovered && canOpen ? CAMERA_PORT$ADD_PHOTO_HOVER : CAMERA_PORT$ADD_PHOTO;
-		graphics.blitSprite(RenderPipelines.GUI_TEXTURED, sprite, x, y, CAMERA_PORT$ADD_BUTTON_SIZE, CAMERA_PORT$ADD_BUTTON_SIZE);
+		final int x = this.freezeFrame$backgroundLeft() + FREEZE_FRAME$ADD_BUTTON_X_OFFSET;
+		final int y = this.freezeFrame$backgroundTop() + FREEZE_FRAME$ADD_BUTTON_Y_OFFSET;
+		final boolean hovered = this.freezeFrame$isWithin(mouseX, mouseY, x, y, FREEZE_FRAME$ADD_BUTTON_SIZE, FREEZE_FRAME$ADD_BUTTON_SIZE);
+		final Identifier sprite = hovered && canOpen ? FREEZE_FRAME$ADD_PHOTO_HOVER : FREEZE_FRAME$ADD_PHOTO;
+		graphics.blitSprite(RenderPipelines.GUI_TEXTURED, sprite, x, y, FREEZE_FRAME$ADD_BUTTON_SIZE, FREEZE_FRAME$ADD_BUTTON_SIZE);
 		if (hovered && !canOpen) {
 			graphics.setTooltipForNextFrame(
 				this.freezeFrame$getFont(),
@@ -221,7 +221,7 @@ public abstract class BookEditScreenMixin {
 		if (this.currentPage < 0 || this.currentPage >= this.pages.size()) return false;
 		if (BookPagePhotographHelper.hasPhoto(this.book, this.currentPage)) return true;
 		final String pageText = this.page == null ? this.pages.get(this.currentPage) : this.page.getValue();
-		return this.freezeFrame$getFont().wordWrapHeight(Component.literal(pageText), CAMERA_PORT$TEXT_WIDTH) <= (CAMERA_PORT$PHOTO_TEXT_LINES * CAMERA_PORT$TEXT_LINE_HEIGHT);
+		return this.freezeFrame$getFont().wordWrapHeight(Component.literal(pageText), FREEZE_FRAME$TEXT_WIDTH) <= (FREEZE_FRAME$PHOTO_TEXT_LINES * FREEZE_FRAME$TEXT_LINE_HEIGHT);
 	}
 
 	@Unique
@@ -230,7 +230,7 @@ public abstract class BookEditScreenMixin {
 		this.freezeFrame$capturedDefaultPageBox = true;
 		this.freezeFrame$defaultPageY = this.page.getY();
 		this.freezeFrame$defaultPageHeight = this.page.getHeight();
-		this.freezeFrame$defaultPageLineLimit = Math.max(1, this.freezeFrame$defaultPageHeight / CAMERA_PORT$TEXT_LINE_HEIGHT);
+		this.freezeFrame$defaultPageLineLimit = Math.max(1, this.freezeFrame$defaultPageHeight / FREEZE_FRAME$TEXT_LINE_HEIGHT);
 	}
 
 	@Unique
@@ -243,12 +243,12 @@ public abstract class BookEditScreenMixin {
 		this.freezeFrame$wasPhotoLayout = hasPhoto;
 
 		if (hasPhoto) {
-			final int photoTextHeight = CAMERA_PORT$PHOTO_TEXT_LINES * CAMERA_PORT$TEXT_LINE_HEIGHT;
-			this.page.setLineLimit(CAMERA_PORT$PHOTO_TEXT_LINES);
+			final int photoTextHeight = FREEZE_FRAME$PHOTO_TEXT_LINES * FREEZE_FRAME$TEXT_LINE_HEIGHT;
+			this.page.setLineLimit(FREEZE_FRAME$PHOTO_TEXT_LINES);
 			this.page.setHeight(photoTextHeight);
-			this.page.setY(this.freezeFrame$defaultPageY + (this.freezeFrame$defaultPageHeight - photoTextHeight) - CAMERA_PORT$TEXT_LINE_HEIGHT);
+			this.page.setY(this.freezeFrame$defaultPageY + (this.freezeFrame$defaultPageHeight - photoTextHeight) - FREEZE_FRAME$TEXT_LINE_HEIGHT);
 			if (layoutChanged) this.page.setValue(this.page.getValue(), true);
-			this.freezeFrame$trimCurrentPageToVisibleLineLimit(CAMERA_PORT$PHOTO_TEXT_LINES);
+			this.freezeFrame$trimCurrentPageToVisibleLineLimit(FREEZE_FRAME$PHOTO_TEXT_LINES);
 			return;
 		}
 
@@ -261,8 +261,8 @@ public abstract class BookEditScreenMixin {
 	@Unique
 	private void freezeFrame$trimCurrentPageToVisibleLineLimit(int lines) {
 		String value = this.page.getValue();
-		final int maxHeight = lines * CAMERA_PORT$TEXT_LINE_HEIGHT;
-		while (!value.isEmpty() && this.freezeFrame$getFont().wordWrapHeight(Component.literal(value), CAMERA_PORT$TEXT_WIDTH) > maxHeight) {
+		final int maxHeight = lines * FREEZE_FRAME$TEXT_LINE_HEIGHT;
+		while (!value.isEmpty() && this.freezeFrame$getFont().wordWrapHeight(Component.literal(value), FREEZE_FRAME$TEXT_WIDTH) > maxHeight) {
 			value = value.substring(0, value.length() - 1);
 		}
 		if (!value.equals(this.page.getValue())) {
