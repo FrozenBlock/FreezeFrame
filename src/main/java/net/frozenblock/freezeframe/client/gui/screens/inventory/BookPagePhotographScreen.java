@@ -116,8 +116,8 @@ public class BookPagePhotographScreen extends AbstractContainerScreen<BookPagePh
 	public boolean isHovering(Slot slot, double mouseX, double mouseY) {
 		if (slot != this.menu.getSlot(BookPagePhotographMenu.PHOTO_SLOT)) return super.isHovering(slot, mouseX, mouseY);
 		return this.isHovering(
-			this.leftPos + PHOTO_PREVIEW_X_OFFSET,
-			this.topPos + PHOTO_PREVIEW_Y_OFFSET,
+			PHOTO_PREVIEW_X_OFFSET,
+			PHOTO_PREVIEW_Y_OFFSET,
 			PHOTO_PREVIEW_SIZE,
 			PHOTO_PREVIEW_SIZE,
 			mouseX,
