@@ -1,6 +1,6 @@
 /*
  * Copyright 2026 FrozenBlock
- * This file is part of Camera Port.
+ * This file is part of Freeze Frame.
  *
  * This program is free software; you can modify it under
  * the terms of version 1 of the FrozenBlock Modding Oasis License
@@ -15,67 +15,45 @@
  * along with this program; if not, see <https://github.com/FrozenBlock/Licenses>.
  */
 
-package net.lunade.camera.mixin.camera;
+package net.frozenblock.freezeframe.mixin.book;
 
-import net.lunade.camera.component.BookPagePhotographs;
-import net.lunade.camera.registry.CameraPortDataComponents;
-import net.lunade.camera.util.BookPagePhotographHelper;
-import net.minecraft.core.component.DataComponents;
-import net.minecraft.core.HolderLookup;
+import com.llamalad7.mixinextras.injector.ModifyReturnValue;
+import com.llamalad7.mixinextras.sugar.Local;
+import net.frozenblock.freezeframe.component.BookPagePhotographs;
+import net.frozenblock.freezeframe.registry.FFDataComponents;
+import net.frozenblock.freezeframe.util.BookPagePhotographHelper;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.Items;
 import net.minecraft.world.item.crafting.BookCloningRecipe;
-import net.minecraft.world.item.crafting.CraftingInput;
-import net.minecraft.world.item.crafting.RecipeInput;
 import org.spongepowered.asm.mixin.Mixin;
+import org.spongepowered.asm.mixin.Unique;
 import org.spongepowered.asm.mixin.injection.At;
-import org.spongepowered.asm.mixin.injection.Inject;
-import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
 
 @Mixin(BookCloningRecipe.class)
 public class BookCloningRecipeMixin {
 
-	@Inject(method = "assemble(Lnet/minecraft/world/item/crafting/CraftingInput;Lnet/minecraft/core/HolderLookup$Provider;)Lnet/minecraft/world/item/ItemStack;", at = @At("RETURN"), cancellable = true)
-	private void cameraPort$incrementBookPhotoGenerationOnClone(
-		CraftingInput craftingInput,
-		HolderLookup.Provider provider,
-		CallbackInfoReturnable<ItemStack> info
+	@ModifyReturnValue(
+		method = "assemble(Lnet/minecraft/world/item/crafting/CraftingInput;)Lnet/minecraft/world/item/ItemStack;",
+		at = @At("RETURN")
+	)
+	private ItemStack freezeFrame$incrementBookPhotoGenerationOnClone(
+		ItemStack original,
+		@Local(name = "source") ItemStack source
 	) {
-		this.cameraPort$applyPhotoGenerationIncrement(craftingInput, info);
+		return this.freezeFrame$applyPhotoGenerationIncrement(original, source);
 	}
 
-	@Inject(method = "assemble(Lnet/minecraft/world/item/crafting/RecipeInput;Lnet/minecraft/core/HolderLookup$Provider;)Lnet/minecraft/world/item/ItemStack;", at = @At("RETURN"), cancellable = true, require = 0)
-	private void cameraPort$incrementBookPhotoGenerationOnCloneBridge(
-		RecipeInput recipeInput,
-		HolderLookup.Provider provider,
-		CallbackInfoReturnable<ItemStack> info
-	) {
-		if (recipeInput instanceof CraftingInput craftingInput) {
-			this.cameraPort$applyPhotoGenerationIncrement(craftingInput, info);
-		}
-	}
+	@Unique
+	private ItemStack freezeFrame$applyPhotoGenerationIncrement(ItemStack original, ItemStack source) {
+		if (!original.is(Items.WRITTEN_BOOK) || original.isEmpty() || source.isEmpty()) return original;
 
-	private void cameraPort$applyPhotoGenerationIncrement(CraftingInput craftingInput, CallbackInfoReturnable<ItemStack> info) {
-		final ItemStack result = info.getReturnValue();
-		if (!result.is(Items.WRITTEN_BOOK)) return;
+		final BookPagePhotographs sourcePhotographs = source.get(FFDataComponents.BOOK_PAGE_PHOTOGRAPHS);
+		if (sourcePhotographs == null || sourcePhotographs.photographs().isEmpty()) return original;
 
-		ItemStack sourceBook = ItemStack.EMPTY;
-		for (int i = 0; i < craftingInput.size(); i++) {
-			final ItemStack stack = craftingInput.getItem(i);
-			if (stack.has(DataComponents.WRITTEN_BOOK_CONTENT)) {
-				sourceBook = stack;
-				break;
-			}
-		}
-		if (sourceBook.isEmpty()) return;
-
-		final BookPagePhotographs sourcePhotographs = sourceBook.get(CameraPortDataComponents.BOOK_PAGE_PHOTOGRAPHS);
-		if (sourcePhotographs == null || sourcePhotographs.photographs().isEmpty()) return;
-
-		result.set(
-			CameraPortDataComponents.BOOK_PAGE_PHOTOGRAPHS,
+		original.set(
+			FFDataComponents.BOOK_PAGE_PHOTOGRAPHS,
 			BookPagePhotographHelper.incrementPhotoGenerationsForBookCopy(sourcePhotographs)
 		);
-		info.setReturnValue(result);
+		return original;
 	}
 }

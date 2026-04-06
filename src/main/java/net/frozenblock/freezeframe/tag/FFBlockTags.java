@@ -25,7 +25,7 @@ import net.minecraft.world.level.block.Block;
 public final class FFBlockTags {
 
 	private FFBlockTags() {
-		throw new UnsupportedOperationException("CameraPortBlockTags contains only static declarations.");
+		throw new UnsupportedOperationException("FFBlockTags contains only static declarations.");
 	}
 
 	private static TagKey<Block> bind(String path) {

@@ -36,7 +36,7 @@ public class PortfolioEditScreen extends Screen {
         this.owner = player;
         this.portfolio = portfolio;
         this.hand = hand;
-        WritablePortfolioContent writablePortfolioContent = portfolio.get(CameraPortItems.WRITABLE_PORTFOLIO_CONTENT);
+        WritablePortfolioContent writablePortfolioContent = portfolio.get(FFItems.WRITABLE_PORTFOLIO_CONTENT);
         if (writablePortfolioContent != null) {
             writablePortfolioContent.pages().forEach(this.pages::add);
         }

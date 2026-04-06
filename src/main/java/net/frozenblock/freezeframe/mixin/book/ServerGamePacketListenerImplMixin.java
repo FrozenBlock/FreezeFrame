@@ -1,6 +1,6 @@
 /*
  * Copyright 2026 FrozenBlock
- * This file is part of Camera Port.
+ * This file is part of Freeze Frame.
  *
  * This program is free software; you can modify it under
  * the terms of version 1 of the FrozenBlock Modding Oasis License
@@ -15,11 +15,11 @@
  * along with this program; if not, see <https://github.com/FrozenBlock/Licenses>.
  */
 
-package net.lunade.camera.mixin.camera;
+package net.frozenblock.freezeframe.mixin.book;
 
 import java.util.List;
-import net.lunade.camera.component.BookPagePhotographs;
-import net.lunade.camera.registry.CameraPortDataComponents;
+import net.frozenblock.freezeframe.component.BookPagePhotographs;
+import net.frozenblock.freezeframe.registry.FFDataComponents;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.server.network.FilteredText;
 import net.minecraft.server.network.ServerGamePacketListenerImpl;
@@ -34,27 +34,28 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 
 @Mixin(ServerGamePacketListenerImpl.class)
 public class ServerGamePacketListenerImplMixin {
+
 	@Shadow
 	public ServerPlayer player;
 
 	@Unique
-	private ItemStack cameraPort$preSignBook = ItemStack.EMPTY;
+	private ItemStack freezeFrame$preSignBook = ItemStack.EMPTY;
 
 	@Inject(method = "signBook", at = @At("HEAD"))
-	private void cameraPort$capturePreSignBook(FilteredText title, List<FilteredText> pages, int slot, CallbackInfo info) {
-		this.cameraPort$preSignBook = this.player.getInventory().getItem(slot).copy();
+	private void freezeFrame$capturePreSignBook(FilteredText title, List<FilteredText> contents, int slot, CallbackInfo info) {
+		this.freezeFrame$preSignBook = this.player.getInventory().getItem(slot).copy();
 	}
 
 	@Inject(method = "signBook", at = @At("TAIL"))
-	private void cameraPort$copyBookPhotoComponentToWrittenBook(FilteredText title, List<FilteredText> pages, int slot, CallbackInfo info) {
+	private void freezeFrame$copyBookPhotoComponentToWrittenBook(FilteredText title, List<FilteredText> contents, int slot, CallbackInfo info) {
 		final ItemStack written = this.player.getInventory().getItem(slot);
 		if (!written.is(Items.WRITTEN_BOOK)) return;
 
-		final BookPagePhotographs photographs = this.cameraPort$preSignBook.get(CameraPortDataComponents.BOOK_PAGE_PHOTOGRAPHS);
+		final BookPagePhotographs photographs = this.freezeFrame$preSignBook.get(FFDataComponents.BOOK_PAGE_PHOTOGRAPHS);
 		if (photographs != null) {
-			written.set(CameraPortDataComponents.BOOK_PAGE_PHOTOGRAPHS, photographs);
+			written.set(FFDataComponents.BOOK_PAGE_PHOTOGRAPHS, photographs);
 		} else {
-			written.remove(CameraPortDataComponents.BOOK_PAGE_PHOTOGRAPHS);
+			written.remove(FFDataComponents.BOOK_PAGE_PHOTOGRAPHS);
 		}
 	}
 }

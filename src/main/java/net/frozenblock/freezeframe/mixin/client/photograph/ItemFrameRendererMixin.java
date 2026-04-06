@@ -27,7 +27,7 @@ import com.mojang.blaze3d.vertex.PoseStack;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 import net.frozenblock.freezeframe.client.photograph.PhotographRenderer;
-import net.frozenblock.freezeframe.client.renderer.entity.state.impl.CameraPortRenderStateDataKeys;
+import net.frozenblock.freezeframe.client.renderer.entity.state.impl.FFRenderStateDataKeys;
 import net.frozenblock.freezeframe.component.Photograph;
 import net.frozenblock.freezeframe.registry.FFDataComponents;
 import net.minecraft.client.renderer.SubmitNodeCollector;
@@ -53,7 +53,7 @@ public class ItemFrameRendererMixin<T extends ItemFrame> {
 	public void freezeFrame$addPhotoToRenderState(T entity, ItemFrameRenderState state, float partialTicks, CallbackInfo info) {
 		final Photograph photograph = entity.getItem().get(FFDataComponents.PHOTOGRAPH);
 		state.setData(
-			CameraPortRenderStateDataKeys.PHOTOGRAPH_ID,
+			FFRenderStateDataKeys.PHOTOGRAPH_ID,
 			photograph == null ? null : photograph.identifier()
 		);
 	}
@@ -72,7 +72,7 @@ public class ItemFrameRendererMixin<T extends ItemFrame> {
 		@Local(argsOnly = true) ItemFrameRenderState state,
 		@Share("freezeFrame$photographId") LocalRef<Identifier> photographIdRef
 	) {
-		final Identifier photoId = state.getData(CameraPortRenderStateDataKeys.PHOTOGRAPH_ID);
+		final Identifier photoId = state.getData(FFRenderStateDataKeys.PHOTOGRAPH_ID);
 		if (photoId == null) return original;
 
 		photographIdRef.set(photoId);

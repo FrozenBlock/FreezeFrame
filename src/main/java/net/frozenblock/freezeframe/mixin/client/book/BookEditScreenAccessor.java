@@ -1,6 +1,6 @@
 /*
  * Copyright 2026 FrozenBlock
- * This file is part of Camera Port.
+ * This file is part of Freeze Frame.
  *
  * This program is free software; you can modify it under
  * the terms of version 1 of the FrozenBlock Modding Oasis License
@@ -15,7 +15,7 @@
  * along with this program; if not, see <https://github.com/FrozenBlock/Licenses>.
  */
 
-package net.lunade.camera.mixin.client.book;
+package net.frozenblock.freezeframe.mixin.client.book;
 
 import net.minecraft.client.gui.screens.inventory.BookEditScreen;
 import org.spongepowered.asm.mixin.Mixin;
@@ -25,11 +25,11 @@ import org.spongepowered.asm.mixin.gen.Invoker;
 @Mixin(BookEditScreen.class)
 public interface BookEditScreenAccessor {
 	@Invoker("saveChanges")
-	void cameraPort$invokeSaveChanges();
+	void freezeFrame$invokeSaveChanges();
 
 	@Accessor("currentPage")
-	void cameraPort$setCurrentPage(int currentPage);
+	void freezeFrame$setCurrentPage(int currentPage);
 
 	@Invoker("updatePageContent")
-	void cameraPort$invokeUpdatePageContent();
+	void freezeFrame$invokeUpdatePageContent();
 }

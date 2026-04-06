@@ -92,7 +92,7 @@ public class MinecraftMixin {
 	}
 
 	@Inject(method = "setScreen", at = @At("HEAD"))
-	private void cameraPort$clearBookPhotoSuppressionOnScreenSwap(@Nullable Screen screen, CallbackInfo info) {
+	private void freezeFrame$clearBookPhotoSuppressionOnScreenSwap(@Nullable Screen screen, CallbackInfo info) {
 		if (!(screen instanceof BookPagePhotographScreen)) {
 			BookPagePhotographUiState.setSuppressBookEditorPhotoControls(false);
 		}

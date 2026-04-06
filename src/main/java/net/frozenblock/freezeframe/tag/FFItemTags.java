@@ -26,7 +26,7 @@ public final class FFItemTags {
 	public static final TagKey<Item> CAMERAS = bind("cameras");
 
 	private FFItemTags() {
-		throw new UnsupportedOperationException("CameraPortItemTags contains only static declarations.");
+		throw new UnsupportedOperationException("FFItemTags contains only static declarations.");
 	}
 
 	private static TagKey<Item> bind(String path) {

@@ -1,6 +1,6 @@
 /*
  * Copyright 2026 FrozenBlock
- * This file is part of Camera Port.
+ * This file is part of Freeze Frame.
  *
  * This program is free software; you can modify it under
  * the terms of version 1 of the FrozenBlock Modding Oasis License
@@ -15,16 +15,16 @@
  * along with this program; if not, see <https://github.com/FrozenBlock/Licenses>.
  */
 
-package net.lunade.camera.mixin.client.book;
+package net.frozenblock.freezeframe.mixin.client.book;
 
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
-import net.lunade.camera.CameraPortConstants;
-import net.lunade.camera.client.BookPagePhotographCache;
-import net.lunade.camera.client.photograph.PhotographHoverTooltipRenderer;
-import net.lunade.camera.client.photograph.PhotographRenderer;
-import net.lunade.camera.component.Photograph;
-import net.lunade.camera.registry.CameraPortDataComponents;
+import net.frozenblock.freezeframe.FFConstants;
+import net.frozenblock.freezeframe.client.BookPagePhotographCache;
+import net.frozenblock.freezeframe.client.photograph.PhotographHoverTooltipRenderer;
+import net.frozenblock.freezeframe.client.photograph.PhotographRenderer;
+import net.frozenblock.freezeframe.component.Photograph;
+import net.frozenblock.freezeframe.registry.FFDataComponents;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.GuiGraphicsExtractor;
 import net.minecraft.client.gui.screens.inventory.BookViewScreen;
@@ -44,7 +44,7 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 @Mixin(BookViewScreen.class)
 public abstract class BookViewScreenMixin {
 	@Unique
-	private static final Identifier CAMERA_PORT$PHOTO_FRAME = CameraPortConstants.id("container/written_book/photograph");
+	private static final Identifier CAMERA_PORT$PHOTO_FRAME = FFConstants.id("container/written_book/photograph");
 	@Unique
 	private static final int CAMERA_PORT$PHOTO_SIZE = 84;
 	@Unique
@@ -60,23 +60,23 @@ public abstract class BookViewScreenMixin {
 	private int currentPage;
 	@Shadow
 	private int backgroundLeft() {
-		throw new AssertionError("Mixin injection failed - Camera Port BookViewScreenMixin.");
+		throw new AssertionError("Mixin injection failed - Freeze Frame BookViewScreenMixin.");
 	}
 
 	@ModifyConstant(method = "visitText", constant = @Constant(intValue = 30), require = 0)
-	private int cameraPort$shiftWrittenBookTextForPhotos(int original) {
+	private int freezeFrame$shiftWrittenBookTextForPhotos(int original) {
 		return BookPagePhotographCache.getPhoto(this.bookAccess, this.currentPage).isEmpty() ? original : original + CAMERA_PORT$PHOTO_TEXT_Y_SHIFT;
 	}
 
 	@Inject(method = "extractRenderState", at = @At("TAIL"))
-	private void cameraPort$renderBookPhotograph(GuiGraphicsExtractor graphics, int mouseX, int mouseY, float delta, CallbackInfo info) {
+	private void freezeFrame$renderBookPhotograph(GuiGraphicsExtractor graphics, int mouseX, int mouseY, float delta, CallbackInfo info) {
 		final ItemStack photo = BookPagePhotographCache.getPhoto(this.bookAccess, this.currentPage);
 		if (photo.isEmpty()) return;
 
 		final int backgroundLeft = this.backgroundLeft();
 		final int x = backgroundLeft + CAMERA_PORT$PHOTO_X_OFFSET;
 		final int y = 2 + CAMERA_PORT$PHOTO_Y_OFFSET;
-		final Photograph photograph = photo.get(CameraPortDataComponents.PHOTOGRAPH);
+		final Photograph photograph = photo.get(FFDataComponents.PHOTOGRAPH);
 		final Identifier photoId = photograph == null ? null : photograph.identifier();
 		if (photoId == null) return;
 

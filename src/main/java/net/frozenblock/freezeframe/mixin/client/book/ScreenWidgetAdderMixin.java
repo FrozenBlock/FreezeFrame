@@ -1,6 +1,6 @@
 /*
  * Copyright 2026 FrozenBlock
- * This file is part of Camera Port.
+ * This file is part of Freeze Frame.
  *
  * This program is free software; you can modify it under
  * the terms of version 1 of the FrozenBlock Modding Oasis License
@@ -15,7 +15,7 @@
  * along with this program; if not, see <https://github.com/FrozenBlock/Licenses>.
  */
 
-package net.lunade.camera.mixin.client.book;
+package net.frozenblock.freezeframe.mixin.client.book;
 
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
@@ -30,8 +30,8 @@ import org.spongepowered.asm.mixin.gen.Invoker;
 @Mixin(Screen.class)
 public interface ScreenWidgetAdderMixin {
 	@Invoker("addRenderableWidget")
-	<T extends GuiEventListener & Renderable & NarratableEntry> T cameraPort$addRenderableWidget(T widget);
+	<T extends GuiEventListener & Renderable & NarratableEntry> T freezeFrame$addRenderableWidget(T widget);
 
 	@Invoker("addWidget")
-	<T extends GuiEventListener & NarratableEntry> T cameraPort$addWidget(T widget);
+	<T extends GuiEventListener & NarratableEntry> T freezeFrame$addWidget(T widget);
 }

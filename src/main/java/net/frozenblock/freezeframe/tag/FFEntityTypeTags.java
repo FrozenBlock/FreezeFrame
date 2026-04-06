@@ -26,7 +26,7 @@ public final class FFEntityTypeTags {
 	public static final TagKey<EntityType<?>> CAMERAS = bind("cameras");
 
 	private FFEntityTypeTags() {
-		throw new UnsupportedOperationException("CameraPortEntityTags contains only static declarations.");
+		throw new UnsupportedOperationException("FFEntityTags contains only static declarations.");
 	}
 
 	private static TagKey<EntityType<?>> bind(String path) {
