@@ -76,7 +76,7 @@ public class DevelopingTableScreen extends AbstractContainerScreen<DevelopingTab
 	private static final int RESULT_SLOT_SIZE = 16;
 	private static final Identifier TEXTURE = FFConstants.id("textures/gui/container/developing_table.png");
 	private static final Identifier TEXTURE_FILM = FFConstants.id("textures/gui/container/developing_table_film.png");
-	private static final Identifier TEXTURE_BOOK = FFConstants.id("textures/gui/container/developing_book.png");
+	private static final Identifier TEXTURE_BOOK = FFConstants.id("textures/gui/container/developing_table_book.png");
 	private static final Identifier SCROLLER = FFConstants.id("container/developing_table/scroller");
 	private static final Identifier SCROLLER_DISABLED = FFConstants.id("container/developing_table/scroller_disabled");
 	private static final Identifier BOOK_SCROLLER = FFConstants.id("container/developing_table/book_scroller");

@@ -74,7 +74,7 @@ public class BookPagePhotographScreen extends AbstractContainerScreen<BookPagePh
 		BookPagePhotographUiState.setSuppressBookEditorPhotoControls(true);
 		this.freezeFrame$bookPreview = this.freezeFrame$createBookPreview();
 		this.addRenderableWidget(
-			Button.builder(Component.translatable("screen.camera_port.book_photograph.close"), button -> this.onClose())
+			Button.builder(Component.translatable("screen.freezeframe.book_photograph.close"), button -> this.onClose())
 				.bounds(this.leftPos + this.imageWidth - 54, this.topPos + 5, 48, 20)
 				.build()
 		);

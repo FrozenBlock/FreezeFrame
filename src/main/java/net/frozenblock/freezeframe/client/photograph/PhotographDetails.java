@@ -49,7 +49,7 @@ public final class PhotographDetails {
 	@Nullable
 	public static Component getPhotographNameLine(Photograph photograph) {
 		if (StringUtil.isNullOrEmpty(photograph.name())) {
-			return Component.translatable("item.camera_port.photograph").withStyle(ChatFormatting.GRAY);
+			return Component.translatable("item.freezeframe.photograph").withStyle(ChatFormatting.GRAY);
 		}
 		return Component.literal(photograph.name()).withStyle(ChatFormatting.GRAY);
 	}

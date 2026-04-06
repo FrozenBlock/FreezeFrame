@@ -209,7 +209,7 @@ public abstract class BookEditScreenMixin {
 		if (hovered && !canOpen) {
 			graphics.setTooltipForNextFrame(
 				this.freezeFrame$getFont(),
-				Component.translatable("screen.camera_port.book_photograph.empty_page_only"),
+				Component.translatable("screen.freezeframe.book_photograph.empty_page_only"),
 				mouseX,
 				mouseY
 			);
