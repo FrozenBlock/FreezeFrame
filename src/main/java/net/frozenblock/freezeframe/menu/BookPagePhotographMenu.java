@@ -39,11 +39,11 @@ public class BookPagePhotographMenu extends AbstractContainerMenu {
 	private static final int INVENTORY_END_SLOT = 28;
 	private static final int HOTBAR_START_SLOT = 28;
 	private static final int HOTBAR_END_SLOT = 37;
+	private static final int BOOK_BOTTOM_Y = 79;
 	private static final int PHOTO_SLOT_X = -1000;
 	private static final int PHOTO_SLOT_Y = -1000;
 	private static final int INVENTORY_SLOT_X = 5;
-	private static final int INVENTORY_SLOT_Y = 54;
-	private static final int HOTBAR_SLOT_Y = 112;
+	private static final int INVENTORY_SLOT_Y = BOOK_BOTTOM_Y + 13;
 
 	private final Container photoContainer;
 	private final DataSlot handData = DataSlot.standalone();
@@ -64,7 +64,7 @@ public class BookPagePhotographMenu extends AbstractContainerMenu {
 			this.photoContainer.setItem(PHOTO_SLOT, BookPagePhotographHelper.getPhoto(book, pageIndex).copy());
 		}
 
-		// TODO: Not important, separate slot to separate class
+		// TODO: Not important, but separate slot to separate class
 		this.addSlot(new Slot(this.photoContainer, PHOTO_SLOT, PHOTO_SLOT_X, PHOTO_SLOT_Y) {
 			@Override
 			public boolean mayPlace(ItemStack stack) {

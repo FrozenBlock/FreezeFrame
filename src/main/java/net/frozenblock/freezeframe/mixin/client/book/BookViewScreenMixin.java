@@ -44,7 +44,7 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 @Mixin(BookViewScreen.class)
 public abstract class BookViewScreenMixin {
 	@Unique
-	private static final Identifier FREEZE_FRAME$PHOTO_FRAME = FFConstants.id("container/written_book/photograph");
+	private static final Identifier FREEZE_FRAME$PHOTO_FRAME = FFConstants.id("container/book/photograph");
 	@Unique
 	private static final int FREEZE_FRAME$PHOTO_SIZE = 84;
 	@Unique

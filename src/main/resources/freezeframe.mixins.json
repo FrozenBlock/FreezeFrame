@@ -21,11 +21,9 @@
     "film.AbstractContainerMenuMixin"
   ],
   "client": [
-    "client.book.BookEditScreenAccessor",
     "client.book.BookEditScreenMixin",
     "client.book.BookViewScreenBookAccessMixin",
     "client.book.BookViewScreenMixin",
-    "client.book.ScreenWidgetAdderMixin",
     "client.camera.AbstractClientPlayerMixin",
     "client.camera.AbstractContainerScreenMixin",
     "client.camera.ArmPoseMixin",

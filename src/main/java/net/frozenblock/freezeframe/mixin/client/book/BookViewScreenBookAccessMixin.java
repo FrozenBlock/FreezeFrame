@@ -32,8 +32,8 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
 public class BookViewScreenBookAccessMixin {
 
 	@Inject(method = "fromItem", at = @At("RETURN"))
-	private static void freezeFrame$rememberBookPhotographs(ItemStack stack, CallbackInfoReturnable<BookViewScreen.BookAccess> info) {
+	private static void freezeFrame$rememberBookPhotographs(ItemStack itemStack, CallbackInfoReturnable<BookViewScreen.BookAccess> info) {
 		final BookViewScreen.BookAccess access = info.getReturnValue();
-		if (access != null) BookPagePhotographCache.remember(access, stack);
+		if (access != null) BookPagePhotographCache.remember(access, itemStack);
 	}
 }

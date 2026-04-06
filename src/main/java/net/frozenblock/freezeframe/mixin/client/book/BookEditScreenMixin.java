@@ -34,12 +34,14 @@ import net.minecraft.client.gui.Font;
 import net.minecraft.client.gui.GuiGraphicsExtractor;
 import net.minecraft.client.gui.components.Button;
 import net.minecraft.client.gui.components.MultiLineEditBox;
+import net.minecraft.client.gui.screens.Screen;
 import net.minecraft.client.gui.screens.inventory.BookEditScreen;
 import net.minecraft.client.renderer.RenderPipelines;
 import net.minecraft.network.chat.Component;
 import net.minecraft.resources.Identifier;
 import net.minecraft.world.InteractionHand;
 import net.minecraft.world.item.ItemStack;
+import org.spongepowered.asm.mixin.Final;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Shadow;
 import org.spongepowered.asm.mixin.Unique;
@@ -49,13 +51,13 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 
 @Environment(EnvType.CLIENT)
 @Mixin(BookEditScreen.class)
-public abstract class BookEditScreenMixin {
+public abstract class BookEditScreenMixin extends Screen {
 	@Unique
-	private static final Identifier FREEZE_FRAME$ADD_PHOTO = FFConstants.id("container/written_book/add_photo");
+	private static final Identifier FREEZE_FRAME$ADD_PHOTO = FFConstants.id("container/book/add_photo");
 	@Unique
-	private static final Identifier FREEZE_FRAME$ADD_PHOTO_HOVER = FFConstants.id("container/written_book/add_photo_hover");
+	private static final Identifier FREEZE_FRAME$ADD_PHOTO_HOVER = FFConstants.id("container/book/add_photo_hover");
 	@Unique
-	private static final Identifier FREEZE_FRAME$PHOTO_FRAME = FFConstants.id("container/written_book/photograph");
+	private static final Identifier FREEZE_FRAME$PHOTO_FRAME = FFConstants.id("container/book/photograph");
 	@Unique
 	private static final int FREEZE_FRAME$PHOTO_SIZE = 84;
 	@Unique
@@ -77,16 +79,24 @@ public abstract class BookEditScreenMixin {
 	@Unique
 	private static final int FREEZE_FRAME$DEFAULT_TEXT_LINES = 14;
 
+	@Final
 	@Shadow
 	private ItemStack book;
 	@Shadow
 	private int currentPage;
+	@Final
 	@Shadow
 	private List<String> pages;
 	@Shadow
 	private MultiLineEditBox page;
+	@Final
 	@Shadow
 	private InteractionHand hand;
+
+	protected BookEditScreenMixin(Component title) {
+		super(title);
+	}
+
 	@Shadow
 	private int backgroundLeft() {
 		throw new AssertionError("Mixin injection failed - Freeze Frame BookEditScreenMixin.");
@@ -95,6 +105,9 @@ public abstract class BookEditScreenMixin {
 	private int backgroundTop() {
 		throw new AssertionError("Mixin injection failed - Freeze Frame BookEditScreenMixin.");
 	}
+
+	@Shadow
+	protected abstract void saveChanges();
 
 	@Unique
 	private Button freezeFrame$addPhotoButton;
@@ -114,7 +127,7 @@ public abstract class BookEditScreenMixin {
 		if (BookPagePhotographUiState.suppressBookEditorPhotoControls()) return;
 		final int addButtonX = this.freezeFrame$backgroundLeft() + FREEZE_FRAME$ADD_BUTTON_X_OFFSET;
 		final int addButtonY = this.freezeFrame$backgroundTop() + FREEZE_FRAME$ADD_BUTTON_Y_OFFSET;
-		this.freezeFrame$addPhotoButton = ((ScreenWidgetAdderMixin) this).freezeFrame$addWidget(
+		this.freezeFrame$addPhotoButton = this.addWidget(
 			Button.builder(Component.empty(), button -> this.freezeFrame$openPhotoInventory())
 				.bounds(addButtonX, addButtonY, FREEZE_FRAME$ADD_BUTTON_SIZE, FREEZE_FRAME$ADD_BUTTON_SIZE)
 				.build()
@@ -159,7 +172,7 @@ public abstract class BookEditScreenMixin {
 	private void freezeFrame$openPhotoInventory() {
 		if (!this.freezeFrame$canOpenPhotoInventory()) return;
 		final int pageIndex = this.currentPage;
-		((BookEditScreenAccessor) this).freezeFrame$invokeSaveChanges();
+		this.saveChanges();
 		BookPagePhotographUiState.rememberOpenRequest(this.hand, pageIndex);
 		ClientPlayNetworking.send(new OpenBookPagePhotographInventoryPacket(this.hand, pageIndex));
 	}
