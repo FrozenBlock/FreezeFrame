@@ -20,12 +20,12 @@ package net.frozenblock.freezeframe.config;
 import com.mojang.serialization.Codec;
 import com.mojang.serialization.JavaOps;
 import io.netty.buffer.ByteBuf;
+import net.frozenblock.freezeframe.FFConstants;
 import net.frozenblock.lib.config.v2.config.ConfigData;
 import net.frozenblock.lib.config.v2.config.ConfigSettings;
 import net.frozenblock.lib.config.v2.entry.ConfigEntry;
 import net.frozenblock.lib.config.v2.entry.EntryType;
 import net.frozenblock.lib.config.v2.registry.ID;
-import net.frozenblock.freezeframe.FFConstants;
 import net.minecraft.network.codec.ByteBufCodecs;
 import net.minecraft.network.codec.StreamCodec;
 import net.minecraft.util.StringRepresentable;
@@ -39,19 +39,23 @@ public class FFConfig {
 		.build();
 
 	public static final ConfigEntry<Boolean> HIDE_FILM_PHOTO_PREVIEW_AND_INFO = CONFIG.entryBuilder("hideFilmPhotoPreviewAndInfo", EntryType.BOOL, false)
-		.comment("Hides embedded photo previews and photo information text in Film Roll tooltips.")
+		.comment("Hides embedded Photo previews and Photo information text in Film Roll tooltips.")
 		.build();
 
 	public static final ConfigEntry<Boolean> HIDE_PHOTOGRAPH_PREVIEW = CONFIG.entryBuilder("hidePhotographPreview", EntryType.BOOL, false)
-		.comment("Hides Photograph image previews in tooltips while keeping text information visible.")
+		.comment("Hides Photo image previews in tooltips while keeping text information visible.")
+		.build();
+
+	public static final ConfigEntry<Boolean> THIRD_PERSON_PHOTOGRAPH_ITEM = CONFIG.entryBuilder("thirdPersonPhotographItem", EntryType.BOOL, false)
+		.comment("Photo items render similarly to their first-person counterpart in third-person.")
 		.build();
 
 	public static final ConfigEntry<Integer> PHOTOGRAPH_RESOLUTION = CONFIG.entryBuilder("photographResolution", EntryType.INT, 256)
-		.comment("The resolution of photographs taken. Will be clamped between 128 and 1024.")
+		.comment("The resolution of Photos taken. Will be clamped between 128 and 1024.")
 		.build();
 
 	public static final ConfigEntry<PhotographFormat> PHOTOGRAPH_FORMAT = CONFIG.unsyncableEntryBuilder("photographFormat", PHOTOGRAPH_FORMAT_ENTRY_TYPE, PhotographFormat.MCPHOTO_LOSSLESS)
-		.comment("Dictates the file format to save photographs as. mcphoto is treated as jpeg. It is recommended to used mcphoto_very_compressed when using higher resolutions, and mcphoto_lossless when using lower resolutions.")
+		.comment("Dictates the file format to save Photos as. mcphoto is treated as jpeg. It is recommended to used mcphoto_very_compressed when using higher resolutions, and mcphoto_lossless when using lower resolutions.")
 		.build();
 
 	public static enum PhotographFormat implements StringRepresentable {

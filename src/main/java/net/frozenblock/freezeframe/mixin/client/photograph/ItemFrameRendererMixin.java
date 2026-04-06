@@ -50,9 +50,9 @@ public class ItemFrameRendererMixin<T extends ItemFrame> {
 		method = "extractRenderState(Lnet/minecraft/world/entity/decoration/ItemFrame;Lnet/minecraft/client/renderer/entity/state/ItemFrameRenderState;F)V",
 		at = @At("TAIL")
 	)
-	public void freezeFrame$addPhotoToRenderState(T itemFrame, ItemFrameRenderState renderState, float partialTicks, CallbackInfo info) {
-		final Photograph photograph = itemFrame.getItem().get(FFDataComponents.PHOTOGRAPH);
-		renderState.setData(
+	public void freezeFrame$addPhotoToRenderState(T entity, ItemFrameRenderState state, float partialTicks, CallbackInfo info) {
+		final Photograph photograph = entity.getItem().get(FFDataComponents.PHOTOGRAPH);
+		state.setData(
 			CameraPortRenderStateDataKeys.PHOTOGRAPH_ID,
 			photograph == null ? null : photograph.identifier()
 		);
@@ -69,10 +69,10 @@ public class ItemFrameRendererMixin<T extends ItemFrame> {
 	)
 	public int freezeFrame$fixRotationAndCapturePhotographComponent(
 		int original,
-		@Local(argsOnly = true) ItemFrameRenderState renderState,
+		@Local(argsOnly = true) ItemFrameRenderState state,
 		@Share("freezeFrame$photographId") LocalRef<Identifier> photographIdRef
 	) {
-		final Identifier photoId = renderState.getData(CameraPortRenderStateDataKeys.PHOTOGRAPH_ID);
+		final Identifier photoId = state.getData(CameraPortRenderStateDataKeys.PHOTOGRAPH_ID);
 		if (photoId == null) return original;
 
 		photographIdRef.set(photoId);
@@ -95,7 +95,7 @@ public class ItemFrameRendererMixin<T extends ItemFrame> {
 			// 0.625F
 			poseStack.scale(1.25F, 1.25F, 1.25F);
 			poseStack.translate(0F, 0F, 0.03125F);
-			PhotographRenderer.submit(poseStack, collector, photographId, lightVal, PhotographRenderer.FrameType.NONE);
+			PhotographRenderer.submit(poseStack, collector, photographId, lightVal, PhotographRenderer.FrameType.NONE, PhotographRenderer.FrameType.NONE);
 			return;
 		}
 		original.call(instance, poseStack, collector, lightVal, overlay, outlineColor);

@@ -128,6 +128,6 @@ public abstract class ItemInHandRendererMixin {
 	private void freezeFrame$renderPhotograph(PoseStack poseStack, SubmitNodeCollector collector, int lightCoords, Identifier photographId) {
 		poseStack.mulPose(Axis.YP.rotationDegrees(180F));
 		poseStack.scale(0.38F, 0.38F, 0.38F);
-		PhotographRenderer.submit(poseStack, collector, photographId, lightCoords, PhotographRenderer.FrameType.FRAME_FULL);
+		PhotographRenderer.submit(poseStack, collector, photographId, lightCoords, PhotographRenderer.FrameType.FRAME_FULL, PhotographRenderer.FrameType.NONE);
 	}
 }

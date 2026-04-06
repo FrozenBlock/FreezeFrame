@@ -67,6 +67,8 @@
   "tooltip.freezeframe.hide_film_photo_preview_and_info": "Hides only the embedded Photo preview and Photo information text in Film Roll tooltips.",
   "option.freezeframe.hide_photograph_preview": "Hide Photo Preview",
   "tooltip.freezeframe.hide_photograph_preview": "Hides only the Photo image preview on photograph items.",
+  "option.freezeframe.third_person_photo_item": "Third-Person Photo Items",
+  "tooltip.freezeframe.third_person_photo_item": "Whether Photo items will render similarly to their first-person counterpart in third-person",
   "option.freezeframe.photograph_resolution": "Photo Resolution",
   "tooltip.freezeframe.photograph_resolution": "The resolution Photos will be taken at.",
   "enum.freezeframe.photograph_format.png": "png",

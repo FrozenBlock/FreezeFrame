@@ -25,7 +25,7 @@ import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.injection.At;
 
 @Mixin(ContainerComponentManipulators.class)
-public class ContainerComponentManipulatorsMixin {
+public interface ContainerComponentManipulatorsMixin {
 
 	@ModifyExpressionValue(
 		method = "<clinit>",

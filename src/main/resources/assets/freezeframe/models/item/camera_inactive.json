@@ -1,23 +1,26 @@
 {
 	"parent": "minecraft:block/block",
-	"texture_size": [40, 40],
 	"textures": {
-		"texture": "freezeframe:entity/camera",
-    "particle": "#texture"
+		"bottom": "freezeframe:block/camera_bottom",
+		"west": "freezeframe:block/camera_west",
+		"east": "freezeframe:block/camera_east",
+		"south": "freezeframe:block/camera_south",
+		"top": "freezeframe:block/camera_top",
+		"north": "freezeframe:block/camera_north",
+    "particle": "#north"
 	},
 	"elements": [
 		{
-			"name": "head",
 			"from": [4, 4, 3],
 			"to": [12, 12, 13],
 			"rotation": {"angle": 0, "axis": "y", "origin": [8, 8, 8]},
 			"faces": {
-				"north": {"uv": [4, 4, 7.2, 7.2], "texture": "#texture"},
-				"east": {"uv": [0, 4, 4, 7.2], "texture": "#texture"},
-				"south": {"uv": [11.2, 4, 14.4, 7.2], "texture": "#texture"},
-				"west": {"uv": [7.2, 4, 11.2, 7.2], "texture": "#texture"},
-				"up": {"uv": [4, 0, 7.2, 4], "rotation": 180, "texture": "#texture"},
-				"down": {"uv": [7.2, 0, 10.4, 4], "texture": "#texture"}
+				"north": {"uv": [4, 4, 12, 12], "texture": "#north"},
+				"east": {"uv": [3, 4, 13, 12], "texture": "#east"},
+				"south": {"uv": [4, 4, 12, 12], "texture": "#south"},
+				"west": {"uv": [3, 4, 13, 12], "texture": "#west"},
+				"up": {"uv": [4, 3, 12, 13], "rotation": 180, "texture": "#top"},
+				"down": {"uv": [4, 3, 12, 13], "texture": "#bottom"}
 			}
 		}
 	],

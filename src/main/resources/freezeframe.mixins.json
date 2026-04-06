@@ -34,6 +34,7 @@
     "client.item_properties.ConditionalItemModelPropertiesMixin",
     "client.item_properties.RangeSelectItemModelPropertiesMixin",
     "client.photograph.ItemFrameRendererMixin",
+    "client.photograph.ItemInHandLayerMixin",
     "client.photograph.ItemInHandRendererMixin",
     "client.photograph.NativeImageMixin",
     "client.scope.MouseHandlerMixin"

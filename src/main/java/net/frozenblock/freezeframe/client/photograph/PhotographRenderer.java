@@ -37,6 +37,9 @@ public class PhotographRenderer {
 	private static final Identifier FRAME = FFConstants.id("textures/gui/sprites/photograph/frame.png");
 	private static final RenderType FRAME_RENDER_TYPE = RenderTypes.text(FRAME);
 	private static final Identifier GUI_FRAME = FFConstants.id("photograph/frame");
+	private static final Identifier FRAME_BACK = FFConstants.id("textures/gui/sprites/photograph/frame_back.png");
+	private static final RenderType FRAME_BACK_RENDER_TYPE = RenderTypes.text(FRAME_BACK);
+	private static final Identifier GUI_FRAME_BACK = FFConstants.id("photograph/frame_back");
 	private static final Identifier FRAME_FULL = FFConstants.id("textures/gui/sprites/photograph/frame_full.png");
 	private static final RenderType FRAME_FULL_RENDER_TYPE = RenderTypes.text(FRAME_FULL);
 	private static final Identifier GUI_FRAME_FULL = FFConstants.id("photograph/frame_full");
@@ -44,7 +47,7 @@ public class PhotographRenderer {
 	private static final RenderType FILM_EMBED_RENDER_TYPE = RenderTypes.text(FILM_EMBED);
 	private static final Identifier GUI_FILM_EMBED = FFConstants.id("photograph/film_embed");
 
-	public static void submit(PoseStack poseStack, SubmitNodeCollector collector, Identifier photographId, int lightCoords, FrameType frameType) {
+	public static void submit(PoseStack poseStack, SubmitNodeCollector collector, Identifier photographId, int lightCoords, FrameType frameType, FrameType frameBackType) {
 		poseStack.mulPose(Axis.ZP.rotationDegrees(180F));
 		poseStack.translate(-0.5F, -0.5F, 0F);
 
@@ -60,6 +63,24 @@ public class PhotographRenderer {
 					buffer.addVertex(pose, IN_WORLD_FRAME_MIN, IN_WORLD_FRAME_MIN, 0F).setColor(-1).setUv(0F, 0F).setLight(lightCoords);
 				}
 			);
+		}
+
+		final RenderType frameBackRenderType = frameBackType.renderType();
+		if (frameBackRenderType != null) {
+			poseStack.pushPose();
+			poseStack.translate(0F, 1F, 0F);
+			poseStack.mulPose(Axis.YP.rotationDegrees(180F));
+			collector.submitCustomGeometry(
+				poseStack,
+				frameBackRenderType,
+				(pose, buffer) -> {
+					buffer.addVertex(pose, -IN_WORLD_FRAME_MIN, -IN_WORLD_FRAME_MAX, 0F).setColor(-1).setUv(0F, 0F).setLight(lightCoords);
+					buffer.addVertex(pose, -IN_WORLD_FRAME_MAX, -IN_WORLD_FRAME_MAX, 0F).setColor(-1).setUv(1F, 0F).setLight(lightCoords);
+					buffer.addVertex(pose, -IN_WORLD_FRAME_MAX, -IN_WORLD_FRAME_MIN, 0F).setColor(-1).setUv(1F, 1F).setLight(lightCoords);
+					buffer.addVertex(pose, -IN_WORLD_FRAME_MIN, -IN_WORLD_FRAME_MIN, 0F).setColor(-1).setUv(0F, 1F).setLight(lightCoords);
+				}
+			);
+			poseStack.popPose();
 		}
 
 		final Identifier loadedPhotoLocation = PhotographLoader.getAndLoadPhotograph(photographId);
@@ -107,6 +128,7 @@ public class PhotographRenderer {
 	public static enum FrameType {
 		NONE(null,  null),
 		FRAME(FRAME_RENDER_TYPE, GUI_FRAME),
+		FRAME_BACK(FRAME_BACK_RENDER_TYPE, GUI_FRAME_BACK),
 		FRAME_FULL(FRAME_FULL_RENDER_TYPE, GUI_FRAME_FULL),
 		FILM_EMBED(FILM_EMBED_RENDER_TYPE, GUI_FILM_EMBED);
 		private final RenderType renderType;

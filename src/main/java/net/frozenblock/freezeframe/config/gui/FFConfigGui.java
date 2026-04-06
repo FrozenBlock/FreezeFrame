@@ -22,11 +22,11 @@ import me.shedaniel.clothconfig2.api.ConfigCategory;
 import me.shedaniel.clothconfig2.api.ConfigEntryBuilder;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
-import net.frozenblock.lib.config.clothconfig.FrozenClothConfig;
 import static net.frozenblock.freezeframe.FFConstants.*;
 import net.frozenblock.freezeframe.config.FFConfig;
 import static net.frozenblock.freezeframe.config.gui.FFConfigGuiHelper.booleanEntry;
 import static net.frozenblock.freezeframe.config.gui.FFConfigGuiHelper.intSliderEntry;
+import net.frozenblock.lib.config.clothconfig.FrozenClothConfig;
 import net.minecraft.client.gui.screens.Screen;
 
 @Environment(EnvType.CLIENT)
@@ -36,6 +36,7 @@ public final class FFConfigGui {
 		category.addEntry(booleanEntry(builder, "use_as_world_icon", FFConfig.USE_LATEST_PHOTO_AS_WORLD_ICON));
 		category.addEntry(booleanEntry(builder, "hide_film_photo_preview_and_info", FFConfig.HIDE_FILM_PHOTO_PREVIEW_AND_INFO));
 		category.addEntry(booleanEntry(builder, "hide_photograph_preview", FFConfig.HIDE_PHOTOGRAPH_PREVIEW));
+		category.addEntry(booleanEntry(builder, "third_person_photo_item", FFConfig.THIRD_PERSON_PHOTOGRAPH_ITEM));
 		category.addEntry(intSliderEntry(builder, "photograph_resolution", FFConfig.PHOTOGRAPH_RESOLUTION, 128, 1024));
 		category.addEntry(
 			FrozenClothConfig.syncedEntry(
