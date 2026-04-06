@@ -1,0 +1,18 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "category": "equipment",
+  "key": {
+    "#": "#minecraft:planks",
+    "A": "minecraft:amethyst_shard",
+    "G": "minecraft:gold_ingot",
+    "R": "minecraft:redstone"
+  },
+  "pattern": [
+    "##G",
+    "R A",
+    "##G"
+  ],
+  "result": {
+    "id": "freezeframe:camera"
+  }
+}

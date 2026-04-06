@@ -1,0 +1,12 @@
+{
+  "parent": "minecraft:block/cube",
+  "textures": {
+    "down": "freezeframe:block/developing_table_bottom",
+    "east": "freezeframe:block/developing_table_east",
+    "north": "freezeframe:block/developing_table_north",
+    "particle": "freezeframe:block/developing_table_north",
+    "south": "freezeframe:block/developing_table_south",
+    "up": "freezeframe:block/developing_table_top",
+    "west": "freezeframe:block/developing_table_west"
+  }
+}

@@ -25,9 +25,9 @@ pluginManagement {
     }
 }
 
-rootProject.name = "Camera Java Port"
+rootProject.name = "Freeze Frame"
 
-localRepository("cloth-config", "me.shedaniel.cloth:cloth-config-fabric", true, true)
+localRepository("cloth-config", "me.shedaniel.cloth:cloth-config-fabric", true, false)
 localRepository("FrozenLib", "maven.modrinth:frozenlib", true, false)
 
 fun localRepository(repo: String, dependencySub: String, kotlin: Boolean, enabled: Boolean) {

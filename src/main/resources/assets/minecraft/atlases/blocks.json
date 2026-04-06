@@ -2,7 +2,7 @@
   "sources": [
     {
       "type": "single",
-      "resource": "camera_port:entity/camera"
+      "resource": "freezeframe:entity/camera"
     }
   ]
 }

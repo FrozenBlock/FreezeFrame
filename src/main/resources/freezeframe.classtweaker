@@ -1,0 +1,9 @@
+classTweaker    v1    official
+
+accessible field net/minecraft/client/gui/screens/inventory/AbstractContainerScreen imageHeight I
+mutable field net/minecraft/client/gui/screens/inventory/AbstractContainerScreen imageHeight I
+accessible field net/minecraft/client/gui/screens/Screen minecraft Lnet/minecraft/client/Minecraft;
+accessible class net/minecraft/client/renderer/ItemInHandRenderer$HandRenderSelection
+
+transitive-inject-interface net/minecraft/world/inventory/AbstractContainerMenu net/frozenblock/freezeframe/menu/impl/ContainerMenuFilmInterface
+transitive-inject-interface net/minecraft/world/inventory/AbstractContainerMenu net/frozenblock/freezeframe/menu/impl/ContainerMenuCameraInterface

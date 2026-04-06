@@ -1,0 +1,49 @@
+/*
+ * Copyright 2026 FrozenBlock
+ * This file is part of Freeze Frame.
+ *
+ * This program is free software; you can modify it under
+ * the terms of version 1 of the FrozenBlock Modding Oasis License
+ * as published by FrozenBlock Modding Oasis.
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
+ * FrozenBlock Modding Oasis License for more details.
+ *
+ * You should have received a copy of the FrozenBlock Modding Oasis License
+ * along with this program; if not, see <https://github.com/FrozenBlock/Licenses>.
+ */
+
+package net.frozenblock.freezeframe.mixin.camera;
+
+import com.mojang.serialization.DataResult;
+import net.frozenblock.freezeframe.component.CameraContents;
+import net.frozenblock.freezeframe.registry.FFDataComponents;
+import net.minecraft.core.component.DataComponentMap;
+import net.minecraft.world.item.ItemInstance;
+import net.minecraft.world.item.ItemStack;
+import org.spongepowered.asm.mixin.Mixin;
+import org.spongepowered.asm.mixin.Shadow;
+import org.spongepowered.asm.mixin.injection.At;
+import org.spongepowered.asm.mixin.injection.Inject;
+import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
+
+@Mixin(ItemStack.class)
+public abstract class ItemStackMixin {
+
+	@Shadow
+	private static DataResult<?> validateContainedItemSizes(Iterable<? extends ItemInstance> items) {
+		throw new AssertionError("Mixin injection failed - Freeze Frame ItemStackMixin.");
+	}
+
+	@Inject(method = "validateComponents", at = @At("TAIL"), cancellable = true)
+	private static void freezeFrame$validateCameraContentsComponent(DataComponentMap components, CallbackInfoReturnable<DataResult<?>> info) {
+		final CameraContents cameraContents = components.get(FFDataComponents.CAMERA_CONTENTS);
+		if (cameraContents == null) return;
+
+		final DataResult<?> result = validateContainedItemSizes(cameraContents.items());
+		if (result.isError()) info.setReturnValue(result);
+	}
+
+}

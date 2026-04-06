@@ -1,0 +1,62 @@
+{
+	"parent": "minecraft:block/block",
+	"textures": {
+		"bottom": "freezeframe:block/camera_bottom",
+		"west": "freezeframe:block/camera_west",
+		"east": "freezeframe:block/camera_east",
+		"south": "freezeframe:block/camera_south",
+		"top": "freezeframe:block/camera_top",
+		"north": "freezeframe:block/camera_north",
+    "particle": "#north"
+	},
+	"elements": [
+		{
+			"from": [4, 4, 3],
+			"to": [12, 12, 13],
+			"rotation": {"angle": 0, "axis": "y", "origin": [8, 8, 8]},
+			"faces": {
+				"north": {"uv": [4, 4, 12, 12], "texture": "#north"},
+				"east": {"uv": [3, 4, 13, 12], "texture": "#east"},
+				"south": {"uv": [4, 4, 12, 12], "texture": "#south"},
+				"west": {"uv": [3, 4, 13, 12], "texture": "#west"},
+				"up": {"uv": [4, 3, 12, 13], "rotation": 180, "texture": "#top"},
+				"down": {"uv": [4, 3, 12, 13], "texture": "#bottom"}
+			}
+		}
+	],
+	"display": {
+		"thirdperson_righthand": {
+			"rotation": [80, 0, 0],
+			"translation": [-1, -0.25, -1],
+			"scale": [0.575, 0.575, 0.575]
+		},
+		"thirdperson_lefthand": {
+			"rotation": [80, 0, 0],
+			"translation": [-1, -0.25, -1],
+			"scale": [0.575, 0.575, 0.575]
+		},
+		"firstperson_righthand": {
+			"rotation": [0, 22.5, 0],
+			"translation": [0, 3, 0],
+			"scale": [0.5, 0.5, 0.5]
+		},
+		"firstperson_lefthand": {
+			"rotation": [0, 22.5, 0],
+			"translation": [0, 3, 0],
+			"scale": [0.5, 0.5, 0.5]
+		},
+		"ground": {
+			"translation": [0, 3, 0],
+			"scale": [0.5, 0.5, 0.5]
+		},
+		"gui": {
+			"rotation": [30, -135, 0]
+		},
+		"head": {
+			"scale": [1.85, 1.85, 1.85]
+		},
+		"fixed": {
+			"translation": [0, 0, -3.75]
+		}
+	}
+}
