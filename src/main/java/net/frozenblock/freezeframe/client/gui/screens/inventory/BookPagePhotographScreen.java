@@ -171,16 +171,15 @@ public class BookPagePhotographScreen extends AbstractContainerScreen<BookPagePh
 
 	@Nullable
 	private BookEditScreen createBookPreview() {
-		final Minecraft minecraft = Minecraft.getInstance();
-		if (minecraft.player == null) return null;
+		if (this.minecraft.player == null) return null;
 
-		final ItemStack book = minecraft.player.getItemInHand(this.menu.getHand());
+		final ItemStack book = this.minecraft.player.getItemInHand(this.menu.getHand());
 		if (!book.is(Items.WRITABLE_BOOK)) return null;
 
 		final WritableBookContent content = this.ensurePageExists(book, this.targetPageIndex());
 		if (content == null) return null;
 
-		final BookEditScreen screen = new BookEditScreen(minecraft.player, book, this.menu.getHand(), content);
+		final BookEditScreen screen = new BookEditScreen(this.minecraft.player, book, this.menu.getHand(), content);
 		screen.currentPage = this.targetPageIndex();
 		screen.init(this.width, this.height);
 		screen.updatePageContent();
@@ -194,23 +193,25 @@ public class BookPagePhotographScreen extends AbstractContainerScreen<BookPagePh
 		return screen;
 	}
 
-	private void reopenBookEditor() {
-		final Minecraft minecraft = Minecraft.getInstance();
-		if (minecraft.player == null) return;
-		final ItemStack book = minecraft.player.getItemInHand(this.menu.getHand());
-		if (!book.is(Items.WRITABLE_BOOK)) return;
-		final WritableBookContent content = this.ensurePageExists(book, this.targetPageIndex());
-		if (content == null) return;
+	private boolean reopenBookEditor() {
+		if (this.minecraft.player == null) return false;
 
-		final BookEditScreen screen = new BookEditScreen(minecraft.player, book, this.menu.getHand(), content);
+		final ItemStack book = this.minecraft.player.getItemInHand(this.menu.getHand());
+		if (!book.is(Items.WRITABLE_BOOK)) return false;
+
+		final WritableBookContent content = this.ensurePageExists(book, this.targetPageIndex());
+		if (content == null) return false;
+
+		final BookEditScreen screen = new BookEditScreen(this.minecraft.player, book, this.menu.getHand(), content);
 		screen.currentPage = this.targetPageIndex();
 		minecraft.setScreen(screen);
+		return true;
 	}
 
 	private void applyLocalBookPhotoUpdate() {
-		final Minecraft minecraft = Minecraft.getInstance();
-		if (minecraft.player == null) return;
-		final ItemStack book = minecraft.player.getItemInHand(this.menu.getHand());
+		if (this.minecraft.player == null) return;
+
+		final ItemStack book = this.minecraft.player.getItemInHand(this.menu.getHand());
 		if (!book.is(Items.WRITABLE_BOOK)) return;
 
 		this.ensurePageExists(book, this.targetPageIndex());
