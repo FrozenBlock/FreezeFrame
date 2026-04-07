@@ -91,6 +91,11 @@ public class BookPagePhotographScreen extends AbstractContainerScreen<BookPagePh
 	}
 
 	@Override
+	public boolean isPauseScreen() {
+		return true;
+	}
+
+	@Override
 	public void extractBackground(GuiGraphicsExtractor graphics, int mouseX, int mouseY, float partialTicks) {
 		if (this.bookPreviewScreen != null) {
 			BookPagePhotographUiState.setSuppressBookEditorPhotoControls(true);
