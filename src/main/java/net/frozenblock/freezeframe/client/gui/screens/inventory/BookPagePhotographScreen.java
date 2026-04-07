@@ -66,7 +66,12 @@ public class BookPagePhotographScreen extends AbstractContainerScreen<BookPagePh
 	private static final int PHOTOGRAPH_HOLDER_X_OFFSET = -7;
 	private static final int PHOTOGRAPH_HOLDER_Y_OFFSET = -7;
 	private static final int INVENTORY_BG_X_OFFSET = -1;
-	private static final int INVENTORY_BG_Y = BOOK_BOTTOM_Y + 13;
+	private static final int INVENTORY_BG_Y = BOOK_BOTTOM_Y + 7;
+	private static final int INVENTORY_BOTTOM_Y = INVENTORY_BG_Y + 86;
+	private static final int DONE_BUTTON_WIDTH = 48;
+	private static final int DONE_BUTTON_WIDTH_HALF = DONE_BUTTON_WIDTH / 2;
+	private static final int DONE_BUTTON_HEIGHT = 20;
+	private static final int DONE_BUTTON_Y = INVENTORY_BOTTOM_Y + 9;
 	private BookEditScreen bookPreviewScreen;
 
 	public BookPagePhotographScreen(BookPagePhotographMenu menu, Inventory inventory, Component title) {
@@ -79,8 +84,8 @@ public class BookPagePhotographScreen extends AbstractContainerScreen<BookPagePh
 		BookPagePhotographUiState.setSuppressBookEditorPhotoControls(true);
 		this.bookPreviewScreen = this.createBookPreview();
 		this.addRenderableWidget(
-			Button.builder(Component.translatable("screen.freezeframe.book_photograph.close"), button -> this.onClose())
-				.bounds(this.leftPos + this.imageWidth - 54, this.topPos + 5, 48, 20)
+			Button.builder(Component.translatable("gui.done"), button -> this.onClose())
+				.bounds(this.leftPos + (this.imageWidth / 2) - DONE_BUTTON_WIDTH_HALF, this.topPos + DONE_BUTTON_Y, DONE_BUTTON_WIDTH, DONE_BUTTON_HEIGHT)
 				.build()
 		);
 	}
@@ -151,7 +156,16 @@ public class BookPagePhotographScreen extends AbstractContainerScreen<BookPagePh
 
 	@Override
 	public boolean keyPressed(KeyEvent event) {
-		if (this.minecraft != null && this.minecraft.options.keyDrop.matches(event)) return true;
+		if (this.minecraft.options.keyDrop.matches(event)) return true;
+
+		//TODO: revoke changes when escaping?
+		/*
+		if (event.isEscape() && this.shouldCloseOnEsc()) {
+			this.onClose();
+			return true;
+		}
+		 */
+
 		return super.keyPressed(event);
 	}
 

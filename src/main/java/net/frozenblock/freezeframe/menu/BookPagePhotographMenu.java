@@ -43,7 +43,7 @@ public class BookPagePhotographMenu extends AbstractContainerMenu {
 	private static final int PHOTO_SLOT_X = 42;
 	private static final int PHOTO_SLOT_Y = -74;
 	private static final int INVENTORY_SLOT_X = 5;
-	private static final int INVENTORY_SLOT_Y = BOOK_BOTTOM_Y + 13;
+	private static final int INVENTORY_SLOT_Y = BOOK_BOTTOM_Y + 7;
 
 	private final Container photoContainer;
 	private final DataSlot handData = DataSlot.standalone();
