@@ -52,14 +52,19 @@ import org.jetbrains.annotations.Nullable;
 @Environment(EnvType.CLIENT)
 public class BookPagePhotographScreen extends AbstractContainerScreen<BookPagePhotographMenu> {
 	private static final Identifier INVENTORY_TEXTURE = FFConstants.id("textures/gui/container/book.png");
-	private static final Identifier PHOTO_FRAME_SPRITE = FFConstants.id("container/book/photograph");
-	private static final Identifier PHOTO_HIGHLIGHT_SPRITE = FFConstants.id("container/book/photograph_highlight");
+	private static final Identifier PHOTOGRAPH_HOLDER_BACK_SPRITE = FFConstants.id("container/book/photograph_holder_back");
+	private static final Identifier PHOTOGRAPH_HOLDER_BACK_EMPTY_SPRITE = FFConstants.id("container/book/photograph_holder_back_empty");
+	private static final Identifier PHOTOGRAPH_HOLDER_FRONT_SPRITE = FFConstants.id("container/book/photograph_holder_front");
+	private static final Identifier PHOTOGRAPH_HIGHLIGHT_SPRITE = FFConstants.id("container/book/photograph_highlight");
 	private static final int BOOK_BOTTOM_Y = 73;
 	private static final int IMAGE_WIDTH = 172;
 	private static final int IMAGE_HEIGHT = 140;
-	private static final int PHOTO_PREVIEW_SIZE = 84;
-	private static final int PHOTO_PREVIEW_X_OFFSET = 51;
-	private static final int PHOTO_PREVIEW_Y_OFFSET = 30;
+	private static final int PHOTOGRAPH_PREVIEW_SIZE = 84;
+	private static final int PHOTOGRAPH_PREVIEW_X_OFFSET = 41;
+	private static final int PHOTOGRAPH_PREVIEW_Y_OFFSET = -75;
+	private static final int PHOTOGRAPH_HOLDER_SIZE = 98;
+	private static final int PHOTOGRAPH_HOLDER_X_OFFSET = -7;
+	private static final int PHOTOGRAPH_HOLDER_Y_OFFSET = -7;
 	private static final int INVENTORY_BG_X_OFFSET = -1;
 	private static final int INVENTORY_BG_Y = BOOK_BOTTOM_Y + 13;
 	private BookEditScreen bookPreviewScreen;
@@ -97,14 +102,14 @@ public class BookPagePhotographScreen extends AbstractContainerScreen<BookPagePh
 			0F,
 			172,
 			86,
-			256,
-			256
+			BACKGROUND_TEXTURE_WIDTH,
+			BACKGROUND_TEXTURE_HEIGHT
 		);
 	}
 
 	@Override
-	public void extractRenderState(GuiGraphicsExtractor graphics, int mouseX, int mouseY, float partialTicks) {
-		super.extractRenderState(graphics, mouseX, mouseY, partialTicks);
+	public void extractContents(GuiGraphicsExtractor graphics, int mouseX, int mouseY, float partialTicks) {
+		super.extractContents(graphics, mouseX, mouseY, partialTicks);
 		this.renderSlotPhotograph(graphics, mouseX, mouseY);
 	}
 
@@ -116,10 +121,10 @@ public class BookPagePhotographScreen extends AbstractContainerScreen<BookPagePh
 	public boolean isHovering(Slot slot, double mouseX, double mouseY) {
 		if (slot != this.menu.getSlot(BookPagePhotographMenu.PHOTO_SLOT)) return super.isHovering(slot, mouseX, mouseY);
 		return this.isHovering(
-			PHOTO_PREVIEW_X_OFFSET,
-			PHOTO_PREVIEW_Y_OFFSET,
-			PHOTO_PREVIEW_SIZE,
-			PHOTO_PREVIEW_SIZE,
+			PHOTOGRAPH_PREVIEW_X_OFFSET,
+			PHOTOGRAPH_PREVIEW_Y_OFFSET,
+			PHOTOGRAPH_PREVIEW_SIZE,
+			PHOTOGRAPH_PREVIEW_SIZE,
 			mouseX,
 			mouseY
 		);
@@ -223,21 +228,29 @@ public class BookPagePhotographScreen extends AbstractContainerScreen<BookPagePh
 	}
 
 	private void renderSlotPhotograph(GuiGraphicsExtractor graphics, int mouseX, int mouseY) {
-		final int x = this.leftPos + PHOTO_PREVIEW_X_OFFSET;
-		final int y = this.topPos + PHOTO_PREVIEW_Y_OFFSET;
-		final ItemStack slot = this.menu.getSlot(BookPagePhotographMenu.PHOTO_SLOT).getItem();
+		final int x = this.leftPos + PHOTOGRAPH_PREVIEW_X_OFFSET;
+		final int y = this.topPos + PHOTOGRAPH_PREVIEW_Y_OFFSET;
+		final int holderX = x + PHOTOGRAPH_HOLDER_X_OFFSET;
+		final int holderY = y + PHOTOGRAPH_HOLDER_Y_OFFSET;
 
-		if (slot.is(FFItems.PHOTOGRAPH)) {
-			final Photograph photograph = slot.get(FFDataComponents.PHOTOGRAPH);
+		boolean hasPhotograph = false;
+		final Slot slot = this.menu.getSlot(BookPagePhotographMenu.PHOTO_SLOT);
+		final ItemStack itemStack = slot.getItem();
+		if (itemStack.is(FFItems.PHOTOGRAPH)) {
+			final Photograph photograph = itemStack.get(FFDataComponents.PHOTOGRAPH);
 			if (photograph != null) {
-				PhotographRenderer.blit(0, 0, x, y, graphics, photograph.identifier(), PHOTO_PREVIEW_SIZE, PhotographRenderer.FrameType.NONE);
-				graphics.blitSprite(RenderPipelines.GUI_TEXTURED, PHOTO_FRAME_SPRITE, x, y, PHOTO_PREVIEW_SIZE, PHOTO_PREVIEW_SIZE);
+				hasPhotograph = true;
+				graphics.blitSprite(RenderPipelines.GUI_TEXTURED, PHOTOGRAPH_HOLDER_BACK_SPRITE, holderX, holderY, PHOTOGRAPH_HOLDER_SIZE, PHOTOGRAPH_HOLDER_SIZE);
+				PhotographRenderer.blit(0, 0, x, y, graphics, photograph.identifier(), PHOTOGRAPH_PREVIEW_SIZE, PhotographRenderer.FrameType.FRAME);
 			}
 		}
 
-		if (this.isHovering(x, y, PHOTO_PREVIEW_SIZE, PHOTO_PREVIEW_SIZE, mouseX, mouseY)) {
-			graphics.blitSprite(RenderPipelines.GUI_TEXTURED, PHOTO_HIGHLIGHT_SPRITE, x, y, PHOTO_PREVIEW_SIZE, PHOTO_PREVIEW_SIZE);
-			if (!slot.isEmpty()) graphics.setTooltipForNextFrame(this.font, slot, mouseX, mouseY);
+		if (!hasPhotograph) graphics.blitSprite(RenderPipelines.GUI_TEXTURED, PHOTOGRAPH_HOLDER_BACK_EMPTY_SPRITE, holderX, holderY, PHOTOGRAPH_HOLDER_SIZE, PHOTOGRAPH_HOLDER_SIZE);
+		graphics.blitSprite(RenderPipelines.GUI_TEXTURED, PHOTOGRAPH_HOLDER_FRONT_SPRITE, holderX, holderY, PHOTOGRAPH_HOLDER_SIZE, PHOTOGRAPH_HOLDER_SIZE);
+
+		if (this.isHovering(slot, mouseX, mouseY)) {
+			graphics.blitSprite(RenderPipelines.GUI_TEXTURED, PHOTOGRAPH_HIGHLIGHT_SPRITE, x, y, PHOTOGRAPH_PREVIEW_SIZE, PHOTOGRAPH_PREVIEW_SIZE);
+			if (!itemStack.isEmpty()) graphics.setTooltipForNextFrame(this.font, itemStack, mouseX, mouseY);
 		}
 	}
 }

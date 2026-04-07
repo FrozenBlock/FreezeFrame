@@ -53,17 +53,25 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 @Mixin(BookEditScreen.class)
 public abstract class BookEditScreenMixin extends Screen {
 	@Unique
-	private static final Identifier FREEZE_FRAME$ADD_PHOTO = FFConstants.id("container/book/add_photo");
+	private static final Identifier FREEZE_FRAME$ADD_PHOTOGRAPH = FFConstants.id("container/book/add_photograph");
 	@Unique
-	private static final Identifier FREEZE_FRAME$ADD_PHOTO_HOVER = FFConstants.id("container/book/add_photo_hover");
+	private static final Identifier FREEZE_FRAME$ADD_PHOTOGRAPH_HOVER = FFConstants.id("container/book/add_photograph_hover");
 	@Unique
-	private static final Identifier FREEZE_FRAME$PHOTO_FRAME = FFConstants.id("container/book/photograph");
+	private static final Identifier FREEZE_FRAME$PHOTOGRAPH_HOLDER_BACK_SPRITE = FFConstants.id("container/book/photograph_holder_back");
 	@Unique
-	private static final int FREEZE_FRAME$PHOTO_SIZE = 84;
+	private static final Identifier FREEZE_FRAME$PHOTOGRAPH_HOLDER_FRONT_SPRITE = FFConstants.id("container/book/photograph_holder_front");
 	@Unique
-	private static final int FREEZE_FRAME$PHOTO_X_OFFSET = 51;
+	private static final int FREEZE_FRAME$PHOTOGRAPH_SIZE = 84;
 	@Unique
-	private static final int FREEZE_FRAME$PHOTO_Y_OFFSET = 30;
+	private static final int FREEZE_FRAME$PHOTOGRAPH_X_OFFSET = 51;
+	@Unique
+	private static final int FREEZE_FRAME$PHOTOGRAPH_Y_OFFSET = 33;
+	@Unique
+	private static final int FREEZE_FRAME$PHOTOGRAPH_HOLDER_SIZE = 98;
+	@Unique
+	private static final int FREEZE_FRAME$PHOTOGRAPH_HOLDER_X_OFFSET = -7;
+	@Unique
+	private static final int FREEZE_FRAME$PHOTOGRAPH_HOLDER_Y_OFFSET = -7;
 	@Unique
 	private static final int FREEZE_FRAME$ADD_BUTTON_SIZE = 16;
 	@Unique
@@ -192,12 +200,29 @@ public abstract class BookEditScreenMixin extends Screen {
 		final Photograph photograph = photoStack.get(FFDataComponents.PHOTOGRAPH);
 		if (photograph == null) return;
 
-		final int x = this.freezeFrame$backgroundLeft() + FREEZE_FRAME$PHOTO_X_OFFSET;
-		final int y = this.freezeFrame$backgroundTop() + FREEZE_FRAME$PHOTO_Y_OFFSET;
-		PhotographRenderer.blit(0, 0, x, y, graphics, photograph.identifier(), FREEZE_FRAME$PHOTO_SIZE, PhotographRenderer.FrameType.NONE);
-		graphics.blitSprite(RenderPipelines.GUI_TEXTURED, FREEZE_FRAME$PHOTO_FRAME, x, y, FREEZE_FRAME$PHOTO_SIZE, FREEZE_FRAME$PHOTO_SIZE);
+		final int x = this.freezeFrame$backgroundLeft() + FREEZE_FRAME$PHOTOGRAPH_X_OFFSET;
+		final int y = this.freezeFrame$backgroundTop() + FREEZE_FRAME$PHOTOGRAPH_Y_OFFSET;
+		final int holderX = x + FREEZE_FRAME$PHOTOGRAPH_HOLDER_X_OFFSET;
+		final int holderY = y + FREEZE_FRAME$PHOTOGRAPH_HOLDER_Y_OFFSET;
+		graphics.blitSprite(
+			RenderPipelines.GUI_TEXTURED,
+			FREEZE_FRAME$PHOTOGRAPH_HOLDER_BACK_SPRITE,
+			holderX,
+			holderY,
+			FREEZE_FRAME$PHOTOGRAPH_HOLDER_SIZE,
+			FREEZE_FRAME$PHOTOGRAPH_HOLDER_SIZE
+		);
+		PhotographRenderer.blit(0, 0, x, y, graphics, photograph.identifier(), FREEZE_FRAME$PHOTOGRAPH_SIZE, PhotographRenderer.FrameType.FRAME);
+		graphics.blitSprite(
+			RenderPipelines.GUI_TEXTURED,
+			FREEZE_FRAME$PHOTOGRAPH_HOLDER_FRONT_SPRITE,
+			holderX,
+			holderY,
+			FREEZE_FRAME$PHOTOGRAPH_HOLDER_SIZE,
+			FREEZE_FRAME$PHOTOGRAPH_HOLDER_SIZE
+		);
 
-		if (this.freezeFrame$isWithin(mouseX, mouseY, x, y, FREEZE_FRAME$PHOTO_SIZE, FREEZE_FRAME$PHOTO_SIZE)) {
+		if (this.freezeFrame$isWithin(mouseX, mouseY, x, y, FREEZE_FRAME$PHOTOGRAPH_SIZE, FREEZE_FRAME$PHOTOGRAPH_SIZE)) {
 			final Minecraft minecraft = Minecraft.getInstance();
 			PhotographHoverTooltipRenderer.extractRenderState(
 				graphics,
@@ -217,7 +242,7 @@ public abstract class BookEditScreenMixin extends Screen {
 		final int x = this.freezeFrame$backgroundLeft() + FREEZE_FRAME$ADD_BUTTON_X_OFFSET;
 		final int y = this.freezeFrame$backgroundTop() + FREEZE_FRAME$ADD_BUTTON_Y_OFFSET;
 		final boolean hovered = this.freezeFrame$isWithin(mouseX, mouseY, x, y, FREEZE_FRAME$ADD_BUTTON_SIZE, FREEZE_FRAME$ADD_BUTTON_SIZE);
-		final Identifier sprite = hovered && canOpen ? FREEZE_FRAME$ADD_PHOTO_HOVER : FREEZE_FRAME$ADD_PHOTO;
+		final Identifier sprite = hovered && canOpen ? FREEZE_FRAME$ADD_PHOTOGRAPH_HOVER : FREEZE_FRAME$ADD_PHOTOGRAPH;
 		graphics.blitSprite(RenderPipelines.GUI_TEXTURED, sprite, x, y, FREEZE_FRAME$ADD_BUTTON_SIZE, FREEZE_FRAME$ADD_BUTTON_SIZE);
 		if (hovered && !canOpen) {
 			graphics.setTooltipForNextFrame(

@@ -50,7 +50,7 @@ public abstract class BookViewScreenMixin {
 	@Unique
 	private static final int FREEZE_FRAME$PHOTO_X_OFFSET = 51;
 	@Unique
-	private static final int FREEZE_FRAME$PHOTO_Y_OFFSET = 30;
+	private static final int FREEZE_FRAME$PHOTO_Y_OFFSET = 28;
 	@Unique
 	private static final int FREEZE_FRAME$PHOTO_TEXT_Y_SHIFT = 81;
 
