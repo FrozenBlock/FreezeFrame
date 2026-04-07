@@ -3,7 +3,6 @@ classTweaker    v1    official
 extendable method net/minecraft/client/gui/screens/inventory/AbstractContainerScreen isHovering (Lnet/minecraft/world/inventory/Slot;DD)Z
 accessible field net/minecraft/client/gui/screens/inventory/AbstractContainerScreen imageHeight I
 mutable field net/minecraft/client/gui/screens/inventory/AbstractContainerScreen imageHeight I
-accessible method net/minecraft/client/gui/screens/inventory/AbstractContainerScreen onStopHovering (Lnet/minecraft/world/inventory/Slot;)V
 accessible field net/minecraft/client/gui/screens/inventory/BookEditScreen currentPage I
 accessible method net/minecraft/client/gui/screens/inventory/BookEditScreen saveChanges ()V
 accessible method net/minecraft/client/gui/screens/inventory/BookEditScreen updatePageContent ()V
