@@ -139,8 +139,16 @@ public class BookPagePhotographScreen extends AbstractContainerScreen<BookPagePh
 	public void onClose() {
 		this.applyLocalBookPhotoUpdate();
 		BookPagePhotographUiState.setSuppressBookEditorPhotoControls(false);
+
+		final BookEditScreen screen = this.getBookEditScreenIfPossible();
+		if (screen != null) {
+			this.minecraft.player.closeContainer();
+			if (this.hoveredSlot != null) this.onStopHovering(this.hoveredSlot);
+			this.minecraft.setScreen(screen);
+			return;
+		}
+
 		super.onClose();
-		this.reopenBookEditor();
 	}
 
 	@Override
@@ -194,17 +202,20 @@ public class BookPagePhotographScreen extends AbstractContainerScreen<BookPagePh
 		return screen;
 	}
 
-	private void reopenBookEditor() {
+	@Nullable
+	private BookEditScreen getBookEditScreenIfPossible() {
 		final Minecraft minecraft = Minecraft.getInstance();
-		if (minecraft.player == null) return;
+		if (minecraft.player == null) return null;
+
 		final ItemStack book = minecraft.player.getItemInHand(this.menu.getHand());
-		if (!book.is(Items.WRITABLE_BOOK)) return;
+		if (!book.is(Items.WRITABLE_BOOK)) return null;
+
 		final WritableBookContent content = this.ensurePageExists(book, this.targetPageIndex());
-		if (content == null) return;
+		if (content == null) return null;
 
 		final BookEditScreen screen = new BookEditScreen(minecraft.player, book, this.menu.getHand(), content);
 		screen.currentPage = this.targetPageIndex();
-		minecraft.setScreen(screen);
+		return screen;
 	}
 
 	private void applyLocalBookPhotoUpdate() {
