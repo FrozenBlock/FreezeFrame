@@ -74,6 +74,11 @@ public class BookPagePhotographMenu extends AbstractContainerMenu {
 			public int getMaxStackSize() {
 				return 1;
 			}
+
+			@Override
+			public boolean isHighlightable() {
+				return false;
+			}
 		});
 
 		this.addStandardInventorySlots(inventory, INVENTORY_SLOT_X, INVENTORY_SLOT_Y);

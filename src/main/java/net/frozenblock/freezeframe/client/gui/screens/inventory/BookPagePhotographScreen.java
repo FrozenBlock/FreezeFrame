@@ -62,7 +62,8 @@ public class BookPagePhotographScreen extends AbstractContainerScreen<BookPagePh
 	private static final Identifier PHOTOGRAPH_HOLDER_BACK_SPRITE = FFConstants.id("container/book/photograph_holder_back");
 	private static final Identifier PHOTOGRAPH_HOLDER_BACK_EMPTY_SPRITE = FFConstants.id("container/book/photograph_holder_back_empty");
 	private static final Identifier PHOTOGRAPH_HOLDER_FRONT_SPRITE = FFConstants.id("container/book/photograph_holder_front");
-	private static final Identifier PHOTOGRAPH_HIGHLIGHT_SPRITE = FFConstants.id("container/book/photograph_highlight");
+	private static final Identifier PHOTOGRAPH_HIGHLIGHT_BACK_SPRITE = FFConstants.id("container/book/photograph_highlight_back");
+	private static final Identifier PHOTOGRAPH_HIGHLIGHT_FRONT_SPRITE = FFConstants.id("container/book/photograph_highlight_front");
 	private static final int BOOK_BOTTOM_Y = 73;
 	private static final int IMAGE_WIDTH = 172;
 	private static final int IMAGE_HEIGHT = 140;
@@ -300,7 +301,8 @@ public class BookPagePhotographScreen extends AbstractContainerScreen<BookPagePh
 		graphics.blitSprite(RenderPipelines.GUI_TEXTURED, PHOTOGRAPH_HOLDER_FRONT_SPRITE, photoX, photoY, PHOTOGRAPH_HOLDER_SIZE, PHOTOGRAPH_HOLDER_SIZE);
 
 		if (this.isHovering(slot, mouseX, mouseY)) {
-			graphics.blitSprite(RenderPipelines.GUI_TEXTURED, PHOTOGRAPH_HIGHLIGHT_SPRITE, x, y, PHOTOGRAPH_PREVIEW_SIZE, PHOTOGRAPH_PREVIEW_SIZE);
+			if (!hasPhotograph) graphics.blitSprite(RenderPipelines.GUI_TEXTURED, PHOTOGRAPH_HIGHLIGHT_BACK_SPRITE, x, y, PHOTOGRAPH_PREVIEW_SIZE, PHOTOGRAPH_PREVIEW_SIZE);
+			graphics.blitSprite(RenderPipelines.GUI_TEXTURED, PHOTOGRAPH_HIGHLIGHT_FRONT_SPRITE, x, y, PHOTOGRAPH_PREVIEW_SIZE, PHOTOGRAPH_PREVIEW_SIZE);
 			if (!itemStack.isEmpty()) graphics.setTooltipForNextFrame(this.font, itemStack, mouseX, mouseY);
 		}
 	}
