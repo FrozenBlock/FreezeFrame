@@ -10,6 +10,10 @@ accessible method net/minecraft/client/gui/screens/Screen addRenderableWidget (L
 accessible method net/minecraft/client/gui/screens/Screen addWidget (Lnet/minecraft/client/gui/components/events/GuiEventListener;)Lnet/minecraft/client/gui/components/events/GuiEventListener;
 accessible field net/minecraft/client/gui/screens/Screen minecraft Lnet/minecraft/client/Minecraft;
 accessible class net/minecraft/client/renderer/ItemInHandRenderer$HandRenderSelection
+accessible field net/minecraft/client/gui/screens/inventory/BookEditScreen page Lnet/minecraft/client/gui/components/MultiLineEditBox;
+accessible method net/minecraft/client/gui/screens/inventory/BookEditScreen backgroundLeft ()I
+accessible method net/minecraft/client/gui/screens/inventory/BookEditScreen backgroundTop ()I
+accessible field net/minecraft/client/gui/screens/inventory/BookViewScreen PAGE_TEXT_STYLE Lnet/minecraft/network/chat/Style;
 
 transitive-inject-interface net/minecraft/world/inventory/AbstractContainerMenu net/frozenblock/freezeframe/menu/impl/ContainerMenuFilmInterface
 transitive-inject-interface net/minecraft/world/inventory/AbstractContainerMenu net/frozenblock/freezeframe/menu/impl/ContainerMenuCameraInterface

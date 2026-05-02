@@ -41,7 +41,7 @@ public final class BookPagePhotographUiState {
 		suppressBookEditorPhotoControls = suppress;
 	}
 
-	public static boolean suppressBookEditorPhotoControls() {
+	public static boolean suppressingBookEditorPhotoControls() {
 		return suppressBookEditorPhotoControls;
 	}
 }

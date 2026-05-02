@@ -17,6 +17,7 @@
 
 package net.frozenblock.freezeframe.mixin.client.book;
 
+import com.mojang.blaze3d.platform.Window;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 import net.frozenblock.freezeframe.FFConstants;
@@ -25,10 +26,11 @@ import net.frozenblock.freezeframe.client.photograph.PhotographHoverTooltipRende
 import net.frozenblock.freezeframe.client.photograph.PhotographRenderer;
 import net.frozenblock.freezeframe.component.Photograph;
 import net.frozenblock.freezeframe.registry.FFDataComponents;
-import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.GuiGraphicsExtractor;
+import net.minecraft.client.gui.screens.Screen;
 import net.minecraft.client.gui.screens.inventory.BookViewScreen;
 import net.minecraft.client.renderer.RenderPipelines;
+import net.minecraft.network.chat.Component;
 import net.minecraft.resources.Identifier;
 import net.minecraft.world.item.ItemStack;
 import org.spongepowered.asm.mixin.Mixin;
@@ -42,7 +44,7 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 
 @Environment(EnvType.CLIENT)
 @Mixin(BookViewScreen.class)
-public abstract class BookViewScreenMixin {
+public abstract class BookViewScreenMixin extends Screen {
 	@Unique
 	private static final Identifier FREEZE_FRAME$PHOTO_FRAME = FFConstants.id("container/book/photograph");
 	@Unique
@@ -58,6 +60,11 @@ public abstract class BookViewScreenMixin {
 	private BookViewScreen.BookAccess bookAccess;
 	@Shadow
 	private int currentPage;
+
+	protected BookViewScreenMixin(Component title) {
+		super(title);
+	}
+
 	@Shadow
 	private int backgroundLeft() {
 		throw new AssertionError("Mixin injection failed - Freeze Frame BookViewScreenMixin.");
@@ -69,7 +76,7 @@ public abstract class BookViewScreenMixin {
 	}
 
 	@Inject(method = "extractRenderState", at = @At("TAIL"))
-	private void freezeFrame$renderBookPhotograph(GuiGraphicsExtractor graphics, int mouseX, int mouseY, float delta, CallbackInfo info) {
+	private void freezeFrame$renderBookPhotograph(GuiGraphicsExtractor graphics, int mouseX, int mouseY, float partialTicks, CallbackInfo info) {
 		final ItemStack photo = BookPagePhotographCache.getPhoto(this.bookAccess, this.currentPage);
 		if (photo.isEmpty()) return;
 
@@ -84,12 +91,12 @@ public abstract class BookViewScreenMixin {
 		graphics.blitSprite(RenderPipelines.GUI_TEXTURED, FREEZE_FRAME$PHOTO_FRAME, x, y, FREEZE_FRAME$PHOTO_SIZE, FREEZE_FRAME$PHOTO_SIZE);
 
 		if (mouseX >= x && mouseX < x + FREEZE_FRAME$PHOTO_SIZE && mouseY >= y && mouseY < y + FREEZE_FRAME$PHOTO_SIZE) {
-			final Minecraft minecraft = Minecraft.getInstance();
+			final Window window = this.minecraft.getWindow();
 			PhotographHoverTooltipRenderer.extractRenderState(
 				graphics,
-				minecraft.font,
-				minecraft.getWindow().getGuiScaledWidth(),
-				minecraft.getWindow().getGuiScaledHeight(),
+				this.font,
+				window.getGuiScaledWidth(),
+				window.getGuiScaledHeight(),
 				mouseX,
 				mouseY,
 				photograph

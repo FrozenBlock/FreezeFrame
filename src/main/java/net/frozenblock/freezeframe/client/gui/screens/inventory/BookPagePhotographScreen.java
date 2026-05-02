@@ -18,6 +18,7 @@
 package net.frozenblock.freezeframe.client.gui.screens.inventory;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
@@ -29,25 +30,31 @@ import net.frozenblock.freezeframe.menu.BookPagePhotographMenu;
 import net.frozenblock.freezeframe.registry.FFDataComponents;
 import net.frozenblock.freezeframe.registry.FFItems;
 import net.frozenblock.freezeframe.util.BookPagePhotographHelper;
-import net.minecraft.client.Minecraft;
+import net.minecraft.client.gui.ActiveTextCollector;
 import net.minecraft.client.gui.GuiGraphicsExtractor;
+import net.minecraft.client.gui.TextAlignment;
 import net.minecraft.client.gui.components.AbstractWidget;
 import net.minecraft.client.gui.components.Button;
 import net.minecraft.client.gui.components.events.GuiEventListener;
 import net.minecraft.client.gui.screens.inventory.AbstractContainerScreen;
 import net.minecraft.client.gui.screens.inventory.BookEditScreen;
+import net.minecraft.client.gui.screens.inventory.BookViewScreen;
 import net.minecraft.client.input.KeyEvent;
 import net.minecraft.client.renderer.RenderPipelines;
 import net.minecraft.core.component.DataComponents;
 import net.minecraft.network.chat.Component;
+import net.minecraft.network.chat.ComponentUtils;
+import net.minecraft.network.chat.FormattedText;
 import net.minecraft.resources.Identifier;
 import net.minecraft.server.network.Filterable;
+import net.minecraft.util.FormattedCharSequence;
 import net.minecraft.world.entity.player.Inventory;
 import net.minecraft.world.inventory.Slot;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.Items;
 import net.minecraft.world.item.component.WritableBookContent;
 import org.jetbrains.annotations.Nullable;
+import org.spongepowered.asm.mixin.Unique;
 
 @Environment(EnvType.CLIENT)
 public class BookPagePhotographScreen extends AbstractContainerScreen<BookPagePhotographMenu> {
@@ -72,7 +79,10 @@ public class BookPagePhotographScreen extends AbstractContainerScreen<BookPagePh
 	private static final int DONE_BUTTON_WIDTH_HALF = DONE_BUTTON_WIDTH / 2;
 	private static final int DONE_BUTTON_HEIGHT = 20;
 	private static final int DONE_BUTTON_Y = INVENTORY_BOTTOM_Y + 9;
+	public static final int PHOTO_TEXT_LINES = 3;
+	public static final int DEFAULT_TEXT_LINES = 14;
 	private BookEditScreen bookPreviewScreen;
+	private List<FormattedCharSequence> cachedPageComponents = Collections.emptyList();
 
 	public BookPagePhotographScreen(BookPagePhotographMenu menu, Inventory inventory, Component title) {
 		super(menu, inventory, title, IMAGE_WIDTH, IMAGE_HEIGHT);
@@ -93,6 +103,25 @@ public class BookPagePhotographScreen extends AbstractContainerScreen<BookPagePh
 	@Override
 	public boolean isPauseScreen() {
 		return true;
+	}
+
+	@Override
+	public void extractRenderState(GuiGraphicsExtractor graphics, int mouseX, int mouseY, float partialTicks) {
+		super.extractRenderState(graphics, mouseX, mouseY, partialTicks);
+		this.visitText(graphics.textRenderer(GuiGraphicsExtractor.HoveredTextEffects.NONE));
+	}
+
+	private void visitText(final ActiveTextCollector collector) {
+		if (this.bookPreviewScreen == null) return;
+
+		final int left = this.bookPreviewScreen.page.getX() + 4;
+		final int top = 4 + 28 + (134 - (PHOTO_TEXT_LINES * 9)) - 9;
+
+		final int shownLines = Math.min(BookEditScreen.TEXT_HEIGHT / 9, this.cachedPageComponents.size());
+		for (int i = 0; i < shownLines; i++) {
+			final FormattedCharSequence component = this.cachedPageComponents.get(i);
+			collector.accept(left, top + i * 9, component);
+		}
 	}
 
 	@Override
@@ -124,8 +153,7 @@ public class BookPagePhotographScreen extends AbstractContainerScreen<BookPagePh
 	}
 
 	@Override
-	protected void extractLabels(GuiGraphicsExtractor graphics, int mouseX, int mouseY) {
-	}
+	protected void extractLabels(GuiGraphicsExtractor graphics, int mouseX, int mouseY) {}
 
 	@Override
 	public boolean isHovering(Slot slot, double mouseX, double mouseY) {
@@ -195,6 +223,9 @@ public class BookPagePhotographScreen extends AbstractContainerScreen<BookPagePh
 			widget.visible = false;
 		}
 
+		final FormattedText pageText = ComponentUtils.mergeStyles(Component.literal(screen.page.getValue()), BookViewScreen.PAGE_TEXT_STYLE);
+		this.cachedPageComponents = this.font.split(pageText, BookEditScreen.TEXT_WIDTH);
+
 		return screen;
 	}
 
@@ -209,7 +240,7 @@ public class BookPagePhotographScreen extends AbstractContainerScreen<BookPagePh
 
 		final BookEditScreen screen = new BookEditScreen(this.minecraft.player, book, this.menu.getHand(), content);
 		screen.currentPage = this.targetPageIndex();
-		minecraft.setScreen(screen);
+		this.minecraft.setScreen(screen);
 		return true;
 	}
 
@@ -250,8 +281,8 @@ public class BookPagePhotographScreen extends AbstractContainerScreen<BookPagePh
 	private void renderSlotPhotograph(GuiGraphicsExtractor graphics, int mouseX, int mouseY) {
 		final int x = this.leftPos + PHOTOGRAPH_PREVIEW_X_OFFSET;
 		final int y = this.topPos + PHOTOGRAPH_PREVIEW_Y_OFFSET;
-		final int holderX = x + PHOTOGRAPH_HOLDER_X_OFFSET;
-		final int holderY = y + PHOTOGRAPH_HOLDER_Y_OFFSET;
+		final int photoX = x + PHOTOGRAPH_HOLDER_X_OFFSET;
+		final int photoY = y + PHOTOGRAPH_HOLDER_Y_OFFSET;
 
 		boolean hasPhotograph = false;
 		final Slot slot = this.menu.getSlot(BookPagePhotographMenu.PHOTO_SLOT);
@@ -260,13 +291,13 @@ public class BookPagePhotographScreen extends AbstractContainerScreen<BookPagePh
 			final Photograph photograph = itemStack.get(FFDataComponents.PHOTOGRAPH);
 			if (photograph != null) {
 				hasPhotograph = true;
-				graphics.blitSprite(RenderPipelines.GUI_TEXTURED, PHOTOGRAPH_HOLDER_BACK_SPRITE, holderX, holderY, PHOTOGRAPH_HOLDER_SIZE, PHOTOGRAPH_HOLDER_SIZE);
+				graphics.blitSprite(RenderPipelines.GUI_TEXTURED, PHOTOGRAPH_HOLDER_BACK_SPRITE, photoX, photoY, PHOTOGRAPH_HOLDER_SIZE, PHOTOGRAPH_HOLDER_SIZE);
 				PhotographRenderer.blit(0, 0, x, y, graphics, photograph.identifier(), PHOTOGRAPH_PREVIEW_SIZE, PhotographRenderer.FrameType.FRAME);
 			}
 		}
 
-		if (!hasPhotograph) graphics.blitSprite(RenderPipelines.GUI_TEXTURED, PHOTOGRAPH_HOLDER_BACK_EMPTY_SPRITE, holderX, holderY, PHOTOGRAPH_HOLDER_SIZE, PHOTOGRAPH_HOLDER_SIZE);
-		graphics.blitSprite(RenderPipelines.GUI_TEXTURED, PHOTOGRAPH_HOLDER_FRONT_SPRITE, holderX, holderY, PHOTOGRAPH_HOLDER_SIZE, PHOTOGRAPH_HOLDER_SIZE);
+		if (!hasPhotograph) graphics.blitSprite(RenderPipelines.GUI_TEXTURED, PHOTOGRAPH_HOLDER_BACK_EMPTY_SPRITE, photoX, photoY, PHOTOGRAPH_HOLDER_SIZE, PHOTOGRAPH_HOLDER_SIZE);
+		graphics.blitSprite(RenderPipelines.GUI_TEXTURED, PHOTOGRAPH_HOLDER_FRONT_SPRITE, photoX, photoY, PHOTOGRAPH_HOLDER_SIZE, PHOTOGRAPH_HOLDER_SIZE);
 
 		if (this.isHovering(slot, mouseX, mouseY)) {
 			graphics.blitSprite(RenderPipelines.GUI_TEXTURED, PHOTOGRAPH_HIGHLIGHT_SPRITE, x, y, PHOTOGRAPH_PREVIEW_SIZE, PHOTOGRAPH_PREVIEW_SIZE);
