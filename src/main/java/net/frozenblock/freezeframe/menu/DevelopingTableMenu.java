@@ -65,12 +65,12 @@ public class DevelopingTableMenu extends AbstractContainerMenu {
 	};
 	final ResultContainer resultContainer = new ResultContainer();
 
-	public DevelopingTableMenu(int id, Inventory inventory) {
-		this(id, inventory, ContainerLevelAccess.NULL);
+	public DevelopingTableMenu(int containerId, Inventory inventory) {
+		this(containerId, inventory, ContainerLevelAccess.NULL);
 	}
 
-	public DevelopingTableMenu(int id, Inventory inventory, ContainerLevelAccess access) {
-		super(FFMenuTypes.DEVELOPING_TABLE, id);
+	public DevelopingTableMenu(int containerId, Inventory inventory, ContainerLevelAccess access) {
+		super(FFMenuTypes.DEVELOPING_TABLE, containerId);
 		this.access = access;
 		this.sourceSlot = addSlot(new DevelopingTableSourceSlot(this.inputContainer, SOURCE_SLOT, 14, 15));
 		this.paperSlot = addSlot(new DevelopingTablePaperSlot(this.inputContainer, PAPER_SLOT, 44, 113));
@@ -153,26 +153,26 @@ public class DevelopingTableMenu extends AbstractContainerMenu {
 	}
 
 	@Override
-	public ItemStack quickMoveStack(Player player, int fromIndex) {
-		final Slot slot = this.slots.get(fromIndex);
+	public ItemStack quickMoveStack(Player player, int slotIndex) {
+		final Slot slot = this.slots.get(slotIndex);
 		ItemStack clicked = ItemStack.EMPTY;
 		if (slot == null || !slot.hasItem()) return clicked;
 
 		final ItemStack item = slot.getItem();
 		clicked = item.copy();
-		if (fromIndex == RESULT_SLOT) {
+		if (slotIndex == RESULT_SLOT) {
 			item.onCraftedBy(player, 1);
 			if (!this.moveItemStackTo(item, INV_SLOT_START, USE_ROW_SLOT_END, true)) return ItemStack.EMPTY;
 			slot.onQuickCraft(item, clicked);
-		} else if (fromIndex == SOURCE_SLOT || fromIndex == PAPER_SLOT) {
+		} else if (slotIndex == SOURCE_SLOT || slotIndex == PAPER_SLOT) {
 			if (!this.moveItemStackTo(item, INV_SLOT_START, USE_ROW_SLOT_END, false)) return ItemStack.EMPTY;
 		} else if (DevelopingTableSourceSlot.isValidAsSource(item)) {
 			if (!this.moveItemStackTo(item, SOURCE_SLOT, SOURCE_SLOT + 1, false)) return ItemStack.EMPTY;
 		} else if (item.is(Items.PAPER)) {
 			if (!this.moveItemStackTo(item, PAPER_SLOT, PAPER_SLOT + 1, false)) return ItemStack.EMPTY;
-		} else if (fromIndex >= INV_SLOT_START && fromIndex < INV_SLOT_END) {
+		} else if (slotIndex >= INV_SLOT_START && slotIndex < INV_SLOT_END) {
 			if (!this.moveItemStackTo(item, USE_ROW_SLOT_START, USE_ROW_SLOT_END, false)) return ItemStack.EMPTY;
-		} else if (fromIndex >= USE_ROW_SLOT_START && fromIndex < USE_ROW_SLOT_END && !this.moveItemStackTo(item, INV_SLOT_START, INV_SLOT_END, false)) {
+		} else if (slotIndex >= USE_ROW_SLOT_START && slotIndex < USE_ROW_SLOT_END && !this.moveItemStackTo(item, INV_SLOT_START, INV_SLOT_END, false)) {
 			return ItemStack.EMPTY;
 		}
 

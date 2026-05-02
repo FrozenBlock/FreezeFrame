@@ -23,7 +23,7 @@ import java.util.Optional;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 import net.frozenblock.freezeframe.FFConstants;
-import net.frozenblock.freezeframe.client.photograph.PhotographDetails;
+import net.frozenblock.freezeframe.client.photograph.PhotographDetailsUtil;
 import net.frozenblock.freezeframe.client.photograph.PhotographLoader;
 import net.frozenblock.freezeframe.client.photograph.PhotographRenderer;
 import net.frozenblock.freezeframe.component.FilmContents;
@@ -84,7 +84,7 @@ public class ClientFilmTooltip implements ClientTooltipComponent {
 
 		this.name = photograph == null
 			? null
-			: PhotographDetails.getPhotographNameLine(photograph);
+			: PhotographDetailsUtil.getPhotographNameLine(photograph);
 
 		this.photographer = photograph == null || StringUtil.isNullOrEmpty(photograph.photographer())
 			? null

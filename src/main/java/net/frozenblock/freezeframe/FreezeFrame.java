@@ -35,14 +35,14 @@ public class FreezeFrame implements ModInitializer {
 	@Override
 	public void onInitialize() {
 		FFEntityTypes.init();
-		FFBlocks.register();
+		FFBlocks.init();
 		FFItems.init();
 		FFContainerComponentManipulators.init();
 		FFDataComponentPredicates.init();
 		FFSounds.init();
 		FFDataComponents.init();
 		FFRecipeSerializers.init();
-		FFMenuTypes.register();
+		FFMenuTypes.init();
 
 		FFNetworking.init();
 

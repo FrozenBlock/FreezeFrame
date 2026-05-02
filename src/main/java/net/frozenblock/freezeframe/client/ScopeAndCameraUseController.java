@@ -43,9 +43,6 @@ public final class ScopeAndCameraUseController {
 	private static boolean forcedFirstPerson = false;
 	private static CameraType previousCameraType = CameraType.FIRST_PERSON;
 
-	private ScopeAndCameraUseController() {
-	}
-
 	public static void init() {
 		ClientTickEvents.END_CLIENT_TICK.register(ScopeAndCameraUseController::tick);
 	}

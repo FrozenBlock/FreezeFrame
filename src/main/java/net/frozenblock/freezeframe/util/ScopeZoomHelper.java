@@ -50,9 +50,6 @@ public final class ScopeZoomHelper {
 	public static final float MIN_SUPPORTED_ZOOM = 0.75F;
 	public static final float MAX_SUPPORTED_ZOOM = 64F;
 
-	private ScopeZoomHelper() {
-	}
-
 	public static boolean isScopeItem(ItemStack stack) {
 		return getZoomConfig(stack) != null;
 	}

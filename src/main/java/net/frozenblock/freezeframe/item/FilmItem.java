@@ -38,6 +38,7 @@ import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemInstance;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.component.TooltipDisplay;
+import net.minecraft.world.level.Level;
 import org.apache.commons.lang3.math.Fraction;
 import org.jspecify.annotations.Nullable;
 
@@ -73,12 +74,10 @@ public class FilmItem extends Item {
 	}
 
 	@Override
-	public InteractionResult use(net.minecraft.world.level.Level level, Player player, InteractionHand hand) {
+	public InteractionResult use(Level level, Player player, InteractionHand hand) {
 		final ItemStack stack = player.getItemInHand(hand);
 		if (!stack.isEmpty() && !stack.getOrDefault(FFDataComponents.FILM_CONTENTS, FilmContents.EMPTY).isEmpty()) {
-			if (player instanceof ServerPlayer serverPlayer) {
-				OpenFilmScreenPacket.sendTo(serverPlayer, hand);
-			}
+			if (player instanceof ServerPlayer serverPlayer) OpenFilmScreenPacket.sendTo(serverPlayer, hand);
 			return InteractionResult.SUCCESS;
 		}
 
@@ -86,7 +85,7 @@ public class FilmItem extends Item {
 	}
 
 	@Override
-	public void inventoryTick(ItemStack stack, ServerLevel level, Entity entity, EquipmentSlot equipmentSlot) {
+	public void inventoryTick(ItemStack stack, ServerLevel level, Entity entity, EquipmentSlot slot) {
 		if (needsStackingRefresh(stack)) refreshStackingState(stack);
 	}
 

@@ -43,7 +43,7 @@ public class DevelopingTableBlock extends HorizontalDirectionalBlock {
 	}
 
 	@Override
-	protected MapCodec<? extends HorizontalDirectionalBlock> codec() {
+	protected MapCodec<? extends DevelopingTableBlock> codec() {
 		return CODEC;
 	}
 

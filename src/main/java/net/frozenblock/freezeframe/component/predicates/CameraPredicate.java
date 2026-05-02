@@ -29,11 +29,9 @@ import net.minecraft.core.component.DataComponentType;
 import net.minecraft.world.item.ItemInstance;
 
 public record CameraPredicate(Optional<CollectionPredicate<ItemInstance, ItemPredicate>> items) implements SingleComponentItemPredicate<CameraContents> {
-	public static final Codec<CameraPredicate> CODEC = RecordCodecBuilder.create(
-		i -> i.group(
-			CollectionPredicate.codec(ItemPredicate.CODEC).optionalFieldOf("items").forGetter(CameraPredicate::items)
-		).apply(i, CameraPredicate::new)
-	);
+	public static final Codec<CameraPredicate> CODEC = RecordCodecBuilder.create(instance -> instance.group(
+		CollectionPredicate.codec(ItemPredicate.CODEC).optionalFieldOf("items").forGetter(CameraPredicate::items)
+	).apply(instance, CameraPredicate::new));
 
 	@Override
 	public DataComponentType<CameraContents> componentType() {

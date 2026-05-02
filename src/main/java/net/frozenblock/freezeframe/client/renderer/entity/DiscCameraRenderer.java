@@ -45,12 +45,12 @@ public class DiscCameraRenderer extends MobRenderer<DiscCamera, TripodCameraRend
 	public void extractRenderState(DiscCamera entity, TripodCameraRenderState renderState, float partialTicks) {
 		super.extractRenderState(entity, renderState, partialTicks);
 		renderState.trackedHeight = entity.getTrackedHeight();
-		renderState.lerpedTimer = entity.getLerpedTimer(partialTicks);
+		renderState.timer = entity.getLerpedTimer(partialTicks);
 	}
 
 	@Override
 	protected float getWhiteOverlayProgress(TripodCameraRenderState renderState) {
-		float timer = renderState.lerpedTimer;
+		float timer = renderState.timer;
 		float timedTimer = (timer * (float) Math.PI) * 0.1F;
 		float sin = (float) (Math.sin(timedTimer - (float) Math.PI * 0.5F) + 1F) * 0.5F;
 		return sin;

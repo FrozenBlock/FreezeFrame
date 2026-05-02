@@ -94,7 +94,6 @@ public class DevelopingTableScreen extends AbstractContainerScreen<DevelopingTab
 		FFConstants.id("container/slot/book"),
 		FFConstants.id("container/slot/photograph")
 	);
-
 	private static final List<Identifier> PAPER_SLOT_ICONS = List.of(FFConstants.id("container/slot/paper"));
 	private final ScrollWheelHandler scrollWheelHandler;
 	private final CyclingSlotBackground sourceSlotBackground = new CyclingSlotBackground(DevelopingTableMenu.SOURCE_SLOT);

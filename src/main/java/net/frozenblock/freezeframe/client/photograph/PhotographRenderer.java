@@ -47,7 +47,7 @@ public class PhotographRenderer {
 	private static final RenderType FILM_EMBED_RENDER_TYPE = RenderTypes.text(FILM_EMBED);
 	private static final Identifier GUI_FILM_EMBED = FFConstants.id("photograph/film_embed");
 
-	public static void submit(PoseStack poseStack, SubmitNodeCollector collector, Identifier photographId, int lightCoords, FrameType frameType, FrameType frameBackType) {
+	public static void submit(PoseStack poseStack, SubmitNodeCollector collector, Identifier id, int lightCoords, FrameType frameType, FrameType frameBackType) {
 		poseStack.mulPose(Axis.ZP.rotationDegrees(180F));
 		poseStack.translate(-0.5F, -0.5F, 0F);
 
@@ -83,10 +83,9 @@ public class PhotographRenderer {
 			poseStack.popPose();
 		}
 
-		final Identifier loadedPhotoLocation = PhotographLoader.getAndLoadPhotograph(photographId);
 		collector.submitCustomGeometry(
 			poseStack,
-			RenderTypes.text(loadedPhotoLocation),
+			RenderTypes.text(PhotographLoader.getAndLoadPhotograph(id)),
 			(pose, buffer) -> {
 				buffer.addVertex(pose, 0F, 1F, -0.00007812F).setColor(-1).setUv(0F, 1F).setLight(lightCoords);
 				buffer.addVertex(pose, 1F, 1F, -0.00007812F).setColor(-1).setUv(1F, 1F).setLight(lightCoords);
@@ -96,8 +95,7 @@ public class PhotographRenderer {
 		);
 	}
 
-	public static void blit(int x, int y, int xOffset, int yOffset, GuiGraphicsExtractor graphics, Identifier photoLocation, int renderSize, FrameType frameType) {
-		final Identifier loadedPhotoId = PhotographLoader.getAndLoadPhotograph(photoLocation);
+	public static void blit(int x, int y, int xOffset, int yOffset, GuiGraphicsExtractor graphics, Identifier id, int renderSize, FrameType frameType) {
 		final int renderX = x + xOffset;
 		final int renderY = y + yOffset;
 
@@ -117,7 +115,7 @@ public class PhotographRenderer {
 		}
 		graphics.blit(
 			RenderPipelines.GUI_TEXTURED,
-			loadedPhotoId,
+			PhotographLoader.getAndLoadPhotograph(id),
 			renderX, renderY,
 			0F,
 			0F,

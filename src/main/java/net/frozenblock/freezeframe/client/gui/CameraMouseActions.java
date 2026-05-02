@@ -37,7 +37,7 @@ public class CameraMouseActions implements ItemSlotMouseAction {
 	private final Minecraft minecraft;
 	private final ScrollWheelHandler scrollWheelHandler;
 
-	public CameraMouseActions(final Minecraft minecraft) {
+	public CameraMouseActions(Minecraft minecraft) {
 		this.minecraft = minecraft;
 		this.scrollWheelHandler = new ScrollWheelHandler();
 	}
@@ -48,8 +48,8 @@ public class CameraMouseActions implements ItemSlotMouseAction {
 	}
 
 	@Override
-	public boolean onMouseScrolled(final double scrollX, final double scrollY, final int slotIndex, final ItemStack itemStack) {
-		int amountOfShownItems = CameraItem.getNumberOfItemsToShow(itemStack);
+	public boolean onMouseScrolled(double scrollX, double scrollY, int slotIndex, ItemStack itemStack) {
+		final int amountOfShownItems = CameraItem.getNumberOfItemsToShow(itemStack);
 		if (amountOfShownItems == 0) return false;
 
 		final Vector2i wheelXY = this.scrollWheelHandler.onMouseScroll(scrollX, scrollY);
@@ -78,9 +78,7 @@ public class CameraMouseActions implements ItemSlotMouseAction {
 		if (connection == null || selectedItem >= CameraItem.getNumberOfItemsToShow(cameraItem)) return;
 
 		CameraItem.toggleSelectedItem(cameraItem, selectedItem);
-		connection.send(new ServerboundCustomPayloadPacket(
-			new SelectCameraFilmPacket(slotIndex, selectedItem)
-		));
+		connection.send(new ServerboundCustomPayloadPacket(new SelectCameraFilmPacket(slotIndex, selectedItem)));
 	}
 
 	public void unselectedCameraItem(ItemStack cameraItem, int slotIndex) {

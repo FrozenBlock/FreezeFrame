@@ -18,6 +18,7 @@
 package net.frozenblock.freezeframe.util;
 
 import java.util.ArrayList;
+import java.util.Comparator;
 import java.util.List;
 import net.frozenblock.freezeframe.component.BookPagePhotographs;
 import net.frozenblock.freezeframe.component.Photograph;
@@ -26,9 +27,6 @@ import net.frozenblock.freezeframe.registry.FFItems;
 import net.minecraft.world.item.ItemStack;
 
 public final class BookPagePhotographHelper {
-
-	private BookPagePhotographHelper() {
-	}
 
 	public static ItemStack getPhoto(ItemStack book, int pageIndex) {
 		if (pageIndex < 0) return ItemStack.EMPTY;
@@ -67,7 +65,7 @@ public final class BookPagePhotographHelper {
 			entries.add(new BookPagePhotographs.PagePhotograph(pageIndex, photoStack.copyWithCount(1)));
 		}
 
-		entries.sort((left, right) -> Integer.compare(left.pageIndex(), right.pageIndex()));
+		entries.sort(Comparator.comparingInt(BookPagePhotographs.PagePhotograph::pageIndex));
 		if (entries.isEmpty()) {
 			book.remove(FFDataComponents.BOOK_PAGE_PHOTOGRAPHS);
 		} else {
@@ -81,9 +79,7 @@ public final class BookPagePhotographHelper {
 			final ItemStack stack = pagePhotograph.photograph().copyWithCount(1);
 			if (stack.is(FFItems.PHOTOGRAPH)) {
 				final Photograph photograph = stack.get(FFDataComponents.PHOTOGRAPH);
-				if (photograph != null) {
-					stack.set(FFDataComponents.PHOTOGRAPH, photograph.asBookCopy());
-				}
+				if (photograph != null) stack.set(FFDataComponents.PHOTOGRAPH, photograph.asBookCopy());
 			}
 			updatedPages.add(new BookPagePhotographs.PagePhotograph(pagePhotograph.pageIndex(), stack));
 		}

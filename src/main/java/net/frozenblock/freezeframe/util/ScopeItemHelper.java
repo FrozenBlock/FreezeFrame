@@ -24,9 +24,6 @@ import net.minecraft.world.item.ItemStack;
 
 public final class ScopeItemHelper {
 
-	private ScopeItemHelper() {
-	}
-
 	public static boolean isCameraItem(ItemStack stack) {
 		return stack.is(FFItemTags.CAMERAS);
 	}

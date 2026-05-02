@@ -44,17 +44,16 @@ public class BookPagePhotographMenu extends AbstractContainerMenu {
 	private static final int PHOTO_SLOT_Y = -74;
 	private static final int INVENTORY_SLOT_X = 5;
 	private static final int INVENTORY_SLOT_Y = BOOK_BOTTOM_Y + 7;
-
 	private final Container photoContainer;
 	private final DataSlot handData = DataSlot.standalone();
 	private final DataSlot pageData = DataSlot.standalone();
 
-	public BookPagePhotographMenu(int id, Inventory inventory) {
-		this(id, inventory, InteractionHand.MAIN_HAND, 0);
+	public BookPagePhotographMenu(int containerId, Inventory inventory) {
+		this(containerId, inventory, InteractionHand.MAIN_HAND, 0);
 	}
 
-	public BookPagePhotographMenu(int id, Inventory inventory, InteractionHand hand, int pageIndex) {
-		super(FFMenuTypes.BOOK_PAGE_PHOTOGRAPH, id);
+	public BookPagePhotographMenu(int containerId, Inventory inventory, InteractionHand hand, int pageIndex) {
+		super(FFMenuTypes.BOOK_PAGE_PHOTOGRAPH, containerId);
 		this.photoContainer = new SimpleContainer(1);
 		this.handData.set(hand == InteractionHand.OFF_HAND ? 1 : 0);
 		this.pageData.set(Math.max(0, pageIndex));
@@ -97,20 +96,20 @@ public class BookPagePhotographMenu extends AbstractContainerMenu {
 	}
 
 	@Override
-	public ItemStack quickMoveStack(Player player, int fromIndex) {
-		final Slot slot = this.slots.get(fromIndex);
+	public ItemStack quickMoveStack(Player player, int slotIndex) {
+		final Slot slot = this.slots.get(slotIndex);
 		ItemStack clicked = ItemStack.EMPTY;
 		if (slot == null || !slot.hasItem()) return clicked;
 
 		final ItemStack item = slot.getItem();
 		clicked = item.copy();
-		if (fromIndex == PHOTO_SLOT) {
+		if (slotIndex == PHOTO_SLOT) {
 			if (!this.moveItemStackTo(item, INVENTORY_START_SLOT, HOTBAR_END_SLOT, true)) return ItemStack.EMPTY;
 		} else if (item.is(FFItems.PHOTOGRAPH)) {
 			if (!this.moveItemStackTo(item, PHOTO_SLOT, PHOTO_SLOT + 1, false)) return ItemStack.EMPTY;
-		} else if (fromIndex >= INVENTORY_START_SLOT && fromIndex < INVENTORY_END_SLOT) {
+		} else if (slotIndex >= INVENTORY_START_SLOT && slotIndex < INVENTORY_END_SLOT) {
 			if (!this.moveItemStackTo(item, HOTBAR_START_SLOT, HOTBAR_END_SLOT, false)) return ItemStack.EMPTY;
-		} else if (fromIndex >= HOTBAR_START_SLOT && fromIndex < HOTBAR_END_SLOT) {
+		} else if (slotIndex >= HOTBAR_START_SLOT && slotIndex < HOTBAR_END_SLOT) {
 			if (!this.moveItemStackTo(item, INVENTORY_START_SLOT, INVENTORY_END_SLOT, false)) return ItemStack.EMPTY;
 		} else {
 			return ItemStack.EMPTY;

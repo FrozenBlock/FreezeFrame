@@ -54,22 +54,18 @@ public class FFSounds {
 	public static final SoundEvent FILM_TEAR = register("ui.film.tear");
 	public static final SoundEvent FILM_TEAR_FINISH = register("ui.film.tear_finish");
 
-	private static Holder.Reference<SoundEvent> registerForHolder(String path) {
-		return registerForHolder(FFConstants.id(path));
+	public static void init() {}
+
+	private static Holder.Reference<SoundEvent> registerForHolder(String name) {
+		return registerForHolder(FFConstants.id(name));
 	}
 
 	private static Holder.Reference<SoundEvent> registerForHolder(Identifier id) {
-		return registerForHolder(id, id);
+		return Registry.registerForHolder(BuiltInRegistries.SOUND_EVENT, id, SoundEvent.createVariableRangeEvent(id));
 	}
 
 	public static SoundEvent register(String path) {
 		final Identifier id = FFConstants.id(path);
 		return Registry.register(BuiltInRegistries.SOUND_EVENT, id, SoundEvent.createVariableRangeEvent(id));
 	}
-
-	private static Holder.Reference<SoundEvent> registerForHolder(Identifier id, Identifier id2) {
-		return Registry.registerForHolder(BuiltInRegistries.SOUND_EVENT, id, SoundEvent.createVariableRangeEvent(id2));
-	}
-
-	public static void init() {}
 }

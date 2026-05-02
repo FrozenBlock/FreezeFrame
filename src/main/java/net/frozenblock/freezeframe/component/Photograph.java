@@ -30,16 +30,12 @@ public record Photograph(Identifier identifier, String photographer, String name
 	public static final int COPY_OF_COPY = 2;
 	public static final int DEGRADED = 3;
 	public static final int MAX_COPY_GENERATION = COPY_OF_COPY;
-
-	public static final Codec<Photograph> CODEC = RecordCodecBuilder.create(instance -> instance
-		.group(
-			Identifier.CODEC.fieldOf("identifier").forGetter(component -> component.identifier),
-			Codec.STRING.fieldOf("author").forGetter(Photograph::photographer),
-			Codec.STRING.optionalFieldOf("name", "").forGetter(Photograph::name),
-			Codec.INT.optionalFieldOf("generation", ORIGINAL).forGetter(Photograph::generation)
-		)
-		.apply(instance, Photograph::new)
-	);
+	public static final Codec<Photograph> CODEC = RecordCodecBuilder.create(instance -> instance.group(
+		Identifier.CODEC.fieldOf("identifier").forGetter(component -> component.identifier),
+		Codec.STRING.fieldOf("author").forGetter(Photograph::photographer),
+		Codec.STRING.optionalFieldOf("name", "").forGetter(Photograph::name),
+		Codec.INT.optionalFieldOf("generation", ORIGINAL).forGetter(Photograph::generation)
+	).apply(instance, Photograph::new));
 	public static final StreamCodec<ByteBuf, Photograph> STREAM_CODEC = StreamCodec.composite(
 		Identifier.STREAM_CODEC, Photograph::identifier,
 		ByteBufCodecs.STRING_UTF8, Photograph::photographer,
@@ -48,12 +44,12 @@ public record Photograph(Identifier identifier, String photographer, String name
 		Photograph::new
 	);
 
-	public Photograph(Identifier identifier, String photographer) {
-		this(identifier, photographer, "", ORIGINAL);
+	public Photograph(Identifier id, String photographer) {
+		this(id, photographer, "", ORIGINAL);
 	}
 
-	public Photograph(Identifier identifier, String photographer, int generation) {
-		this(identifier, photographer, "", generation);
+	public Photograph(Identifier id, String photographer, int generation) {
+		this(id, photographer, "", generation);
 	}
 
 	public boolean isCopy() {

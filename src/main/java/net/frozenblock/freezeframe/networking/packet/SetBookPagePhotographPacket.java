@@ -88,8 +88,6 @@ public record SetBookPagePhotographPacket(InteractionHand hand, int pageIndex, i
 		if (inventoryStack.isEmpty()) player.getInventory().setItem(inventorySlot, ItemStack.EMPTY);
 
 		BookPagePhotographHelper.setPhoto(heldBook, packet.pageIndex, usedPhoto);
-		if (!currentPhoto.isEmpty()) {
-			player.getInventory().placeItemBackInInventory(currentPhoto);
-		}
+		if (!currentPhoto.isEmpty()) player.getInventory().placeItemBackInInventory(currentPhoto);
 	}
 }

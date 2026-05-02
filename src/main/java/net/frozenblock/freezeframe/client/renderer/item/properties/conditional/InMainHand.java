@@ -29,7 +29,8 @@ import org.jspecify.annotations.Nullable;
 
 @Environment(EnvType.CLIENT)
 public class InMainHand implements ConditionalItemModelProperty {
-	public static final MapCodec<InMainHand> MAP_CODEC = MapCodec.unit(new InMainHand());
+	public static final InMainHand INSTANCE = new InMainHand();
+	public static final MapCodec<InMainHand> MAP_CODEC = MapCodec.unit(INSTANCE);
 
 	@Override
 	public boolean get(ItemStack stack, @Nullable ClientLevel level, @Nullable LivingEntity owner, int seed, ItemDisplayContext displayContext) {

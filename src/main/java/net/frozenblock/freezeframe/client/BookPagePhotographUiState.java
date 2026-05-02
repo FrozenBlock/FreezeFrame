@@ -27,9 +27,6 @@ public final class BookPagePhotographUiState {
 	private static int pageIndex = 0;
 	private static boolean suppressBookEditorPhotoControls = false;
 
-	private BookPagePhotographUiState() {
-	}
-
 	public static void rememberOpenRequest(InteractionHand requestedHand, int requestedPageIndex) {
 		hand = requestedHand;
 		pageIndex = Math.max(0, requestedPageIndex);

@@ -28,9 +28,7 @@ import net.minecraft.util.StringUtil;
 import org.jetbrains.annotations.Nullable;
 import net.minecraft.ChatFormatting;
 
-public final class PhotographDetails {
-	private PhotographDetails() {
-	}
+public final class PhotographDetailsUtil {
 
 	public static List<Component> buildTooltipLines(Photograph photograph) {
 		final List<Component> lines = new ArrayList<>(3);
@@ -46,7 +44,6 @@ public final class PhotographDetails {
 		return lines;
 	}
 
-	@Nullable
 	public static Component getPhotographNameLine(Photograph photograph) {
 		if (StringUtil.isNullOrEmpty(photograph.name())) {
 			return Component.translatable("item.freezeframe.photograph").withStyle(ChatFormatting.GRAY);

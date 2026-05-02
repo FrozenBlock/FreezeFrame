@@ -435,8 +435,7 @@ public class TripodCamera extends Mob {
 	}
 
 	@Override
-	public void thunderHit(ServerLevel level, LightningBolt lightningBolt) {
-	}
+	public void thunderHit(ServerLevel level, LightningBolt lightningBolt) {}
 
 	@Override
 	public boolean attackable() {
@@ -444,8 +443,7 @@ public class TripodCamera extends Mob {
 	}
 
 	@Override
-	public void doPush(Entity entity) {
-	}
+	public void doPush(Entity entity) {}
 
 	@Override
 	@Nullable

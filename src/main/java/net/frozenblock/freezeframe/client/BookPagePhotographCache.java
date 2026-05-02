@@ -30,9 +30,6 @@ import net.minecraft.world.item.ItemStack;
 public final class BookPagePhotographCache {
 	private static final Map<BookViewScreen.BookAccess, BookPagePhotographs> CACHE = new WeakHashMap<>();
 
-	private BookPagePhotographCache() {
-	}
-
 	public static void remember(BookViewScreen.BookAccess access, ItemStack stack) {
 		final BookPagePhotographs photographs = stack.get(FFDataComponents.BOOK_PAGE_PHOTOGRAPHS);
 		if (photographs == null || photographs.photographs().isEmpty()) {

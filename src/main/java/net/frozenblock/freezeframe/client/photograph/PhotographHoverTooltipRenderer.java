@@ -41,7 +41,7 @@ public final class PhotographHoverTooltipRenderer {
 		int mouseY,
 		Photograph photograph
 	) {
-		final List<Component> lines = PhotographDetails.buildTooltipLines(photograph);
+		final List<Component> lines = PhotographDetailsUtil.buildTooltipLines(photograph);
 		if (lines.isEmpty()) return;
 
 		int contentWidth = 0;
