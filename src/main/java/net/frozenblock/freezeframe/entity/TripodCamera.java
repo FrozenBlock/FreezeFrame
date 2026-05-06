@@ -166,7 +166,7 @@ public class TripodCamera extends Mob {
 			);
 
 			if (isSuccess) {
-				CameraTakeScreenshotPacket.sendTo(photographer, this, fileName);
+				CameraTakeScreenshotPacket.sendTo(photographer, this, fileName, CameraItem.getFilterForNextPhotograph(this.cameraContents));
 				this.setComponent(FFDataComponents.CAMERA_CONTENTS, cameraContents);
 			}
 		}

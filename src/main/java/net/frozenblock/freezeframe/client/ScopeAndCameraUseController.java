@@ -22,12 +22,15 @@ import net.fabricmc.api.Environment;
 import net.fabricmc.fabric.api.client.event.lifecycle.v1.ClientTickEvents;
 import net.fabricmc.fabric.api.client.networking.v1.ClientPlayNetworking;
 import net.frozenblock.freezeframe.FreezeFrameClient;
+import net.frozenblock.freezeframe.component.FilmFilter;
 import net.frozenblock.freezeframe.component.ScopeZoomConfig;
+import net.frozenblock.freezeframe.item.CameraItem;
 import net.frozenblock.freezeframe.networking.packet.ChangeScopeZoomPacket;
 import net.frozenblock.freezeframe.networking.packet.QuickCameraPhotographPacket;
 import net.frozenblock.freezeframe.registry.FFDataComponents;
 import net.frozenblock.freezeframe.util.ScopeItemHelper;
 import net.frozenblock.freezeframe.util.ScopeZoomHelper;
+import net.frozenblock.freezeframe.util.client.ScopePostEffectController;
 import net.frozenblock.freezeframe.util.client.ScopeZoomManager;
 import net.minecraft.client.CameraType;
 import net.minecraft.client.Minecraft;
@@ -42,6 +45,8 @@ public final class ScopeAndCameraUseController {
 	private static ItemStack previousScopeItem = ItemStack.EMPTY;
 	private static boolean forcedFirstPerson = false;
 	private static CameraType previousCameraType = CameraType.FIRST_PERSON;
+	private static int scopeEffectGraceTicks = 0;
+	private static FilmFilter lastAppliedFilter = FilmFilter.EMPTY;
 
 	private ScopeAndCameraUseController() {
 	}
@@ -61,6 +66,7 @@ public final class ScopeAndCameraUseController {
 		wasPlayerNull = false;
 		final boolean usingScopeItem = ScopeItemHelper.isPlayerUsingScopeItem(player);
 		final boolean holdingCamera = ScopeItemHelper.isPlayerHoldingCamera(player);
+		final boolean usingCamera = ScopeItemHelper.isPlayerUsingCamera(player);
 		if (usingScopeItem) {
 			//ensureFirstPerson(minecraft);
 		} else {
@@ -68,6 +74,22 @@ public final class ScopeAndCameraUseController {
 		}
 
 		final ItemStack scopeItem = usingScopeItem ? player.getUseItem() : ItemStack.EMPTY;
+		if (usingCamera) {
+			lastAppliedFilter = CameraItem.getFilterForNextPhotograph(scopeItem);
+			scopeEffectGraceTicks = 2;
+			ScopePostEffectController.applyFromFilter(minecraft, lastAppliedFilter);
+		} else {
+			final boolean shouldHoldScopeEffects = holdingCamera && minecraft.options.keyUse.isDown();
+			if (shouldHoldScopeEffects && scopeEffectGraceTicks > 0 && !lastAppliedFilter.isEmpty()) {
+				scopeEffectGraceTicks--;
+				ScopePostEffectController.applyFromFilter(minecraft, lastAppliedFilter);
+			} else {
+				scopeEffectGraceTicks = 0;
+				lastAppliedFilter = FilmFilter.EMPTY;
+				ScopePostEffectController.clearIfApplied(minecraft);
+			}
+		}
+
 		final boolean isScopeConfigDifferent = !previousScopeItem.getOrDefault(FFDataComponents.SCOPE_ZOOM_CONFIG, ScopeZoomConfig.EMPTY)
 				.equals(scopeItem.getOrDefault(FFDataComponents.SCOPE_ZOOM_CONFIG, ScopeZoomConfig.EMPTY));
 		if (!usingScopeItem || isScopeConfigDifferent) {
@@ -112,6 +134,9 @@ public final class ScopeAndCameraUseController {
 	private static void resetState(Minecraft minecraft) {
 		restoreCameraType(minecraft);
 		ScopeZoomManager.resetActiveZoomProfile();
+		ScopePostEffectController.clearIfApplied(minecraft);
+		scopeEffectGraceTicks = 0;
+		lastAppliedFilter = FilmFilter.EMPTY;
 		wasAttackDown = false;
 		previousScopeItem = ItemStack.EMPTY;
 	}

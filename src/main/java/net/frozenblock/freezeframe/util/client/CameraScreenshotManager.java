@@ -31,6 +31,7 @@ import net.fabricmc.api.Environment;
 import net.frozenblock.lib.file.transfer.FileTransferPacket;
 import net.frozenblock.lib.networking.FrozenNetworking;
 import net.frozenblock.freezeframe.FFConstants;
+import net.frozenblock.freezeframe.component.FilmFilter;
 import net.frozenblock.freezeframe.config.FFConfig;
 import net.minecraft.client.Camera;
 import net.minecraft.client.DeltaTracker;
@@ -68,7 +69,7 @@ public class CameraScreenshotManager {
 		return isScreenshotting() && isCameraHandheld;
 	}
 
-	public static void executeScreenshot(@Nullable Entity entity, boolean handheldCapture, @Nullable String fileName, float zoom) {
+	public static void executeScreenshot(@Nullable Entity entity, boolean handheldCapture, @Nullable String fileName, float zoom, FilmFilter filter) {
 		final Minecraft minecraft = Minecraft.getInstance();
 		isCameraHandheld = handheldCapture;
 		if (handheldCapture) {
@@ -82,7 +83,7 @@ public class CameraScreenshotManager {
 		possessingCamera = true;
 
 		final int resolution = Math.clamp(FFConfig.PHOTOGRAPH_RESOLUTION.get(), 128, 1024);
-		grabCameraScreenshot(minecraft.gameDirectory, resolution, resolution, fileName, !handheldCapture);
+		grabCameraScreenshot(minecraft.gameDirectory, resolution, resolution, fileName, filter);
 
 		makeSnapSoundAndSmoke: {
 			if (minecraft.level == null) break makeSnapSoundAndSmoke;
@@ -102,9 +103,10 @@ public class CameraScreenshotManager {
 		possessingCamera = false;
 		isCameraHandheld = false;
 		if (handheldCapture) ScopeZoomManager.clearForcedZoom();
+		if (handheldCapture && !filter.isEmpty()) ScopePostEffectController.applyFromFilter(minecraft, filter);
 	}
 
-	public static void grabCameraScreenshot(File workDir, int width, int height, @Nullable String fileName, boolean handheldCapture) {
+	public static void grabCameraScreenshot(File workDir, int width, int height, @Nullable String fileName, FilmFilter filter) {
 		final Minecraft minecraft = Minecraft.getInstance();
 		final Window window = minecraft.getWindow();
 		final int prevWidth = window.getWidth();
@@ -118,16 +120,14 @@ public class CameraScreenshotManager {
 			camera.enablePanoramicMode();
 			window.setWidth(width);
 			window.setHeight(height);
+			ScopePostEffectController.applyFromFilter(minecraft, filter);
 			gameRenderer.update(DeltaTracker.ONE, true);
 			gameRenderer.extract(DeltaTracker.ONE, true);
-			if (handheldCapture) {
-				gameRenderer.render(DeltaTracker.ONE, true);
-			} else {
-				gameRenderer.renderLevel(DeltaTracker.ONE);
-			}
+			gameRenderer.render(DeltaTracker.ONE, true);
 			grab(workDir, fileName, renderTarget, (text) -> minecraft.execute(() -> minecraft.gui.getChat().addClientSystemMessage(text)));
 		} catch (Exception ignored) {
 		} finally {
+			ScopePostEffectController.clearIfApplied(minecraft);
 			gameRenderer.setRenderBlockOutline(true);
 			window.setWidth(prevWidth);
 			window.setHeight(prevHeight);

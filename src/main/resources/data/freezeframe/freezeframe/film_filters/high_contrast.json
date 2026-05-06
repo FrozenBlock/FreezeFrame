@@ -1,0 +1,6 @@
+﻿{
+    "ingredient":  "minecraft:honey_bottle",
+    "operation":  "high_contrast",
+    "tooltip_key":  "item.freezeframe.film.filter.effect.high_contrast",
+    "shader":  "freezeframe:post/contrast"
+}

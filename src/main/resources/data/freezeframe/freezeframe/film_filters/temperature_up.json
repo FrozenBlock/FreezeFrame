@@ -1,0 +1,6 @@
+﻿{
+    "ingredient":  "minecraft:magma_cream",
+    "operation":  "temperature_up",
+    "tooltip_key":  "item.freezeframe.film.filter.effect.temperature_up",
+    "shader":  "freezeframe:post/temperature"
+}

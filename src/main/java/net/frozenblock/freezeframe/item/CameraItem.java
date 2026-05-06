@@ -23,6 +23,7 @@ import net.frozenblock.lib.sound.impl.networking.FrozenLibSoundPackets;
 import net.frozenblock.freezeframe.FFConstants;
 import net.frozenblock.freezeframe.component.CameraContents;
 import net.frozenblock.freezeframe.component.FilmContents;
+import net.frozenblock.freezeframe.component.FilmFilter;
 import net.frozenblock.freezeframe.component.Photograph;
 import net.frozenblock.freezeframe.component.tooltip.CameraTooltip;
 import net.frozenblock.freezeframe.networking.packet.CameraTakeScreenshotPacket;
@@ -143,7 +144,7 @@ public class CameraItem extends SpawnEggItem {
 		setAllCamerasOnCooldown(player, 20);
 		if (player instanceof ServerPlayer serverPlayer) {
 			final String fileName = makeFileName(serverPlayer);
-			CameraTakeScreenshotPacket.sendToAsHandheld(serverPlayer, fileName, captureZoom);
+			CameraTakeScreenshotPacket.sendToAsHandheld(serverPlayer, fileName, captureZoom, getFilterForNextPhotograph(initialContents));
 			addPhotograph(stack, player, fileName);
 		}
 
@@ -291,6 +292,21 @@ public class CameraItem extends SpawnEggItem {
 
 	public static boolean isCapableOfTakingPhotos(ItemStack stack) {
 		return stack.getOrDefault(FFDataComponents.CAMERA_CONTENTS, CameraContents.EMPTY).hasSpaceForPhotograph();
+	}
+
+	public static FilmFilter getFilterForNextPhotograph(ItemStack cameraStack) {
+		return getFilterForNextPhotograph(cameraStack.getOrDefault(FFDataComponents.CAMERA_CONTENTS, CameraContents.EMPTY));
+	}
+
+	public static FilmFilter getFilterForNextPhotograph(CameraContents contents) {
+		for (ItemStackTemplate filmStack : contents.items()) {
+			final FilmContents filmContents = filmStack.get(FFDataComponents.FILM_CONTENTS);
+			if (filmContents == null) continue;
+			if (FilmItem.getWeightSafe(filmContents, filmStack).compareTo(Fraction.ONE) < 0) {
+				return filmStack.getOrDefault(FFDataComponents.FILM_FILTER, FilmFilter.EMPTY);
+			}
+		}
+		return FilmFilter.EMPTY;
 	}
 
 	@Override

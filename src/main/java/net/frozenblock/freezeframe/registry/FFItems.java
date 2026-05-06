@@ -24,6 +24,7 @@ import net.frozenblock.lib.item.api.component.FrozenLibDataComponents;
 import net.frozenblock.freezeframe.FFConstants;
 import net.frozenblock.freezeframe.component.CameraContents;
 import net.frozenblock.freezeframe.component.FilmContents;
+import net.frozenblock.freezeframe.component.FilmFilter;
 import net.frozenblock.freezeframe.item.CameraItem;
 import net.frozenblock.freezeframe.item.FilmItem;
 import net.frozenblock.freezeframe.item.PhotographItem;
@@ -59,6 +60,7 @@ public class FFItems {
 		new Item.Properties()
 			.stacksTo(16)
 			.component(FFDataComponents.FILM_CONTENTS, FilmContents.EMPTY)
+			.component(FFDataComponents.FILM_FILTER, FilmFilter.EMPTY)
 			.component(FFDataComponents.FILM_MAX_PHOTOGRAPHS, FilmContents.BASE_MAX_PHOTOGRAPHS)
 			.component(FrozenLibDataComponents.BUNDLE_WEIGHT_OVERRIDE, new BundleWeightOverride(1, 16))
 	);

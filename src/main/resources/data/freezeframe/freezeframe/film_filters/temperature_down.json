@@ -1,0 +1,6 @@
+﻿{
+    "ingredient":  "minecraft:powder_snow_bucket",
+    "operation":  "temperature_down",
+    "tooltip_key":  "item.freezeframe.film.filter.effect.temperature_down",
+    "shader":  "freezeframe:post/temperature"
+}

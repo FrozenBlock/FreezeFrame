@@ -1,0 +1,6 @@
+﻿{
+    "ingredient":  "minecraft:skeleton_skull",
+    "operation":  "monochrome",
+    "tooltip_key":  "item.freezeframe.film.filter.effect.monochrome",
+    "shader":  "freezeframe:post/monochrome"
+}

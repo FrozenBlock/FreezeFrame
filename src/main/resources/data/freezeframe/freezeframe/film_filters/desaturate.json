@@ -1,0 +1,6 @@
+﻿{
+    "ingredient":  "minecraft:zombie_head",
+    "operation":  "desaturate",
+    "tooltip_key":  "item.freezeframe.film.filter.effect.desaturate",
+    "shader":  "freezeframe:post/desaturate"
+}

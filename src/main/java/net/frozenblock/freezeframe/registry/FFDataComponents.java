@@ -23,6 +23,7 @@ import net.fabricmc.fabric.api.item.v1.DefaultItemComponentEvents;
 import net.frozenblock.freezeframe.FFConstants;
 import net.frozenblock.freezeframe.component.CameraContents;
 import net.frozenblock.freezeframe.component.FilmContents;
+import net.frozenblock.freezeframe.component.FilmFilter;
 import net.frozenblock.freezeframe.component.Photograph;
 import net.frozenblock.freezeframe.component.ScopeZoomConfig;
 import net.frozenblock.freezeframe.component.WritablePortfolioContent;
@@ -45,6 +46,10 @@ public class FFDataComponents {
 	public static final DataComponentType<FilmContents> FILM_CONTENTS = register(
 		"film_contents",
 		builder -> builder.persistent(FilmContents.CODEC).networkSynchronized(FilmContents.STREAM_CODEC)
+	);
+	public static final DataComponentType<FilmFilter> FILM_FILTER = register(
+		"film_filter",
+		builder -> builder.persistent(FilmFilter.CODEC).networkSynchronized(FilmFilter.STREAM_CODEC)
 	);
 	public static final DataComponentType<Integer> FILM_MAX_PHOTOGRAPHS = register(
 		"film_max_photographs",

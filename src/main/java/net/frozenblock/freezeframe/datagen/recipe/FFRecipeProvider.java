@@ -22,6 +22,7 @@ import net.fabricmc.fabric.api.datagen.v1.FabricPackOutput;
 import net.fabricmc.fabric.api.datagen.v1.provider.FabricRecipeProvider;
 import net.frozenblock.freezeframe.FFConstants;
 import net.frozenblock.freezeframe.recipe.FilmCapacityUpgradeRecipe;
+import net.frozenblock.freezeframe.recipe.FilmFilterUpgradeRecipe;
 import net.frozenblock.freezeframe.registry.FFBlocks;
 import net.frozenblock.freezeframe.registry.FFItems;
 import net.frozenblock.lib.recipe.api.RecipeExportNamespaceFix;
@@ -83,6 +84,10 @@ public final class FFRecipeProvider extends FabricRecipeProvider {
 				SpecialRecipeBuilder.special(FilmCapacityUpgradeRecipe::new)
 					.unlockedBy("has_film", this.has(FFItems.FILM))
 					.save(this.output, "film_capacity_upgrade");
+
+				SpecialRecipeBuilder.special(FilmFilterUpgradeRecipe::new)
+					.unlockedBy("has_film", this.has(FFItems.FILM))
+					.save(this.output, "film_filter_upgrade");
 
 				RecipeExportNamespaceFix.clearCurrentGeneratingModId();
 			}

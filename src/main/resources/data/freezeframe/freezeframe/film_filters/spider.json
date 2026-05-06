@@ -1,0 +1,6 @@
+﻿{
+    "ingredient":  "minecraft:spider_eye",
+    "operation":  "spider",
+    "tooltip_key":  "item.freezeframe.film.filter.effect.spider",
+    "shader":  "freezeframe:post/spider_simple"
+}
