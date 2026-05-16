@@ -21,8 +21,8 @@ import java.util.Date;
 import java.util.Optional;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
-import net.frozenblock.lib.texture.client.api.ServerTextureDownloader;
 import net.frozenblock.freezeframe.FFConstants;
+import net.frozenblock.lib.texture.client.api.ServerTextureDownloader;
 import net.minecraft.resources.Identifier;
 
 @Environment(EnvType.CLIENT)

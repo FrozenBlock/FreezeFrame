@@ -19,7 +19,6 @@ package net.frozenblock.freezeframe.item;
 
 import java.util.Objects;
 import java.util.Optional;
-import net.frozenblock.lib.sound.impl.networking.FrozenLibSoundPackets;
 import net.frozenblock.freezeframe.FFConstants;
 import net.frozenblock.freezeframe.component.CameraContents;
 import net.frozenblock.freezeframe.component.FilmContents;
@@ -32,6 +31,7 @@ import net.frozenblock.freezeframe.registry.FFSounds;
 import net.frozenblock.freezeframe.tag.FFItemTags;
 import net.frozenblock.freezeframe.util.ScopeItemHelper;
 import net.frozenblock.freezeframe.util.ScopeZoomHelper;
+import net.frozenblock.lib.sound.impl.networking.FrozenLibSoundPackets;
 import net.minecraft.core.Holder;
 import net.minecraft.core.component.DataComponents;
 import net.minecraft.core.registries.BuiltInRegistries;

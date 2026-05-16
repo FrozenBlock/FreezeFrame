@@ -39,7 +39,6 @@ public record SpecialFilmFilterDefinition(
 		Codec.STRING.fieldOf("shader").forGetter(SpecialFilmFilterDefinition::shader),
 		uniformsCodec()
 	).apply(instance, SpecialFilmFilterDefinition::new));
-
 	public static final Codec<SpecialFilmFilterDefinition> FILE_CODEC = RecordCodecBuilder.create(instance -> instance.group(
 		Identifier.CODEC.fieldOf("ingredient").forGetter(SpecialFilmFilterDefinition::ingredient),
 		Codec.STRING.optionalFieldOf("operation", "custom").forGetter(SpecialFilmFilterDefinition::operation),
@@ -52,8 +51,10 @@ public record SpecialFilmFilterDefinition(
 		return new SpecialFilmFilterDefinition(id, this.ingredient, this.operation, this.tooltipKey, this.shader, this.uniforms);
 	}
 
-	private static com.mojang.serialization.codecs.RecordCodecBuilder<SpecialFilmFilterDefinition, Map<String, List<ConfiguredUniform>>> uniformsCodec() {
-		return Codec.unboundedMap(Codec.STRING, ConfiguredUniform.CODEC.listOf()).optionalFieldOf("uniforms", Map.of()).forGetter(SpecialFilmFilterDefinition::uniforms);
+	private static RecordCodecBuilder<SpecialFilmFilterDefinition, Map<String, List<ConfiguredUniform>>> uniformsCodec() {
+		return Codec.unboundedMap(Codec.STRING, ConfiguredUniform.CODEC.listOf())
+			.optionalFieldOf("uniforms", Map.of())
+			.forGetter(SpecialFilmFilterDefinition::uniforms);
 	}
 
 	public record ConfiguredUniform(String type, List<Float> values) {

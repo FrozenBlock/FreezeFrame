@@ -19,8 +19,8 @@ package net.frozenblock.freezeframe.client.renderer.entity;
 
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
-import net.frozenblock.freezeframe.FreezeFrameClient;
 import net.frozenblock.freezeframe.FFConstants;
+import net.frozenblock.freezeframe.FreezeFrameClient;
 import net.frozenblock.freezeframe.client.model.object.camera.DiscCameraModel;
 import net.frozenblock.freezeframe.client.renderer.entity.state.TripodCameraRenderState;
 import net.frozenblock.freezeframe.entity.DiscCamera;

@@ -19,7 +19,6 @@ package net.frozenblock.freezeframe.datagen;
 
 import net.fabricmc.fabric.api.datagen.v1.DataGeneratorEntrypoint;
 import net.fabricmc.fabric.api.datagen.v1.FabricDataGenerator;
-import net.frozenblock.lib.feature_flag.api.FeatureFlagApi;
 import net.frozenblock.freezeframe.FFConstants;
 import net.frozenblock.freezeframe.datagen.loot.FFBlockLootProvider;
 import net.frozenblock.freezeframe.datagen.model.FFModelProvider;
@@ -27,6 +26,7 @@ import net.frozenblock.freezeframe.datagen.recipe.FFRecipeProvider;
 import net.frozenblock.freezeframe.datagen.tag.FFBlockTagsProvider;
 import net.frozenblock.freezeframe.datagen.tag.FFEntityTagsProvider;
 import net.frozenblock.freezeframe.datagen.tag.FFItemTagsProvider;
+import net.frozenblock.lib.feature_flag.api.FeatureFlagApi;
 import net.minecraft.core.RegistrySetBuilder;
 
 public final class FFDataGenerator implements DataGeneratorEntrypoint {

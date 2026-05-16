@@ -19,8 +19,6 @@ package net.frozenblock.freezeframe.registry;
 
 import java.util.function.Function;
 import net.fabricmc.fabric.api.creativetab.v1.CreativeModeTabEvents;
-import net.frozenblock.lib.item.api.component.BundleWeightOverride;
-import net.frozenblock.lib.item.api.component.FrozenLibDataComponents;
 import net.frozenblock.freezeframe.FFConstants;
 import net.frozenblock.freezeframe.component.CameraContents;
 import net.frozenblock.freezeframe.component.FilmContents;
@@ -29,6 +27,8 @@ import net.frozenblock.freezeframe.item.CameraItem;
 import net.frozenblock.freezeframe.item.FilmItem;
 import net.frozenblock.freezeframe.item.PhotographItem;
 import net.frozenblock.freezeframe.util.ScopeZoomHelper;
+import net.frozenblock.lib.item.api.component.BundleWeightOverride;
+import net.frozenblock.lib.item.api.component.FrozenLibDataComponents;
 import net.minecraft.core.registries.Registries;
 import net.minecraft.resources.ResourceKey;
 import net.minecraft.world.item.CreativeModeTabs;

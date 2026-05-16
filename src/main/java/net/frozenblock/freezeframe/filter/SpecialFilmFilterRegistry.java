@@ -40,12 +40,11 @@ import net.minecraft.world.item.Item;
 public final class SpecialFilmFilterRegistry {
 	private static final String DIRECTORY = "freezeframe/film_filters";
 	private static final String JSON_SUFFIX = ".json";
-	private static final Map<String, SpecialFilmFilterDefinition> BY_ID = new HashMap<>();
+	private static final Map<Identifier, SpecialFilmFilterDefinition> BY_ID = new HashMap<>();
 	private static final Map<Item, SpecialFilmFilterDefinition> BY_INGREDIENT = new HashMap<>();
 	private static List<SpecialFilmFilterDefinition> DEFINITIONS = List.of();
 
-	private SpecialFilmFilterRegistry() {
-	}
+	private SpecialFilmFilterRegistry() {}
 
 	public static void init() {
 		ResourceManagerHelper.get(PackType.SERVER_DATA).registerReloadListener(new SimpleSynchronousResourceReloadListener() {
@@ -65,7 +64,7 @@ public final class SpecialFilmFilterRegistry {
 		return DEFINITIONS;
 	}
 
-	public static SpecialFilmFilterDefinition getById(String id) {
+	public static SpecialFilmFilterDefinition getById(Identifier id) {
 		return BY_ID.get(id);
 	}
 
@@ -73,17 +72,19 @@ public final class SpecialFilmFilterRegistry {
 		return BY_INGREDIENT.get(ingredient);
 	}
 
-	public static Identifier shaderId(String specialId) {
+	public static Identifier shaderId(Identifier specialId) {
 		final SpecialFilmFilterDefinition definition = getById(specialId);
 		if (definition == null || definition.shader().isBlank()) return null;
 		return Identifier.tryParse(definition.shader());
 	}
 
 	private static void loadDefinitions(ResourceManager resourceManager) {
-		final List<Map.Entry<Identifier, Resource>> resources = new ArrayList<>(resourceManager.listResources(DIRECTORY, id -> id.getPath().endsWith(JSON_SUFFIX)).entrySet());
+		final List<Map.Entry<Identifier, Resource>> resources = new ArrayList<>(
+			resourceManager.listResources(DIRECTORY, id -> id.getPath().endsWith(JSON_SUFFIX)).entrySet()
+		);
 		resources.sort(Comparator.comparing(entry -> entry.getKey().toString()));
 
-		final Map<String, SpecialFilmFilterDefinition> byId = new HashMap<>();
+		final Map<Identifier, SpecialFilmFilterDefinition> byId = new HashMap<>();
 		final Map<Item, SpecialFilmFilterDefinition> byIngredient = new HashMap<>();
 		final List<SpecialFilmFilterDefinition> definitions = new ArrayList<>();
 
@@ -108,7 +109,7 @@ public final class SpecialFilmFilterRegistry {
 				if (previousByIngredient != null) {
 					FFConstants.warn("Film filter " + filterId + " replaced ingredient mapping from " + previousByIngredient.id() + " for " + definition.ingredient(), true);
 				}
-				byId.put(definition.id().toString(), definition);
+				byId.put(definition.id(), definition);
 				definitions.add(definition);
 			} catch (Exception exception) {
 				FFConstants.error("Failed to load film filter definition " + filterId, exception);

@@ -33,6 +33,7 @@ import net.minecraft.data.recipes.RecipeOutput;
 import net.minecraft.data.recipes.RecipeProvider;
 import net.minecraft.data.recipes.SpecialRecipeBuilder;
 import net.minecraft.tags.ItemTags;
+import net.minecraft.world.item.ItemStackTemplate;
 import net.minecraft.world.item.Items;
 import net.minecraft.world.item.crafting.Ingredient;
 import org.jetbrains.annotations.Contract;
@@ -81,12 +82,12 @@ public final class FFRecipeProvider extends FabricRecipeProvider {
 					.unlockedBy(RecipeProvider.getHasName(Items.STONE), this.has(Items.STONE))
 					.save(exporter);
 
-				SpecialRecipeBuilder.special(FilmCapacityUpgradeRecipe::new)
-					.unlockedBy("has_film", this.has(FFItems.FILM))
+				SpecialRecipeBuilder.special(() -> new FilmCapacityUpgradeRecipe(Ingredient.of(FFItems.FILM), Ingredient.of(Items.PAPER), new ItemStackTemplate(FFItems.FILM)))
+					.unlockedBy(RecipeProvider.getHasName(FFItems.FILM), this.has(FFItems.FILM))
 					.save(this.output, "film_capacity_upgrade");
 
-				SpecialRecipeBuilder.special(FilmFilterUpgradeRecipe::new)
-					.unlockedBy("has_film", this.has(FFItems.FILM))
+				SpecialRecipeBuilder.special(() -> new FilmFilterUpgradeRecipe(Ingredient.of(FFItems.FILM), new ItemStackTemplate(FFItems.FILM)))
+					.unlockedBy(RecipeProvider.getHasName(FFItems.FILM), this.has(FFItems.FILM))
 					.save(this.output, "film_filter_upgrade");
 
 				RecipeExportNamespaceFix.clearCurrentGeneratingModId();

@@ -1,3 +1,8 @@
 {
-  "type": "freezeframe:film_capacity_upgrade"
+  "type": "freezeframe:film_capacity_upgrade",
+  "film": "freezeframe:film",
+  "material": "freezeframe:film",
+  "result": {
+    "id": "freezeframe:film"
+  }
 }

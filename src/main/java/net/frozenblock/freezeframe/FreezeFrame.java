@@ -29,12 +29,14 @@ import net.frozenblock.freezeframe.registry.FFEntityTypes;
 import net.frozenblock.freezeframe.registry.FFItems;
 import net.frozenblock.freezeframe.registry.FFMenuTypes;
 import net.frozenblock.freezeframe.registry.FFRecipeSerializers;
+import net.frozenblock.freezeframe.registry.FFRegistries;
 import net.frozenblock.freezeframe.registry.FFSounds;
 
 public class FreezeFrame implements ModInitializer {
 
 	@Override
 	public void onInitialize() {
+		FFRegistries.init();
 		FFEntityTypes.init();
 		FFBlocks.init();
 		FFItems.init();

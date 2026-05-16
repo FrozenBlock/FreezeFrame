@@ -22,23 +22,21 @@ import com.mojang.serialization.codecs.RecordCodecBuilder;
 import io.netty.buffer.ByteBuf;
 import java.util.List;
 import java.util.Locale;
+import net.frozenblock.freezeframe.FFConstants;
 import net.minecraft.network.codec.ByteBufCodecs;
 import net.minecraft.network.codec.StreamCodec;
+import net.minecraft.resources.Identifier;
 
 public record FilmFilter(List<Layer> layers) {
 	public static final int MAX_LAYERS = 8;
 	public static final FilmFilter EMPTY = new FilmFilter(List.of());
-
-	public static final Codec<FilmFilter> CODEC = RecordCodecBuilder.create(instance -> instance.group(Layer.CODEC.listOf().optionalFieldOf("layers", List.of()).forGetter(FilmFilter::layers))
-		.apply(instance, FilmFilter::new));
+	public static final Codec<FilmFilter> CODEC = RecordCodecBuilder.create(instance -> instance.group(
+		Layer.CODEC.listOf().optionalFieldOf("layers", List.of()).forGetter(FilmFilter::layers)
+	).apply(instance, FilmFilter::new));
 	public static final StreamCodec<ByteBuf, FilmFilter> STREAM_CODEC = StreamCodec.composite(
 		Layer.STREAM_CODEC.apply(ByteBufCodecs.list()), FilmFilter::layers,
 		FilmFilter::new
 	);
-
-	public FilmFilter {
-		layers = List.copyOf(layers);
-	}
 
 	public boolean isEmpty() {
 		return this.layers.isEmpty();
@@ -52,7 +50,7 @@ public record FilmFilter(List<Layer> layers) {
 		return this.size() < MAX_LAYERS;
 	}
 
-	public boolean hasSpecial(String specialId) {
+	public boolean hasSpecial(Identifier specialId) {
 		for (Layer layer : this.layers) {
 			if (layer.isSpecial() && layer.specialId().equals(specialId)) return true;
 		}
@@ -66,29 +64,35 @@ public record FilmFilter(List<Layer> layers) {
 		return new FilmFilter(newLayers);
 	}
 
-	public record Layer(LayerType type, int color, String specialId, boolean exclusionTint) {
-		private static final Codec<LayerType> LAYER_TYPE_CODEC = Codec.STRING.xmap(value -> LayerType.valueOf(value.toUpperCase(Locale.ROOT)), layerType -> layerType.name().toLowerCase(Locale.ROOT));
-		private static final StreamCodec<ByteBuf, LayerType> LAYER_TYPE_STREAM_CODEC = ByteBufCodecs.STRING_UTF8.map(value -> LayerType.valueOf(value.toUpperCase(Locale.ROOT)), layerType -> layerType.name().toLowerCase(Locale.ROOT));
-
+	public record Layer(LayerType type, int color, Identifier specialId, boolean exclusionTint) {
+		private static final Identifier EMPTY = FFConstants.id("empty");
+		private static final Codec<LayerType> LAYER_TYPE_CODEC = Codec.STRING.xmap(
+			value -> LayerType.valueOf(value.toUpperCase(Locale.ROOT)),
+			layerType -> layerType.name().toLowerCase(Locale.ROOT)
+		);
+		private static final StreamCodec<ByteBuf, LayerType> LAYER_TYPE_STREAM_CODEC = ByteBufCodecs.STRING_UTF8.map(
+			value -> LayerType.valueOf(value.toUpperCase(Locale.ROOT)),
+			layerType -> layerType.name().toLowerCase(Locale.ROOT)
+		);
 		public static final Codec<Layer> CODEC = RecordCodecBuilder.create(instance -> instance.group(
 			LAYER_TYPE_CODEC.fieldOf("type").forGetter(Layer::type),
 			Codec.INT.optionalFieldOf("color", 0).forGetter(Layer::color),
-			Codec.STRING.optionalFieldOf("special_id", "").forGetter(Layer::specialId),
+			Identifier.CODEC.optionalFieldOf("special_id", EMPTY).forGetter(Layer::specialId),
 			Codec.BOOL.optionalFieldOf("exclusion_tint", false).forGetter(Layer::exclusionTint)
 		).apply(instance, Layer::new));
 		public static final StreamCodec<ByteBuf, Layer> STREAM_CODEC = StreamCodec.composite(
 			LAYER_TYPE_STREAM_CODEC, Layer::type,
 			ByteBufCodecs.VAR_INT, Layer::color,
-			ByteBufCodecs.STRING_UTF8, Layer::specialId,
+			Identifier.STREAM_CODEC, Layer::specialId,
 			ByteBufCodecs.BOOL, Layer::exclusionTint,
 			Layer::new
 		);
 
 		public static Layer dye(int color, boolean exclusionTint) {
-			return new Layer(LayerType.DYE, color, "", exclusionTint);
+			return new Layer(LayerType.DYE, color, EMPTY, exclusionTint);
 		}
 
-		public static Layer special(String specialId) {
+		public static Layer special(Identifier specialId) {
 			return new Layer(LayerType.SPECIAL, 0, specialId, false);
 		}
 

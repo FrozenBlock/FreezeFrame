@@ -32,7 +32,6 @@ import net.frozenblock.freezeframe.registry.FFItems;
 import net.frozenblock.freezeframe.util.BookPagePhotographHelper;
 import net.minecraft.client.gui.ActiveTextCollector;
 import net.minecraft.client.gui.GuiGraphicsExtractor;
-import net.minecraft.client.gui.TextAlignment;
 import net.minecraft.client.gui.components.AbstractWidget;
 import net.minecraft.client.gui.components.Button;
 import net.minecraft.client.gui.components.events.GuiEventListener;
@@ -54,7 +53,6 @@ import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.Items;
 import net.minecraft.world.item.component.WritableBookContent;
 import org.jetbrains.annotations.Nullable;
-import org.spongepowered.asm.mixin.Unique;
 
 @Environment(EnvType.CLIENT)
 public class BookPagePhotographScreen extends AbstractContainerScreen<BookPagePhotographMenu> {

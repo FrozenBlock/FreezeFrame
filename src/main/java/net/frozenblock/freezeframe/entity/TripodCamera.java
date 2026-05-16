@@ -17,13 +17,13 @@
 
 package net.frozenblock.freezeframe.entity;
 
-import net.frozenblock.lib.sound.api.predicate.SoundPredicate;
-import net.frozenblock.lib.sound.impl.networking.FrozenLibSoundPackets;
 import net.frozenblock.freezeframe.component.CameraContents;
 import net.frozenblock.freezeframe.item.CameraItem;
 import net.frozenblock.freezeframe.networking.packet.CameraTakeScreenshotPacket;
 import net.frozenblock.freezeframe.registry.FFDataComponents;
 import net.frozenblock.freezeframe.registry.FFSounds;
+import net.frozenblock.lib.sound.api.predicate.SoundPredicate;
+import net.frozenblock.lib.sound.impl.networking.FrozenLibSoundPackets;
 import net.minecraft.core.component.DataComponentGetter;
 import net.minecraft.core.component.DataComponentType;
 import net.minecraft.core.component.DataComponents;
