@@ -46,6 +46,5 @@ public class FFRecipeSerializers {
 		)
 	);
 
-	public static void init() {
-	}
+	public static void init() {}
 }

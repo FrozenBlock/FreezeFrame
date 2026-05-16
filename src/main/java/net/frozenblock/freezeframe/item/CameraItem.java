@@ -89,10 +89,10 @@ public class CameraItem extends SpawnEggItem {
 	}
 
 	@Override
-	public InteractionResult useOn(UseOnContext useOnContext) {
-		final Player player = useOnContext.getPlayer();
+	public InteractionResult useOn(UseOnContext context) {
+		final Player player = context.getPlayer();
 		if (player != null && !player.isShiftKeyDown()) return InteractionResult.PASS;
-		return super.useOn(useOnContext);
+		return super.useOn(context);
 	}
 
 	@Override

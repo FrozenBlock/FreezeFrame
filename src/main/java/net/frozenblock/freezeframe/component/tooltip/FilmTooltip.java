@@ -20,5 +20,4 @@ package net.frozenblock.freezeframe.component.tooltip;
 import net.frozenblock.freezeframe.component.FilmContents;
 import net.minecraft.world.inventory.tooltip.TooltipComponent;
 
-public record FilmTooltip(FilmContents contents, int maxPhotographs) implements TooltipComponent {
-}
+public record FilmTooltip(FilmContents contents, int maxPhotographs) implements TooltipComponent {}

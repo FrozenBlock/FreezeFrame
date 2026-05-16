@@ -41,7 +41,6 @@ import net.minecraft.world.level.block.state.properties.NoteBlockInstrument;
 import net.minecraft.world.level.material.MapColor;
 
 public class FFBlocks {
-
 	public static final DevelopingTableBlock DEVELOPING_TABLE = register("developing_table",
 		DevelopingTableBlock::new,
 		BlockBehaviour.Properties.of()
@@ -52,27 +51,25 @@ public class FFBlocks {
 			.ignitedByLava()
 	);
 
-	public static void register() {
+	public static void init() {
 		CreativeModeTabEvents.modifyOutputEvent(CreativeModeTabs.FUNCTIONAL_BLOCKS).register(
 			output -> output.insertAfter(Items.LOOM, DEVELOPING_TABLE)
 		);
 	}
 
-	private static <T extends Block> T registerWithoutItem(String path, Function<BlockBehaviour.Properties, T> block, BlockBehaviour.Properties properties) {
-		Identifier id = FFConstants.id(path);
+	private static <T extends Block> T registerWithoutItem(String name, Function<BlockBehaviour.Properties, T> block, BlockBehaviour.Properties properties) {
+		Identifier id = FFConstants.id(name);
 		return doRegister(id, makeBlock(block, properties, id));
 	}
 
-	private static <T extends Block> T register(String path, Function<BlockBehaviour.Properties, T> block, BlockBehaviour.Properties properties) {
-		T registered = registerWithoutItem(path, block, properties);
+	private static <T extends Block> T register(String name, Function<BlockBehaviour.Properties, T> block, BlockBehaviour.Properties properties) {
+		T registered = registerWithoutItem(name, block, properties);
 		registerBlockItem(registered);
 		return registered;
 	}
 
 	private static <T extends Block> T doRegister(Identifier id, T block) {
-		if (BuiltInRegistries.BLOCK.getOptional(id).isEmpty()) {
-			return Registry.register(BuiltInRegistries.BLOCK, id, block);
-		}
+		if (BuiltInRegistries.BLOCK.getOptional(id).isEmpty()) return Registry.register(BuiltInRegistries.BLOCK, id, block);
 		throw new IllegalArgumentException("Block with identifier " + id + " is already in the block registry.");
 	}
 

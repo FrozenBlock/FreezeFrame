@@ -29,7 +29,8 @@ import org.jspecify.annotations.Nullable;
 
 @Environment(EnvType.CLIENT)
 public class CameraFullness implements RangeSelectItemModelProperty {
-	public static final MapCodec<CameraFullness> MAP_CODEC = MapCodec.unit(new CameraFullness());
+	public static final CameraFullness INSTANCE = new CameraFullness();
+	public static final MapCodec<CameraFullness> MAP_CODEC = MapCodec.unit(INSTANCE);
 
 	@Override
 	public float get(ItemStack stack, @Nullable ClientLevel level, @Nullable ItemOwner owner, int seed) {

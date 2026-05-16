@@ -30,7 +30,8 @@ import org.jspecify.annotations.Nullable;
 
 @Environment(EnvType.CLIENT)
 public class CanTakePhoto implements ConditionalItemModelProperty {
-	public static final MapCodec<CanTakePhoto> MAP_CODEC = MapCodec.unit(new CanTakePhoto());
+	public static final CanTakePhoto INSTANCE = new CanTakePhoto();
+	public static final MapCodec<CanTakePhoto> MAP_CODEC = MapCodec.unit(INSTANCE);
 
 	@Override
 	public boolean get(ItemStack stack, @Nullable ClientLevel level, @Nullable LivingEntity owner, int seed, ItemDisplayContext displayContext) {

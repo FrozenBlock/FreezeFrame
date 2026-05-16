@@ -48,9 +48,6 @@ public final class ScopeAndCameraUseController {
 	private static int scopeEffectGraceTicks = 0;
 	private static FilmFilter lastAppliedFilter = FilmFilter.EMPTY;
 
-	private ScopeAndCameraUseController() {
-	}
-
 	public static void init() {
 		ClientTickEvents.END_CLIENT_TICK.register(ScopeAndCameraUseController::tick);
 	}

@@ -25,11 +25,7 @@ import net.minecraft.world.item.Item;
 public final class FFItemTags {
 	public static final TagKey<Item> CAMERAS = bind("cameras");
 
-	private FFItemTags() {
-		throw new UnsupportedOperationException("CameraPortItemTags contains only static declarations.");
-	}
-
-	private static TagKey<Item> bind(String path) {
-		return TagKey.create(Registries.ITEM, FFConstants.id(path));
+	private static TagKey<Item> bind(String name) {
+		return TagKey.create(Registries.ITEM, FFConstants.id(name));
 	}
 }

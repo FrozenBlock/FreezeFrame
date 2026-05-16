@@ -25,11 +25,7 @@ import net.minecraft.world.entity.EntityType;
 public final class FFEntityTypeTags {
 	public static final TagKey<EntityType<?>> CAMERAS = bind("cameras");
 
-	private FFEntityTypeTags() {
-		throw new UnsupportedOperationException("CameraPortEntityTags contains only static declarations.");
-	}
-
-	private static TagKey<EntityType<?>> bind(String path) {
-		return TagKey.create(Registries.ENTITY_TYPE, FFConstants.id(path));
+	private static TagKey<EntityType<?>> bind(String name) {
+		return TagKey.create(Registries.ENTITY_TYPE, FFConstants.id(name));
 	}
 }

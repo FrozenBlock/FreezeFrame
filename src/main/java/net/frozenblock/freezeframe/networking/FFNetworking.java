@@ -19,22 +19,24 @@ package net.frozenblock.freezeframe.networking;
 
 import net.fabricmc.fabric.api.networking.v1.PayloadTypeRegistry;
 import net.fabricmc.fabric.api.networking.v1.ServerPlayNetworking;
-import net.frozenblock.lib.file.transfer.FileTransferFilter;
 import net.frozenblock.freezeframe.networking.packet.CameraTakeScreenshotPacket;
 import net.frozenblock.freezeframe.networking.packet.ChangeScopeZoomPacket;
 import net.frozenblock.freezeframe.networking.packet.DevelopingTableSyncSelectPhotographIndexPacket;
+import net.frozenblock.freezeframe.networking.packet.OpenBookPagePhotographInventoryPacket;
 import net.frozenblock.freezeframe.networking.packet.OpenFilmScreenPacket;
 import net.frozenblock.freezeframe.networking.packet.QuickCameraPhotographPacket;
 import net.frozenblock.freezeframe.networking.packet.SaveFilmChangesPacket;
 import net.frozenblock.freezeframe.networking.packet.SelectCameraFilmPacket;
 import net.frozenblock.freezeframe.networking.packet.SelectFilmPhotographPacket;
+import net.frozenblock.freezeframe.networking.packet.SetBookPagePhotographPacket;
+import net.frozenblock.lib.file.transfer.FileTransferFilter;
 import net.minecraft.network.RegistryFriendlyByteBuf;
 
 public class FFNetworking {
 
 	public static void init() {
-		PayloadTypeRegistry<RegistryFriendlyByteBuf> registry = PayloadTypeRegistry.clientboundPlay();
-		PayloadTypeRegistry<RegistryFriendlyByteBuf> c2sRegistry = PayloadTypeRegistry.serverboundPlay();
+		final PayloadTypeRegistry<RegistryFriendlyByteBuf> registry = PayloadTypeRegistry.clientboundPlay();
+		final PayloadTypeRegistry<RegistryFriendlyByteBuf> c2sRegistry = PayloadTypeRegistry.serverboundPlay();
 
 		registry.register(CameraTakeScreenshotPacket.PACKET_TYPE, CameraTakeScreenshotPacket.CODEC);
 		registry.register(OpenFilmScreenPacket.PACKET_TYPE, OpenFilmScreenPacket.CODEC);
@@ -56,6 +58,12 @@ public class FFNetworking {
 
 		c2sRegistry.register(ChangeScopeZoomPacket.PACKET_TYPE, ChangeScopeZoomPacket.CODEC);
 		ServerPlayNetworking.registerGlobalReceiver(ChangeScopeZoomPacket.PACKET_TYPE, ChangeScopeZoomPacket::handle);
+
+		c2sRegistry.register(SetBookPagePhotographPacket.PACKET_TYPE, SetBookPagePhotographPacket.CODEC);
+		ServerPlayNetworking.registerGlobalReceiver(SetBookPagePhotographPacket.PACKET_TYPE, SetBookPagePhotographPacket::handle);
+
+		c2sRegistry.register(OpenBookPagePhotographInventoryPacket.PACKET_TYPE, OpenBookPagePhotographInventoryPacket.CODEC);
+		ServerPlayNetworking.registerGlobalReceiver(OpenBookPagePhotographInventoryPacket.PACKET_TYPE, OpenBookPagePhotographInventoryPacket::handle);
 
 		FileTransferFilter.whitelistDestinationPath("photographs", false);
 		FileTransferFilter.whitelistDestinationPath("photographs", true);

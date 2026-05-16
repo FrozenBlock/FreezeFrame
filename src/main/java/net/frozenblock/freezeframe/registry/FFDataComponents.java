@@ -21,12 +21,12 @@ import com.mojang.serialization.Codec;
 import java.util.function.UnaryOperator;
 import net.fabricmc.fabric.api.item.v1.DefaultItemComponentEvents;
 import net.frozenblock.freezeframe.FFConstants;
+import net.frozenblock.freezeframe.component.BookPagePhotographs;
 import net.frozenblock.freezeframe.component.CameraContents;
 import net.frozenblock.freezeframe.component.FilmContents;
 import net.frozenblock.freezeframe.component.FilmFilter;
 import net.frozenblock.freezeframe.component.Photograph;
 import net.frozenblock.freezeframe.component.ScopeZoomConfig;
-import net.frozenblock.freezeframe.component.WritablePortfolioContent;
 import net.frozenblock.freezeframe.util.ScopeZoomHelper;
 import net.minecraft.core.Registry;
 import net.minecraft.core.component.DataComponentType;
@@ -55,9 +55,9 @@ public class FFDataComponents {
 		"film_max_photographs",
 		builder -> builder.persistent(Codec.INT).networkSynchronized(ByteBufCodecs.VAR_INT)
 	);
-	public static final DataComponentType<WritablePortfolioContent> WRITABLE_PORTFOLIO_CONTENT = register(
-		"writable_portfolio_content",
-		builder -> builder.persistent(WritablePortfolioContent.CODEC).networkSynchronized(WritablePortfolioContent.STREAM_CODEC)
+	public static final DataComponentType<BookPagePhotographs> BOOK_PAGE_PHOTOGRAPHS = register(
+		"book_page_photographs",
+		builder -> builder.persistent(BookPagePhotographs.CODEC).networkSynchronized(BookPagePhotographs.STREAM_CODEC)
 	);
 	public static final DataComponentType<Float> SCOPE_ZOOM = register(
 		"scope_zoom",
@@ -76,7 +76,7 @@ public class FFDataComponents {
 		});
 	}
 
-	private static <T> DataComponentType<T> register(String id, UnaryOperator<DataComponentType.Builder<T>> unaryOperator) {
-		return Registry.register(BuiltInRegistries.DATA_COMPONENT_TYPE, FFConstants.id(id), unaryOperator.apply(DataComponentType.builder()).build());
+	private static <T> DataComponentType<T> register(String name, UnaryOperator<DataComponentType.Builder<T>> builder) {
+		return Registry.register(BuiltInRegistries.DATA_COMPONENT_TYPE, FFConstants.id(name), builder.apply(DataComponentType.builder()).build());
 	}
 }

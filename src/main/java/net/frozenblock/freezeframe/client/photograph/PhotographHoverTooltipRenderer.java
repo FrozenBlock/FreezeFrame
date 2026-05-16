@@ -29,9 +29,6 @@ public final class PhotographHoverTooltipRenderer {
 	private static final int BORDER_TOP_COLOR = 0x505000FF;
 	private static final int BORDER_BOTTOM_COLOR = 0x5028007F;
 
-	private PhotographHoverTooltipRenderer() {
-	}
-
 	public static void extractRenderState(
 		GuiGraphicsExtractor graphics,
 		Font font,
@@ -41,28 +38,23 @@ public final class PhotographHoverTooltipRenderer {
 		int mouseY,
 		Photograph photograph
 	) {
-		final List<Component> lines = PhotographDetails.buildTooltipLines(photograph);
+		final List<Component> lines = PhotographDetailsUtil.buildTooltipLines(photograph);
 		if (lines.isEmpty()) return;
 
 		int contentWidth = 0;
-		for (Component line : lines) {
-			contentWidth = Math.max(contentWidth, font.width(line));
-		}
+		for (Component line : lines) contentWidth = Math.max(contentWidth, font.width(line));
 
 		final int contentHeight = lines.size() * font.lineHeight;
 		int tooltipX = mouseX + 12;
 		int tooltipY = mouseY - 12;
 		final int totalWidth = contentWidth + 6;
 		final int totalHeight = contentHeight + 6;
-		if (tooltipX + totalWidth > screenWidth - TOOLTIP_MARGIN) {
-			tooltipX = mouseX - 12 - totalWidth;
-		}
-		if (tooltipY + totalHeight > screenHeight - TOOLTIP_MARGIN) {
-			tooltipY = screenHeight - totalHeight - TOOLTIP_MARGIN;
-		}
-		if (tooltipY < TOOLTIP_MARGIN) {
-			tooltipY = TOOLTIP_MARGIN;
-		}
+
+		if (tooltipX + totalWidth > screenWidth - TOOLTIP_MARGIN) tooltipX = mouseX - 12 - totalWidth;
+
+		if (tooltipY + totalHeight > screenHeight - TOOLTIP_MARGIN) tooltipY = screenHeight - totalHeight - TOOLTIP_MARGIN;
+
+		if (tooltipY < TOOLTIP_MARGIN) tooltipY = TOOLTIP_MARGIN;
 
 		final int x0 = tooltipX;
 		final int y0 = tooltipY;

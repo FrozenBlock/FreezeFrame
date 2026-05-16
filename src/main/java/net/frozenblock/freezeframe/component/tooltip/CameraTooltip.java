@@ -20,5 +20,4 @@ package net.frozenblock.freezeframe.component.tooltip;
 import net.frozenblock.freezeframe.component.CameraContents;
 import net.minecraft.world.inventory.tooltip.TooltipComponent;
 
-public record CameraTooltip(CameraContents contents) implements TooltipComponent {
-}
+public record CameraTooltip(CameraContents contents) implements TooltipComponent {}

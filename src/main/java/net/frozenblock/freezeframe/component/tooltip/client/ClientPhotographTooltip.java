@@ -19,7 +19,7 @@ package net.frozenblock.freezeframe.component.tooltip.client;
 
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
-import net.frozenblock.freezeframe.client.photograph.PhotographDetails;
+import net.frozenblock.freezeframe.client.photograph.PhotographDetailsUtil;
 import net.frozenblock.freezeframe.client.photograph.PhotographRenderer;
 import net.frozenblock.freezeframe.component.Photograph;
 import net.frozenblock.freezeframe.component.tooltip.PhotographTooltip;
@@ -57,8 +57,8 @@ public class ClientPhotographTooltip implements ClientTooltipComponent {
 		this.photographId = component.identifier();
 		final Photograph photograph = new Photograph(component.identifier(), component.photographer(), component.name(), component.generation());
 		this.name = null;
-		this.photographer = PhotographDetails.getPhotographerLine(photograph);
-		this.dateAndTime = PhotographDetails.getDateLine(photograph);
+		this.photographer = PhotographDetailsUtil.getPhotographerLine(photograph);
+		this.dateAndTime = PhotographDetailsUtil.getDateLine(photograph);
 
 		this.generationLabel = switch (component.generation()) {
 			case 0 -> ORIGINAL_COMPONENT;

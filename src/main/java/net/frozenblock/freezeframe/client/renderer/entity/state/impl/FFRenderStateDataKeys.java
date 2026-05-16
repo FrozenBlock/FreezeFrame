@@ -23,6 +23,6 @@ import net.fabricmc.fabric.api.client.rendering.v1.RenderStateDataKey;
 import net.minecraft.resources.Identifier;
 
 @Environment(EnvType.CLIENT)
-public class CameraPortRenderStateDataKeys {
+public class FFRenderStateDataKeys {
 	public static final RenderStateDataKey<Identifier> PHOTOGRAPH_ID = RenderStateDataKey.create();
 }

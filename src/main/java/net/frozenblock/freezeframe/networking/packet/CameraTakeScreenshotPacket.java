@@ -17,7 +17,6 @@
 
 package net.frozenblock.freezeframe.networking.packet;
 
-import java.util.OptionalInt;
 import net.fabricmc.fabric.api.networking.v1.ServerPlayNetworking;
 import net.frozenblock.freezeframe.FFConstants;
 import net.frozenblock.freezeframe.component.FilmFilter;
@@ -27,6 +26,7 @@ import net.minecraft.network.codec.ByteBufCodecs;
 import net.minecraft.network.codec.StreamCodec;
 import net.minecraft.network.protocol.common.custom.CustomPacketPayload;
 import net.minecraft.server.level.ServerPlayer;
+import java.util.OptionalInt;
 
 public record CameraTakeScreenshotPacket(OptionalInt entityId, boolean handheldCapture, float zoom, String fileName, FilmFilter filter) implements CustomPacketPayload {
 	public static final Type<CameraTakeScreenshotPacket> PACKET_TYPE = CustomPacketPayload.createType(FFConstants.safeString("camera_take_screenshot"));

@@ -76,10 +76,10 @@ public final class FFModelProvider extends FabricModelProvider {
 		final ItemModel.Unbaked activeModel = ItemModelUtils.plainModel(ModelLocationUtils.getModelLocation(camera, "_active"));
 		generator.generateBooleanDispatch(
 			camera,
-			new CanTakePhoto(),
+			CanTakePhoto.INSTANCE,
 			activeModel,
 			ItemModelUtils.conditional(
-				new InMainHand(),
+				InMainHand.INSTANCE,
 				ItemModelUtils.conditional(
 					new IsUsingItem(),
 					activeModel,

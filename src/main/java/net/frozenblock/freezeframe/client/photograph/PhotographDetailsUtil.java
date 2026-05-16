@@ -28,13 +28,10 @@ import net.minecraft.util.StringUtil;
 import org.jetbrains.annotations.Nullable;
 import net.minecraft.ChatFormatting;
 
-public final class PhotographDetails {
-
-	private PhotographDetails() {
-	}
+public final class PhotographDetailsUtil {
 
 	public static List<Component> buildTooltipLines(Photograph photograph) {
-		final List<Component> lines = new ArrayList<>();
+		final List<Component> lines = new ArrayList<>(3);
 		final Component name = getPhotographNameLine(photograph);
 		if (name != null) lines.add(name);
 
@@ -47,12 +44,11 @@ public final class PhotographDetails {
 		return lines;
 	}
 
-	@Nullable
 	public static Component getPhotographNameLine(Photograph photograph) {
 		if (StringUtil.isNullOrEmpty(photograph.name())) {
-			return Component.translatable("photograph.unnamed").withStyle(ChatFormatting.WHITE);
+			return Component.translatable("item.freezeframe.photograph").withStyle(ChatFormatting.GRAY);
 		}
-		return Component.literal(photograph.name()).withStyle(ChatFormatting.WHITE);
+		return Component.literal(photograph.name()).withStyle(ChatFormatting.GRAY);
 	}
 
 	@Nullable

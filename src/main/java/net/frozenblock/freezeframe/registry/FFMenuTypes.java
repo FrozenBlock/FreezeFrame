@@ -18,6 +18,7 @@
 package net.frozenblock.freezeframe.registry;
 
 import net.frozenblock.freezeframe.FFConstants;
+import net.frozenblock.freezeframe.menu.BookPagePhotographMenu;
 import net.frozenblock.freezeframe.menu.DevelopingTableMenu;
 import net.minecraft.core.Registry;
 import net.minecraft.core.registries.BuiltInRegistries;
@@ -26,8 +27,10 @@ import net.minecraft.world.inventory.MenuType;
 
 public class FFMenuTypes {
 	public static final MenuType<DevelopingTableMenu> DEVELOPING_TABLE = new MenuType<>(DevelopingTableMenu::new, FeatureFlags.DEFAULT_FLAGS);
+	public static final MenuType<BookPagePhotographMenu> BOOK_PAGE_PHOTOGRAPH = new MenuType<>(BookPagePhotographMenu::new, FeatureFlags.DEFAULT_FLAGS);
 
-	public static void register() {
+	public static void init() {
 		Registry.register(BuiltInRegistries.MENU, FFConstants.id("developing_table"), DEVELOPING_TABLE);
+		Registry.register(BuiltInRegistries.MENU, FFConstants.id("book_page_photograph"), BOOK_PAGE_PHOTOGRAPH);
 	}
 }

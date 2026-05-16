@@ -33,8 +33,7 @@ public record QuickCameraPhotographPacket() implements CustomPacketPayload {
 		this();
 	}
 
-	public void write(FriendlyByteBuf buf) {
-	}
+	public void write(FriendlyByteBuf buf) {}
 
 	@Override
 	public Type<? extends CustomPacketPayload> type() {
