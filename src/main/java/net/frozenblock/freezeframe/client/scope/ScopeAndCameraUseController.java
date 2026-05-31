@@ -43,7 +43,6 @@ public final class ScopeAndCameraUseController {
 	private static ItemStack previousScopeItem = ItemStack.EMPTY;
 	private static boolean forcedFirstPerson = false;
 	private static CameraType previousCameraType = CameraType.FIRST_PERSON;
-	private static int scopeEffectGraceTicks = 0;
 	private static FilmFilter lastAppliedFilter = FilmFilter.EMPTY;
 
 	public static void init() {
@@ -122,7 +121,6 @@ public final class ScopeAndCameraUseController {
 		restoreCameraType(minecraft);
 		ScopeZoomManager.resetActiveZoomProfile();
 		ScopePostEffectController.clearIfApplied(minecraft);
-		scopeEffectGraceTicks = 0;
 		lastAppliedFilter = FilmFilter.EMPTY;
 		wasAttackDown = false;
 		previousScopeItem = ItemStack.EMPTY;
