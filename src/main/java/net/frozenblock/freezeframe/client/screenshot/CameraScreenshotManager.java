@@ -71,12 +71,10 @@ public class CameraScreenshotManager {
 		return isScreenshotting() && isCameraHandheld;
 	}
 
-	public static void executeScreenshot(@Nullable Entity entity, boolean handheldCapture, @Nullable String fileName, float zoom, FilmFilter filter) {
+	public static void executeScreenshot(@Nullable Entity entity, boolean handheldCapture, boolean wasScoping, @Nullable String fileName, float zoom, FilmFilter filter) {
 		final Minecraft minecraft = Minecraft.getInstance();
 		isCameraHandheld = handheldCapture;
-		if (handheldCapture) {
-			ScopeZoomManager.pushForcedZoom(zoom);
-		}
+		if (handheldCapture) ScopeZoomManager.pushForcedZoom(zoom);
 		final Entity previousCameraEntity = minecraft.getCameraEntity();
 		if (entity != null) minecraft.setCameraEntity(entity);
 
@@ -105,7 +103,7 @@ public class CameraScreenshotManager {
 		possessingCamera = false;
 		isCameraHandheld = false;
 		if (handheldCapture) ScopeZoomManager.clearForcedZoom();
-		if (handheldCapture && !filter.isEmpty()) ScopePostEffectController.applyFromFilter(minecraft, filter);
+		if (handheldCapture && wasScoping && !filter.isEmpty()) ScopePostEffectController.applyFromFilter(minecraft, filter);
 	}
 
 	public static void grabCameraScreenshot(File workDir, int width, int height, @Nullable String fileName, FilmFilter filter) {

@@ -36,7 +36,7 @@ public class FFClientNetworking {
 
 		ClientPlayNetworking.registerGlobalReceiver(CameraTakeScreenshotPacket.PACKET_TYPE, (packet, ctx) -> {
 			final Entity entity = packet.entityId().isPresent() ? ctx.player().level().getEntity(packet.entityId().getAsInt()) : null;
-			CameraScreenshotManager.executeScreenshot(entity, packet.handheldCapture(), packet.fileName(), packet.zoom(), packet.filter());
+			CameraScreenshotManager.executeScreenshot(entity, packet.handheldCapture(), packet.wasScoping(), packet.fileName(), packet.zoom(), packet.filter());
 		});
 	}
 }

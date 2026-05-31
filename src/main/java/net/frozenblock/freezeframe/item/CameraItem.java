@@ -144,7 +144,7 @@ public class CameraItem extends SpawnEggItem {
 		setAllCamerasOnCooldown(player, 20);
 		if (player instanceof ServerPlayer serverPlayer) {
 			final String fileName = makeFileName(serverPlayer);
-			CameraTakeScreenshotPacket.sendToAsHandheld(serverPlayer, fileName, captureZoom, getFilterForNextPhotograph(initialContents));
+			CameraTakeScreenshotPacket.sendToAsHandheld(serverPlayer, serverPlayer.getUseItem().equals(stack), fileName, captureZoom, getFilterForNextPhotograph(initialContents));
 			addPhotograph(stack, player, fileName);
 		}
 
