@@ -29,6 +29,7 @@ import net.minecraft.network.RegistryFriendlyByteBuf;
 import net.minecraft.network.codec.ByteBufCodecs;
 import net.minecraft.network.codec.StreamCodec;
 import net.minecraft.util.StringRepresentable;
+import net.minecraft.world.item.DyeColor;
 
 public record FilmFilter(List<Layer> layers) {
 	public static final int MAX_LAYERS = 8;
@@ -67,6 +68,14 @@ public record FilmFilter(List<Layer> layers) {
 		final List<Layer> newLayers = new java.util.ArrayList<>(this.layers);
 		newLayers.add(layer);
 		return new FilmFilter(newLayers);
+	}
+
+	public static FilmFilter dyeDemo(DyeColor dyeColor, boolean exclusionTint) {
+		return new FilmFilter(List.of(Layer.dye(dyeColor.getTextureDiffuseColor(), exclusionTint)));
+	}
+
+	public static FilmFilter specialDemo(Holder<SpecialFilmFilter> specialFilmFilter) {
+		return new FilmFilter(List.of(Layer.special(specialFilmFilter)));
 	}
 
 	public record Layer(LayerType type, int color, Optional<Holder<SpecialFilmFilter>> specialFilmFilter, boolean exclusionTint) {

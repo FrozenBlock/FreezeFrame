@@ -15,7 +15,7 @@
  * along with this program; if not, see <https://github.com/FrozenBlock/Licenses>.
  */
 
-package net.frozenblock.freezeframe.recipe;
+package net.frozenblock.freezeframe.item.crafting;
 
 import com.mojang.serialization.Codec;
 import com.mojang.serialization.MapCodec;
@@ -24,11 +24,13 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 import net.frozenblock.freezeframe.component.FilmFilter;
-import net.frozenblock.freezeframe.item.filter.SpecialFilmFilter;
 import net.frozenblock.freezeframe.item.FilmItem;
+import net.frozenblock.freezeframe.item.crafting.display.FilmDyeFilterSlotDisplay;
+import net.frozenblock.freezeframe.item.filter.SpecialFilmFilter;
 import net.frozenblock.freezeframe.registry.FFDataComponents;
 import net.frozenblock.freezeframe.registry.FFRecipeSerializers;
 import net.minecraft.core.Holder;
+import net.minecraft.core.component.DataComponentPatch;
 import net.minecraft.core.component.DataComponents;
 import net.minecraft.network.RegistryFriendlyByteBuf;
 import net.minecraft.network.codec.ByteBufCodecs;
@@ -53,16 +55,16 @@ import org.jspecify.annotations.Nullable;
 public class FilmFilterUpgradeRecipe extends CustomRecipe {
 	public static final MapCodec<FilmFilterUpgradeRecipe> MAP_CODEC = RecordCodecBuilder.mapCodec(instance -> instance.group(
 		Ingredient.CODEC.fieldOf("film").forGetter(recipe -> recipe.film),
-		Ingredient.CODEC.fieldOf("exclusion_tint_material").forGetter(recipe -> recipe.exclusionTintMaterial),
-		Ingredient.CODEC.fieldOf("dye").forGetter(recipe -> recipe.dye),
+		Ingredient.CODEC.optionalFieldOf("exclusion_tint_material").forGetter(recipe -> recipe.exclusionTintMaterial),
+		Ingredient.CODEC.optionalFieldOf("dye").forGetter(recipe -> recipe.dye),
 		SpecialFilmFilter.REGISTRY_CODEC.optionalFieldOf("special_filter_material").forGetter(recipe -> recipe.specialFilter),
 		Codec.STRING.optionalFieldOf("group", "").forGetter(recipe -> recipe.group),
 		ItemStackTemplate.CODEC.fieldOf("result").forGetter(recipe -> recipe.result)
 	).apply(instance, FilmFilterUpgradeRecipe::new));
 	public static final StreamCodec<RegistryFriendlyByteBuf, FilmFilterUpgradeRecipe> STREAM_CODEC = StreamCodec.composite(
 		Ingredient.CONTENTS_STREAM_CODEC, recipe -> recipe.film,
-		Ingredient.CONTENTS_STREAM_CODEC, recipe -> recipe.exclusionTintMaterial,
-		Ingredient.CONTENTS_STREAM_CODEC, recipe -> recipe.dye,
+		ByteBufCodecs.optional(Ingredient.CONTENTS_STREAM_CODEC), recipe -> recipe.exclusionTintMaterial,
+		ByteBufCodecs.optional(Ingredient.CONTENTS_STREAM_CODEC), recipe -> recipe.dye,
 		ByteBufCodecs.optional(SpecialFilmFilter.STREAM_CODEC), recipe -> recipe.specialFilter,
 		ByteBufCodecs.STRING_UTF8, recipe -> recipe.group,
 		ItemStackTemplate.STREAM_CODEC, recipe -> recipe.result,
@@ -70,8 +72,8 @@ public class FilmFilterUpgradeRecipe extends CustomRecipe {
 	);
 	public static final RecipeSerializer<FilmFilterUpgradeRecipe> SERIALIZER = new RecipeSerializer<>(MAP_CODEC, STREAM_CODEC);
 	private final Ingredient film;
-	private final Ingredient exclusionTintMaterial;
-	private final Ingredient dye;
+	private final Optional<Ingredient> exclusionTintMaterial;
+	private final Optional<Ingredient> dye;
 	private final Optional<Holder<SpecialFilmFilter>> specialFilter;
 	private final String group;
 	private final ItemStackTemplate result;
@@ -80,12 +82,20 @@ public class FilmFilterUpgradeRecipe extends CustomRecipe {
 
 	public FilmFilterUpgradeRecipe(
 		Ingredient film,
-		Ingredient exclusionTintMaterial,
-		Ingredient dye,
+		Optional<Ingredient> exclusionTintMaterial,
+		Optional<Ingredient> dye,
 		Optional<Holder<SpecialFilmFilter>> specialFilter,
 		String group,
 		ItemStackTemplate result
 	) {
+		if (specialFilter.isPresent() && (exclusionTintMaterial.isPresent() || dye.isPresent())) {
+			throw new IllegalArgumentException("Dye and exclusion tint ingredients cannot be present in a special film filter recipe!");
+		}
+
+		if (specialFilter.isEmpty() && dye.isEmpty()) {
+			throw new IllegalArgumentException("Film filter recipes require at least one dye or special film filter ingredient!");
+		}
+
 		this.film = film;
 		this.exclusionTintMaterial = exclusionTintMaterial;
 		this.dye = dye;
@@ -105,13 +115,23 @@ public class FilmFilterUpgradeRecipe extends CustomRecipe {
 	}
 
 	@Override
+	public boolean isSpecial() {
+		return false;
+	}
+
+	@Override
+	public boolean showNotification() {
+		return true;
+	}
+
+	@Override
 	public String group() {
 		return this.group;
 	}
 
 	protected PlacementInfo createPlacementInfo() {
 		if (this.specialFilter.isPresent()) return PlacementInfo.create(List.of(this.film, this.specialFilter.get().value().ingredient()));
-		return PlacementInfo.create(List.of(this.film, this.dye, this.exclusionTintMaterial));
+		return PlacementInfo.create(List.of(this.film, this.dye.orElseThrow()));
 	}
 
 	@Override
@@ -122,12 +142,39 @@ public class FilmFilterUpgradeRecipe extends CustomRecipe {
 
 	@Override
 	public List<RecipeDisplay> display() {
+		final SlotDisplay film = this.film.display();
+		final SlotDisplay craftingStation = new SlotDisplay.ItemSlotDisplay(Items.CRAFTING_TABLE);
+
+		if (this.specialFilter.isPresent()) {
+			return List.of(
+				new ShapelessCraftingRecipeDisplay(
+					List.of(film, this.specialFilter.get().value().ingredient().display()),
+					new SlotDisplay.ItemStackSlotDisplay(
+						ItemStackTemplate.fromNonEmptyStack(
+							this.result.apply(
+								DataComponentPatch.builder().set(FFDataComponents.FILM_FILTER, FilmFilter.specialDemo(this.specialFilter.get())).build()
+							)
+						)
+					),
+					craftingStation
+				)
+			);
+		}
+
+		final SlotDisplay dye = this.dye.orElseThrow().display();
+		final SlotDisplay result = new SlotDisplay.ItemStackSlotDisplay(this.result);
 		return List.of(
-			new ShapelessCraftingRecipeDisplay(
-				List.of(this.film.display(), this.dye.display(), this.exclusionTintMaterial.display()),
-				new SlotDisplay.ItemStackSlotDisplay(this.result),
-				new SlotDisplay.ItemSlotDisplay(Items.CRAFTING_TABLE)
-			)
+			this.exclusionTintMaterial.isPresent()
+				? new ShapelessCraftingRecipeDisplay(
+					List.of(film, dye, this.exclusionTintMaterial.orElseThrow().display()),
+					new FilmDyeFilterSlotDisplay(dye, result, true),
+					craftingStation
+				)
+				: new ShapelessCraftingRecipeDisplay(
+					List.of(film, dye),
+					new FilmDyeFilterSlotDisplay(dye, result, false),
+					craftingStation
+				)
 		);
 	}
 
@@ -141,6 +188,7 @@ public class FilmFilterUpgradeRecipe extends CustomRecipe {
 		if (targetStack == null || targetStack.isEmpty()) return ItemStack.EMPTY;
 
 		FilmFilter filter = FilmItem.getFilter(targetStack);
+		if (!filter.canAddLayer()) return ItemStack.EMPTY;
 
 		int redTotal = 0;
 		int greenTotal = 0;
@@ -160,10 +208,9 @@ public class FilmFilterUpgradeRecipe extends CustomRecipe {
 		if (this.specialFilter.isPresent() && specialFilterMaterial.isEmpty()) return ItemStack.EMPTY;
 
 		if (targetStack.isEmpty()) return ItemStack.EMPTY;
-		if (this.specialFilter.isPresent() && (colorCount > 0 || exclusionTintCount > 0)) return ItemStack.EMPTY;
+		if (this.hasNonMatchingItems(input)) return ItemStack.EMPTY;
 		if (this.specialFilter.isEmpty() && colorCount == 0) return ItemStack.EMPTY;
 		if (exclusionTintCount > 1) return ItemStack.EMPTY;
-		if (!filter.canAddLayer()) return ItemStack.EMPTY;
 
 		if (this.specialFilter.isPresent()) {
 			if (filter.hasSpecialOfType(this.specialFilter.get())) return ItemStack.EMPTY;
@@ -198,19 +245,23 @@ public class FilmFilterUpgradeRecipe extends CustomRecipe {
 	}
 
 	private int countExclusionTintMaterials(CraftingInput input) {
+		if (this.exclusionTintMaterial.isEmpty()) return 0;
+
 		int count = 0;
 		for (int i = 0; i < input.size(); i++) {
 			final ItemStack itemStack = input.getItem(i);
-			if (this.exclusionTintMaterial.test(itemStack)) count += 1;
+			if (this.exclusionTintMaterial.orElseThrow().test(itemStack)) count += 1;
 		}
 		return count;
 	}
 
 	private List<DyeColor> findDyes(CraftingInput input) {
+		if (this.dye.isEmpty()) return List.of();
+
 		final List<DyeColor> dyes = new ArrayList<>();
 		for (int i = 0; i < input.size(); i++) {
 			final ItemStack itemStack = input.getItem(i);
-			if (this.dye.test(itemStack))dyes.add(itemStack.getOrDefault(DataComponents.DYE, DyeColor.WHITE));
+			if (this.dye.orElseThrow().test(itemStack))dyes.add(itemStack.getOrDefault(DataComponents.DYE, DyeColor.WHITE));
 		}
 		return dyes;
 	}
@@ -230,5 +281,20 @@ public class FilmFilterUpgradeRecipe extends CustomRecipe {
 			}
 		}
 		return specialFilterMaterial;
+	}
+
+	private boolean hasNonMatchingItems(CraftingInput input) {
+		for (int i = 0; i < input.size(); i++) {
+			final ItemStack itemStack = input.getItem(i);
+			if (itemStack.isEmpty()) continue;
+			if (this.film.test(itemStack)) continue;
+			if (this.specialFilter.map(specialFilter -> specialFilter.value().ingredient().test(itemStack)).orElse(true)) return false;
+			if (!this.dye.map(ingredient -> ingredient.test(itemStack))
+				.orElse(this.exclusionTintMaterial.map(ingredient -> ingredient.test(itemStack)).orElse(true))
+			) {
+				return false;
+			}
+		}
+		return true;
 	}
 }

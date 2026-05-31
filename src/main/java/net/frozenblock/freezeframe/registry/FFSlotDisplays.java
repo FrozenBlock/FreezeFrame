@@ -18,23 +18,12 @@
 package net.frozenblock.freezeframe.registry;
 
 import net.frozenblock.freezeframe.FFConstants;
-import net.frozenblock.freezeframe.item.crafting.FilmCapacityUpgradeRecipe;
-import net.frozenblock.freezeframe.item.crafting.FilmFilterUpgradeRecipe;
+import net.frozenblock.freezeframe.item.crafting.display.FilmDyeFilterSlotDisplay;
 import net.minecraft.core.Registry;
 import net.minecraft.core.registries.BuiltInRegistries;
-import net.minecraft.world.item.crafting.RecipeSerializer;
 
-public class FFRecipeSerializers {
-	public static final RecipeSerializer<FilmCapacityUpgradeRecipe> FILM_CAPACITY_UPGRADE = Registry.register(
-		BuiltInRegistries.RECIPE_SERIALIZER,
-		FFConstants.id("film_capacity_upgrade"),
-		FilmCapacityUpgradeRecipe.SERIALIZER
-	);
-	public static final RecipeSerializer<FilmFilterUpgradeRecipe> FILM_FILTER_UPGRADE = Registry.register(
-		BuiltInRegistries.RECIPE_SERIALIZER,
-		FFConstants.id("film_filter_upgrade"),
-		FilmFilterUpgradeRecipe.SERIALIZER
-	);
-
-	public static void init() {}
+public class FFSlotDisplays {
+	public static void bootstrap() {
+		Registry.register(BuiltInRegistries.SLOT_DISPLAY, FFConstants.id("film_filter_dye"), FilmDyeFilterSlotDisplay.TYPE);
+	}
 }

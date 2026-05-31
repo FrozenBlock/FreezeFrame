@@ -29,6 +29,7 @@ import net.frozenblock.freezeframe.registry.FFItems;
 import net.frozenblock.freezeframe.registry.FFMenuTypes;
 import net.frozenblock.freezeframe.registry.FFRecipeSerializers;
 import net.frozenblock.freezeframe.registry.FFRegistries;
+import net.frozenblock.freezeframe.registry.FFSlotDisplays;
 import net.frozenblock.freezeframe.registry.FFSounds;
 
 public class FreezeFrame implements ModInitializer {
@@ -44,6 +45,7 @@ public class FreezeFrame implements ModInitializer {
 		FFSounds.init();
 		FFDataComponents.init();
 		FFRecipeSerializers.init();
+		FFSlotDisplays.bootstrap();
 		FFMenuTypes.init();
 
 		FFNetworking.init();

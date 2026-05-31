@@ -23,8 +23,8 @@ import net.fabricmc.fabric.api.datagen.v1.FabricPackOutput;
 import net.fabricmc.fabric.api.datagen.v1.provider.FabricRecipeProvider;
 import net.frozenblock.freezeframe.FFConstants;
 import net.frozenblock.freezeframe.item.filter.SpecialFilmFilter;
-import net.frozenblock.freezeframe.recipe.FilmCapacityUpgradeRecipe;
-import net.frozenblock.freezeframe.recipe.FilmFilterUpgradeRecipe;
+import net.frozenblock.freezeframe.item.crafting.FilmCapacityUpgradeRecipe;
+import net.frozenblock.freezeframe.item.crafting.FilmFilterUpgradeRecipe;
 import net.frozenblock.freezeframe.registry.FFBlocks;
 import net.frozenblock.freezeframe.registry.FFItems;
 import net.frozenblock.freezeframe.registry.FFRegistries;
@@ -99,11 +99,12 @@ public final class FFRecipeProvider extends FabricRecipeProvider {
 					.save(this.output, "film_capacity_upgrade");
 
 				try {
-					createFilmFilterRecipe(items, this.output, this, Optional.empty(), "dye");
+					createDyeFilmFilterRecipe(items, this.output, false);
+					createDyeFilmFilterRecipe(items, this.output, true);
 
 					this.registries.lookupOrThrow(FFRegistries.SPECIAL_FILM_FILTER).listElements().forEach(specialFilmFilter -> {
 						try {
-							createFilmFilterRecipe(items, this.output, this, Optional.of(specialFilmFilter), specialFilmFilter.key().identifier().getPath());
+							createSpecialFilmFilterRecipe(items, this.output, specialFilmFilter);
 						} catch (IllegalAccessException e) {
 							throw new RuntimeException(e);
 						}
@@ -117,19 +118,35 @@ public final class FFRecipeProvider extends FabricRecipeProvider {
 		};
 	}
 
-	public static void createFilmFilterRecipe(
+	public static void createDyeFilmFilterRecipe(
 		HolderLookup.RegistryLookup<Item> itemRegistry,
 		RecipeOutput output,
-		RecipeProvider provider,
+		boolean hasExclusion
+	) throws IllegalAccessException {
+		createFilmFilterRecipe(itemRegistry, output, Optional.empty(), hasExclusion, hasExclusion ? "dye_with_exclusion" : "dye");
+	}
+
+	public static void createSpecialFilmFilterRecipe(
+		HolderLookup.RegistryLookup<Item> itemRegistry,
+		RecipeOutput output,
+		Holder<SpecialFilmFilter> specialFilmFilter
+	) throws IllegalAccessException {
+		createFilmFilterRecipe(itemRegistry, output, Optional.of(specialFilmFilter), false, specialFilmFilter.unwrapKey().orElseThrow().identifier().getPath());
+	}
+
+	private static void createFilmFilterRecipe(
+		HolderLookup.RegistryLookup<Item> itemRegistry,
+		RecipeOutput output,
 		Optional<Holder<SpecialFilmFilter>> specialFilmFilter,
+		boolean hasExclusion,
 		String recipeSuffix
 	) throws IllegalAccessException {
 		if (StringUtil.isNullOrEmpty(recipeSuffix)) throw new IllegalAccessException("recipeSuffix cannot be empty!");
 
 		final SpecialRecipeBuilder builder = SpecialRecipeBuilder.special(() -> new FilmFilterUpgradeRecipe(
 				Ingredient.of(FFItems.FILM),
-				Ingredient.of(Items.AMETHYST_SHARD),
-				Ingredient.of(itemRegistry.getOrThrow(ItemTags.DYES)),
+				specialFilmFilter.isPresent() || !hasExclusion ? Optional.empty() : Optional.of(Ingredient.of(Items.AMETHYST_SHARD)),
+				specialFilmFilter.isPresent() ? Optional.empty() : Optional.of(Ingredient.of(itemRegistry.getOrThrow(ItemTags.DYES))),
 				specialFilmFilter,
 				"film",
 				new ItemStackTemplate(FFItems.FILM)
@@ -144,13 +161,25 @@ public final class FFRecipeProvider extends FabricRecipeProvider {
 				)
 			);
 		} else {
-			builder.unlockedBy(
-				"has_film_and_dye",
-				RecipeProvider.inventoryTrigger(
-					ItemPredicate.Builder.item().of(itemRegistry, FFItems.FILM),
-					ItemPredicate.Builder.item().of(itemRegistry, ItemTags.DYES)
-				)
-			);
+			if (hasExclusion) {
+				builder.unlockedBy(
+					"has_film_and_dye_and_amethyst_shard",
+					RecipeProvider.inventoryTrigger(
+						ItemPredicate.Builder.item().of(itemRegistry, FFItems.FILM),
+						ItemPredicate.Builder.item().of(itemRegistry, ItemTags.DYES),
+						ItemPredicate.Builder.item().of(itemRegistry, Items.AMETHYST_SHARD)
+					)
+				);
+			} else {
+				builder.unlockedBy(
+					"has_film_and_dye",
+					RecipeProvider.inventoryTrigger(
+						ItemPredicate.Builder.item().of(itemRegistry, FFItems.FILM),
+						ItemPredicate.Builder.item().of(itemRegistry, ItemTags.DYES)
+					)
+				);
+			}
+
 		}
 
 		builder.save(output, "film_filter_upgrade_" + recipeSuffix);
