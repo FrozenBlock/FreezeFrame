@@ -1,4 +1,11 @@
 {
-  "operation": "triple_vision",
-  "shader": "freezeframe:post/triple_vision"
+  "shader": "freezeframe:post/triple_vision",
+  "shader_uniforms": {
+    "OffsetConfig": [
+      {
+        "type": "float",
+        "value": 2.0
+      }
+    ]
+  }
 }

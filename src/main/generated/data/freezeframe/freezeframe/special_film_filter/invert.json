@@ -1,3 +1,4 @@
 {
-  "shader": "freezeframe:post/invert"
+  "shader": "freezeframe:post/invert",
+  "shader_uniforms": {}
 }

@@ -17,8 +17,10 @@
 
 package net.frozenblock.freezeframe.data;
 
+import net.fabricmc.api.EnvType;
 import net.fabricmc.fabric.api.datagen.v1.DataGeneratorEntrypoint;
 import net.fabricmc.fabric.api.datagen.v1.FabricDataGenerator;
+import net.fabricmc.loader.api.FabricLoader;
 import net.frozenblock.freezeframe.FFConstants;
 import net.frozenblock.freezeframe.data.loot.FFBlockLootProvider;
 import net.frozenblock.freezeframe.data.model.FFModelProvider;
@@ -52,7 +54,9 @@ public final class FFDataGenerator implements DataGeneratorEntrypoint {
 
 	@Override
 	public void buildRegistry(RegistrySetBuilder registryBuilder) {
-		registryBuilder.add(FFRegistries.SPECIAL_FILM_FILTER, FFSpecialFilmFilters::bootstrap);
+		if (FabricLoader.getInstance().getEnvironmentType() == EnvType.CLIENT) {
+			registryBuilder.add(FFRegistries.SPECIAL_FILM_FILTER, context -> FFSpecialFilmFilters.bootstrap(context));
+		}
 	}
 
 	@Override

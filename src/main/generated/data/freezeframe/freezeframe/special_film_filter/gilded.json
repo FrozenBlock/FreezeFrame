@@ -1,3 +1,4 @@
 {
-  "shader": "freezeframe:post/gilded"
+  "shader": "freezeframe:post/gilded",
+  "shader_uniforms": {}
 }

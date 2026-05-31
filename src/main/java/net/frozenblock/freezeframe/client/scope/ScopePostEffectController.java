@@ -151,10 +151,7 @@ public final class ScopePostEffectController {
 				final Optional<Holder<SpecialFilmFilter>> specialFilmFilter = layer.specialFilmFilter();
 				if (specialFilmFilter.isEmpty()) continue;
 
-				final Identifier shader = specialFilmFilter.get().value().shader();
-				if (shader == null) continue;
-
-				passSpecs.add(specialPass(shader, specialFilmFilter.get().value()));
+				passSpecs.add(specialPass(specialFilmFilter.get().value()));
 				continue;
 			}
 		}
@@ -174,33 +171,8 @@ public final class ScopePostEffectController {
 		);
 	}
 
-	private static PassSpec specialPass(Identifier shader, SpecialFilmFilter definition) {
-		return switch (definition.operation()) {
-			case BLOOM -> new PassSpec(shader, Map.of("BloomConfig", List.of(new UniformValue.FloatUniform(0.55F))));
-			case CHROMATIC_ABERRATION -> new PassSpec(shader, Map.of("OffsetConfig", List.of(new UniformValue.FloatUniform(1F))));
-			case CRUNCHY -> new PassSpec(shader, Map.of("CrunchConfig", List.of(new UniformValue.FloatUniform(2F), new UniformValue.FloatUniform(6F))));
-			case HIGH_CONTRAST -> new PassSpec(shader, Map.of("ContrastConfig", List.of(new UniformValue.FloatUniform(1.35F), new UniformValue.FloatUniform(0F))));
-			case TEMPERATURE_UP -> new PassSpec(shader, temperatureUniforms(0.18F, 0.02F, -0.12F));
-			case TEMPERATURE_DOWN -> new PassSpec(shader, temperatureUniforms(-0.12F, 0.04F, 0.2F));
-			case TRIPLE_VISION -> new PassSpec(shader, Map.of("OffsetConfig", List.of(new UniformValue.FloatUniform(2F))));
-			case SAPPED -> new PassSpec(shader, tintShiftUniforms(0xEC7214, 0.68F, 1.18F, 0.88F));
-			case WARDING -> new PassSpec(shader, tintShiftUniforms(0x29DFEB, 0.52F, 1.15F, 0.72F));
-			default -> new PassSpec(shader, Map.of());
-		};
-	}
-
-	private static Map<String, List<UniformValue>> temperatureUniforms(float red, float green, float blue) {
-		return Map.of("TemperatureConfig", List.of(new UniformValue.Vec4Uniform(new Vector4f(red, green, blue, 0F))));
-	}
-
-	private static Map<String, List<UniformValue>> tintShiftUniforms(int color, float tintAmount, float contrastAmount, float saturationAmount) {
-		final float red = ARGB.red(color) / 255F;
-		final float green = ARGB.green(color) / 255F;
-		final float blue = ARGB.blue(color) / 255F;
-		return Map.of("TintShiftConfig", List.of(
-			new UniformValue.Vec4Uniform(new Vector4f(red, green, blue, 1F)),
-			new UniformValue.Vec4Uniform(new Vector4f(tintAmount, contrastAmount, saturationAmount, 0F))
-		));
+	private static PassSpec specialPass(SpecialFilmFilter definition) {
+		return new PassSpec(definition.shader(), (Map<String, List<UniformValue>>) definition.uniforms().orElse(Map.of()));
 	}
 
 	private record PassSpec(Identifier shader, Map<String, List<UniformValue>> uniforms) {}

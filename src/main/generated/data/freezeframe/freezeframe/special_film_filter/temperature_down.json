@@ -1,4 +1,16 @@
 {
-  "operation": "temperature_down",
-  "shader": "freezeframe:post/temperature"
+  "shader": "freezeframe:post/temperature",
+  "shader_uniforms": {
+    "TemperatureConfig": [
+      {
+        "type": "vec4",
+        "value": [
+          -0.12,
+          0.04,
+          0.2,
+          0.0
+        ]
+      }
+    ]
+  }
 }

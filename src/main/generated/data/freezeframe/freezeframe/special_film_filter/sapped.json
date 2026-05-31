@@ -1,4 +1,25 @@
 {
-  "operation": "sapped",
-  "shader": "freezeframe:post/tint_shift"
+  "shader": "freezeframe:post/tint_shift",
+  "shader_uniforms": {
+    "TintShiftConfig": [
+      {
+        "type": "vec4",
+        "value": [
+          0.9254902,
+          0.44705883,
+          0.078431375,
+          1.0
+        ]
+      },
+      {
+        "type": "vec4",
+        "value": [
+          0.68,
+          1.18,
+          0.88,
+          0.0
+        ]
+      }
+    ]
+  }
 }

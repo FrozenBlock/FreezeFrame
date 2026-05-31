@@ -17,7 +17,9 @@
 
 package net.frozenblock.freezeframe.registry;
 
+import net.fabricmc.api.EnvType;
 import net.fabricmc.fabric.api.event.registry.DynamicRegistries;
+import net.fabricmc.loader.api.FabricLoader;
 import net.frozenblock.freezeframe.FFConstants;
 import net.frozenblock.freezeframe.item.filter.SpecialFilmFilter;
 import net.minecraft.core.Registry;
@@ -27,6 +29,10 @@ public class FFRegistries {
 	public static final ResourceKey<Registry<SpecialFilmFilter>> SPECIAL_FILM_FILTER = ResourceKey.createRegistryKey(FFConstants.id("special_film_filter"));
 
 	public static void init() {
-		DynamicRegistries.registerSynced(SPECIAL_FILM_FILTER, SpecialFilmFilter.CODEC);
+		if (FabricLoader.getInstance().getEnvironmentType() == EnvType.CLIENT) {
+			DynamicRegistries.registerSynced(SPECIAL_FILM_FILTER, SpecialFilmFilter.Client.CODEC);
+		} else {
+			DynamicRegistries.registerSynced(SPECIAL_FILM_FILTER, SpecialFilmFilter.CODEC);
+		}
 	}
 }

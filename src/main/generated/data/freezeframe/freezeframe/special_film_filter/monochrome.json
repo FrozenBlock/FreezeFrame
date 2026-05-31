@@ -1,3 +1,4 @@
 {
-  "shader": "freezeframe:post/monochrome"
+  "shader": "freezeframe:post/monochrome",
+  "shader_uniforms": {}
 }

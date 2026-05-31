@@ -17,11 +17,19 @@
 
 package net.frozenblock.freezeframe.registry;
 
+import net.fabricmc.api.EnvType;
+import net.fabricmc.api.Environment;
 import net.frozenblock.freezeframe.FFConstants;
 import net.frozenblock.freezeframe.item.filter.SpecialFilmFilter;
+import net.minecraft.client.renderer.UniformValue;
 import net.minecraft.data.worldgen.BootstrapContext;
 import net.minecraft.resources.Identifier;
 import net.minecraft.resources.ResourceKey;
+import net.minecraft.util.ARGB;
+import org.joml.Vector4f;
+import java.util.List;
+import java.util.Map;
+import java.util.Optional;
 
 public class FFSpecialFilmFilters {
 	public static final ResourceKey<SpecialFilmFilter> BLOOM = createKey("bloom");
@@ -39,39 +47,58 @@ public class FFSpecialFilmFilters {
 	public static final ResourceKey<SpecialFilmFilter> TRIPLE_VISION = createKey("triple_vision");
 	public static final ResourceKey<SpecialFilmFilter> WARDING = createKey("warding");
 
+	@Environment(EnvType.CLIENT)
 	public static void bootstrap(BootstrapContext<SpecialFilmFilter> context) {
-		register(context, BLOOM, SpecialFilmFilter.Operation.BLOOM, "post/bloom");
-		register(context, CHROMATIC_ABERRATION, SpecialFilmFilter.Operation.CHROMATIC_ABERRATION, "post/chromatic_aberration");
-		register(context, CRUNCHY, SpecialFilmFilter.Operation.CRUNCHY, "post/crunchy");
-		register(context, DESATURATE, SpecialFilmFilter.Operation.NONE, "post/desaturate");
-		register(context, GILDED, SpecialFilmFilter.Operation.NONE, "post/gilded");
-		register(context, HIGH_CONTRAST, SpecialFilmFilter.Operation.HIGH_CONTRAST, "post/contrast");
-		register(context, INVERT, SpecialFilmFilter.Operation.NONE, "post/invert");
-		register(context, MONOCHROME, SpecialFilmFilter.Operation.NONE, "post/monochrome");
-		register(context, SAPPED, SpecialFilmFilter.Operation.SAPPED, "post/tint_shift");
-		register(context, SPIDER, SpecialFilmFilter.Operation.NONE, "post/spider_simple");
-		register(context, TEMPERATURE_DOWN, SpecialFilmFilter.Operation.TEMPERATURE_DOWN, "post/temperature");
-		register(context, TEMPERATURE_UP, SpecialFilmFilter.Operation.TEMPERATURE_UP, "post/temperature");
-		register(context, TRIPLE_VISION, SpecialFilmFilter.Operation.TRIPLE_VISION, "post/triple_vision");
-		register(context, WARDING, SpecialFilmFilter.Operation.WARDING, "post/tint_shift");
+		register(context, BLOOM, Map.of("BloomConfig", List.of(new UniformValue.FloatUniform(0.55F))), "post/bloom");
+		register(context, CHROMATIC_ABERRATION, Map.of("OffsetConfig", List.of(new UniformValue.FloatUniform(1F))), "post/chromatic_aberration");
+		register(context, CRUNCHY, Map.of("CrunchConfig", List.of(new UniformValue.FloatUniform(2F), new UniformValue.FloatUniform(6F))), "post/crunchy");
+		register(context, DESATURATE, Map.of(), "post/desaturate");
+		register(context, GILDED, Map.of(), "post/gilded");
+		register(context, HIGH_CONTRAST, Map.of("ContrastConfig", List.of(new UniformValue.FloatUniform(1.35F), new UniformValue.FloatUniform(0F))), "post/contrast");
+		register(context, INVERT, Map.of(), "post/invert");
+		register(context, MONOCHROME, Map.of(), "post/monochrome");
+		register(context, SAPPED, tintShiftUniforms(0xEC7214, 0.68F, 1.18F, 0.88F), "post/tint_shift");
+		register(context, SPIDER, Map.of(), "post/spider_simple");
+		register(context, TEMPERATURE_DOWN, temperatureUniforms(-0.12F, 0.04F, 0.2F), "post/temperature");
+		register(context, TEMPERATURE_UP, temperatureUniforms(0.18F, 0.02F, -0.12F), "post/temperature");
+		register(context, TRIPLE_VISION, Map.of("OffsetConfig", List.of(new UniformValue.FloatUniform(2F))), "post/triple_vision");
+		register(context, WARDING, tintShiftUniforms(0x29DFEB, 0.52F, 1.15F, 0.72F), "post/tint_shift");
 	}
 
+	@Environment(EnvType.CLIENT)
+	public static Map<String, List<UniformValue>> temperatureUniforms(float red, float green, float blue) {
+		return Map.of("TemperatureConfig", List.of(new UniformValue.Vec4Uniform(new Vector4f(red, green, blue, 0F))));
+	}
+
+	@Environment(EnvType.CLIENT)
+	public static Map<String, List<UniformValue>> tintShiftUniforms(int color, float tintAmount, float contrastAmount, float saturationAmount) {
+		final float red = ARGB.red(color) / 255F;
+		final float green = ARGB.green(color) / 255F;
+		final float blue = ARGB.blue(color) / 255F;
+		return Map.of("TintShiftConfig", List.of(
+			new UniformValue.Vec4Uniform(new Vector4f(red, green, blue, 1F)),
+			new UniformValue.Vec4Uniform(new Vector4f(tintAmount, contrastAmount, saturationAmount, 0F))
+		));
+	}
+
+	@Environment(EnvType.CLIENT)
 	private static void register(
 		BootstrapContext<SpecialFilmFilter> context,
 		ResourceKey<SpecialFilmFilter> key,
-		SpecialFilmFilter.Operation operation,
+		Map<String, List<UniformValue>> uniforms,
 		String shader
 	) {
-		register(context, key, operation, FFConstants.id(shader));
+		register(context, key, uniforms, FFConstants.id(shader));
 	}
 
+	@Environment(EnvType.CLIENT)
 	public static void register(
 		BootstrapContext<SpecialFilmFilter> context,
 		ResourceKey<SpecialFilmFilter> key,
-		SpecialFilmFilter.Operation operation,
+		Map<String, List<UniformValue>> uniforms,
 		Identifier shader
 	) {
-		context.register(key, new SpecialFilmFilter(operation, shader));
+		context.register(key, new SpecialFilmFilter(shader, Optional.of(uniforms)));
 	}
 
 	private static ResourceKey<SpecialFilmFilter> createKey(String name) {

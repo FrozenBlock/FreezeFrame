@@ -19,7 +19,14 @@ package net.frozenblock.freezeframe.item.filter;
 
 import com.mojang.serialization.Codec;
 import com.mojang.serialization.codecs.RecordCodecBuilder;
+import java.util.List;
+import java.util.Map;
+import java.util.Optional;
+import net.fabricmc.api.EnvType;
+import net.fabricmc.api.Environment;
 import net.frozenblock.freezeframe.registry.FFRegistries;
+import net.minecraft.client.renderer.PostChainConfig;
+import net.minecraft.client.renderer.UniformValue;
 import net.minecraft.core.Holder;
 import net.minecraft.network.RegistryFriendlyByteBuf;
 import net.minecraft.network.chat.Component;
@@ -27,12 +34,10 @@ import net.minecraft.network.codec.ByteBufCodecs;
 import net.minecraft.network.codec.StreamCodec;
 import net.minecraft.resources.Identifier;
 import net.minecraft.resources.RegistryFixedCodec;
-import net.minecraft.util.StringRepresentable;
 import net.minecraft.ChatFormatting;
 
-public record SpecialFilmFilter(Operation operation, Identifier shader) {
+public record SpecialFilmFilter(Identifier shader, Optional uniforms) {
 	public static final Codec<SpecialFilmFilter> CODEC = RecordCodecBuilder.create(instance -> instance.group(
-		Operation.CODEC.optionalFieldOf("operation", Operation.NONE).forGetter(SpecialFilmFilter::operation),
 		Identifier.CODEC.fieldOf("shader").forGetter(SpecialFilmFilter::shader)
 	).apply(instance, SpecialFilmFilter::new));
 	public static final Codec<Holder<SpecialFilmFilter>> REGISTRY_CODEC = RegistryFixedCodec.create(FFRegistries.SPECIAL_FILM_FILTER);
@@ -43,27 +48,17 @@ public record SpecialFilmFilter(Operation operation, Identifier shader) {
 		return Component.translatable("item.freezeframe.film.filter.effect." + path).withStyle(ChatFormatting.GRAY);
 	}
 
-	public enum Operation implements StringRepresentable {
-		BLOOM("bloom"),
-		CHROMATIC_ABERRATION("chromatic_aberration"),
-		CRUNCHY("crunchy"),
-		HIGH_CONTRAST("high_contrast"),
-		TEMPERATURE_UP("temperature_up"),
-		TEMPERATURE_DOWN("temperature_down"),
-		TRIPLE_VISION("triple_vision"),
-		SAPPED("sapped"),
-		WARDING("warding"),
-		NONE("none");
-		public static final Codec<Operation> CODEC = StringRepresentable.fromEnum(Operation::values);
-		private final String name;
+	public SpecialFilmFilter(Identifier shader) {
+		this(shader, Optional.empty());
+	}
 
-		Operation(String name) {
-			this.name = name;
-		}
+	@Environment(EnvType.CLIENT)
+	public static class Client {
+		public static final Codec<SpecialFilmFilter> CODEC = RecordCodecBuilder.create(instance -> instance.group(
+			Identifier.CODEC.fieldOf("shader").forGetter(SpecialFilmFilter::shader),
+			PostChainConfig.Pass.UNIFORM_BLOCKS_CODEC.optionalFieldOf("shader_uniforms")
+				.forGetter(specialFilmFilter -> ((Optional<Map<String, List<UniformValue>>>) specialFilmFilter.uniforms()))
+		).apply(instance, SpecialFilmFilter::new));
 
-		@Override
-		public String getSerializedName() {
-			return this.name;
-		}
 	}
 }

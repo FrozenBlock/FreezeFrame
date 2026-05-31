@@ -26,3 +26,4 @@ accessible field net/minecraft/client/renderer/ShaderManager postChainProjection
 accessible field net/minecraft/client/renderer/ShaderManager compilationCache Lnet/minecraft/client/renderer/ShaderManager$CompilationCache;
 accessible class net/minecraft/client/renderer/ShaderManager$CompilationCache
 accessible field net/minecraft/client/renderer/ShaderManager$CompilationCache postChains Ljava/util/Map;
+accessible field net/minecraft/client/renderer/PostChainConfig$Pass UNIFORM_BLOCKS_CODEC Lcom/mojang/serialization/Codec;

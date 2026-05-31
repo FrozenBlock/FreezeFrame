@@ -1,4 +1,11 @@
 {
-  "operation": "bloom",
-  "shader": "freezeframe:post/bloom"
+  "shader": "freezeframe:post/bloom",
+  "shader_uniforms": {
+    "BloomConfig": [
+      {
+        "type": "float",
+        "value": 0.55
+      }
+    ]
+  }
 }

@@ -1,3 +1,4 @@
 {
-  "shader": "freezeframe:post/desaturate"
+  "shader": "freezeframe:post/desaturate",
+  "shader_uniforms": {}
 }
