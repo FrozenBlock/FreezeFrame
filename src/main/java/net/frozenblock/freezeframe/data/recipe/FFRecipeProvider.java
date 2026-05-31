@@ -33,6 +33,7 @@ import net.minecraft.advancements.criterion.ItemPredicate;
 import net.minecraft.core.Holder;
 import net.minecraft.core.HolderLookup;
 import net.minecraft.core.registries.Registries;
+import net.minecraft.data.recipes.RecipeBuilder;
 import net.minecraft.data.recipes.RecipeCategory;
 import net.minecraft.data.recipes.RecipeOutput;
 import net.minecraft.data.recipes.RecipeProvider;
@@ -99,12 +100,12 @@ public final class FFRecipeProvider extends FabricRecipeProvider {
 					.save(this.output, "film_capacity_upgrade");
 
 				try {
-					createDyeFilmFilterRecipe(items, this.output, false);
-					createDyeFilmFilterRecipe(items, this.output, true);
+					createDyeFilmFilterRecipe(RecipeCategory.TOOLS, "film", items, this.output, false);
+					createDyeFilmFilterRecipe(RecipeCategory.TOOLS, "film",items, this.output, true);
 
 					this.registries.lookupOrThrow(FFRegistries.SPECIAL_FILM_FILTER).listElements().forEach(specialFilmFilter -> {
 						try {
-							createSpecialFilmFilterRecipe(items, this.output, specialFilmFilter);
+							createSpecialFilmFilterRecipe(RecipeCategory.TOOLS, "film",items, this.output, specialFilmFilter);
 						} catch (IllegalAccessException e) {
 							throw new RuntimeException(e);
 						}
@@ -119,22 +120,28 @@ public final class FFRecipeProvider extends FabricRecipeProvider {
 	}
 
 	public static void createDyeFilmFilterRecipe(
+		RecipeCategory category,
+		String group,
 		HolderLookup.RegistryLookup<Item> itemRegistry,
 		RecipeOutput output,
 		boolean hasExclusion
 	) throws IllegalAccessException {
-		createFilmFilterRecipe(itemRegistry, output, Optional.empty(), hasExclusion, hasExclusion ? "dye_with_exclusion" : "dye");
+		createFilmFilterRecipe(category, group, itemRegistry, output, Optional.empty(), hasExclusion, hasExclusion ? "dye_with_exclusion" : "dye");
 	}
 
 	public static void createSpecialFilmFilterRecipe(
+		RecipeCategory category,
+		String group,
 		HolderLookup.RegistryLookup<Item> itemRegistry,
 		RecipeOutput output,
 		Holder<SpecialFilmFilter> specialFilmFilter
 	) throws IllegalAccessException {
-		createFilmFilterRecipe(itemRegistry, output, Optional.of(specialFilmFilter), false, specialFilmFilter.unwrapKey().orElseThrow().identifier().getPath());
+		createFilmFilterRecipe(category, group, itemRegistry, output, Optional.of(specialFilmFilter), false, specialFilmFilter.unwrapKey().orElseThrow().identifier().getPath());
 	}
 
 	private static void createFilmFilterRecipe(
+		RecipeCategory category,
+		String group,
 		HolderLookup.RegistryLookup<Item> itemRegistry,
 		RecipeOutput output,
 		Optional<Holder<SpecialFilmFilter>> specialFilmFilter,
@@ -148,7 +155,7 @@ public final class FFRecipeProvider extends FabricRecipeProvider {
 				specialFilmFilter.isPresent() || !hasExclusion ? Optional.empty() : Optional.of(Ingredient.of(Items.AMETHYST_SHARD)),
 				specialFilmFilter.isPresent() ? Optional.empty() : Optional.of(Ingredient.of(itemRegistry.getOrThrow(ItemTags.DYES))),
 				specialFilmFilter,
-				"film",
+				RecipeBuilder.createCraftingBookInfo(category, group),
 				new ItemStackTemplate(FFItems.FILM)
 			));
 

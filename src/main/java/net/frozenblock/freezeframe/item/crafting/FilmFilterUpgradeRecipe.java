@@ -17,7 +17,6 @@
 
 package net.frozenblock.freezeframe.item.crafting;
 
-import com.mojang.serialization.Codec;
 import com.mojang.serialization.MapCodec;
 import com.mojang.serialization.codecs.RecordCodecBuilder;
 import java.util.ArrayList;
@@ -40,6 +39,7 @@ import net.minecraft.world.item.DyeColor;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.ItemStackTemplate;
 import net.minecraft.world.item.Items;
+import net.minecraft.world.item.crafting.CraftingBookCategory;
 import net.minecraft.world.item.crafting.CraftingInput;
 import net.minecraft.world.item.crafting.CustomRecipe;
 import net.minecraft.world.item.crafting.Ingredient;
@@ -58,7 +58,7 @@ public class FilmFilterUpgradeRecipe extends CustomRecipe {
 		Ingredient.CODEC.optionalFieldOf("exclusion_tint_material").forGetter(recipe -> recipe.exclusionTintMaterial),
 		Ingredient.CODEC.optionalFieldOf("dye").forGetter(recipe -> recipe.dye),
 		SpecialFilmFilter.REGISTRY_CODEC.optionalFieldOf("special_filter_material").forGetter(recipe -> recipe.specialFilter),
-		Codec.STRING.optionalFieldOf("group", "").forGetter(recipe -> recipe.group),
+		CraftingBookInfo.MAP_CODEC.forGetter(recipe -> recipe.craftingBookInfo),
 		ItemStackTemplate.CODEC.fieldOf("result").forGetter(recipe -> recipe.result)
 	).apply(instance, FilmFilterUpgradeRecipe::new));
 	public static final StreamCodec<RegistryFriendlyByteBuf, FilmFilterUpgradeRecipe> STREAM_CODEC = StreamCodec.composite(
@@ -66,7 +66,7 @@ public class FilmFilterUpgradeRecipe extends CustomRecipe {
 		ByteBufCodecs.optional(Ingredient.CONTENTS_STREAM_CODEC), recipe -> recipe.exclusionTintMaterial,
 		ByteBufCodecs.optional(Ingredient.CONTENTS_STREAM_CODEC), recipe -> recipe.dye,
 		ByteBufCodecs.optional(SpecialFilmFilter.STREAM_CODEC), recipe -> recipe.specialFilter,
-		ByteBufCodecs.STRING_UTF8, recipe -> recipe.group,
+		CraftingBookInfo.STREAM_CODEC, recipe -> recipe.craftingBookInfo,
 		ItemStackTemplate.STREAM_CODEC, recipe -> recipe.result,
 		FilmFilterUpgradeRecipe::new
 	);
@@ -75,7 +75,7 @@ public class FilmFilterUpgradeRecipe extends CustomRecipe {
 	private final Optional<Ingredient> exclusionTintMaterial;
 	private final Optional<Ingredient> dye;
 	private final Optional<Holder<SpecialFilmFilter>> specialFilter;
-	private final String group;
+	private final CraftingBookInfo craftingBookInfo;
 	private final ItemStackTemplate result;
 	@Nullable
 	private PlacementInfo placementInfo;
@@ -85,7 +85,7 @@ public class FilmFilterUpgradeRecipe extends CustomRecipe {
 		Optional<Ingredient> exclusionTintMaterial,
 		Optional<Ingredient> dye,
 		Optional<Holder<SpecialFilmFilter>> specialFilter,
-		String group,
+		CraftingBookInfo craftingBookInfo,
 		ItemStackTemplate result
 	) {
 		if (specialFilter.isPresent() && (exclusionTintMaterial.isPresent() || dye.isPresent())) {
@@ -100,7 +100,7 @@ public class FilmFilterUpgradeRecipe extends CustomRecipe {
 		this.exclusionTintMaterial = exclusionTintMaterial;
 		this.dye = dye;
 		this.specialFilter = specialFilter;
-		this.group = group;
+		this.craftingBookInfo = craftingBookInfo;
 		this.result = result;
 	}
 
@@ -126,7 +126,12 @@ public class FilmFilterUpgradeRecipe extends CustomRecipe {
 
 	@Override
 	public String group() {
-		return this.group;
+		return this.craftingBookInfo.group();
+	}
+
+	@Override
+	public CraftingBookCategory category() {
+		return this.craftingBookInfo.category();
 	}
 
 	protected PlacementInfo createPlacementInfo() {

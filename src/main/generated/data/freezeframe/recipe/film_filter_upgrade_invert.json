@@ -1,5 +1,6 @@
 {
   "type": "freezeframe:film_filter_upgrade",
+  "category": "equipment",
   "film": "freezeframe:film",
   "group": "film",
   "result": {
