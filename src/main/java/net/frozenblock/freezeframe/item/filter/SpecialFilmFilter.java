@@ -34,7 +34,7 @@ import net.minecraft.ChatFormatting;
 public record SpecialFilmFilter(Ingredient ingredient, Operation operation, Identifier shader) {
 	public static final Codec<SpecialFilmFilter> CODEC = RecordCodecBuilder.create(instance -> instance.group(
 		Ingredient.CODEC.fieldOf("ingredient").forGetter(SpecialFilmFilter::ingredient),
-		Operation.CODEC.optionalFieldOf("operation", Operation.CUSTOM).forGetter(SpecialFilmFilter::operation),
+		Operation.CODEC.optionalFieldOf("operation", Operation.NONE).forGetter(SpecialFilmFilter::operation),
 		Identifier.CODEC.fieldOf("shader").forGetter(SpecialFilmFilter::shader)
 	).apply(instance, SpecialFilmFilter::new));
 	public static final Codec<Holder<SpecialFilmFilter>> REGISTRY_CODEC = RegistryFixedCodec.create(FFRegistries.SPECIAL_FILM_FILTER);
@@ -55,7 +55,6 @@ public record SpecialFilmFilter(Ingredient ingredient, Operation operation, Iden
 		TRIPLE_VISION("triple_vision"),
 		SAPPED("sapped"),
 		WARDING("warding"),
-		CUSTOM("custom"),
 		NONE("none");
 		public static final Codec<Operation> CODEC = StringRepresentable.fromEnum(Operation::values);
 		private final String name;
