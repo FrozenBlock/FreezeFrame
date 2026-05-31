@@ -42,7 +42,7 @@ public record SpecialFilmFilter(Ingredient ingredient, Operation operation, Iden
 
 	public static Component tooltipComponent(Holder<SpecialFilmFilter> specialFilmFilter) {
 		final String path = specialFilmFilter.unwrapKey().map(key -> key.identifier().getPath()).orElse("unknown");
-		return Component.translatable("item.freezeframe.film.filter.effect" + path).withStyle(ChatFormatting.GRAY);
+		return Component.translatable("item.freezeframe.film.filter.effect." + path).withStyle(ChatFormatting.GRAY);
 	}
 
 	public enum Operation implements StringRepresentable {
