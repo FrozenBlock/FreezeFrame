@@ -298,14 +298,14 @@ public class FilmFilterUpgradeRecipe extends CustomRecipe {
 			final ItemStack itemStack = input.getItem(i);
 			if (itemStack.isEmpty()) continue;
 			if (this.film.test(itemStack)) continue;
-			if (this.specialFilter.map(specialFilter -> specialFilter.ingredient().test(itemStack)).orElse(true)) return false;
+			if (!this.specialFilter.map(specialFilter -> specialFilter.ingredient().test(itemStack)).orElse(true)) return true;
 			if (!this.dye.map(ingredient -> ingredient.test(itemStack))
 				.orElse(this.exclusionTintMaterial.map(ingredient -> ingredient.test(itemStack)).orElse(true))
 			) {
-				return false;
+				return true;
 			}
 		}
-		return true;
+		return false;
 	}
 
 	public record SpecialFilterAndIngredient(Holder<SpecialFilmFilter> specialFilmFilter, Ingredient ingredient) {
