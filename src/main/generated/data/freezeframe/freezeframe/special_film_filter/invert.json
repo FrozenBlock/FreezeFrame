@@ -1,5 +1,4 @@
 {
   "ingredient": "minecraft:ender_pearl",
-  "operation": "none",
   "shader": "freezeframe:post/invert"
 }

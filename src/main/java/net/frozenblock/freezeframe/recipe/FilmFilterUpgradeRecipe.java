@@ -17,6 +17,7 @@
 
 package net.frozenblock.freezeframe.recipe;
 
+import com.mojang.serialization.Codec;
 import com.mojang.serialization.MapCodec;
 import com.mojang.serialization.codecs.RecordCodecBuilder;
 import java.util.ArrayList;
@@ -36,12 +37,18 @@ import net.minecraft.util.ARGB;
 import net.minecraft.world.item.DyeColor;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.ItemStackTemplate;
+import net.minecraft.world.item.Items;
 import net.minecraft.world.item.crafting.CraftingInput;
 import net.minecraft.world.item.crafting.CustomRecipe;
 import net.minecraft.world.item.crafting.Ingredient;
+import net.minecraft.world.item.crafting.PlacementInfo;
 import net.minecraft.world.item.crafting.RecipeSerializer;
 import net.minecraft.world.item.crafting.TransmuteRecipe;
+import net.minecraft.world.item.crafting.display.RecipeDisplay;
+import net.minecraft.world.item.crafting.display.ShapelessCraftingRecipeDisplay;
+import net.minecraft.world.item.crafting.display.SlotDisplay;
 import net.minecraft.world.level.Level;
+import org.jspecify.annotations.Nullable;
 
 public class FilmFilterUpgradeRecipe extends CustomRecipe {
 	public static final MapCodec<FilmFilterUpgradeRecipe> MAP_CODEC = RecordCodecBuilder.mapCodec(instance -> instance.group(
@@ -49,6 +56,7 @@ public class FilmFilterUpgradeRecipe extends CustomRecipe {
 		Ingredient.CODEC.fieldOf("exclusion_tint_material").forGetter(recipe -> recipe.exclusionTintMaterial),
 		Ingredient.CODEC.fieldOf("dye").forGetter(recipe -> recipe.dye),
 		SpecialFilmFilter.REGISTRY_CODEC.optionalFieldOf("special_filter_material").forGetter(recipe -> recipe.specialFilter),
+		Codec.STRING.optionalFieldOf("group", "").forGetter(recipe -> recipe.group),
 		ItemStackTemplate.CODEC.fieldOf("result").forGetter(recipe -> recipe.result)
 	).apply(instance, FilmFilterUpgradeRecipe::new));
 	public static final StreamCodec<RegistryFriendlyByteBuf, FilmFilterUpgradeRecipe> STREAM_CODEC = StreamCodec.composite(
@@ -56,6 +64,7 @@ public class FilmFilterUpgradeRecipe extends CustomRecipe {
 		Ingredient.CONTENTS_STREAM_CODEC, recipe -> recipe.exclusionTintMaterial,
 		Ingredient.CONTENTS_STREAM_CODEC, recipe -> recipe.dye,
 		ByteBufCodecs.optional(SpecialFilmFilter.STREAM_CODEC), recipe -> recipe.specialFilter,
+		ByteBufCodecs.STRING_UTF8, recipe -> recipe.group,
 		ItemStackTemplate.STREAM_CODEC, recipe -> recipe.result,
 		FilmFilterUpgradeRecipe::new
 	);
@@ -64,19 +73,24 @@ public class FilmFilterUpgradeRecipe extends CustomRecipe {
 	private final Ingredient exclusionTintMaterial;
 	private final Ingredient dye;
 	private final Optional<Holder<SpecialFilmFilter>> specialFilter;
+	private final String group;
 	private final ItemStackTemplate result;
+	@Nullable
+	private PlacementInfo placementInfo;
 
 	public FilmFilterUpgradeRecipe(
 		Ingredient film,
 		Ingredient exclusionTintMaterial,
 		Ingredient dye,
 		Optional<Holder<SpecialFilmFilter>> specialFilter,
+		String group,
 		ItemStackTemplate result
 	) {
 		this.film = film;
 		this.exclusionTintMaterial = exclusionTintMaterial;
 		this.dye = dye;
 		this.specialFilter = specialFilter;
+		this.group = group;
 		this.result = result;
 	}
 
@@ -88,6 +102,33 @@ public class FilmFilterUpgradeRecipe extends CustomRecipe {
 	@Override
 	public ItemStack assemble(CraftingInput input) {
 		return this.assembleInternal(input);
+	}
+
+	@Override
+	public String group() {
+		return this.group;
+	}
+
+	protected PlacementInfo createPlacementInfo() {
+		if (this.specialFilter.isPresent()) return PlacementInfo.create(List.of(this.film, this.specialFilter.get().value().ingredient()));
+		return PlacementInfo.create(List.of(this.film, this.dye, this.exclusionTintMaterial));
+	}
+
+	@Override
+	public final PlacementInfo placementInfo() {
+		if (this.placementInfo == null) this.placementInfo = this.createPlacementInfo();
+		return this.placementInfo;
+	}
+
+	@Override
+	public List<RecipeDisplay> display() {
+		return List.of(
+			new ShapelessCraftingRecipeDisplay(
+				List.of(this.film.display(), this.dye.display(), this.exclusionTintMaterial.display()),
+				new SlotDisplay.ItemStackSlotDisplay(this.result),
+				new SlotDisplay.ItemSlotDisplay(Items.CRAFTING_TABLE)
+			)
+		);
 	}
 
 	@Override

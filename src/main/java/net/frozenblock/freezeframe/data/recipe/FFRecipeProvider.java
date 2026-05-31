@@ -29,6 +29,7 @@ import net.frozenblock.freezeframe.registry.FFBlocks;
 import net.frozenblock.freezeframe.registry.FFItems;
 import net.frozenblock.freezeframe.registry.FFRegistries;
 import net.frozenblock.lib.recipe.api.RecipeExportNamespaceFix;
+import net.minecraft.advancements.criterion.ItemPredicate;
 import net.minecraft.core.Holder;
 import net.minecraft.core.HolderLookup;
 import net.minecraft.core.registries.Registries;
@@ -42,6 +43,7 @@ import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStackTemplate;
 import net.minecraft.world.item.Items;
 import net.minecraft.world.item.crafting.Ingredient;
+import net.minecraft.world.level.ItemLike;
 
 public final class FFRecipeProvider extends FabricRecipeProvider {
 
@@ -58,6 +60,7 @@ public final class FFRecipeProvider extends FabricRecipeProvider {
 				final HolderLookup.RegistryLookup<Item> items = this.registries.lookupOrThrow(Registries.ITEM);
 
 				this.shapeless(RecipeCategory.TOOLS, FFItems.FILM)
+					.group("film")
 					.requires(Items.PAPER, 3)
 					.requires(Items.COPPER_INGOT)
 					.unlockedBy(RecipeProvider.getHasName(FFItems.CAMERA), this.has(FFItems.CAMERA))
@@ -123,15 +126,34 @@ public final class FFRecipeProvider extends FabricRecipeProvider {
 	) throws IllegalAccessException {
 		if (StringUtil.isNullOrEmpty(recipeSuffix)) throw new IllegalAccessException("recipeSuffix cannot be empty!");
 
-		SpecialRecipeBuilder.special(() -> new FilmFilterUpgradeRecipe(
+		final SpecialRecipeBuilder builder = SpecialRecipeBuilder.special(() -> new FilmFilterUpgradeRecipe(
 				Ingredient.of(FFItems.FILM),
 				Ingredient.of(Items.AMETHYST_SHARD),
 				Ingredient.of(itemRegistry.getOrThrow(ItemTags.DYES)),
 				specialFilmFilter,
+				"film",
 				new ItemStackTemplate(FFItems.FILM)
-			))
-			.unlockedBy(RecipeProvider.getHasName(FFItems.FILM), provider.has(FFItems.FILM))
-			.save(output, "film_filter_upgrade_" + recipeSuffix);
+			));
+
+		if (specialFilmFilter.isPresent()) {
+			builder.unlockedBy(
+				"has_film_and_special_filter_ingredient",
+				RecipeProvider.inventoryTrigger(
+					ItemPredicate.Builder.item().of(itemRegistry, FFItems.FILM),
+					ItemPredicate.Builder.item().of(itemRegistry, specialFilmFilter.get().value().ingredient().items().map(Holder::value).toArray(ItemLike[]::new))
+				)
+			);
+		} else {
+			builder.unlockedBy(
+				"has_film_and_dye",
+				RecipeProvider.inventoryTrigger(
+					ItemPredicate.Builder.item().of(itemRegistry, FFItems.FILM),
+					ItemPredicate.Builder.item().of(itemRegistry, ItemTags.DYES)
+				)
+			);
+		}
+
+		builder.save(output, "film_filter_upgrade_" + recipeSuffix);
 	}
 
 	@Override

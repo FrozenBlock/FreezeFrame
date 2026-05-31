@@ -1,5 +1,4 @@
 {
   "ingredient": "minecraft:skeleton_skull",
-  "operation": "none",
   "shader": "freezeframe:post/monochrome"
 }

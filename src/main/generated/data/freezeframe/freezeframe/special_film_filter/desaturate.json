@@ -1,5 +1,4 @@
 {
   "ingredient": "minecraft:zombie_head",
-  "operation": "none",
   "shader": "freezeframe:post/desaturate"
 }

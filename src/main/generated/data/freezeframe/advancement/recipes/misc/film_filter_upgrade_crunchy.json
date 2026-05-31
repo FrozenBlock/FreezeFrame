@@ -1,11 +1,14 @@
 {
   "parent": "minecraft:recipes/root",
   "criteria": {
-    "has_film": {
+    "has_film_and_special_filter_ingredient": {
       "conditions": {
         "items": [
           {
             "items": "freezeframe:film"
+          },
+          {
+            "items": "minecraft:creeper_head"
           }
         ]
       },
@@ -21,7 +24,7 @@
   "requirements": [
     [
       "has_the_recipe",
-      "has_film"
+      "has_film_and_special_filter_ingredient"
     ]
   ],
   "rewards": {
