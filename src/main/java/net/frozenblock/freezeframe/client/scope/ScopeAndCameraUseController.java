@@ -71,18 +71,10 @@ public final class ScopeAndCameraUseController {
 		final ItemStack scopeItem = usingScopeItem ? player.getUseItem() : ItemStack.EMPTY;
 		if (usingCamera) {
 			lastAppliedFilter = CameraItem.getFilterForNextPhotograph(scopeItem);
-			scopeEffectGraceTicks = 2;
 			ScopePostEffectController.applyFromFilter(minecraft, lastAppliedFilter);
 		} else {
-			final boolean shouldHoldScopeEffects = holdingCamera && minecraft.options.keyUse.isDown();
-			if (shouldHoldScopeEffects && scopeEffectGraceTicks > 0 && !lastAppliedFilter.isEmpty()) {
-				scopeEffectGraceTicks--;
-				ScopePostEffectController.applyFromFilter(minecraft, lastAppliedFilter);
-			} else {
-				scopeEffectGraceTicks = 0;
-				lastAppliedFilter = FilmFilter.EMPTY;
-				ScopePostEffectController.clearIfApplied(minecraft);
-			}
+			lastAppliedFilter = FilmFilter.EMPTY;
+			ScopePostEffectController.clearIfApplied(minecraft);
 		}
 
 		final boolean isScopeConfigDifferent = !previousScopeItem.getOrDefault(FFDataComponents.SCOPE_ZOOM_CONFIG, ScopeZoomConfig.EMPTY)
