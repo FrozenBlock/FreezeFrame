@@ -179,16 +179,11 @@ public final class ScopePostEffectController {
 			case BLOOM -> new PassSpec(shader, Map.of("BloomConfig", List.of(new UniformValue.FloatUniform(0.55F))));
 			case CHROMATIC_ABERRATION -> new PassSpec(shader, Map.of("OffsetConfig", List.of(new UniformValue.FloatUniform(1F))));
 			case CRUNCHY -> new PassSpec(shader, Map.of("CrunchConfig", List.of(new UniformValue.FloatUniform(2F), new UniformValue.FloatUniform(6F))));
-			// TODO: DESATURATE
-			// TODO: GILDED
 			case HIGH_CONTRAST -> new PassSpec(shader, Map.of("ContrastConfig", List.of(new UniformValue.FloatUniform(1.35F), new UniformValue.FloatUniform(0F))));
-			// TODO: INVERT
-			// TODO: MONOCHROME
 			case TEMPERATURE_UP -> new PassSpec(shader, temperatureUniforms(0.18F, 0.02F, -0.12F));
 			case TEMPERATURE_DOWN -> new PassSpec(shader, temperatureUniforms(-0.12F, 0.04F, 0.2F));
 			case TRIPLE_VISION -> new PassSpec(shader, Map.of("OffsetConfig", List.of(new UniformValue.FloatUniform(2F))));
 			case SAPPED -> new PassSpec(shader, tintShiftUniforms(0xEC7214, 0.68F, 1.18F, 0.88F));
-			// TODO: SPIDER
 			case WARDING -> new PassSpec(shader, tintShiftUniforms(0x29DFEB, 0.52F, 1.15F, 0.72F));
 			default -> new PassSpec(shader, Map.of());
 		};

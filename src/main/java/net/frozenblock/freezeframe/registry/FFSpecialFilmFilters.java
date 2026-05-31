@@ -31,13 +31,13 @@ public class FFSpecialFilmFilters {
 		register(context, "bloom", Ingredient.of(Items.SLIME_BALL), SpecialFilmFilter.Operation.BLOOM, "post/bloom");
 		register(context, "chromatic_aberration", Ingredient.of(Items.DIAMOND), SpecialFilmFilter.Operation.CHROMATIC_ABERRATION, "post/chromatic_aberration");
 		register(context, "crunchy", Ingredient.of(Items.CREEPER_HEAD), SpecialFilmFilter.Operation.CRUNCHY, "post/crunchy");
-		register(context, "desaturate", Ingredient.of(Items.ZOMBIE_HEAD), SpecialFilmFilter.Operation.DESATURATE, "post/desaturate");
-		register(context, "gilded", Ingredient.of(Items.PIGLIN_HEAD), SpecialFilmFilter.Operation.GILDED, "post/gilded");
+		register(context, "desaturate", Ingredient.of(Items.ZOMBIE_HEAD), SpecialFilmFilter.Operation.NONE, "post/desaturate");
+		register(context, "gilded", Ingredient.of(Items.PIGLIN_HEAD), SpecialFilmFilter.Operation.NONE, "post/gilded");
 		register(context, "high_contrast", Ingredient.of(Items.HONEY_BOTTLE), SpecialFilmFilter.Operation.HIGH_CONTRAST, "post/contrast");
-		register(context, "invert", Ingredient.of(Items.ENDER_PEARL), SpecialFilmFilter.Operation.INVERT, "post/invert");
-		register(context, "monochrome", Ingredient.of(Items.SKELETON_SKULL), SpecialFilmFilter.Operation.MONOCHROME, "post/monochrome");
+		register(context, "invert", Ingredient.of(Items.ENDER_PEARL), SpecialFilmFilter.Operation.NONE, "post/invert");
+		register(context, "monochrome", Ingredient.of(Items.SKELETON_SKULL), SpecialFilmFilter.Operation.NONE, "post/monochrome");
 		register(context, "sapped", Ingredient.of(Items.RESIN_CLUMP), SpecialFilmFilter.Operation.SAPPED, "post/tint_shift");
-		register(context, "spider", Ingredient.of(Items.SPIDER_EYE), SpecialFilmFilter.Operation.SPIDER, "post/spider_simple");
+		register(context, "spider", Ingredient.of(Items.SPIDER_EYE), SpecialFilmFilter.Operation.NONE, "post/spider_simple");
 		register(context, "temperature_down", Ingredient.of(Items.SNOWBALL), SpecialFilmFilter.Operation.TEMPERATURE_DOWN, "post/temperature");
 		register(context, "temperature_up", Ingredient.of(Items.MAGMA_CREAM), SpecialFilmFilter.Operation.TEMPERATURE_UP, "post/temperature");
 		register(context, "triple_vision", Ingredient.of(Items.WITHER_SKELETON_SKULL), SpecialFilmFilter.Operation.TRIPLE_VISION, "post/triple_vision");
