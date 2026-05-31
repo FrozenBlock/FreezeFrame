@@ -97,6 +97,7 @@ public final class FFRecipeProvider extends FabricRecipeProvider {
 				SpecialRecipeBuilder.special(() -> new FilmCapacityUpgradeRecipe(
 					Ingredient.of(FFItems.FILM),
 					Ingredient.of(Items.PAPER),
+					RecipeBuilder.createCraftingBookInfo(RecipeCategory.TOOLS, "film"),
 					new ItemStackTemplate(FFItems.FILM)
 				))
 					.unlockedBy(RecipeProvider.getHasName(FFItems.FILM), this.has(FFItems.FILM))

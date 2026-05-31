@@ -19,6 +19,7 @@ package net.frozenblock.freezeframe.item.crafting;
 
 import com.mojang.serialization.MapCodec;
 import com.mojang.serialization.codecs.RecordCodecBuilder;
+import java.util.List;
 import java.util.Map;
 import net.frozenblock.freezeframe.component.FilmContents;
 import net.frozenblock.freezeframe.item.FilmItem;
@@ -28,23 +29,32 @@ import net.minecraft.network.RegistryFriendlyByteBuf;
 import net.minecraft.network.codec.StreamCodec;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.ItemStackTemplate;
+import net.minecraft.world.item.Items;
+import net.minecraft.world.item.crafting.CraftingBookCategory;
 import net.minecraft.world.item.crafting.CraftingInput;
 import net.minecraft.world.item.crafting.CustomRecipe;
 import net.minecraft.world.item.crafting.Ingredient;
+import net.minecraft.world.item.crafting.PlacementInfo;
 import net.minecraft.world.item.crafting.RecipeSerializer;
 import net.minecraft.world.item.crafting.ShapedRecipePattern;
 import net.minecraft.world.item.crafting.TransmuteRecipe;
+import net.minecraft.world.item.crafting.display.RecipeDisplay;
+import net.minecraft.world.item.crafting.display.ShapedCraftingRecipeDisplay;
+import net.minecraft.world.item.crafting.display.SlotDisplay;
 import net.minecraft.world.level.Level;
+import org.jspecify.annotations.Nullable;
 
 public class FilmCapacityUpgradeRecipe extends CustomRecipe {
-	public static final MapCodec<FilmCapacityUpgradeRecipe> MAP_CODEC = RecordCodecBuilder.mapCodec(i -> i.group(
+	public static final MapCodec<FilmCapacityUpgradeRecipe> MAP_CODEC = RecordCodecBuilder.mapCodec(instance -> instance.group(
 		Ingredient.CODEC.fieldOf("film").forGetter(recipe -> recipe.film),
 		Ingredient.CODEC.fieldOf("material").forGetter(recipe -> recipe.film),
+		CraftingBookInfo.MAP_CODEC.forGetter(recipe -> recipe.craftingBookInfo),
 		ItemStackTemplate.CODEC.fieldOf("result").forGetter(recipe -> recipe.result)
-	).apply(i, FilmCapacityUpgradeRecipe::new));
+	).apply(instance, FilmCapacityUpgradeRecipe::new));
 	public static final StreamCodec<RegistryFriendlyByteBuf, FilmCapacityUpgradeRecipe> STREAM_CODEC = StreamCodec.composite(
 		Ingredient.CONTENTS_STREAM_CODEC, recipe -> recipe.film,
 		Ingredient.CONTENTS_STREAM_CODEC, recipe -> recipe.material,
+		CraftingBookInfo.STREAM_CODEC, recipe -> recipe.craftingBookInfo,
 		ItemStackTemplate.STREAM_CODEC, recipe -> recipe.result,
 		FilmCapacityUpgradeRecipe::new
 	);
@@ -52,12 +62,16 @@ public class FilmCapacityUpgradeRecipe extends CustomRecipe {
 	private final ShapedRecipePattern pattern;
 	private final Ingredient film;
 	private final Ingredient material;
+	private final CraftingBookInfo craftingBookInfo;
 	private final ItemStackTemplate result;
+	@Nullable
+	private PlacementInfo placementInfo;
 
-	public FilmCapacityUpgradeRecipe(Ingredient film, Ingredient material, ItemStackTemplate result) {
+	public FilmCapacityUpgradeRecipe(Ingredient film, Ingredient material, CraftingBookInfo craftingBookInfo, ItemStackTemplate result) {
 		this.film = film;
 		this.material = material;
 		this.result = result;
+		this.craftingBookInfo = craftingBookInfo;
 		this.pattern = ShapedRecipePattern.of(Map.of('#', material, 'I', film), "###", "#I#", "###");
 	}
 
@@ -82,6 +96,44 @@ public class FilmCapacityUpgradeRecipe extends CustomRecipe {
 		upgradedFilm.set(FFDataComponents.FILM_MAX_PHOTOGRAPHS, upgradedMax);
 		FilmItem.refreshStackingState(upgradedFilm);
 		return upgradedFilm;
+	}
+
+	@Override
+	public boolean isSpecial() {
+		return false;
+	}
+
+	@Override
+	public String group() {
+		return this.craftingBookInfo.group();
+	}
+
+	@Override
+	public CraftingBookCategory category() {
+		return this.craftingBookInfo.category();
+	}
+
+	protected PlacementInfo createPlacementInfo() {
+		return PlacementInfo.createFromOptionals(this.pattern.ingredients());
+	}
+
+	@Override
+	public final PlacementInfo placementInfo() {
+		if (this.placementInfo == null) this.placementInfo = this.createPlacementInfo();
+		return this.placementInfo;
+	}
+
+	@Override
+	public List<RecipeDisplay> display() {
+		return List.of(
+			new ShapedCraftingRecipeDisplay(
+				this.pattern.width(),
+				this.pattern.height(),
+				this.pattern.ingredients().stream().map(ingredient -> ingredient.map(Ingredient::display).orElse(SlotDisplay.Empty.INSTANCE)).toList(),
+				new SlotDisplay.ItemStackSlotDisplay(this.result),
+				new SlotDisplay.ItemSlotDisplay(Items.CRAFTING_TABLE)
+			)
+		);
 	}
 
 	private ItemStack findFilm(CraftingInput input) {
