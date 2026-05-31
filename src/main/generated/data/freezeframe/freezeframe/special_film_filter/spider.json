@@ -1,0 +1,5 @@
+{
+  "ingredient": "minecraft:spider_eye",
+  "operation": "spider",
+  "shader": "freezeframe:post/spider_simple"
+}

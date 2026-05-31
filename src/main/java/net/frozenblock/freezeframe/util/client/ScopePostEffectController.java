@@ -26,18 +26,16 @@ import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 import net.frozenblock.freezeframe.FFConstants;
 import net.frozenblock.freezeframe.component.FilmFilter;
-import net.frozenblock.freezeframe.filter.SpecialFilmFilterDefinition;
-import net.frozenblock.freezeframe.filter.SpecialFilmFilterRegistry;
-import net.frozenblock.freezeframe.mixin.client.camera.GameRendererAccessor;
-import net.frozenblock.freezeframe.mixin.client.camera.ShaderManagerAccessor;
-import net.frozenblock.freezeframe.mixin.client.camera.ShaderManagerCompilationCacheAccessor;
+import net.frozenblock.freezeframe.item.filter.SpecialFilmFilter;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.renderer.LevelTargetBundle;
 import net.minecraft.client.renderer.PostChain;
 import net.minecraft.client.renderer.PostChainConfig;
 import net.minecraft.client.renderer.ShaderManager;
 import net.minecraft.client.renderer.UniformValue;
+import net.minecraft.core.Holder;
 import net.minecraft.resources.Identifier;
+import net.minecraft.util.ARGB;
 import org.joml.Vector4f;
 import org.jspecify.annotations.Nullable;
 
@@ -48,80 +46,69 @@ public final class ScopePostEffectController {
 	private static final Identifier SWAP_TARGET = FFConstants.id("film/scope_swap");
 	private static final Identifier TEMP_TARGET = FFConstants.id("film/scope_temp");
 	private static final PostChainConfig.InternalTarget TRANSIENT_TARGET = new PostChainConfig.InternalTarget(Optional.empty(), Optional.empty(), false, 0);
+	private static final Identifier DYE_PASS_SPEC_ID = FFConstants.id("post/tint_dynamic");
+	private static final UniformValue.Vec4Uniform DYE_TINT_EXCLUSION = new UniformValue.Vec4Uniform(new Vector4f(1F, 1F, 0F, 0F));
+	private static final UniformValue.Vec4Uniform DYE_TINT_NO_EXCLUSION = new UniformValue.Vec4Uniform(new Vector4f(0F, 0.4F, 0F, 0F));
 
 	@Nullable
 	private static Identifier appliedEffect;
 
-	private ScopePostEffectController() {
-	}
-
 	public static void applyFromFilter(Minecraft minecraft, FilmFilter filter) {
 		if (minecraft.gameRenderer == null) return;
+
 		final Identifier desired = getOrCreateEffect(minecraft, filter);
 		if (desired == null) {
 			clearIfApplied(minecraft);
 			return;
 		}
 		if (desired.equals(appliedEffect) && desired.equals(minecraft.gameRenderer.currentPostEffect())) return;
-		((GameRendererAccessor) minecraft.gameRenderer).freezeFrame$setPostEffect(desired);
+		minecraft.gameRenderer.setPostEffect(desired);
 		appliedEffect = desired;
 	}
 
 	public static void clearIfApplied(Minecraft minecraft) {
 		if (appliedEffect == null || minecraft.gameRenderer == null) return;
-		if (appliedEffect.equals(minecraft.gameRenderer.currentPostEffect())) {
-			minecraft.gameRenderer.clearPostEffect();
-		}
+
+		if (appliedEffect.equals(minecraft.gameRenderer.currentPostEffect())) minecraft.gameRenderer.clearPostEffect();
 		appliedEffect = null;
 	}
 
 	@Nullable
 	private static Identifier getOrCreateEffect(Minecraft minecraft, FilmFilter filter) {
 		if (filter.isEmpty()) return null;
+
 		final List<PassSpec> passSpecs = buildPassSpecs(filter);
 		if (passSpecs.isEmpty()) return null;
 
 		final Identifier effectId = FFConstants.id("film/dynamic/" + Integer.toUnsignedString(filter.layers().hashCode(), 16));
 		if (ensurePostChainRegistered(minecraft, effectId, passSpecs)) return effectId;
+
 		return null;
 	}
 
 	private static boolean ensurePostChainRegistered(Minecraft minecraft, Identifier effectId, List<PassSpec> passSpecs) {
 		try {
 			final ShaderManager shaderManager = minecraft.getShaderManager();
-			final ShaderManagerAccessor shaderManagerAccessor = (ShaderManagerAccessor) shaderManager;
-			final Object cache = getCompilationCache(shaderManager);
+			final ShaderManager.CompilationCache cache = shaderManager.compilationCache;
 			if (cache == null) return false;
 
-			final Map<Identifier, Optional<PostChain>> postChains = ((ShaderManagerCompilationCacheAccessor) cache).freezeFrame$getPostChains();
+			final Map<Identifier, Optional<PostChain>> postChains = cache.postChains;
 			final Optional<PostChain> cached = postChains.get(effectId);
 			if (cached != null && cached.isPresent()) return true;
 
 			final PostChain chain = PostChain.load(
 				buildPostChainConfig(passSpecs),
-				shaderManagerAccessor.freezeFrame$getTextureManager(),
+				shaderManager.textureManager,
 				LevelTargetBundle.MAIN_TARGETS,
 				effectId,
-				shaderManagerAccessor.freezeFrame$getPostChainProjection(),
-				shaderManagerAccessor.freezeFrame$getPostChainProjectionMatrixBuffer()
+				shaderManager.postChainProjection,
+				shaderManager.postChainProjectionMatrixBuffer
 			);
 			postChains.put(effectId, Optional.of(chain));
 			return true;
 		} catch (Exception exception) {
 			FFConstants.error("Failed to build film scope post effect", exception);
 			return false;
-		}
-	}
-
-	@Nullable
-	private static Object getCompilationCache(ShaderManager shaderManager) {
-		try {
-			final java.lang.reflect.Field field = ShaderManager.class.getDeclaredField("compilationCache");
-			field.setAccessible(true);
-			return field.get(shaderManager);
-		} catch (ReflectiveOperationException exception) {
-			FFConstants.error("Failed to access shader compilation cache for film scope post effect", exception);
-			return null;
 		}
 	}
 
@@ -160,69 +147,50 @@ public final class ScopePostEffectController {
 				continue;
 			}
 
-			final SpecialFilmFilterDefinition definition = SpecialFilmFilterRegistry.getById(layer.specialId());
-			if (definition == null) continue;
-			final Identifier shader = SpecialFilmFilterRegistry.shaderId(layer.specialId());
-			if (shader == null) continue;
-			passSpecs.add(specialPass(shader, definition));
+			if (layer.isSpecial()) {
+				final Optional<Holder<SpecialFilmFilter>> specialFilmFilter = layer.specialFilmFilter();
+				if (specialFilmFilter.isEmpty()) continue;
+
+				final Identifier shader = specialFilmFilter.get().value().shader();
+				if (shader == null) continue;
+
+				passSpecs.add(specialPass(shader, specialFilmFilter.get().value()));
+				continue;
+			}
 		}
 		return passSpecs;
 	}
 
 	private static PassSpec dyePass(FilmFilter.Layer layer) {
-		final float red = ((layer.color() >> 16) & 0xFF) / 255F;
-		final float green = ((layer.color() >> 8) & 0xFF) / 255F;
-		final float blue = (layer.color() & 0xFF) / 255F;
+		final float red = ARGB.red(layer.color()) / 255F;
+		final float green = ARGB.green(layer.color()) / 255F;
+		final float blue = ARGB.blue(layer.color()) / 255F;
 		return new PassSpec(
-			FFConstants.id("post/tint_dynamic"),
+			DYE_PASS_SPEC_ID,
 			Map.of("TintConfig", List.of(
 				new UniformValue.Vec4Uniform(new Vector4f(red, green, blue, 1F)),
-				new UniformValue.Vec4Uniform(new Vector4f(layer.exclusionTint() ? 1F : 0F, layer.exclusionTint() ? 1F : 0.4F, 0F, 0F))
+				layer.exclusionTint() ? DYE_TINT_EXCLUSION : DYE_TINT_NO_EXCLUSION
 			))
 		);
 	}
 
-	private static PassSpec specialPass(Identifier shader, SpecialFilmFilterDefinition definition) {
-		final Map<String, List<UniformValue>> configuredUniforms = configuredUniforms(definition);
-		if (!configuredUniforms.isEmpty()) return new PassSpec(shader, configuredUniforms);
-
+	private static PassSpec specialPass(Identifier shader, SpecialFilmFilter definition) {
 		return switch (definition.operation()) {
-			case "crunchy" -> new PassSpec(shader, Map.of("CrunchConfig", List.of(new UniformValue.FloatUniform(2F), new UniformValue.FloatUniform(6F))));
-			case "high_contrast" -> new PassSpec(shader, Map.of("ContrastConfig", List.of(new UniformValue.FloatUniform(1.35F), new UniformValue.FloatUniform(0F))));
-			case "chromatic_aberration" -> new PassSpec(shader, Map.of("OffsetConfig", List.of(new UniformValue.FloatUniform(1F))));
-			case "temperature_up" -> new PassSpec(shader, temperatureUniforms(0.18F, 0.02F, -0.12F));
-			case "temperature_down" -> new PassSpec(shader, temperatureUniforms(-0.12F, 0.04F, 0.2F));
-			case "sapped" -> new PassSpec(shader, tintShiftUniforms(0xEC7214, 0.68F, 1.18F, 0.88F));
-			case "warding" -> new PassSpec(shader, tintShiftUniforms(0x29DFEB, 0.52F, 1.15F, 0.72F));
-			case "triple_vision" -> new PassSpec(shader, Map.of("OffsetConfig", List.of(new UniformValue.FloatUniform(2.0F))));
-			case "bloom" -> new PassSpec(shader, Map.of("BloomConfig", List.of(new UniformValue.FloatUniform(0.55F))));
+			case BLOOM -> new PassSpec(shader, Map.of("BloomConfig", List.of(new UniformValue.FloatUniform(0.55F))));
+			case CHROMATIC_ABERRATION -> new PassSpec(shader, Map.of("OffsetConfig", List.of(new UniformValue.FloatUniform(1F))));
+			case CRUNCHY -> new PassSpec(shader, Map.of("CrunchConfig", List.of(new UniformValue.FloatUniform(2F), new UniformValue.FloatUniform(6F))));
+			// TODO: DESATURATE
+			// TODO: GILDED
+			case HIGH_CONTRAST -> new PassSpec(shader, Map.of("ContrastConfig", List.of(new UniformValue.FloatUniform(1.35F), new UniformValue.FloatUniform(0F))));
+			// TODO: INVERT
+			// TODO: MONOCHROME
+			case TEMPERATURE_UP -> new PassSpec(shader, temperatureUniforms(0.18F, 0.02F, -0.12F));
+			case TEMPERATURE_DOWN -> new PassSpec(shader, temperatureUniforms(-0.12F, 0.04F, 0.2F));
+			case TRIPLE_VISION -> new PassSpec(shader, Map.of("OffsetConfig", List.of(new UniformValue.FloatUniform(2F))));
+			case SAPPED -> new PassSpec(shader, tintShiftUniforms(0xEC7214, 0.68F, 1.18F, 0.88F));
+			// TODO: SPIDER
+			case WARDING -> new PassSpec(shader, tintShiftUniforms(0x29DFEB, 0.52F, 1.15F, 0.72F));
 			default -> new PassSpec(shader, Map.of());
-		};
-	}
-
-	private static Map<String, List<UniformValue>> configuredUniforms(SpecialFilmFilterDefinition definition) {
-		if (definition.uniforms().isEmpty()) return Map.of();
-		final Map<String, List<UniformValue>> uniforms = new LinkedHashMap<>();
-		for (Map.Entry<String, List<SpecialFilmFilterDefinition.ConfiguredUniform>> entry : definition.uniforms().entrySet()) {
-			final List<UniformValue> values = new ArrayList<>();
-			for (SpecialFilmFilterDefinition.ConfiguredUniform uniform : entry.getValue()) {
-				final UniformValue value = configuredUniformValue(definition, uniform);
-				if (value != null) values.add(value);
-			}
-			if (!values.isEmpty()) uniforms.put(entry.getKey(), List.copyOf(values));
-		}
-		return uniforms;
-	}
-
-	@Nullable
-	private static UniformValue configuredUniformValue(SpecialFilmFilterDefinition definition, SpecialFilmFilterDefinition.ConfiguredUniform uniform) {
-		return switch (uniform.type()) {
-			case "float" -> uniform.values().isEmpty() ? null : new UniformValue.FloatUniform(uniform.values().getFirst());
-			case "vec4" -> uniform.values().size() < 4 ? null : new UniformValue.Vec4Uniform(new Vector4f(uniform.values().get(0), uniform.values().get(1), uniform.values().get(2), uniform.values().get(3)));
-			default -> {
-				FFConstants.warn("Unsupported film filter uniform type '" + uniform.type() + "' in " + definition.id(), true);
-				yield null;
-			}
 		};
 	}
 
@@ -231,15 +199,14 @@ public final class ScopePostEffectController {
 	}
 
 	private static Map<String, List<UniformValue>> tintShiftUniforms(int color, float tintAmount, float contrastAmount, float saturationAmount) {
-		final float red = ((color >> 16) & 0xFF) / 255F;
-		final float green = ((color >> 8) & 0xFF) / 255F;
-		final float blue = (color & 0xFF) / 255F;
+		final float red = ARGB.red(color) / 255F;
+		final float green = ARGB.green(color) / 255F;
+		final float blue = ARGB.blue(color) / 255F;
 		return Map.of("TintShiftConfig", List.of(
 			new UniformValue.Vec4Uniform(new Vector4f(red, green, blue, 1F)),
 			new UniformValue.Vec4Uniform(new Vector4f(tintAmount, contrastAmount, saturationAmount, 0F))
 		));
 	}
 
-	private record PassSpec(Identifier shader, Map<String, List<UniformValue>> uniforms) {
-	}
+	private record PassSpec(Identifier shader, Map<String, List<UniformValue>> uniforms) {}
 }

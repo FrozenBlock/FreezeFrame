@@ -22,7 +22,7 @@ import net.fabricmc.fabric.api.networking.v1.ServerPlayNetworking;
 import net.frozenblock.freezeframe.FFConstants;
 import net.frozenblock.freezeframe.component.FilmFilter;
 import net.frozenblock.freezeframe.entity.TripodCamera;
-import net.minecraft.network.FriendlyByteBuf;
+import net.minecraft.network.RegistryFriendlyByteBuf;
 import net.minecraft.network.codec.ByteBufCodecs;
 import net.minecraft.network.codec.StreamCodec;
 import net.minecraft.network.protocol.common.custom.CustomPacketPayload;
@@ -30,9 +30,9 @@ import net.minecraft.server.level.ServerPlayer;
 
 public record CameraTakeScreenshotPacket(OptionalInt entityId, boolean handheldCapture, float zoom, String fileName, FilmFilter filter) implements CustomPacketPayload {
 	public static final Type<CameraTakeScreenshotPacket> PACKET_TYPE = CustomPacketPayload.createType(FFConstants.safeString("camera_take_screenshot"));
-	public static final StreamCodec<FriendlyByteBuf, CameraTakeScreenshotPacket> CODEC = StreamCodec.ofMember(CameraTakeScreenshotPacket::write, CameraTakeScreenshotPacket::new);
+	public static final StreamCodec<RegistryFriendlyByteBuf, CameraTakeScreenshotPacket> CODEC = StreamCodec.ofMember(CameraTakeScreenshotPacket::write, CameraTakeScreenshotPacket::new);
 
-	public CameraTakeScreenshotPacket(FriendlyByteBuf buf) {
+	public CameraTakeScreenshotPacket(RegistryFriendlyByteBuf buf) {
 		this(ByteBufCodecs.OPTIONAL_VAR_INT.decode(buf), buf.readBoolean(), buf.readFloat(), buf.readUtf(), FilmFilter.STREAM_CODEC.decode(buf));
 	}
 
@@ -54,7 +54,7 @@ public record CameraTakeScreenshotPacket(OptionalInt entityId, boolean handheldC
 		sendToAsCamera(player, tripodCamera.getId(), fileName, filter);
 	}
 
-	public void write(FriendlyByteBuf buf) {
+	public void write(RegistryFriendlyByteBuf buf) {
 		ByteBufCodecs.OPTIONAL_VAR_INT.encode(buf, this.entityId);
 		buf.writeBoolean(this.handheldCapture);
 		buf.writeFloat(this.zoom);

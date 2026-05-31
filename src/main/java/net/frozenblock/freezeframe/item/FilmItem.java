@@ -25,12 +25,10 @@ import net.frozenblock.freezeframe.component.FilmContents;
 import net.frozenblock.freezeframe.component.FilmFilter;
 import net.frozenblock.freezeframe.component.Photograph;
 import net.frozenblock.freezeframe.component.tooltip.FilmTooltip;
-import net.frozenblock.freezeframe.filter.SpecialFilmFilterDefinition;
-import net.frozenblock.freezeframe.filter.SpecialFilmFilterRegistry;
+import net.frozenblock.freezeframe.item.filter.SpecialFilmFilter;
 import net.frozenblock.freezeframe.networking.packet.OpenFilmScreenPacket;
 import net.frozenblock.freezeframe.registry.FFDataComponents;
 import net.minecraft.core.component.DataComponents;
-import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.network.chat.Component;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.server.level.ServerPlayer;
@@ -42,7 +40,6 @@ import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.EquipmentSlot;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.inventory.tooltip.TooltipComponent;
-import net.minecraft.world.item.DyeColor;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemInstance;
 import net.minecraft.world.item.ItemStack;
@@ -185,16 +182,10 @@ public class FilmItem extends Item {
 				tooltipAdder.accept(Component.translatable(colorLineKey, Component.literal(hex).withColor(color)).withStyle(ChatFormatting.GRAY));
 				continue;
 			}
-			final SpecialFilmFilterDefinition definition = SpecialFilmFilterRegistry.getById(layer.specialId());
-			if (definition != null) tooltipAdder.accept(Component.translatable(definition.tooltipKey()).withStyle(ChatFormatting.GRAY));
+
+			if (layer.isSpecial()) {
+				layer.specialFilmFilter().ifPresent(specialFilmFilter -> tooltipAdder.accept(SpecialFilmFilter.tooltipComponent(specialFilmFilter)));
+			}
 		}
 	}
-
-	@Nullable
-	public static DyeColor getDyeColor(ItemStack stack) {
-		final String itemName = BuiltInRegistries.ITEM.getKey(stack.getItem()).getPath();
-		if (!itemName.endsWith("_dye")) return null;
-		return DyeColor.byName(itemName.substring(0, itemName.length() - "_dye".length()), null);
-	}
-
 }

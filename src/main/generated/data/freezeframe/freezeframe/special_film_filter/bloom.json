@@ -1,0 +1,5 @@
+{
+  "ingredient": "minecraft:slime_ball",
+  "operation": "bloom",
+  "shader": "freezeframe:post/bloom"
+}

@@ -1,6 +1,0 @@
-﻿{
-    "ingredient":  "minecraft:echo_shard",
-    "operation":  "warding",
-    "tooltip_key":  "item.freezeframe.film.filter.effect.warding",
-    "shader":  "freezeframe:post/tint_shift"
-}

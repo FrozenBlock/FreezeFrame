@@ -17,11 +17,16 @@
 
 package net.frozenblock.freezeframe.registry;
 
+import net.fabricmc.fabric.api.event.registry.DynamicRegistries;
+import net.frozenblock.freezeframe.FFConstants;
+import net.frozenblock.freezeframe.item.filter.SpecialFilmFilter;
+import net.minecraft.core.Registry;
+import net.minecraft.resources.ResourceKey;
+
 public class FFRegistries {
-	//public static final ResourceKey<Registry<FireflyColor>> FILM_FILTER = ResourceKey.createRegistryKey(FFConstants.id("film_filter"));
+	public static final ResourceKey<Registry<SpecialFilmFilter>> SPECIAL_FILM_FILTER = ResourceKey.createRegistryKey(FFConstants.id("special_film_filter"));
 
 	public static void init() {
-		//DynamicRegistries.registerSynced(FILM_FILTER, FireflyColor.DIRECT_CODEC, FireflyColor.NETWORK_CODEC);
+		DynamicRegistries.registerSynced(SPECIAL_FILM_FILTER, SpecialFilmFilter.CODEC);
 	}
-
 }

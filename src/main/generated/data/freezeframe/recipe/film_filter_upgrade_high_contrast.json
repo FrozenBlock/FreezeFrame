@@ -1,0 +1,10 @@
+{
+  "type": "freezeframe:film_filter_upgrade",
+  "dye": "#minecraft:dyes",
+  "exclusion_tint_material": "minecraft:amethyst_shard",
+  "film": "freezeframe:film",
+  "result": {
+    "id": "freezeframe:film"
+  },
+  "special_filter_material": "freezeframe:high_contrast"
+}

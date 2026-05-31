@@ -1,6 +1,0 @@
-﻿{
-    "ingredient":  "minecraft:slime_ball",
-    "operation":  "bloom",
-    "tooltip_key":  "item.freezeframe.film.filter.effect.bloom",
-    "shader":  "freezeframe:post/bloom"
-}

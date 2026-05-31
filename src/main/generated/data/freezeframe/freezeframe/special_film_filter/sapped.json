@@ -1,0 +1,5 @@
+{
+  "ingredient": "minecraft:resin_clump",
+  "operation": "sapped",
+  "shader": "freezeframe:post/tint_shift"
+}

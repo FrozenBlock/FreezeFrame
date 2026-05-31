@@ -84,7 +84,7 @@ public class FilmCapacityUpgradeRecipe extends CustomRecipe {
 		return upgradedFilm;
 	}
 
-	private ItemStack findFilm(final CraftingInput input) {
+	private ItemStack findFilm(CraftingInput input) {
 		for (int i = 0; i < input.size(); i++) {
 			final ItemStack itemStack = input.getItem(i);
 			if (this.film.test(itemStack)) return itemStack;

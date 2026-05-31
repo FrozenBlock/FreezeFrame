@@ -1,6 +1,0 @@
-﻿{
-    "ingredient":  "minecraft:creeper_head",
-    "operation":  "crunchy",
-    "tooltip_key":  "item.freezeframe.film.filter.effect.crunchy",
-    "shader":  "freezeframe:post/crunchy"
-}

@@ -1,0 +1,5 @@
+{
+  "ingredient": "minecraft:snowball",
+  "operation": "temperature_down",
+  "shader": "freezeframe:post/temperature"
+}

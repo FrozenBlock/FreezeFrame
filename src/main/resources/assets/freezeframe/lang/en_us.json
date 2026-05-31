@@ -52,6 +52,7 @@
   "item.freezeframe.film.fullness": "%s/%s",
   "item.freezeframe.film.filter.color": "Filter: %s",
   "item.freezeframe.film.filter.color.exclusion": "Filter (Exclusion): %s",
+  "item.freezeframe.film.filter.effect.unknown": "[UNKNOWN]",
   "item.freezeframe.film.filter.effect.chromatic_aberration": "Chromatic Aberration",
   "item.freezeframe.film.filter.effect.invert": "Inverted",
   "item.freezeframe.film.filter.effect.crunchy": "8-bit",

@@ -1,6 +1,0 @@
-﻿{
-    "ingredient":  "minecraft:wither_skeleton_skull",
-    "operation":  "triple_vision",
-    "tooltip_key":  "item.freezeframe.film.filter.effect.triple_vision",
-    "shader":  "freezeframe:post/triple_vision"
-}

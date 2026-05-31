@@ -1,6 +1,0 @@
-﻿{
-    "ingredient":  "minecraft:ender_pearl",
-    "operation":  "invert",
-    "tooltip_key":  "item.freezeframe.film.filter.effect.invert",
-    "shader":  "freezeframe:post/invert"
-}

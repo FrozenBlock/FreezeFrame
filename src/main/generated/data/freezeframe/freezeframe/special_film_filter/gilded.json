@@ -1,0 +1,5 @@
+{
+  "ingredient": "minecraft:piglin_head",
+  "operation": "gilded",
+  "shader": "freezeframe:post/gilded"
+}

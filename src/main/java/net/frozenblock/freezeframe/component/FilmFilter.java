@@ -18,14 +18,17 @@
 package net.frozenblock.freezeframe.component;
 
 import com.mojang.serialization.Codec;
+import com.mojang.serialization.JavaOps;
 import com.mojang.serialization.codecs.RecordCodecBuilder;
 import io.netty.buffer.ByteBuf;
 import java.util.List;
-import java.util.Locale;
-import net.frozenblock.freezeframe.FFConstants;
+import java.util.Optional;
+import net.frozenblock.freezeframe.item.filter.SpecialFilmFilter;
+import net.minecraft.core.Holder;
+import net.minecraft.network.RegistryFriendlyByteBuf;
 import net.minecraft.network.codec.ByteBufCodecs;
 import net.minecraft.network.codec.StreamCodec;
-import net.minecraft.resources.Identifier;
+import net.minecraft.util.StringRepresentable;
 
 public record FilmFilter(List<Layer> layers) {
 	public static final int MAX_LAYERS = 8;
@@ -33,7 +36,7 @@ public record FilmFilter(List<Layer> layers) {
 	public static final Codec<FilmFilter> CODEC = RecordCodecBuilder.create(instance -> instance.group(
 		Layer.CODEC.listOf().optionalFieldOf("layers", List.of()).forGetter(FilmFilter::layers)
 	).apply(instance, FilmFilter::new));
-	public static final StreamCodec<ByteBuf, FilmFilter> STREAM_CODEC = StreamCodec.composite(
+	public static final StreamCodec<RegistryFriendlyByteBuf, FilmFilter> STREAM_CODEC = StreamCodec.composite(
 		Layer.STREAM_CODEC.apply(ByteBufCodecs.list()), FilmFilter::layers,
 		FilmFilter::new
 	);
@@ -50,9 +53,11 @@ public record FilmFilter(List<Layer> layers) {
 		return this.size() < MAX_LAYERS;
 	}
 
-	public boolean hasSpecial(Identifier specialId) {
+	public boolean hasSpecialOfType(Holder<SpecialFilmFilter> specialFilmFilter) {
 		for (Layer layer : this.layers) {
-			if (layer.isSpecial() && layer.specialId().equals(specialId)) return true;
+			if (!layer.isSpecial()) continue;
+			if (layer.specialFilmFilter.isEmpty()) continue;
+			if (layer.specialFilmFilter.get().is(specialFilmFilter)) return true;
 		}
 		return false;
 	}
@@ -64,36 +69,27 @@ public record FilmFilter(List<Layer> layers) {
 		return new FilmFilter(newLayers);
 	}
 
-	public record Layer(LayerType type, int color, Identifier specialId, boolean exclusionTint) {
-		private static final Identifier EMPTY = FFConstants.id("empty");
-		private static final Codec<LayerType> LAYER_TYPE_CODEC = Codec.STRING.xmap(
-			value -> LayerType.valueOf(value.toUpperCase(Locale.ROOT)),
-			layerType -> layerType.name().toLowerCase(Locale.ROOT)
-		);
-		private static final StreamCodec<ByteBuf, LayerType> LAYER_TYPE_STREAM_CODEC = ByteBufCodecs.STRING_UTF8.map(
-			value -> LayerType.valueOf(value.toUpperCase(Locale.ROOT)),
-			layerType -> layerType.name().toLowerCase(Locale.ROOT)
-		);
+	public record Layer(LayerType type, int color, Optional<Holder<SpecialFilmFilter>> specialFilmFilter, boolean exclusionTint) {
 		public static final Codec<Layer> CODEC = RecordCodecBuilder.create(instance -> instance.group(
-			LAYER_TYPE_CODEC.fieldOf("type").forGetter(Layer::type),
+			LayerType.CODEC.fieldOf("type").forGetter(Layer::type),
 			Codec.INT.optionalFieldOf("color", 0).forGetter(Layer::color),
-			Identifier.CODEC.optionalFieldOf("special_id", EMPTY).forGetter(Layer::specialId),
+			SpecialFilmFilter.REGISTRY_CODEC.optionalFieldOf("special_film_filter").forGetter(Layer::specialFilmFilter),
 			Codec.BOOL.optionalFieldOf("exclusion_tint", false).forGetter(Layer::exclusionTint)
 		).apply(instance, Layer::new));
-		public static final StreamCodec<ByteBuf, Layer> STREAM_CODEC = StreamCodec.composite(
-			LAYER_TYPE_STREAM_CODEC, Layer::type,
+		public static final StreamCodec<RegistryFriendlyByteBuf, Layer> STREAM_CODEC = StreamCodec.composite(
+			LayerType.STREAM_CODEC, Layer::type,
 			ByteBufCodecs.VAR_INT, Layer::color,
-			Identifier.STREAM_CODEC, Layer::specialId,
+			ByteBufCodecs.optional(SpecialFilmFilter.STREAM_CODEC), Layer::specialFilmFilter,
 			ByteBufCodecs.BOOL, Layer::exclusionTint,
 			Layer::new
 		);
 
 		public static Layer dye(int color, boolean exclusionTint) {
-			return new Layer(LayerType.DYE, color, EMPTY, exclusionTint);
+			return new Layer(LayerType.DYE, color, Optional.empty(), exclusionTint);
 		}
 
-		public static Layer special(Identifier specialId) {
-			return new Layer(LayerType.SPECIAL, 0, specialId, false);
+		public static Layer special(Holder<SpecialFilmFilter> specialFilmFilter) {
+			return new Layer(LayerType.SPECIAL, 0, Optional.of(specialFilmFilter), false);
 		}
 
 		public boolean isDye() {
@@ -105,8 +101,23 @@ public record FilmFilter(List<Layer> layers) {
 		}
 	}
 
-	public enum LayerType {
-		DYE,
-		SPECIAL
+	public enum LayerType implements StringRepresentable {
+		DYE("dye"),
+		SPECIAL("special");
+		public static final Codec<LayerType> CODEC = StringRepresentable.fromEnum(LayerType::values);
+		public static final StreamCodec<ByteBuf, LayerType> STREAM_CODEC = ByteBufCodecs.STRING_UTF8.map(
+			string -> CODEC.parse(JavaOps.INSTANCE, string).result().orElseThrow(),
+			LayerType::getSerializedName
+		);
+		private final String name;
+
+		LayerType(String name) {
+			this.name = name;
+		}
+
+		@Override
+		public String getSerializedName() {
+			return this.name;
+		}
 	}
 }

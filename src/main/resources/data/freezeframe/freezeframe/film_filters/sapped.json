@@ -1,6 +1,0 @@
-﻿{
-    "ingredient":  "minecraft:resin_clump",
-    "operation":  "sapped",
-    "tooltip_key":  "item.freezeframe.film.filter.effect.sapped",
-    "shader":  "freezeframe:post/tint_shift"
-}

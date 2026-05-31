@@ -1,7 +1,0 @@
-{
-  "type": "freezeframe:film_filter_upgrade",
-  "result": {
-    "id": "freezeframe:film"
-  },
-  "target": "freezeframe:film"
-}

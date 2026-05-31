@@ -1,6 +1,0 @@
-﻿{
-    "ingredient":  "minecraft:piglin_head",
-    "operation":  "gilded",
-    "tooltip_key":  "item.freezeframe.film.filter.effect.gilded",
-    "shader":  "freezeframe:post/gilded"
-}

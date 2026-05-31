@@ -19,7 +19,6 @@ package net.frozenblock.freezeframe;
 
 import net.fabricmc.api.ModInitializer;
 import net.frozenblock.freezeframe.config.FFConfig;
-import net.frozenblock.freezeframe.filter.SpecialFilmFilterRegistry;
 import net.frozenblock.freezeframe.networking.FFNetworking;
 import net.frozenblock.freezeframe.registry.FFBlocks;
 import net.frozenblock.freezeframe.registry.FFContainerComponentManipulators;
@@ -46,7 +45,6 @@ public class FreezeFrame implements ModInitializer {
 		FFDataComponents.init();
 		FFRecipeSerializers.init();
 		FFMenuTypes.init();
-		SpecialFilmFilterRegistry.init();
 
 		FFNetworking.init();
 

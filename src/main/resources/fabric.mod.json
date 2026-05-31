@@ -30,7 +30,7 @@
       "net.frozenblock.freezeframe.config.gui.ModMenuIntegration"
     ],
     "fabric-datagen": [
-      "net.frozenblock.freezeframe.datagen.FFDataGenerator"
+      "net.frozenblock.freezeframe.data.FFDataGenerator"
     ]
   },
   "mixins": [

@@ -1,0 +1,5 @@
+{
+  "ingredient": "minecraft:diamond",
+  "operation": "chromatic_aberration",
+  "shader": "freezeframe:post/chromatic_aberration"
+}
