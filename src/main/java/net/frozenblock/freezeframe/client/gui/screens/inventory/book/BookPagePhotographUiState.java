@@ -15,7 +15,7 @@
  * along with this program; if not, see <https://github.com/FrozenBlock/Licenses>.
  */
 
-package net.frozenblock.freezeframe.client;
+package net.frozenblock.freezeframe.client.gui.screens.inventory.book;
 
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;

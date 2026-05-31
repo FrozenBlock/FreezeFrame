@@ -15,7 +15,7 @@
  * along with this program; if not, see <https://github.com/FrozenBlock/Licenses>.
  */
 
-package net.frozenblock.freezeframe.client.gui.screens.inventory;
+package net.frozenblock.freezeframe.client.gui.screens.inventory.book;
 
 import java.util.ArrayList;
 import java.util.Collections;
@@ -23,7 +23,6 @@ import java.util.List;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 import net.frozenblock.freezeframe.FFConstants;
-import net.frozenblock.freezeframe.client.BookPagePhotographUiState;
 import net.frozenblock.freezeframe.client.photograph.PhotographRenderer;
 import net.frozenblock.freezeframe.component.Photograph;
 import net.frozenblock.freezeframe.menu.BookPagePhotographMenu;

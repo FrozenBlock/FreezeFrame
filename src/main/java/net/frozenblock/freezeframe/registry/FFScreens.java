@@ -19,8 +19,8 @@ package net.frozenblock.freezeframe.registry;
 
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
-import net.frozenblock.freezeframe.client.gui.screens.inventory.BookPagePhotographScreen;
 import net.frozenblock.freezeframe.client.gui.screens.inventory.DevelopingTableScreen;
+import net.frozenblock.freezeframe.client.gui.screens.inventory.book.BookPagePhotographScreen;
 import net.minecraft.client.gui.screens.MenuScreens;
 
 @Environment(EnvType.CLIENT)

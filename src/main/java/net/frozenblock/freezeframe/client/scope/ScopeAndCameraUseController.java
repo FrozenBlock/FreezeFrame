@@ -15,7 +15,7 @@
  * along with this program; if not, see <https://github.com/FrozenBlock/Licenses>.
  */
 
-package net.frozenblock.freezeframe.client;
+package net.frozenblock.freezeframe.client.scope;
 
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
@@ -30,8 +30,6 @@ import net.frozenblock.freezeframe.networking.packet.QuickCameraPhotographPacket
 import net.frozenblock.freezeframe.registry.FFDataComponents;
 import net.frozenblock.freezeframe.util.ScopeItemHelper;
 import net.frozenblock.freezeframe.util.ScopeZoomHelper;
-import net.frozenblock.freezeframe.util.client.ScopePostEffectController;
-import net.frozenblock.freezeframe.util.client.ScopeZoomManager;
 import net.minecraft.client.CameraType;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.player.LocalPlayer;

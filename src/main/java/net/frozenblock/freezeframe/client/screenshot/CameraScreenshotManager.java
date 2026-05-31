@@ -15,7 +15,7 @@
  * along with this program; if not, see <https://github.com/FrozenBlock/Licenses>.
  */
 
-package net.frozenblock.freezeframe.util.client;
+package net.frozenblock.freezeframe.client.screenshot;
 
 import com.mojang.blaze3d.pipeline.RenderTarget;
 import com.mojang.blaze3d.pipeline.TextureTarget;
@@ -29,6 +29,8 @@ import java.util.function.Consumer;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 import net.frozenblock.freezeframe.FFConstants;
+import net.frozenblock.freezeframe.client.scope.ScopePostEffectController;
+import net.frozenblock.freezeframe.client.scope.ScopeZoomManager;
 import net.frozenblock.freezeframe.component.FilmFilter;
 import net.frozenblock.freezeframe.config.FFConfig;
 import net.frozenblock.lib.file.transfer.FileTransferPacket;

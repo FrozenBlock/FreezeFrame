@@ -15,7 +15,7 @@
  * along with this program; if not, see <https://github.com/FrozenBlock/Licenses>.
  */
 
-package net.frozenblock.freezeframe.util.client;
+package net.frozenblock.freezeframe.client.scope;
 
 import java.util.ArrayList;
 import java.util.LinkedHashMap;

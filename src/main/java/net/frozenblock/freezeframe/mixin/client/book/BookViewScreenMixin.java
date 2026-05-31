@@ -21,7 +21,7 @@ import com.mojang.blaze3d.platform.Window;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 import net.frozenblock.freezeframe.FFConstants;
-import net.frozenblock.freezeframe.client.BookPagePhotographCache;
+import net.frozenblock.freezeframe.client.gui.screens.inventory.book.BookPagePhotographCache;
 import net.frozenblock.freezeframe.client.photograph.PhotographHoverTooltipRenderer;
 import net.frozenblock.freezeframe.client.photograph.PhotographRenderer;
 import net.frozenblock.freezeframe.component.Photograph;

@@ -20,6 +20,8 @@ package net.frozenblock.freezeframe.item.crafting.display;
 import com.mojang.serialization.Codec;
 import com.mojang.serialization.MapCodec;
 import com.mojang.serialization.codecs.RecordCodecBuilder;
+import java.util.function.BinaryOperator;
+import java.util.stream.Stream;
 import net.frozenblock.freezeframe.component.FilmFilter;
 import net.frozenblock.freezeframe.registry.FFDataComponents;
 import net.minecraft.core.component.DataComponents;
@@ -31,8 +33,6 @@ import net.minecraft.world.item.DyeColor;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.crafting.display.DisplayContentsFactory;
 import net.minecraft.world.item.crafting.display.SlotDisplay;
-import java.util.function.BinaryOperator;
-import java.util.stream.Stream;
 
 public record FilmDyeFilterSlotDisplay(SlotDisplay dye, SlotDisplay target, boolean withExclusion) implements SlotDisplay {
 	public static final MapCodec<FilmDyeFilterSlotDisplay> MAP_CODEC = RecordCodecBuilder.mapCodec(instance -> instance.group(

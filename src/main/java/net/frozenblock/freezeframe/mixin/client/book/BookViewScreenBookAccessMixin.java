@@ -19,7 +19,7 @@ package net.frozenblock.freezeframe.mixin.client.book;
 
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
-import net.frozenblock.freezeframe.client.BookPagePhotographCache;
+import net.frozenblock.freezeframe.client.gui.screens.inventory.book.BookPagePhotographCache;
 import net.minecraft.client.gui.screens.inventory.BookViewScreen;
 import net.minecraft.world.item.ItemStack;
 import org.spongepowered.asm.mixin.Mixin;

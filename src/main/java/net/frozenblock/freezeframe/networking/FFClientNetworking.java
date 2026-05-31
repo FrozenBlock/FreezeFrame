@@ -19,9 +19,9 @@ package net.frozenblock.freezeframe.networking;
 
 import net.fabricmc.fabric.api.client.networking.v1.ClientPlayNetworking;
 import net.frozenblock.freezeframe.client.gui.screens.inventory.FilmScreen;
+import net.frozenblock.freezeframe.client.screenshot.CameraScreenshotManager;
 import net.frozenblock.freezeframe.networking.packet.CameraTakeScreenshotPacket;
 import net.frozenblock.freezeframe.networking.packet.OpenFilmScreenPacket;
-import net.frozenblock.freezeframe.util.client.CameraScreenshotManager;
 import net.minecraft.world.entity.Entity;
 
 public class FFClientNetworking {
