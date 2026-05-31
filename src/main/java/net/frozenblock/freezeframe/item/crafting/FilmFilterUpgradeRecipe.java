@@ -122,7 +122,7 @@ public class FilmFilterUpgradeRecipe extends CustomRecipe {
 
 	@Override
 	public boolean showNotification() {
-		return true;
+		return this.specialFilter.isPresent();
 	}
 
 	@Override
