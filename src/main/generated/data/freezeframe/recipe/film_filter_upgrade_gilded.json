@@ -6,5 +6,8 @@
   "result": {
     "id": "freezeframe:film"
   },
-  "special_filter_material": "freezeframe:gilded"
+  "special_film_filter_and_ingredient": {
+    "ingredient": "minecraft:piglin_head",
+    "special_film_filter": "freezeframe:gilded"
+  }
 }

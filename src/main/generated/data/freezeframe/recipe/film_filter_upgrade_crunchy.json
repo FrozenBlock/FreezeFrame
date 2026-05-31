@@ -6,5 +6,8 @@
   "result": {
     "id": "freezeframe:film"
   },
-  "special_filter_material": "freezeframe:crunchy"
+  "special_film_filter_and_ingredient": {
+    "ingredient": "minecraft:creeper_head",
+    "special_film_filter": "freezeframe:crunchy"
+  }
 }

@@ -1,5 +1,4 @@
 {
-  "ingredient": "minecraft:wither_skeleton_skull",
   "operation": "triple_vision",
   "shader": "freezeframe:post/triple_vision"
 }

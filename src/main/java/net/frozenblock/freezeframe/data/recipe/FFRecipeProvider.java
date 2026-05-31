@@ -22,12 +22,13 @@ import java.util.concurrent.CompletableFuture;
 import net.fabricmc.fabric.api.datagen.v1.FabricPackOutput;
 import net.fabricmc.fabric.api.datagen.v1.provider.FabricRecipeProvider;
 import net.frozenblock.freezeframe.FFConstants;
-import net.frozenblock.freezeframe.item.filter.SpecialFilmFilter;
 import net.frozenblock.freezeframe.item.crafting.FilmCapacityUpgradeRecipe;
 import net.frozenblock.freezeframe.item.crafting.FilmFilterUpgradeRecipe;
+import net.frozenblock.freezeframe.item.filter.SpecialFilmFilter;
 import net.frozenblock.freezeframe.registry.FFBlocks;
 import net.frozenblock.freezeframe.registry.FFItems;
 import net.frozenblock.freezeframe.registry.FFRegistries;
+import net.frozenblock.freezeframe.registry.FFSpecialFilmFilters;
 import net.frozenblock.lib.recipe.api.RecipeExportNamespaceFix;
 import net.minecraft.advancements.criterion.ItemPredicate;
 import net.minecraft.core.Holder;
@@ -38,6 +39,7 @@ import net.minecraft.data.recipes.RecipeCategory;
 import net.minecraft.data.recipes.RecipeOutput;
 import net.minecraft.data.recipes.RecipeProvider;
 import net.minecraft.data.recipes.SpecialRecipeBuilder;
+import net.minecraft.resources.ResourceKey;
 import net.minecraft.tags.ItemTags;
 import net.minecraft.util.StringUtil;
 import net.minecraft.world.item.Item;
@@ -59,6 +61,7 @@ public final class FFRecipeProvider extends FabricRecipeProvider {
 			public void buildRecipes() {
 				RecipeExportNamespaceFix.setCurrentGeneratingModId(FFConstants.MOD_ID);
 				final HolderLookup.RegistryLookup<Item> items = this.registries.lookupOrThrow(Registries.ITEM);
+				final HolderLookup.RegistryLookup<SpecialFilmFilter> specialFilmFilters = this.registries.lookupOrThrow(FFRegistries.SPECIAL_FILM_FILTER);
 
 				this.shapeless(RecipeCategory.TOOLS, FFItems.FILM)
 					.group("film")
@@ -103,13 +106,48 @@ public final class FFRecipeProvider extends FabricRecipeProvider {
 					createDyeFilmFilterRecipe(RecipeCategory.TOOLS, "film_filter", items, this.output, false);
 					createDyeFilmFilterRecipe(RecipeCategory.TOOLS, "film_filter", items, this.output, true);
 
-					this.registries.lookupOrThrow(FFRegistries.SPECIAL_FILM_FILTER).listElements().forEach(specialFilmFilter -> {
-						try {
-							createSpecialFilmFilterRecipe(RecipeCategory.TOOLS, "film_filter", items, this.output, specialFilmFilter);
-						} catch (IllegalAccessException e) {
-							throw new RuntimeException(e);
-						}
-					});
+					createSpecialFilmFilterRecipe(
+						RecipeCategory.TOOLS, "film_filter", items, specialFilmFilters, output, FFSpecialFilmFilters.BLOOM, Ingredient.of(Items.SLIME_BALL)
+					);
+					createSpecialFilmFilterRecipe(
+						RecipeCategory.TOOLS, "film_filter", items, specialFilmFilters, output, FFSpecialFilmFilters.CHROMATIC_ABERRATION, Ingredient.of(Items.DIAMOND)
+					);
+					createSpecialFilmFilterRecipe(
+						RecipeCategory.TOOLS, "film_filter", items, specialFilmFilters, output, FFSpecialFilmFilters.CRUNCHY, Ingredient.of(Items.CREEPER_HEAD)
+					);
+					createSpecialFilmFilterRecipe(
+						RecipeCategory.TOOLS, "film_filter", items, specialFilmFilters, output, FFSpecialFilmFilters.DESATURATE, Ingredient.of(Items.ZOMBIE_HEAD)
+					);
+					createSpecialFilmFilterRecipe(
+						RecipeCategory.TOOLS, "film_filter", items, specialFilmFilters, output, FFSpecialFilmFilters.GILDED, Ingredient.of(Items.PIGLIN_HEAD)
+					);
+					createSpecialFilmFilterRecipe(
+						RecipeCategory.TOOLS, "film_filter", items, specialFilmFilters, output, FFSpecialFilmFilters.HIGH_CONTRAST, Ingredient.of(Items.HONEY_BOTTLE)
+					);
+					createSpecialFilmFilterRecipe(
+						RecipeCategory.TOOLS, "film_filter", items, specialFilmFilters, output, FFSpecialFilmFilters.INVERT, Ingredient.of(Items.ENDER_PEARL)
+					);
+					createSpecialFilmFilterRecipe(
+						RecipeCategory.TOOLS, "film_filter", items, specialFilmFilters, output, FFSpecialFilmFilters.MONOCHROME, Ingredient.of(Items.SKELETON_SKULL)
+					);
+					createSpecialFilmFilterRecipe(
+						RecipeCategory.TOOLS, "film_filter", items, specialFilmFilters, output, FFSpecialFilmFilters.SAPPED, Ingredient.of(Items.RESIN_CLUMP)
+					);
+					createSpecialFilmFilterRecipe(
+						RecipeCategory.TOOLS, "film_filter", items, specialFilmFilters, output, FFSpecialFilmFilters.SPIDER, Ingredient.of(Items.SPIDER_EYE)
+					);
+					createSpecialFilmFilterRecipe(
+						RecipeCategory.TOOLS, "film_filter", items, specialFilmFilters, output, FFSpecialFilmFilters.TEMPERATURE_DOWN, Ingredient.of(Items.SNOWBALL)
+					);
+					createSpecialFilmFilterRecipe(
+						RecipeCategory.TOOLS, "film_filter", items, specialFilmFilters, output, FFSpecialFilmFilters.TEMPERATURE_UP, Ingredient.of(Items.MAGMA_CREAM)
+					);
+					createSpecialFilmFilterRecipe(
+						RecipeCategory.TOOLS, "film_filter", items, specialFilmFilters, output, FFSpecialFilmFilters.TRIPLE_VISION, Ingredient.of(Items.WITHER_SKELETON_SKULL)
+					);
+					createSpecialFilmFilterRecipe(
+						RecipeCategory.TOOLS, "film_filter", items, specialFilmFilters, output, FFSpecialFilmFilters.WARDING, Ingredient.of(Items.ECHO_SHARD)
+					);
 				} catch (IllegalAccessException e) {
 					throw new RuntimeException(e);
 				}
@@ -126,7 +164,33 @@ public final class FFRecipeProvider extends FabricRecipeProvider {
 		RecipeOutput output,
 		boolean hasExclusion
 	) throws IllegalAccessException {
-		createFilmFilterRecipe(category, group, itemRegistry, output, Optional.empty(), hasExclusion, hasExclusion ? "dye_with_exclusion" : "dye");
+		createFilmFilterRecipe(
+			category,
+			group,
+			itemRegistry,
+			output,
+			Optional.empty(),
+			hasExclusion, hasExclusion ? "dye_with_exclusion" : "dye"
+		);
+	}
+
+	public static void createSpecialFilmFilterRecipe(
+		RecipeCategory category,
+		String group,
+		HolderLookup.RegistryLookup<Item> itemRegistry,
+		HolderLookup.RegistryLookup<SpecialFilmFilter> specialFilmFilterRegistry,
+		RecipeOutput output,
+		ResourceKey<SpecialFilmFilter> specialFilmFilterKey,
+		Ingredient specialFilmFilterIngredient
+	) throws IllegalAccessException {
+		createSpecialFilmFilterRecipe(
+			category,
+			group,
+			itemRegistry,
+			output,
+			specialFilmFilterRegistry.getOrThrow(specialFilmFilterKey),
+			specialFilmFilterIngredient
+		);
 	}
 
 	public static void createSpecialFilmFilterRecipe(
@@ -134,9 +198,18 @@ public final class FFRecipeProvider extends FabricRecipeProvider {
 		String group,
 		HolderLookup.RegistryLookup<Item> itemRegistry,
 		RecipeOutput output,
-		Holder<SpecialFilmFilter> specialFilmFilter
+		Holder<SpecialFilmFilter> specialFilmFilter,
+		Ingredient specialFilmFilterIngredient
 	) throws IllegalAccessException {
-		createFilmFilterRecipe(category, group, itemRegistry, output, Optional.of(specialFilmFilter), false, specialFilmFilter.unwrapKey().orElseThrow().identifier().getPath());
+		createFilmFilterRecipe(
+			category,
+			group,
+			itemRegistry,
+			output,
+			Optional.of(new FilmFilterUpgradeRecipe.SpecialFilterAndIngredient(specialFilmFilter, specialFilmFilterIngredient)),
+			false,
+			specialFilmFilter.unwrapKey().orElseThrow().identifier().getPath()
+		);
 	}
 
 	private static void createFilmFilterRecipe(
@@ -144,7 +217,7 @@ public final class FFRecipeProvider extends FabricRecipeProvider {
 		String group,
 		HolderLookup.RegistryLookup<Item> itemRegistry,
 		RecipeOutput output,
-		Optional<Holder<SpecialFilmFilter>> specialFilmFilter,
+		Optional<FilmFilterUpgradeRecipe.SpecialFilterAndIngredient> specialFilmFilterAndIngredient,
 		boolean hasExclusion,
 		String recipeSuffix
 	) throws IllegalAccessException {
@@ -152,19 +225,22 @@ public final class FFRecipeProvider extends FabricRecipeProvider {
 
 		final SpecialRecipeBuilder builder = SpecialRecipeBuilder.special(() -> new FilmFilterUpgradeRecipe(
 				Ingredient.of(FFItems.FILM),
-				specialFilmFilter.isPresent() || !hasExclusion ? Optional.empty() : Optional.of(Ingredient.of(Items.AMETHYST_SHARD)),
-				specialFilmFilter.isPresent() ? Optional.empty() : Optional.of(Ingredient.of(itemRegistry.getOrThrow(ItemTags.DYES))),
-				specialFilmFilter,
+				specialFilmFilterAndIngredient.isPresent() || !hasExclusion ? Optional.empty() : Optional.of(Ingredient.of(Items.AMETHYST_SHARD)),
+				specialFilmFilterAndIngredient.isPresent() ? Optional.empty() : Optional.of(Ingredient.of(itemRegistry.getOrThrow(ItemTags.DYES))),
+				specialFilmFilterAndIngredient,
 				RecipeBuilder.createCraftingBookInfo(category, group),
 				new ItemStackTemplate(FFItems.FILM)
 			));
 
-		if (specialFilmFilter.isPresent()) {
+		if (specialFilmFilterAndIngredient.isPresent()) {
 			builder.unlockedBy(
 				"has_film_and_special_filter_ingredient",
 				RecipeProvider.inventoryTrigger(
 					ItemPredicate.Builder.item().of(itemRegistry, FFItems.FILM),
-					ItemPredicate.Builder.item().of(itemRegistry, specialFilmFilter.get().value().ingredient().items().map(Holder::value).toArray(ItemLike[]::new))
+					ItemPredicate.Builder.item().of(
+						itemRegistry,
+						specialFilmFilterAndIngredient.get().ingredient().items().map(Holder::value).toArray(ItemLike[]::new)
+					)
 				)
 			);
 		} else {

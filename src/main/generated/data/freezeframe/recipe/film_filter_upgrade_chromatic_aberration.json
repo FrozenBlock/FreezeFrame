@@ -6,5 +6,8 @@
   "result": {
     "id": "freezeframe:film"
   },
-  "special_filter_material": "freezeframe:chromatic_aberration"
+  "special_film_filter_and_ingredient": {
+    "ingredient": "minecraft:diamond",
+    "special_film_filter": "freezeframe:chromatic_aberration"
+  }
 }

@@ -6,5 +6,8 @@
   "result": {
     "id": "freezeframe:film"
   },
-  "special_filter_material": "freezeframe:triple_vision"
+  "special_film_filter_and_ingredient": {
+    "ingredient": "minecraft:wither_skeleton_skull",
+    "special_film_filter": "freezeframe:triple_vision"
+  }
 }

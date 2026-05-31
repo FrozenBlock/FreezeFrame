@@ -1,5 +1,4 @@
 {
-  "ingredient": "minecraft:magma_cream",
   "operation": "temperature_up",
   "shader": "freezeframe:post/temperature"
 }

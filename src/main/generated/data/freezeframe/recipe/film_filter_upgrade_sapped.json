@@ -6,5 +6,8 @@
   "result": {
     "id": "freezeframe:film"
   },
-  "special_filter_material": "freezeframe:sapped"
+  "special_film_filter_and_ingredient": {
+    "ingredient": "minecraft:resin_clump",
+    "special_film_filter": "freezeframe:sapped"
+  }
 }

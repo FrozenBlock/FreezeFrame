@@ -22,45 +22,63 @@ import net.frozenblock.freezeframe.item.filter.SpecialFilmFilter;
 import net.minecraft.data.worldgen.BootstrapContext;
 import net.minecraft.resources.Identifier;
 import net.minecraft.resources.ResourceKey;
-import net.minecraft.world.item.Items;
-import net.minecraft.world.item.crafting.Ingredient;
 
 public class FFSpecialFilmFilters {
+	public static final ResourceKey<SpecialFilmFilter> BLOOM = createKey("bloom");
+	public static final ResourceKey<SpecialFilmFilter> CHROMATIC_ABERRATION = createKey("chromatic_aberration");
+	public static final ResourceKey<SpecialFilmFilter> CRUNCHY = createKey("crunchy");
+	public static final ResourceKey<SpecialFilmFilter> DESATURATE = createKey("desaturate");
+	public static final ResourceKey<SpecialFilmFilter> GILDED = createKey("gilded");
+	public static final ResourceKey<SpecialFilmFilter> HIGH_CONTRAST = createKey("high_contrast");
+	public static final ResourceKey<SpecialFilmFilter> INVERT = createKey("invert");
+	public static final ResourceKey<SpecialFilmFilter> MONOCHROME = createKey("monochrome");
+	public static final ResourceKey<SpecialFilmFilter> SAPPED = createKey("sapped");
+	public static final ResourceKey<SpecialFilmFilter> SPIDER = createKey("spider");
+	public static final ResourceKey<SpecialFilmFilter> TEMPERATURE_DOWN = createKey("temperature_down");
+	public static final ResourceKey<SpecialFilmFilter> TEMPERATURE_UP = createKey("temperature_up");
+	public static final ResourceKey<SpecialFilmFilter> TRIPLE_VISION = createKey("triple_vision");
+	public static final ResourceKey<SpecialFilmFilter> WARDING = createKey("warding");
 
 	public static void bootstrap(BootstrapContext<SpecialFilmFilter> context) {
-		register(context, "bloom", Ingredient.of(Items.SLIME_BALL), SpecialFilmFilter.Operation.BLOOM, "post/bloom");
-		register(context, "chromatic_aberration", Ingredient.of(Items.DIAMOND), SpecialFilmFilter.Operation.CHROMATIC_ABERRATION, "post/chromatic_aberration");
-		register(context, "crunchy", Ingredient.of(Items.CREEPER_HEAD), SpecialFilmFilter.Operation.CRUNCHY, "post/crunchy");
-		register(context, "desaturate", Ingredient.of(Items.ZOMBIE_HEAD), SpecialFilmFilter.Operation.NONE, "post/desaturate");
-		register(context, "gilded", Ingredient.of(Items.PIGLIN_HEAD), SpecialFilmFilter.Operation.NONE, "post/gilded");
-		register(context, "high_contrast", Ingredient.of(Items.HONEY_BOTTLE), SpecialFilmFilter.Operation.HIGH_CONTRAST, "post/contrast");
-		register(context, "invert", Ingredient.of(Items.ENDER_PEARL), SpecialFilmFilter.Operation.NONE, "post/invert");
-		register(context, "monochrome", Ingredient.of(Items.SKELETON_SKULL), SpecialFilmFilter.Operation.NONE, "post/monochrome");
-		register(context, "sapped", Ingredient.of(Items.RESIN_CLUMP), SpecialFilmFilter.Operation.SAPPED, "post/tint_shift");
-		register(context, "spider", Ingredient.of(Items.SPIDER_EYE), SpecialFilmFilter.Operation.NONE, "post/spider_simple");
-		register(context, "temperature_down", Ingredient.of(Items.SNOWBALL), SpecialFilmFilter.Operation.TEMPERATURE_DOWN, "post/temperature");
-		register(context, "temperature_up", Ingredient.of(Items.MAGMA_CREAM), SpecialFilmFilter.Operation.TEMPERATURE_UP, "post/temperature");
-		register(context, "triple_vision", Ingredient.of(Items.WITHER_SKELETON_SKULL), SpecialFilmFilter.Operation.TRIPLE_VISION, "post/triple_vision");
-		register(context, "warding", Ingredient.of(Items.ECHO_SHARD), SpecialFilmFilter.Operation.WARDING, "post/tint_shift");
+		register(context, BLOOM, SpecialFilmFilter.Operation.BLOOM, "post/bloom");
+		register(context, CHROMATIC_ABERRATION, SpecialFilmFilter.Operation.CHROMATIC_ABERRATION, "post/chromatic_aberration");
+		register(context, CRUNCHY, SpecialFilmFilter.Operation.CRUNCHY, "post/crunchy");
+		register(context, DESATURATE, SpecialFilmFilter.Operation.NONE, "post/desaturate");
+		register(context, GILDED, SpecialFilmFilter.Operation.NONE, "post/gilded");
+		register(context, HIGH_CONTRAST, SpecialFilmFilter.Operation.HIGH_CONTRAST, "post/contrast");
+		register(context, INVERT, SpecialFilmFilter.Operation.NONE, "post/invert");
+		register(context, MONOCHROME, SpecialFilmFilter.Operation.NONE, "post/monochrome");
+		register(context, SAPPED, SpecialFilmFilter.Operation.SAPPED, "post/tint_shift");
+		register(context, SPIDER, SpecialFilmFilter.Operation.NONE, "post/spider_simple");
+		register(context, TEMPERATURE_DOWN, SpecialFilmFilter.Operation.TEMPERATURE_DOWN, "post/temperature");
+		register(context, TEMPERATURE_UP, SpecialFilmFilter.Operation.TEMPERATURE_UP, "post/temperature");
+		register(context, TRIPLE_VISION, SpecialFilmFilter.Operation.TRIPLE_VISION, "post/triple_vision");
+		register(context, WARDING, SpecialFilmFilter.Operation.WARDING, "post/tint_shift");
 	}
 
 	private static void register(
 		BootstrapContext<SpecialFilmFilter> context,
-		String name,
-		Ingredient ingredient,
+		ResourceKey<SpecialFilmFilter> key,
 		SpecialFilmFilter.Operation operation,
 		String shader
 	) {
-		register(context, FFConstants.id(name), ingredient, operation, FFConstants.id(shader));
+		register(context, key, operation, FFConstants.id(shader));
 	}
 
 	public static void register(
 		BootstrapContext<SpecialFilmFilter> context,
-		Identifier id,
-		Ingredient ingredient,
+		ResourceKey<SpecialFilmFilter> key,
 		SpecialFilmFilter.Operation operation,
 		Identifier shader
 	) {
-		context.register(ResourceKey.create(FFRegistries.SPECIAL_FILM_FILTER, id), new SpecialFilmFilter(ingredient, operation, shader));
+		context.register(key, new SpecialFilmFilter(operation, shader));
+	}
+
+	private static ResourceKey<SpecialFilmFilter> createKey(String name) {
+		return createKey(FFConstants.id(name));
+	}
+
+	public static ResourceKey<SpecialFilmFilter> createKey(Identifier id) {
+		return ResourceKey.create(FFRegistries.SPECIAL_FILM_FILTER, id);
 	}
 }

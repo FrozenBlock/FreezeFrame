@@ -1,5 +1,4 @@
 {
-  "ingredient": "minecraft:echo_shard",
   "operation": "warding",
   "shader": "freezeframe:post/tint_shift"
 }

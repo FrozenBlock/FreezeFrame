@@ -6,5 +6,8 @@
   "result": {
     "id": "freezeframe:film"
   },
-  "special_filter_material": "freezeframe:temperature_down"
+  "special_film_filter_and_ingredient": {
+    "ingredient": "minecraft:snowball",
+    "special_film_filter": "freezeframe:temperature_down"
+  }
 }

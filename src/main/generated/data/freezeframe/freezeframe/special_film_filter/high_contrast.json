@@ -1,5 +1,4 @@
 {
-  "ingredient": "minecraft:honey_bottle",
   "operation": "high_contrast",
   "shader": "freezeframe:post/contrast"
 }

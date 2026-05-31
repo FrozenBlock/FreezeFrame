@@ -6,5 +6,8 @@
   "result": {
     "id": "freezeframe:film"
   },
-  "special_filter_material": "freezeframe:desaturate"
+  "special_film_filter_and_ingredient": {
+    "ingredient": "minecraft:zombie_head",
+    "special_film_filter": "freezeframe:desaturate"
+  }
 }

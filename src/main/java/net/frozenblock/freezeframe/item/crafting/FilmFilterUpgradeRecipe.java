@@ -17,6 +17,7 @@
 
 package net.frozenblock.freezeframe.item.crafting;
 
+import com.mojang.serialization.Codec;
 import com.mojang.serialization.MapCodec;
 import com.mojang.serialization.codecs.RecordCodecBuilder;
 import java.util.ArrayList;
@@ -57,7 +58,7 @@ public class FilmFilterUpgradeRecipe extends CustomRecipe {
 		Ingredient.CODEC.fieldOf("film").forGetter(recipe -> recipe.film),
 		Ingredient.CODEC.optionalFieldOf("exclusion_tint_material").forGetter(recipe -> recipe.exclusionTintMaterial),
 		Ingredient.CODEC.optionalFieldOf("dye").forGetter(recipe -> recipe.dye),
-		SpecialFilmFilter.REGISTRY_CODEC.optionalFieldOf("special_filter_material").forGetter(recipe -> recipe.specialFilter),
+		SpecialFilterAndIngredient.CODEC.optionalFieldOf("special_film_filter_and_ingredient").forGetter(recipe -> recipe.specialFilter),
 		CraftingBookInfo.MAP_CODEC.forGetter(recipe -> recipe.craftingBookInfo),
 		ItemStackTemplate.CODEC.fieldOf("result").forGetter(recipe -> recipe.result)
 	).apply(instance, FilmFilterUpgradeRecipe::new));
@@ -65,7 +66,7 @@ public class FilmFilterUpgradeRecipe extends CustomRecipe {
 		Ingredient.CONTENTS_STREAM_CODEC, recipe -> recipe.film,
 		ByteBufCodecs.optional(Ingredient.CONTENTS_STREAM_CODEC), recipe -> recipe.exclusionTintMaterial,
 		ByteBufCodecs.optional(Ingredient.CONTENTS_STREAM_CODEC), recipe -> recipe.dye,
-		ByteBufCodecs.optional(SpecialFilmFilter.STREAM_CODEC), recipe -> recipe.specialFilter,
+		ByteBufCodecs.optional(SpecialFilterAndIngredient.STREAM_CODEC), recipe -> recipe.specialFilter,
 		CraftingBookInfo.STREAM_CODEC, recipe -> recipe.craftingBookInfo,
 		ItemStackTemplate.STREAM_CODEC, recipe -> recipe.result,
 		FilmFilterUpgradeRecipe::new
@@ -74,7 +75,7 @@ public class FilmFilterUpgradeRecipe extends CustomRecipe {
 	private final Ingredient film;
 	private final Optional<Ingredient> exclusionTintMaterial;
 	private final Optional<Ingredient> dye;
-	private final Optional<Holder<SpecialFilmFilter>> specialFilter;
+	private final Optional<SpecialFilterAndIngredient> specialFilter;
 	private final CraftingBookInfo craftingBookInfo;
 	private final ItemStackTemplate result;
 	@Nullable
@@ -84,7 +85,7 @@ public class FilmFilterUpgradeRecipe extends CustomRecipe {
 		Ingredient film,
 		Optional<Ingredient> exclusionTintMaterial,
 		Optional<Ingredient> dye,
-		Optional<Holder<SpecialFilmFilter>> specialFilter,
+		Optional<SpecialFilterAndIngredient> specialFilter,
 		CraftingBookInfo craftingBookInfo,
 		ItemStackTemplate result
 	) {
@@ -135,7 +136,7 @@ public class FilmFilterUpgradeRecipe extends CustomRecipe {
 	}
 
 	protected PlacementInfo createPlacementInfo() {
-		if (this.specialFilter.isPresent()) return PlacementInfo.create(List.of(this.film, this.specialFilter.get().value().ingredient()));
+		if (this.specialFilter.isPresent()) return PlacementInfo.create(List.of(this.film, this.specialFilter.get().ingredient()));
 		if (this.exclusionTintMaterial.isPresent()) return PlacementInfo.create(List.of(this.film, this.dye.orElseThrow(), this.exclusionTintMaterial.orElseThrow()));
 		return PlacementInfo.create(List.of(this.film, this.dye.orElseThrow()));
 	}
@@ -154,11 +155,14 @@ public class FilmFilterUpgradeRecipe extends CustomRecipe {
 		if (this.specialFilter.isPresent()) {
 			return List.of(
 				new ShapelessCraftingRecipeDisplay(
-					List.of(film, this.specialFilter.get().value().ingredient().display()),
+					List.of(film, this.specialFilter.get().ingredient().display()),
 					new SlotDisplay.ItemStackSlotDisplay(
 						ItemStackTemplate.fromNonEmptyStack(
 							this.result.apply(
-								DataComponentPatch.builder().set(FFDataComponents.FILM_FILTER, FilmFilter.specialDemo(this.specialFilter.get())).build()
+								DataComponentPatch.builder().set(
+									FFDataComponents.FILM_FILTER,
+									FilmFilter.specialDemo(this.specialFilter.get().specialFilmFilter())
+								).build()
 							)
 						)
 					),
@@ -219,8 +223,8 @@ public class FilmFilterUpgradeRecipe extends CustomRecipe {
 		if (exclusionTintCount > 1) return ItemStack.EMPTY;
 
 		if (this.specialFilter.isPresent()) {
-			if (filter.hasSpecialOfType(this.specialFilter.get())) return ItemStack.EMPTY;
-			filter = filter.addLayer(FilmFilter.Layer.special(this.specialFilter.get()));
+			if (filter.hasSpecialOfType(this.specialFilter.get().specialFilmFilter())) return ItemStack.EMPTY;
+			filter = filter.addLayer(FilmFilter.Layer.special(this.specialFilter.get().specialFilmFilter()));
 		} else {
 			final int red = redTotal / colorCount;
 			final int green = greenTotal / colorCount;
@@ -278,7 +282,7 @@ public class FilmFilterUpgradeRecipe extends CustomRecipe {
 		ItemStack specialFilterMaterial = ItemStack.EMPTY;
 		for (int i = 0; i < input.size(); i++) {
 			final ItemStack itemStack = input.getItem(i);
-			if (this.specialFilter.get().value().ingredient().test(itemStack)) {
+			if (this.specialFilter.get().ingredient().test(itemStack)) {
 				if (specialFilterMaterial.isEmpty()) {
 					specialFilterMaterial = itemStack;
 				} else {
@@ -294,7 +298,7 @@ public class FilmFilterUpgradeRecipe extends CustomRecipe {
 			final ItemStack itemStack = input.getItem(i);
 			if (itemStack.isEmpty()) continue;
 			if (this.film.test(itemStack)) continue;
-			if (this.specialFilter.map(specialFilter -> specialFilter.value().ingredient().test(itemStack)).orElse(true)) return false;
+			if (this.specialFilter.map(specialFilter -> specialFilter.ingredient().test(itemStack)).orElse(true)) return false;
 			if (!this.dye.map(ingredient -> ingredient.test(itemStack))
 				.orElse(this.exclusionTintMaterial.map(ingredient -> ingredient.test(itemStack)).orElse(true))
 			) {
@@ -302,5 +306,17 @@ public class FilmFilterUpgradeRecipe extends CustomRecipe {
 			}
 		}
 		return true;
+	}
+
+	public record SpecialFilterAndIngredient(Holder<SpecialFilmFilter> specialFilmFilter, Ingredient ingredient) {
+		public static final Codec<SpecialFilterAndIngredient> CODEC = RecordCodecBuilder.create(instance -> instance.group(
+			SpecialFilmFilter.REGISTRY_CODEC.fieldOf("special_film_filter").forGetter(SpecialFilterAndIngredient::specialFilmFilter),
+			Ingredient.CODEC.fieldOf("ingredient").forGetter(SpecialFilterAndIngredient::ingredient)
+		).apply(instance, SpecialFilterAndIngredient::new));
+		public static final StreamCodec<RegistryFriendlyByteBuf, SpecialFilterAndIngredient> STREAM_CODEC = StreamCodec.composite(
+			SpecialFilmFilter.STREAM_CODEC, SpecialFilterAndIngredient::specialFilmFilter,
+			Ingredient.CONTENTS_STREAM_CODEC, SpecialFilterAndIngredient::ingredient,
+			SpecialFilterAndIngredient::new
+		);
 	}
 }

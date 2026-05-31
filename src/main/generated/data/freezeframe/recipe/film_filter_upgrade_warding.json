@@ -6,5 +6,8 @@
   "result": {
     "id": "freezeframe:film"
   },
-  "special_filter_material": "freezeframe:warding"
+  "special_film_filter_and_ingredient": {
+    "ingredient": "minecraft:echo_shard",
+    "special_film_filter": "freezeframe:warding"
+  }
 }

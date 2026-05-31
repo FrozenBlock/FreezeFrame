@@ -28,12 +28,10 @@ import net.minecraft.network.codec.StreamCodec;
 import net.minecraft.resources.Identifier;
 import net.minecraft.resources.RegistryFixedCodec;
 import net.minecraft.util.StringRepresentable;
-import net.minecraft.world.item.crafting.Ingredient;
 import net.minecraft.ChatFormatting;
 
-public record SpecialFilmFilter(Ingredient ingredient, Operation operation, Identifier shader) {
+public record SpecialFilmFilter(Operation operation, Identifier shader) {
 	public static final Codec<SpecialFilmFilter> CODEC = RecordCodecBuilder.create(instance -> instance.group(
-		Ingredient.CODEC.fieldOf("ingredient").forGetter(SpecialFilmFilter::ingredient),
 		Operation.CODEC.optionalFieldOf("operation", Operation.NONE).forGetter(SpecialFilmFilter::operation),
 		Identifier.CODEC.fieldOf("shader").forGetter(SpecialFilmFilter::shader)
 	).apply(instance, SpecialFilmFilter::new));

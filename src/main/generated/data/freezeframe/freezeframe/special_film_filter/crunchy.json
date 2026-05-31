@@ -1,5 +1,4 @@
 {
-  "ingredient": "minecraft:creeper_head",
   "operation": "crunchy",
   "shader": "freezeframe:post/crunchy"
 }

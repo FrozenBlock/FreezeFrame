@@ -6,5 +6,8 @@
   "result": {
     "id": "freezeframe:film"
   },
-  "special_filter_material": "freezeframe:high_contrast"
+  "special_film_filter_and_ingredient": {
+    "ingredient": "minecraft:honey_bottle",
+    "special_film_filter": "freezeframe:high_contrast"
+  }
 }

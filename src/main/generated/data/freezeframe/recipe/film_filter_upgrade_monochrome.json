@@ -6,5 +6,8 @@
   "result": {
     "id": "freezeframe:film"
   },
-  "special_filter_material": "freezeframe:monochrome"
+  "special_film_filter_and_ingredient": {
+    "ingredient": "minecraft:skeleton_skull",
+    "special_film_filter": "freezeframe:monochrome"
+  }
 }
