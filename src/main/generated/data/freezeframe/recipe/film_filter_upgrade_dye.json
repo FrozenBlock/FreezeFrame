@@ -3,7 +3,7 @@
   "category": "equipment",
   "dye": "#minecraft:dyes",
   "film": "freezeframe:film",
-  "group": "film",
+  "group": "film_filter",
   "result": {
     "id": "freezeframe:film"
   }

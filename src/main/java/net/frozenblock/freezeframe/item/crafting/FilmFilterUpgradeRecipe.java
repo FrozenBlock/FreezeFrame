@@ -136,6 +136,7 @@ public class FilmFilterUpgradeRecipe extends CustomRecipe {
 
 	protected PlacementInfo createPlacementInfo() {
 		if (this.specialFilter.isPresent()) return PlacementInfo.create(List.of(this.film, this.specialFilter.get().value().ingredient()));
+		if (this.exclusionTintMaterial.isPresent()) return PlacementInfo.create(List.of(this.film, this.dye.orElseThrow(), this.exclusionTintMaterial.orElseThrow()));
 		return PlacementInfo.create(List.of(this.film, this.dye.orElseThrow()));
 	}
 

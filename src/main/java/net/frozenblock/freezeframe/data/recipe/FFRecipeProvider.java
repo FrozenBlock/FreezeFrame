@@ -100,12 +100,12 @@ public final class FFRecipeProvider extends FabricRecipeProvider {
 					.save(this.output, "film_capacity_upgrade");
 
 				try {
-					createDyeFilmFilterRecipe(RecipeCategory.TOOLS, "film", items, this.output, false);
-					createDyeFilmFilterRecipe(RecipeCategory.TOOLS, "film",items, this.output, true);
+					createDyeFilmFilterRecipe(RecipeCategory.TOOLS, "film_filter", items, this.output, false);
+					createDyeFilmFilterRecipe(RecipeCategory.TOOLS, "film_filter", items, this.output, true);
 
 					this.registries.lookupOrThrow(FFRegistries.SPECIAL_FILM_FILTER).listElements().forEach(specialFilmFilter -> {
 						try {
-							createSpecialFilmFilterRecipe(RecipeCategory.TOOLS, "film",items, this.output, specialFilmFilter);
+							createSpecialFilmFilterRecipe(RecipeCategory.TOOLS, "film_filter", items, this.output, specialFilmFilter);
 						} catch (IllegalAccessException e) {
 							throw new RuntimeException(e);
 						}

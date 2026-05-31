@@ -4,7 +4,7 @@
   "dye": "#minecraft:dyes",
   "exclusion_tint_material": "minecraft:amethyst_shard",
   "film": "freezeframe:film",
-  "group": "film",
+  "group": "film_filter",
   "result": {
     "id": "freezeframe:film"
   }
