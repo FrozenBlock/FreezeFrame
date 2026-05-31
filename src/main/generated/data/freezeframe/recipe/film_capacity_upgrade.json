@@ -3,7 +3,7 @@
   "category": "equipment",
   "film": "freezeframe:film",
   "group": "film",
-  "material": "freezeframe:film",
+  "material": "minecraft:paper",
   "result": {
     "id": "freezeframe:film"
   }

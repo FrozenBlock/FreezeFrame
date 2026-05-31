@@ -47,7 +47,7 @@ import org.jspecify.annotations.Nullable;
 public class FilmCapacityUpgradeRecipe extends CustomRecipe {
 	public static final MapCodec<FilmCapacityUpgradeRecipe> MAP_CODEC = RecordCodecBuilder.mapCodec(instance -> instance.group(
 		Ingredient.CODEC.fieldOf("film").forGetter(recipe -> recipe.film),
-		Ingredient.CODEC.fieldOf("material").forGetter(recipe -> recipe.film),
+		Ingredient.CODEC.fieldOf("material").forGetter(recipe -> recipe.material),
 		CraftingBookInfo.MAP_CODEC.forGetter(recipe -> recipe.craftingBookInfo),
 		ItemStackTemplate.CODEC.fieldOf("result").forGetter(recipe -> recipe.result)
 	).apply(instance, FilmCapacityUpgradeRecipe::new));
