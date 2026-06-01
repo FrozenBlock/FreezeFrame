@@ -25,6 +25,7 @@ import net.frozenblock.freezeframe.networking.packet.ChangeScopeZoomPacket;
 import net.frozenblock.freezeframe.util.ScopeZoomHelper;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.resources.sounds.SimpleSoundInstance;
+import net.minecraft.client.resources.sounds.SoundInstance;
 import net.minecraft.core.Holder;
 import net.minecraft.sounds.SoundEvent;
 import net.minecraft.util.Mth;
@@ -47,9 +48,6 @@ public final class ScopeZoomManager {
 	private static Optional<Holder<SoundEvent>> activeZoomOutSound = Optional.empty();
 	private static boolean hasForcedZoom = false;
 	private static float forcedZoom = BASE_ZOOM;
-
-	private ScopeZoomManager() {
-	}
 
 	public static float getZoom() {
 		return hasForcedZoom ? forcedZoom : zoom;
@@ -102,7 +100,7 @@ public final class ScopeZoomManager {
 	public static boolean adjustZoom(Minecraft minecraft, Player player, int wheelDirection) {
 		if (wheelDirection == 0) return false;
 
-		final float initalZoom = zoom;
+		final float initialZoom = zoom;
 		final boolean increase = wheelDirection < 0;
 		if (!increase) {
 			zoom = Mth.clamp(zoom - activeZoomStep, activeMinZoom, activeMaxZoom);
@@ -110,28 +108,38 @@ public final class ScopeZoomManager {
 			zoom = Mth.clamp(zoom + activeZoomStep, activeMinZoom, activeMaxZoom);
 		}
 
-		if (initalZoom != zoom) {
-			final float zoomProgress = zoom / activeMaxZoom;
-			final Optional<Holder<SoundEvent>> zoomSound = increase ? activeZoomInSound : activeZoomOutSound;
-			zoomSound.ifPresent(soundEventHolder -> minecraft.getSoundManager().play(SimpleSoundInstance.forUI(soundEventHolder.value(), 0.9F + zoomProgress)));
-			ClientPlayNetworking.send(new ChangeScopeZoomPacket(player.getUsedItemHand(), zoom));
-		}
-
-		return initalZoom != zoom;
+		return onZoomChanged(minecraft, player, initialZoom);
 	}
 
 	public static boolean setZoomToDefault(Minecraft minecraft, Player player) {
-		final float initalZoom = zoom;
-		final boolean increase = initalZoom < activeDefaultZoom;
+		final float initialZoom = zoom;
 		zoom = activeDefaultZoom;
 
-		if (initalZoom != zoom) {
+		return onZoomChanged(minecraft, player, initialZoom);
+	}
+
+	private static boolean onZoomChanged(Minecraft minecraft, Player player, float initialZoom) {
+		if (initialZoom != zoom) {
 			final float zoomProgress = zoom / activeMaxZoom;
+			final int increments = (int) (Math.abs(zoom - initialZoom) / activeZoomStep);
+			final boolean increase = zoom > initialZoom;
 			final Optional<Holder<SoundEvent>> zoomSound = increase ? activeZoomInSound : activeZoomOutSound;
-			zoomSound.ifPresent(soundEventHolder -> minecraft.getSoundManager().play(SimpleSoundInstance.forUI(soundEventHolder.value(), 0.9F + zoomProgress)));
+			zoomSound.ifPresent(soundEventHolder -> {
+				for (int i = 0; i < increments; i++) {
+					final SoundInstance sound = SimpleSoundInstance.forUI(
+						soundEventHolder.value(),
+						0.9F + (increments <= 1 ? zoomProgress : (initialZoom + (increase ? activeZoomStep : -activeZoomStep) * (i + 1)) / activeMaxZoom)
+					);
+					if (i == 0) {
+						minecraft.getSoundManager().play(sound);
+					} else {
+						minecraft.getSoundManager().playDelayed(sound, i / 2);
+					}
+				}
+			});
 			ClientPlayNetworking.send(new ChangeScopeZoomPacket(player.getUsedItemHand(), zoom));
 		}
 
-		return initalZoom != zoom;
+		return initialZoom != zoom;
 	}
 }
