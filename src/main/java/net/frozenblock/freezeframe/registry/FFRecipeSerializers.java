@@ -19,7 +19,7 @@ package net.frozenblock.freezeframe.registry;
 
 import net.frozenblock.freezeframe.FFConstants;
 import net.frozenblock.freezeframe.item.crafting.FilmCapacityUpgradeRecipe;
-import net.frozenblock.freezeframe.item.crafting.FilmFilterUpgradeRecipe;
+import net.frozenblock.freezeframe.item.crafting.FilmFilterRecipe;
 import net.minecraft.core.Registry;
 import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.world.item.crafting.RecipeSerializer;
@@ -30,10 +30,10 @@ public class FFRecipeSerializers {
 		FFConstants.id("film_capacity_upgrade"),
 		FilmCapacityUpgradeRecipe.SERIALIZER
 	);
-	public static final RecipeSerializer<FilmFilterUpgradeRecipe> FILM_FILTER_UPGRADE = Registry.register(
+	public static final RecipeSerializer<FilmFilterRecipe> FILM_FILTER = Registry.register(
 		BuiltInRegistries.RECIPE_SERIALIZER,
-		FFConstants.id("film_filter_upgrade"),
-		FilmFilterUpgradeRecipe.SERIALIZER
+		FFConstants.id("film_filter"),
+		FilmFilterRecipe.SERIALIZER
 	);
 
 	public static void init() {}

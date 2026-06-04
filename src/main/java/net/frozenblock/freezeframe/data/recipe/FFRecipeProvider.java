@@ -23,7 +23,7 @@ import net.fabricmc.fabric.api.datagen.v1.FabricPackOutput;
 import net.fabricmc.fabric.api.datagen.v1.provider.FabricRecipeProvider;
 import net.frozenblock.freezeframe.FFConstants;
 import net.frozenblock.freezeframe.item.crafting.FilmCapacityUpgradeRecipe;
-import net.frozenblock.freezeframe.item.crafting.FilmFilterUpgradeRecipe;
+import net.frozenblock.freezeframe.item.crafting.FilmFilterRecipe;
 import net.frozenblock.freezeframe.item.filter.SpecialFilmFilter;
 import net.frozenblock.freezeframe.registry.FFBlocks;
 import net.frozenblock.freezeframe.registry.FFItems;
@@ -207,7 +207,7 @@ public final class FFRecipeProvider extends FabricRecipeProvider {
 			group,
 			itemRegistry,
 			output,
-			Optional.of(new FilmFilterUpgradeRecipe.SpecialFilterAndIngredient(specialFilmFilter, specialFilmFilterIngredient)),
+			Optional.of(new FilmFilterRecipe.SpecialFilterAndIngredient(specialFilmFilter, specialFilmFilterIngredient)),
 			false,
 			specialFilmFilter.unwrapKey().orElseThrow().identifier().getPath()
 		);
@@ -218,13 +218,13 @@ public final class FFRecipeProvider extends FabricRecipeProvider {
 		String group,
 		HolderLookup.RegistryLookup<Item> itemRegistry,
 		RecipeOutput output,
-		Optional<FilmFilterUpgradeRecipe.SpecialFilterAndIngredient> specialFilmFilterAndIngredient,
+		Optional<FilmFilterRecipe.SpecialFilterAndIngredient> specialFilmFilterAndIngredient,
 		boolean hasExclusion,
 		String recipeSuffix
 	) throws IllegalAccessException {
 		if (StringUtil.isNullOrEmpty(recipeSuffix)) throw new IllegalAccessException("recipeSuffix cannot be empty!");
 
-		final SpecialRecipeBuilder builder = SpecialRecipeBuilder.special(() -> new FilmFilterUpgradeRecipe(
+		final SpecialRecipeBuilder builder = SpecialRecipeBuilder.special(() -> new FilmFilterRecipe(
 				Ingredient.of(FFItems.FILM),
 				specialFilmFilterAndIngredient.isPresent() || !hasExclusion ? Optional.empty() : Optional.of(Ingredient.of(Items.AMETHYST_SHARD)),
 				specialFilmFilterAndIngredient.isPresent() ? Optional.empty() : Optional.of(Ingredient.of(itemRegistry.getOrThrow(ItemTags.DYES))),
@@ -266,7 +266,7 @@ public final class FFRecipeProvider extends FabricRecipeProvider {
 
 		}
 
-		builder.save(output, "film_filter_upgrade_" + recipeSuffix);
+		builder.save(output, "film_filter_" + recipeSuffix);
 	}
 
 	@Override

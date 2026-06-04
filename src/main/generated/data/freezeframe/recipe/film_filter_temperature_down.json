@@ -1,0 +1,13 @@
+{
+  "type": "freezeframe:film_filter",
+  "category": "equipment",
+  "film": "freezeframe:film",
+  "group": "film_filter",
+  "result": {
+    "id": "freezeframe:film"
+  },
+  "special_film_filter_and_ingredient": {
+    "ingredient": "minecraft:snowball",
+    "special_film_filter": "freezeframe:temperature_down"
+  }
+}

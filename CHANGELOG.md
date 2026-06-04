@@ -2,7 +2,35 @@ Please clear changelog after each release.
 Put the changelog BELOW the dashes. ANYTHING ABOVE IS IGNORED.
 -----------------
 - Bumped Freeze Frame's protocol version to 2.
-- Added a statistic for interact with a Developing Table.
+- Added Film Filters.
+  - Film Filters come in two variants:
+    - Special
+      - Added the `freezeframe:special_film_filter` Dynamic Registry.
+      - Special Film Filters are data-driven with the following format:
+        - `shader`: The ID of the shader to be applied.
+        - `shader_uniforms`: The uniforms to be passed to the shader.
+      - Can be applied up to one time per Film item each, via crafting recipe.
+    - Dye
+      - Can be applied to Film items via crafting.
+        - When multiple Dyes are applied in a single craft, the average color of all Dyes will be used for the new Filter Layers.
+      - When multiple Dye Filter Layers are present, they be applied separately.
+  - Film Filters are applied to Photographs taken on the Film item, and when looking through a Camera with the Film item inside while the its capacity isn't full.
+  - Up to eight Film Filter Layers can be applied to a Film item.
+  - Added the `freezeframe:film_filter` recipe type, with the following format:
+    - `category`: The Recipe Book category for the recipe.
+    - `group`: The Recipe Book group for the recipe.
+    - `film`: The base Ingredient to apply the filter to.
+    - `special_film_filter_and_ingredient`: An optional field to be used when making a Special Filter recipe.
+      - `ingredient`: The Ingredient required for the Special Filter.
+      - `special_film_filter`: The Special Filter's ID.
+    - `dyes`: An optional Ingredient to be used when making a Dye Filter recipe.
+    - `exclusion_tint_material`: An optional Ingredient to be used when making a Dye Filter recipe, which will apply an Exclusion effect to the Dye Filter.
+    - `result`: The output Item. Note that the new Filter component and all existing components will be carried over to the output automatically.
+  - Added a config option to disable Film Filter crafting.
+- Photos can now be placed inside of Books.
+  - A new button has been added to the Book's GUI to open the Inventory, which will allow the user to place a Photo inside of the Book and view a preview of how it will look.
+  - If there is too much text on a page for a Photo to fit, the button will be disabled and display a tooltip when hovered over.
+- Added a statistic for interacting with a Developing Table.
 - Added a config option to render Photo items in third-person, similarly to their first-person counterpart.
 - Photo rendering can now render a backside.
   - Added the `FRAME_BACK` Frame Type.

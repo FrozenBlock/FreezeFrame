@@ -59,6 +59,5 @@ public record SpecialFilmFilter(Identifier shader, Optional uniforms) {
 			PostChainConfig.Pass.UNIFORM_BLOCKS_CODEC.optionalFieldOf("shader_uniforms")
 				.forGetter(specialFilmFilter -> ((Optional<Map<String, List<UniformValue>>>) specialFilmFilter.uniforms()))
 		).apply(instance, SpecialFilmFilter::new));
-
 	}
 }

@@ -1,0 +1,35 @@
+{
+  "parent": "minecraft:recipes/root",
+  "criteria": {
+    "has_film_and_dye": {
+      "conditions": {
+        "items": [
+          {
+            "items": "freezeframe:film"
+          },
+          {
+            "items": "#minecraft:dyes"
+          }
+        ]
+      },
+      "trigger": "minecraft:inventory_changed"
+    },
+    "has_the_recipe": {
+      "conditions": {
+        "recipe": "freezeframe:film_filter_dye"
+      },
+      "trigger": "minecraft:recipe_unlocked"
+    }
+  },
+  "requirements": [
+    [
+      "has_the_recipe",
+      "has_film_and_dye"
+    ]
+  ],
+  "rewards": {
+    "recipes": [
+      "freezeframe:film_filter_dye"
+    ]
+  }
+}
