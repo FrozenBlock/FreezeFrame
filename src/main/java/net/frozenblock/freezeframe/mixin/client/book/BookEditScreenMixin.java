@@ -73,12 +73,12 @@ public abstract class BookEditScreenMixin extends Screen {
 	@Shadow
 	private ItemStack book;
 	@Shadow
-	private int currentPage;
+	public int currentPage;
 	@Final
 	@Shadow
 	private List<String> pages;
 	@Shadow
-	private MultiLineEditBox page;
+	public MultiLineEditBox page;
 	@Final
 	@Shadow
 	private InteractionHand hand;

@@ -17,6 +17,8 @@
 
 package net.frozenblock.freezeframe.mixin.client.book;
 
+import com.llamalad7.mixinextras.injector.wrapoperation.Operation;
+import com.llamalad7.mixinextras.injector.wrapoperation.WrapOperation;
 import com.mojang.blaze3d.platform.Window;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
@@ -25,19 +27,19 @@ import net.frozenblock.freezeframe.client.photograph.PhotographHoverTooltipRende
 import net.frozenblock.freezeframe.client.photograph.PhotographRenderer;
 import net.frozenblock.freezeframe.component.Photograph;
 import net.frozenblock.freezeframe.registry.FFDataComponents;
+import net.minecraft.client.gui.ActiveTextCollector;
 import net.minecraft.client.gui.GuiGraphicsExtractor;
 import net.minecraft.client.gui.screens.Screen;
 import net.minecraft.client.gui.screens.inventory.BookViewScreen;
 import net.minecraft.network.chat.Component;
 import net.minecraft.resources.Identifier;
+import net.minecraft.util.FormattedCharSequence;
 import net.minecraft.world.item.ItemStack;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Shadow;
 import org.spongepowered.asm.mixin.Unique;
 import org.spongepowered.asm.mixin.injection.At;
-import org.spongepowered.asm.mixin.injection.Constant;
 import org.spongepowered.asm.mixin.injection.Inject;
-import org.spongepowered.asm.mixin.injection.ModifyConstant;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 
 @Environment(EnvType.CLIENT)
@@ -50,7 +52,7 @@ public abstract class BookViewScreenMixin extends Screen {
 	@Unique
 	private static final int FREEZE_FRAME$PHOTO_Y_OFFSET = 33;
 	@Unique
-	private static final int FREEZE_FRAME$PHOTO_TEXT_Y_SHIFT = 81;
+	private static final int FREEZE_FRAME$PHOTO_TEXT_Y_SHIFT = 98;
 
 	@Shadow
 	private BookViewScreen.BookAccess bookAccess;
@@ -66,16 +68,22 @@ public abstract class BookViewScreenMixin extends Screen {
 		throw new AssertionError("Mixin injection failed - Freeze Frame BookViewScreenMixin.");
 	}
 
-	@ModifyConstant(method = "visitText", constant = @Constant(intValue = 30), require = 0)
-	private int freezeFrame$shiftWrittenBookTextForPhotos(int original) {
-		return BookPagePhotographCache.getPhoto(this.bookAccess, this.currentPage).isEmpty() ? original : original + FREEZE_FRAME$PHOTO_TEXT_Y_SHIFT;
+	@WrapOperation(
+		method = "visitText",
+		at = @At(
+			value = "INVOKE",
+			target = "Lnet/minecraft/client/gui/ActiveTextCollector;accept(IILnet/minecraft/util/FormattedCharSequence;)V"
+		)
+	)
+	private void freezeFrame$shiftWrittenBookTextForPhotos(ActiveTextCollector instance, int x, int y, FormattedCharSequence text, Operation<Void> original) {
+		if (!BookPagePhotographCache.getPhoto(this.bookAccess, this.currentPage).isEmpty()) y += FREEZE_FRAME$PHOTO_TEXT_Y_SHIFT;
+		original.call(instance, x, y, text);
 	}
 
 	@Inject(method = "extractRenderState", at = @At("TAIL"))
 	private void freezeFrame$renderBookPhotograph(GuiGraphicsExtractor graphics, int mouseX, int mouseY, float partialTicks, CallbackInfo info) {
 		final ItemStack photo = BookPagePhotographCache.getPhoto(this.bookAccess, this.currentPage);
 		if (photo.isEmpty()) return;
-
 
 		final Photograph photograph = photo.get(FFDataComponents.PHOTOGRAPH);
 		final Identifier photoId = photograph == null ? null : photograph.identifier();
