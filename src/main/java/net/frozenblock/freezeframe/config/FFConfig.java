@@ -50,6 +50,10 @@ public class FFConfig {
 		.comment("Photo items render similarly to their first-person counterpart in third-person.")
 		.build();
 
+	public static final ConfigEntry<Boolean> FILM_FILTER_RECIPES = CONFIG.entryBuilder("filmFilterRecipes", EntryType.BOOL, true)
+		.comment("Enables filter recipes for the Film Roll item.")
+		.build();
+
 	public static final ConfigEntry<Integer> PHOTOGRAPH_RESOLUTION = CONFIG.entryBuilder("photographResolution", EntryType.INT, 256)
 		.comment("The resolution of Photos taken. Will be clamped between 128 and 1024.")
 		.build();
@@ -58,7 +62,7 @@ public class FFConfig {
 		.comment("Dictates the file format to save Photos as. mcphoto is treated as jpeg. It is recommended to used mcphoto_very_compressed when using higher resolutions, and mcphoto_lossless when using lower resolutions.")
 		.build();
 
-	public static enum PhotographFormat implements StringRepresentable {
+	public enum PhotographFormat implements StringRepresentable {
 		PNG("png", "png"),
 		MCPHOTO_LOSSLESS("mcphoto_lossless", "mcphoto"),
 		MCPHOTO_COMPRESSED("mcphoto_compressed", "mcphoto", 95),

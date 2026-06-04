@@ -24,6 +24,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 import net.frozenblock.freezeframe.component.FilmFilter;
+import net.frozenblock.freezeframe.config.FFConfig;
 import net.frozenblock.freezeframe.item.FilmItem;
 import net.frozenblock.freezeframe.item.crafting.display.FilmDyeFilterSlotDisplay;
 import net.frozenblock.freezeframe.item.filter.SpecialFilmFilter;
@@ -117,12 +118,12 @@ public class FilmFilterUpgradeRecipe extends CustomRecipe {
 
 	@Override
 	public boolean isSpecial() {
-		return false;
+		return !FFConfig.FILM_FILTER_RECIPES.get();
 	}
 
 	@Override
 	public boolean showNotification() {
-		return this.specialFilter.isPresent();
+		return this.specialFilter.isPresent() && FFConfig.FILM_FILTER_RECIPES.get();
 	}
 
 	@Override
@@ -149,6 +150,8 @@ public class FilmFilterUpgradeRecipe extends CustomRecipe {
 
 	@Override
 	public List<RecipeDisplay> display() {
+		if (!FFConfig.FILM_FILTER_RECIPES.get()) return super.display();
+
 		final SlotDisplay film = this.film.display();
 		final SlotDisplay craftingStation = new SlotDisplay.ItemSlotDisplay(Items.CRAFTING_TABLE);
 
@@ -194,6 +197,8 @@ public class FilmFilterUpgradeRecipe extends CustomRecipe {
 	}
 
 	private ItemStack assembleInternal(CraftingInput input) {
+		if (!FFConfig.FILM_FILTER_RECIPES.get()) return ItemStack.EMPTY;
+
 		final ItemStack targetStack = this.findFilm(input);
 		if (targetStack == null || targetStack.isEmpty()) return ItemStack.EMPTY;
 

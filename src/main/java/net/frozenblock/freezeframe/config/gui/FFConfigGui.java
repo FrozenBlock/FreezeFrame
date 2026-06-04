@@ -37,6 +37,7 @@ public final class FFConfigGui {
 		category.addEntry(booleanEntry(builder, "hide_film_photo_preview_and_info", FFConfig.HIDE_FILM_PHOTO_PREVIEW_AND_INFO));
 		category.addEntry(booleanEntry(builder, "hide_photograph_preview", FFConfig.HIDE_PHOTOGRAPH_PREVIEW));
 		category.addEntry(booleanEntry(builder, "third_person_photo_item", FFConfig.THIRD_PERSON_PHOTOGRAPH_ITEM));
+		category.addEntry(booleanEntry(builder, "film_filter_recipes", FFConfig.FILM_FILTER_RECIPES));
 		category.addEntry(intSliderEntry(builder, "photograph_resolution", FFConfig.PHOTOGRAPH_RESOLUTION, 128, 1024));
 		category.addEntry(
 			FrozenClothConfig.syncedEntry(
