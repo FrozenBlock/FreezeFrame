@@ -12,9 +12,9 @@ Put the changelog BELOW the dashes. ANYTHING ABOVE IS IGNORED.
       - Can be applied up to one time per Film item each, via crafting recipe.
     - Dye
       - Can be applied to Film items via crafting.
-        - When multiple Dyes are applied in a single craft, the average color of all Dyes will be used for the new Filter Layers.
+        - When multiple Dyes are applied in a single craft, the average color of all Dyes will be used for the new Filter Layer.
       - When multiple Dye Filter Layers are present, they be applied separately.
-  - Film Filters are applied to Photographs taken on the Film item, and when looking through a Camera with the Film item inside while the its capacity isn't full.
+  - Film Filters are applied to Photographs taken on the Film item, and when looking through a Camera with the Film item inside while its capacity isn't full.
   - Up to eight Film Filter Layers can be applied to a Film item.
   - Added the `freezeframe:film_filter` recipe type, with the following format:
     - `category`: The Recipe Book category for the recipe.
