@@ -28,24 +28,30 @@ import net.minecraft.client.renderer.SubmitNodeCollector;
 import net.minecraft.client.renderer.rendertype.RenderType;
 import net.minecraft.client.renderer.rendertype.RenderTypes;
 import net.minecraft.resources.Identifier;
+import org.spongepowered.asm.mixin.Unique;
 
 @Environment(EnvType.CLIENT)
 public class PhotographRenderer {
 	private static final float IN_WORLD_FRAME_EXTENSION = 1.125F / 16F;
 	private static final float IN_WORLD_FRAME_MAX = 1F + IN_WORLD_FRAME_EXTENSION;
 	private static final float IN_WORLD_FRAME_MIN = -IN_WORLD_FRAME_EXTENSION;
-	private static final Identifier FRAME = FFConstants.id("textures/gui/sprites/photograph/frame.png");
-	private static final RenderType FRAME_RENDER_TYPE = RenderTypes.text(FRAME);
+	private static final RenderType FRAME_RENDER_TYPE = RenderTypes.text(FFConstants.id("textures/gui/sprites/photograph/frame.png"));
 	private static final Identifier GUI_FRAME = FFConstants.id("photograph/frame");
-	private static final Identifier FRAME_BACK = FFConstants.id("textures/gui/sprites/photograph/frame_back.png");
-	private static final RenderType FRAME_BACK_RENDER_TYPE = RenderTypes.text(FRAME_BACK);
+	private static final RenderType FRAME_BACK_RENDER_TYPE = RenderTypes.text(FFConstants.id("textures/gui/sprites/photograph/frame_back.png"));
 	private static final Identifier GUI_FRAME_BACK = FFConstants.id("photograph/frame_back");
-	private static final Identifier FRAME_FULL = FFConstants.id("textures/gui/sprites/photograph/frame_full.png");
-	private static final RenderType FRAME_FULL_RENDER_TYPE = RenderTypes.text(FRAME_FULL);
+	private static final RenderType FRAME_FULL_RENDER_TYPE = RenderTypes.text(FFConstants.id("textures/gui/sprites/photograph/frame_full.png");
 	private static final Identifier GUI_FRAME_FULL = FFConstants.id("photograph/frame_full");
-	private static final Identifier FILM_EMBED = FFConstants.id("textures/gui/sprites/photograph/film_embed.png");
-	private static final RenderType FILM_EMBED_RENDER_TYPE = RenderTypes.text(FILM_EMBED);
+	private static final RenderType FILM_EMBED_RENDER_TYPE = RenderTypes.text(FFConstants.id("textures/gui/sprites/photograph/film_embed.png"));
 	private static final Identifier GUI_FILM_EMBED = FFConstants.id("photograph/film_embed");
+
+	private static final Identifier BOOK_PHOTOGRAPH_HOLDER_BACK = FFConstants.id("container/book/photograph_holder_back");
+	private static final Identifier BOOK_PHOTOGRAPH_HOLDER_FRONT = FFConstants.id("container/book/photograph_holder_front");
+	private static final int BOOK_PHOTO_SIZE = 84;
+	private static final int BOOK_PHOTO_X_OFFSET = 51;
+	private static final int BOOK_PHOTO_Y_OFFSET = 33;
+	private static final int BOOK_PHOTOGRAPH_HOLDER_SIZE = 98;
+	private static final int BOOK_PHOTOGRAPH_HOLDER_X_OFFSET = -7;
+	private static final int BOOK_PHOTOGRAPH_HOLDER_Y_OFFSET = -7;
 
 	public static void submit(PoseStack poseStack, SubmitNodeCollector collector, Identifier id, int lightCoords, FrameType frameType, FrameType frameBackType) {
 		poseStack.mulPose(Axis.ZP.rotationDegrees(180F));
@@ -120,6 +126,28 @@ public class PhotographRenderer {
 			0F,
 			0F,
 			renderSize, renderSize, renderSize, renderSize
+		);
+	}
+
+	public static void blitForBook(int xOffset, int yOffset, GuiGraphicsExtractor graphics, Identifier id) {
+		final int holderX = xOffset + BOOK_PHOTOGRAPH_HOLDER_X_OFFSET;
+		final int holderY = yOffset + BOOK_PHOTOGRAPH_HOLDER_Y_OFFSET;
+		graphics.blitSprite(
+			RenderPipelines.GUI_TEXTURED,
+			BOOK_PHOTOGRAPH_HOLDER_BACK,
+			holderX,
+			holderY,
+			BOOK_PHOTOGRAPH_HOLDER_SIZE,
+			BOOK_PHOTOGRAPH_HOLDER_SIZE
+		);
+		blit(0, 0, xOffset, yOffset, graphics, id, BOOK_PHOTO_SIZE, PhotographRenderer.FrameType.FRAME);
+		graphics.blitSprite(
+			RenderPipelines.GUI_TEXTURED,
+			BOOK_PHOTOGRAPH_HOLDER_FRONT,
+			holderX,
+			holderY,
+			BOOK_PHOTOGRAPH_HOLDER_SIZE,
+			BOOK_PHOTOGRAPH_HOLDER_SIZE
 		);
 	}
 

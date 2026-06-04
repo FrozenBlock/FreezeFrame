@@ -20,7 +20,6 @@ package net.frozenblock.freezeframe.mixin.client.book;
 import com.mojang.blaze3d.platform.Window;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
-import net.frozenblock.freezeframe.FFConstants;
 import net.frozenblock.freezeframe.client.gui.screens.inventory.book.BookPagePhotographCache;
 import net.frozenblock.freezeframe.client.photograph.PhotographHoverTooltipRenderer;
 import net.frozenblock.freezeframe.client.photograph.PhotographRenderer;
@@ -29,7 +28,6 @@ import net.frozenblock.freezeframe.registry.FFDataComponents;
 import net.minecraft.client.gui.GuiGraphicsExtractor;
 import net.minecraft.client.gui.screens.Screen;
 import net.minecraft.client.gui.screens.inventory.BookViewScreen;
-import net.minecraft.client.renderer.RenderPipelines;
 import net.minecraft.network.chat.Component;
 import net.minecraft.resources.Identifier;
 import net.minecraft.world.item.ItemStack;
@@ -46,21 +44,11 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 @Mixin(BookViewScreen.class)
 public abstract class BookViewScreenMixin extends Screen {
 	@Unique
-	private static final Identifier FREEZE_FRAME$PHOTOGRAPH_HOLDER_BACK_SPRITE = FFConstants.id("container/book/photograph_holder_back");
-	@Unique
-	private static final Identifier FREEZE_FRAME$PHOTOGRAPH_HOLDER_FRONT_SPRITE = FFConstants.id("container/book/photograph_holder_front");
-	@Unique
 	private static final int FREEZE_FRAME$PHOTO_SIZE = 84;
 	@Unique
 	private static final int FREEZE_FRAME$PHOTO_X_OFFSET = 51;
 	@Unique
 	private static final int FREEZE_FRAME$PHOTO_Y_OFFSET = 33;
-	@Unique
-	private static final int FREEZE_FRAME$PHOTOGRAPH_HOLDER_SIZE = 98;
-	@Unique
-	private static final int FREEZE_FRAME$PHOTOGRAPH_HOLDER_X_OFFSET = -7;
-	@Unique
-	private static final int FREEZE_FRAME$PHOTOGRAPH_HOLDER_Y_OFFSET = -7;
 	@Unique
 	private static final int FREEZE_FRAME$PHOTO_TEXT_Y_SHIFT = 81;
 
@@ -96,25 +84,7 @@ public abstract class BookViewScreenMixin extends Screen {
 		final int backgroundLeft = this.backgroundLeft();
 		final int x = backgroundLeft + FREEZE_FRAME$PHOTO_X_OFFSET;
 		final int y = 2 + FREEZE_FRAME$PHOTO_Y_OFFSET;
-		final int holderX = x + FREEZE_FRAME$PHOTOGRAPH_HOLDER_X_OFFSET;
-		final int holderY = y + FREEZE_FRAME$PHOTOGRAPH_HOLDER_Y_OFFSET;
-		graphics.blitSprite(
-			RenderPipelines.GUI_TEXTURED,
-			FREEZE_FRAME$PHOTOGRAPH_HOLDER_BACK_SPRITE,
-			holderX,
-			holderY,
-			FREEZE_FRAME$PHOTOGRAPH_HOLDER_SIZE,
-			FREEZE_FRAME$PHOTOGRAPH_HOLDER_SIZE
-		);
-		PhotographRenderer.blit(0, 0, x, y, graphics, photoId, FREEZE_FRAME$PHOTO_SIZE, PhotographRenderer.FrameType.FRAME);
-		graphics.blitSprite(
-			RenderPipelines.GUI_TEXTURED,
-			FREEZE_FRAME$PHOTOGRAPH_HOLDER_FRONT_SPRITE,
-			holderX,
-			holderY,
-			FREEZE_FRAME$PHOTOGRAPH_HOLDER_SIZE,
-			FREEZE_FRAME$PHOTOGRAPH_HOLDER_SIZE
-		);
+		PhotographRenderer.blitForBook(x, y, graphics, photoId);
 
 		if (mouseX >= x && mouseX < x + FREEZE_FRAME$PHOTO_SIZE && mouseY >= y && mouseY < y + FREEZE_FRAME$PHOTO_SIZE) {
 			final Window window = this.minecraft.getWindow();

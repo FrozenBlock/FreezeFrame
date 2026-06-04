@@ -57,21 +57,11 @@ public abstract class BookEditScreenMixin extends Screen {
 	@Unique
 	private static final Identifier FREEZE_FRAME$ADD_PHOTOGRAPH_HOVER = FFConstants.id("container/book/add_photograph_hover");
 	@Unique
-	private static final Identifier FREEZE_FRAME$PHOTOGRAPH_HOLDER_BACK_SPRITE = FFConstants.id("container/book/photograph_holder_back");
-	@Unique
-	private static final Identifier FREEZE_FRAME$PHOTOGRAPH_HOLDER_FRONT_SPRITE = FFConstants.id("container/book/photograph_holder_front");
-	@Unique
 	private static final int FREEZE_FRAME$PHOTOGRAPH_SIZE = 84;
 	@Unique
 	private static final int FREEZE_FRAME$PHOTOGRAPH_X_OFFSET = 51;
 	@Unique
 	private static final int FREEZE_FRAME$PHOTOGRAPH_Y_OFFSET = 33;
-	@Unique
-	private static final int FREEZE_FRAME$PHOTOGRAPH_HOLDER_SIZE = 98;
-	@Unique
-	private static final int FREEZE_FRAME$PHOTOGRAPH_HOLDER_X_OFFSET = -7;
-	@Unique
-	private static final int FREEZE_FRAME$PHOTOGRAPH_HOLDER_Y_OFFSET = -7;
 	@Unique
 	private static final int FREEZE_FRAME$ADD_BUTTON_SIZE = 16;
 	@Unique
@@ -198,25 +188,7 @@ public abstract class BookEditScreenMixin extends Screen {
 
 		final int x = this.backgroundLeft() + FREEZE_FRAME$PHOTOGRAPH_X_OFFSET;
 		final int y = this.backgroundTop() + FREEZE_FRAME$PHOTOGRAPH_Y_OFFSET;
-		final int holderX = x + FREEZE_FRAME$PHOTOGRAPH_HOLDER_X_OFFSET;
-		final int holderY = y + FREEZE_FRAME$PHOTOGRAPH_HOLDER_Y_OFFSET;
-		graphics.blitSprite(
-			RenderPipelines.GUI_TEXTURED,
-			FREEZE_FRAME$PHOTOGRAPH_HOLDER_BACK_SPRITE,
-			holderX,
-			holderY,
-			FREEZE_FRAME$PHOTOGRAPH_HOLDER_SIZE,
-			FREEZE_FRAME$PHOTOGRAPH_HOLDER_SIZE
-		);
-		PhotographRenderer.blit(0, 0, x, y, graphics, photograph.identifier(), FREEZE_FRAME$PHOTOGRAPH_SIZE, PhotographRenderer.FrameType.FRAME);
-		graphics.blitSprite(
-			RenderPipelines.GUI_TEXTURED,
-			FREEZE_FRAME$PHOTOGRAPH_HOLDER_FRONT_SPRITE,
-			holderX,
-			holderY,
-			FREEZE_FRAME$PHOTOGRAPH_HOLDER_SIZE,
-			FREEZE_FRAME$PHOTOGRAPH_HOLDER_SIZE
-		);
+		PhotographRenderer.blitForBook(x, y, graphics, photograph.identifier());
 
 		if (this.freezeFrame$isWithin(mouseX, mouseY, x, y, FREEZE_FRAME$PHOTOGRAPH_SIZE, FREEZE_FRAME$PHOTOGRAPH_SIZE)) {
 			final Window window = this.minecraft.getWindow();
