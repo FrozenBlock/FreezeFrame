@@ -46,13 +46,21 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 @Mixin(BookViewScreen.class)
 public abstract class BookViewScreenMixin extends Screen {
 	@Unique
-	private static final Identifier FREEZE_FRAME$PHOTO_FRAME = FFConstants.id("container/book/photograph");
+	private static final Identifier FREEZE_FRAME$PHOTOGRAPH_HOLDER_BACK_SPRITE = FFConstants.id("container/book/photograph_holder_back");
+	@Unique
+	private static final Identifier FREEZE_FRAME$PHOTOGRAPH_HOLDER_FRONT_SPRITE = FFConstants.id("container/book/photograph_holder_front");
 	@Unique
 	private static final int FREEZE_FRAME$PHOTO_SIZE = 84;
 	@Unique
 	private static final int FREEZE_FRAME$PHOTO_X_OFFSET = 51;
 	@Unique
-	private static final int FREEZE_FRAME$PHOTO_Y_OFFSET = 28;
+	private static final int FREEZE_FRAME$PHOTO_Y_OFFSET = 33;
+	@Unique
+	private static final int FREEZE_FRAME$PHOTOGRAPH_HOLDER_SIZE = 98;
+	@Unique
+	private static final int FREEZE_FRAME$PHOTOGRAPH_HOLDER_X_OFFSET = -7;
+	@Unique
+	private static final int FREEZE_FRAME$PHOTOGRAPH_HOLDER_Y_OFFSET = -7;
 	@Unique
 	private static final int FREEZE_FRAME$PHOTO_TEXT_Y_SHIFT = 81;
 
@@ -80,15 +88,33 @@ public abstract class BookViewScreenMixin extends Screen {
 		final ItemStack photo = BookPagePhotographCache.getPhoto(this.bookAccess, this.currentPage);
 		if (photo.isEmpty()) return;
 
-		final int backgroundLeft = this.backgroundLeft();
-		final int x = backgroundLeft + FREEZE_FRAME$PHOTO_X_OFFSET;
-		final int y = 2 + FREEZE_FRAME$PHOTO_Y_OFFSET;
+
 		final Photograph photograph = photo.get(FFDataComponents.PHOTOGRAPH);
 		final Identifier photoId = photograph == null ? null : photograph.identifier();
 		if (photoId == null) return;
 
-		PhotographRenderer.blit(0, 0, x, y, graphics, photoId, FREEZE_FRAME$PHOTO_SIZE, PhotographRenderer.FrameType.NONE);
-		graphics.blitSprite(RenderPipelines.GUI_TEXTURED, FREEZE_FRAME$PHOTO_FRAME, x, y, FREEZE_FRAME$PHOTO_SIZE, FREEZE_FRAME$PHOTO_SIZE);
+		final int backgroundLeft = this.backgroundLeft();
+		final int x = backgroundLeft + FREEZE_FRAME$PHOTO_X_OFFSET;
+		final int y = 2 + FREEZE_FRAME$PHOTO_Y_OFFSET;
+		final int holderX = x + FREEZE_FRAME$PHOTOGRAPH_HOLDER_X_OFFSET;
+		final int holderY = y + FREEZE_FRAME$PHOTOGRAPH_HOLDER_Y_OFFSET;
+		graphics.blitSprite(
+			RenderPipelines.GUI_TEXTURED,
+			FREEZE_FRAME$PHOTOGRAPH_HOLDER_BACK_SPRITE,
+			holderX,
+			holderY,
+			FREEZE_FRAME$PHOTOGRAPH_HOLDER_SIZE,
+			FREEZE_FRAME$PHOTOGRAPH_HOLDER_SIZE
+		);
+		PhotographRenderer.blit(0, 0, x, y, graphics, photoId, FREEZE_FRAME$PHOTO_SIZE, PhotographRenderer.FrameType.FRAME);
+		graphics.blitSprite(
+			RenderPipelines.GUI_TEXTURED,
+			FREEZE_FRAME$PHOTOGRAPH_HOLDER_FRONT_SPRITE,
+			holderX,
+			holderY,
+			FREEZE_FRAME$PHOTOGRAPH_HOLDER_SIZE,
+			FREEZE_FRAME$PHOTOGRAPH_HOLDER_SIZE
+		);
 
 		if (mouseX >= x && mouseX < x + FREEZE_FRAME$PHOTO_SIZE && mouseY >= y && mouseY < y + FREEZE_FRAME$PHOTO_SIZE) {
 			final Window window = this.minecraft.getWindow();

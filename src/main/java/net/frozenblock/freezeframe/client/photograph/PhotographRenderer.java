@@ -123,7 +123,7 @@ public class PhotographRenderer {
 		);
 	}
 
-	public static enum FrameType {
+	public enum FrameType {
 		NONE(null,  null),
 		FRAME(FRAME_RENDER_TYPE, GUI_FRAME),
 		FRAME_BACK(FRAME_BACK_RENDER_TYPE, GUI_FRAME_BACK),
