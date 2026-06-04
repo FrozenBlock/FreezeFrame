@@ -63,24 +63,7 @@ public class BookPagePhotographMenu extends AbstractContainerMenu {
 			this.photoContainer.setItem(PHOTO_SLOT, BookPagePhotographHelper.getPhoto(book, pageIndex).copy());
 		}
 
-		// TODO: Not important, but separate slot to separate class
-		this.addSlot(new Slot(this.photoContainer, PHOTO_SLOT, PHOTO_SLOT_X, PHOTO_SLOT_Y) {
-			@Override
-			public boolean mayPlace(ItemStack stack) {
-				return stack.is(FFItems.PHOTOGRAPH);
-			}
-
-			@Override
-			public int getMaxStackSize() {
-				return 1;
-			}
-
-			@Override
-			public boolean isHighlightable() {
-				return false;
-			}
-		});
-
+		this.addSlot(new BookPagePhotographSlot(this.photoContainer, PHOTO_SLOT, PHOTO_SLOT_X, PHOTO_SLOT_Y));
 		this.addStandardInventorySlots(inventory, INVENTORY_SLOT_X, INVENTORY_SLOT_Y);
 		this.addDataSlot(this.handData);
 		this.addDataSlot(this.pageData);

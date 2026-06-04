@@ -98,12 +98,12 @@ public abstract class BookEditScreenMixin extends Screen {
 	}
 
 	@Shadow
-	private int backgroundLeft() {
+	public int backgroundLeft() {
 		throw new AssertionError("Mixin injection failed - Freeze Frame BookEditScreenMixin.");
 	}
 
 	@Shadow
-	private int backgroundTop() {
+	public int backgroundTop() {
 		throw new AssertionError("Mixin injection failed - Freeze Frame BookEditScreenMixin.");
 	}
 

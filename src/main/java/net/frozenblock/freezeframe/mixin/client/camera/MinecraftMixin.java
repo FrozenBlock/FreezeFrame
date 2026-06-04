@@ -83,7 +83,6 @@ public class MinecraftMixin {
 		return this.player == null || hand != InteractionHand.OFF_HAND || !ScopeItemHelper.isPlayerHoldingPhotoTakingCamera(this.player);
 	}
 
-	// TODO: see if this actually fixes anything with Iris.
 	@ModifyReturnValue(method = "getMainRenderTarget", at = @At("RETURN"))
 	public RenderTarget freezeFrame$getMainRenderTarget(RenderTarget original) {
 		if (!CameraScreenshotManager.isScreenshotting()) return original;

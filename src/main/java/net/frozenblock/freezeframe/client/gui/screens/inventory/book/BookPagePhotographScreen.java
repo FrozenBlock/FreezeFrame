@@ -188,15 +188,6 @@ public class BookPagePhotographScreen extends AbstractContainerScreen<BookPagePh
 	@Override
 	public boolean keyPressed(KeyEvent event) {
 		if (this.minecraft.options.keyDrop.matches(event)) return true;
-
-		//TODO: revoke changes when escaping?
-		/*
-		if (event.isEscape() && this.shouldCloseOnEsc()) {
-			this.onClose();
-			return true;
-		}
-		 */
-
 		return super.keyPressed(event);
 	}
 
@@ -269,8 +260,8 @@ public class BookPagePhotographScreen extends AbstractContainerScreen<BookPagePh
 
 		final List<Filterable<String>> pages = new ArrayList<>(content.pages());
 		if (pageIndex < pages.size()) return content;
-		while (pages.size() <= pageIndex) pages.add(Filterable.passThrough(""));
 
+		while (pages.size() <= pageIndex) pages.add(Filterable.passThrough(""));
 		final WritableBookContent updated = content.withReplacedPages(pages);
 		book.set(DataComponents.WRITABLE_BOOK_CONTENT, updated);
 		return updated;
@@ -285,13 +276,15 @@ public class BookPagePhotographScreen extends AbstractContainerScreen<BookPagePh
 		boolean hasPhotograph = false;
 		final Slot slot = this.menu.getSlot(BookPagePhotographMenu.PHOTO_SLOT);
 		final ItemStack itemStack = slot.getItem();
-		if (itemStack.is(FFItems.PHOTOGRAPH)) {
+		renderPhotograph: {
+			if (!itemStack.is(FFItems.PHOTOGRAPH)) break renderPhotograph;
+
 			final Photograph photograph = itemStack.get(FFDataComponents.PHOTOGRAPH);
-			if (photograph != null) {
-				hasPhotograph = true;
-				graphics.blitSprite(RenderPipelines.GUI_TEXTURED, PHOTOGRAPH_HOLDER_BACK_SPRITE, photoX, photoY, PHOTOGRAPH_HOLDER_SIZE, PHOTOGRAPH_HOLDER_SIZE);
-				PhotographRenderer.blit(0, 0, x, y, graphics, photograph.identifier(), PHOTOGRAPH_PREVIEW_SIZE, PhotographRenderer.FrameType.FRAME);
-			}
+			if (photograph == null) break renderPhotograph;
+
+			hasPhotograph = true;
+			graphics.blitSprite(RenderPipelines.GUI_TEXTURED, PHOTOGRAPH_HOLDER_BACK_SPRITE, photoX, photoY, PHOTOGRAPH_HOLDER_SIZE, PHOTOGRAPH_HOLDER_SIZE);
+			PhotographRenderer.blit(0, 0, x, y, graphics, photograph.identifier(), PHOTOGRAPH_PREVIEW_SIZE, PhotographRenderer.FrameType.FRAME);
 		}
 
 		if (!hasPhotograph) graphics.blitSprite(RenderPipelines.GUI_TEXTURED, PHOTOGRAPH_HOLDER_BACK_EMPTY_SPRITE, photoX, photoY, PHOTOGRAPH_HOLDER_SIZE, PHOTOGRAPH_HOLDER_SIZE);

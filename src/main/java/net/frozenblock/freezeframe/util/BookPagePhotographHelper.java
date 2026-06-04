@@ -30,15 +30,16 @@ public final class BookPagePhotographHelper {
 
 	public static ItemStack getPhoto(ItemStack book, int pageIndex) {
 		if (pageIndex < 0) return ItemStack.EMPTY;
-		final BookPagePhotographs photographs = book.get(FFDataComponents.BOOK_PAGE_PHOTOGRAPHS);
-		if (photographs == null) return ItemStack.EMPTY;
-		for (BookPagePhotographs.PagePhotograph pagePhotograph : photographs.photographs()) {
-			if (pagePhotograph.pageIndex() == pageIndex) {
-				final ItemStack stack = pagePhotograph.photograph();
-				return stack.is(FFItems.PHOTOGRAPH) ? stack : ItemStack.EMPTY;
-			}
-		}
-		return ItemStack.EMPTY;
+
+		final BookPagePhotographs pages = book.get(FFDataComponents.BOOK_PAGE_PHOTOGRAPHS);
+		if (pages == null) return ItemStack.EMPTY;
+
+		return pages.photographs().stream()
+			.filter(page -> page.pageIndex() == pageIndex)
+			.findFirst()
+			.filter(page -> page.photograph().is(FFItems.PHOTOGRAPH))
+			.map(BookPagePhotographs.PagePhotograph::photograph)
+			.orElse(ItemStack.EMPTY);
 	}
 
 	public static boolean hasPhoto(ItemStack book, int pageIndex) {
@@ -51,6 +52,7 @@ public final class BookPagePhotographHelper {
 
 	public static void setPhoto(ItemStack book, int pageIndex, ItemStack photoStack) {
 		if (pageIndex < 0 || pageIndex >= BookPagePhotographs.MAX_PAGES) return;
+
 		final List<BookPagePhotographs.PagePhotograph> entries = new ArrayList<>();
 		final BookPagePhotographs existing = book.get(FFDataComponents.BOOK_PAGE_PHOTOGRAPHS);
 		if (existing != null) {

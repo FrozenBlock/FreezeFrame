@@ -45,5 +45,5 @@ public record BookPagePhotographs(List<PagePhotograph> photographs) {
 		.apply(ByteBufCodecs.list(MAX_PAGES))
 		.map(BookPagePhotographs::new, BookPagePhotographs::photographs);
 
-	public static record PagePhotograph(int pageIndex, ItemStack photograph) {}
+	public record PagePhotograph(int pageIndex, ItemStack photograph) {}
 }
