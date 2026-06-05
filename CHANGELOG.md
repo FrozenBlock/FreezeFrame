@@ -42,6 +42,7 @@ Put the changelog BELOW the dashes. ANYTHING ABOVE IS IGNORED.
   - This is disabled by default.
 - Photo item rendering now supports rendering a back side.
   - Added the `FRAME_BACK` Frame Type.
+- Added the `FRAME_CENTER` Frame Type.
 - Added separate textures for the Camera item, resolving an issue that locked mipmapping to 3 levels.
 - Resetting a scope item's zoom to default now plays multiple increment sounds in succession instead of one, relative to the amount of zoom steps away from the default.
 - Fixed an issue that would cause an error about the `ContainerComponentManipulators` class to log, despite working as intended.

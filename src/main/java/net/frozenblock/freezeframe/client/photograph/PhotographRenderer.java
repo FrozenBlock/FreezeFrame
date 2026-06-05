@@ -44,6 +44,8 @@ public class PhotographRenderer {
 	private static final Identifier GUI_FRAME_BACK = FFConstants.id("photograph/frame_back");
 	private static final RenderType FRAME_FULL_RENDER_TYPE = RenderTypes.text(FFConstants.id("textures/gui/sprites/photograph/frame_full.png"));
 	private static final Identifier GUI_FRAME_FULL = FFConstants.id("photograph/frame_full");
+	private static final RenderType FRAME_CENTER_RENDER_TYPE = RenderTypes.text(FFConstants.id("textures/gui/sprites/photograph/frame_center.png"));
+	private static final Identifier GUI_FRAME_CENTER = FFConstants.id("photograph/frame_center");
 	private static final RenderType FILM_EMBED_RENDER_TYPE = RenderTypes.text(FFConstants.id("textures/gui/sprites/photograph/film_embed.png"));
 	private static final Identifier GUI_FILM_EMBED = FFConstants.id("photograph/film_embed");
 	private static final Identifier BOOK_PHOTOGRAPH_HOLDER_BACK = FFConstants.id("container/book/photograph_holder_back");
@@ -152,6 +154,7 @@ public class PhotographRenderer {
 		FRAME(FRAME_RENDER_TYPE, GUI_FRAME),
 		FRAME_BACK(FRAME_BACK_RENDER_TYPE, GUI_FRAME_BACK),
 		FRAME_FULL(FRAME_FULL_RENDER_TYPE, GUI_FRAME_FULL),
+		FRAME_CENTER(FRAME_CENTER_RENDER_TYPE, GUI_FRAME_CENTER),
 		FILM_EMBED(FILM_EMBED_RENDER_TYPE, GUI_FILM_EMBED);
 		private final RenderType renderType;
 		private final Identifier guiSprite;
