@@ -34,20 +34,22 @@ public class PhotographRenderer {
 	private static final float IN_WORLD_FRAME_EXTENSION = 1.125F / 16F;
 	private static final float IN_WORLD_FRAME_MAX = 1F + IN_WORLD_FRAME_EXTENSION;
 	private static final float IN_WORLD_FRAME_MIN = -IN_WORLD_FRAME_EXTENSION;
-	private static final Identifier FRAME = FFConstants.id("textures/gui/sprites/photograph/frame.png");
-	private static final RenderType FRAME_RENDER_TYPE = RenderTypes.text(FRAME);
+	private static final int BOOK_PHOTO_SIZE = 84;
+	private static final int BOOK_PHOTOGRAPH_HOLDER_SIZE = 98;
+	private static final int BOOK_PHOTOGRAPH_HOLDER_X_OFFSET = -7;
+	private static final int BOOK_PHOTOGRAPH_HOLDER_Y_OFFSET = -7;
+	private static final RenderType FRAME_RENDER_TYPE = RenderTypes.text(FFConstants.id("textures/gui/sprites/photograph/frame.png"));
 	private static final Identifier GUI_FRAME = FFConstants.id("photograph/frame");
-	private static final Identifier FRAME_BACK = FFConstants.id("textures/gui/sprites/photograph/frame_back.png");
-	private static final RenderType FRAME_BACK_RENDER_TYPE = RenderTypes.text(FRAME_BACK);
+	private static final RenderType FRAME_BACK_RENDER_TYPE = RenderTypes.text(FFConstants.id("textures/gui/sprites/photograph/frame_back.png"));
 	private static final Identifier GUI_FRAME_BACK = FFConstants.id("photograph/frame_back");
-	private static final Identifier FRAME_FULL = FFConstants.id("textures/gui/sprites/photograph/frame_full.png");
-	private static final RenderType FRAME_FULL_RENDER_TYPE = RenderTypes.text(FRAME_FULL);
+	private static final RenderType FRAME_FULL_RENDER_TYPE = RenderTypes.text(FFConstants.id("textures/gui/sprites/photograph/frame_full.png"));
 	private static final Identifier GUI_FRAME_FULL = FFConstants.id("photograph/frame_full");
-	private static final Identifier FILM_EMBED = FFConstants.id("textures/gui/sprites/photograph/film_embed.png");
-	private static final RenderType FILM_EMBED_RENDER_TYPE = RenderTypes.text(FILM_EMBED);
+	private static final RenderType FILM_EMBED_RENDER_TYPE = RenderTypes.text(FFConstants.id("textures/gui/sprites/photograph/film_embed.png"));
 	private static final Identifier GUI_FILM_EMBED = FFConstants.id("photograph/film_embed");
+	private static final Identifier BOOK_PHOTOGRAPH_HOLDER_BACK = FFConstants.id("container/book/photograph_holder_back");
+	private static final Identifier BOOK_PHOTOGRAPH_HOLDER_FRONT = FFConstants.id("container/book/photograph_holder_front");
 
-	public static void submit(PoseStack poseStack, SubmitNodeCollector collector, Identifier photographId, int lightCoords, FrameType frameType, FrameType frameBackType) {
+	public static void submit(PoseStack poseStack, SubmitNodeCollector collector, Identifier id, int lightCoords, FrameType frameType, FrameType frameBackType) {
 		poseStack.mulPose(Axis.ZP.rotationDegrees(180F));
 		poseStack.translate(-0.5F, -0.5F, 0F);
 
@@ -83,10 +85,9 @@ public class PhotographRenderer {
 			poseStack.popPose();
 		}
 
-		final Identifier loadedPhotoLocation = PhotographLoader.getAndLoadPhotograph(photographId);
 		collector.submitCustomGeometry(
 			poseStack,
-			RenderTypes.text(loadedPhotoLocation),
+			RenderTypes.text(PhotographLoader.getAndLoadPhotograph(id)),
 			(pose, buffer) -> {
 				buffer.addVertex(pose, 0F, 1F, -0.00007812F).setColor(-1).setUv(0F, 1F).setLight(lightCoords);
 				buffer.addVertex(pose, 1F, 1F, -0.00007812F).setColor(-1).setUv(1F, 1F).setLight(lightCoords);
@@ -96,8 +97,7 @@ public class PhotographRenderer {
 		);
 	}
 
-	public static void blit(int x, int y, int xOffset, int yOffset, GuiGraphicsExtractor graphics, Identifier photoLocation, int renderSize, FrameType frameType) {
-		final Identifier loadedPhotoId = PhotographLoader.getAndLoadPhotograph(photoLocation);
+	public static void blit(int x, int y, int xOffset, int yOffset, GuiGraphicsExtractor graphics, Identifier id, int renderSize, FrameType frameType) {
 		final int renderX = x + xOffset;
 		final int renderY = y + yOffset;
 
@@ -117,7 +117,7 @@ public class PhotographRenderer {
 		}
 		graphics.blit(
 			RenderPipelines.GUI_TEXTURED,
-			loadedPhotoId,
+			PhotographLoader.getAndLoadPhotograph(id),
 			renderX, renderY,
 			0F,
 			0F,
@@ -125,7 +125,29 @@ public class PhotographRenderer {
 		);
 	}
 
-	public static enum FrameType {
+	public static void blitForBook(int xOffset, int yOffset, GuiGraphicsExtractor graphics, Identifier id) {
+		final int holderX = xOffset + BOOK_PHOTOGRAPH_HOLDER_X_OFFSET;
+		final int holderY = yOffset + BOOK_PHOTOGRAPH_HOLDER_Y_OFFSET;
+		graphics.blitSprite(
+			RenderPipelines.GUI_TEXTURED,
+			BOOK_PHOTOGRAPH_HOLDER_BACK,
+			holderX,
+			holderY,
+			BOOK_PHOTOGRAPH_HOLDER_SIZE,
+			BOOK_PHOTOGRAPH_HOLDER_SIZE
+		);
+		blit(0, 0, xOffset, yOffset, graphics, id, BOOK_PHOTO_SIZE, PhotographRenderer.FrameType.FRAME);
+		graphics.blitSprite(
+			RenderPipelines.GUI_TEXTURED,
+			BOOK_PHOTOGRAPH_HOLDER_FRONT,
+			holderX,
+			holderY,
+			BOOK_PHOTOGRAPH_HOLDER_SIZE,
+			BOOK_PHOTOGRAPH_HOLDER_SIZE
+		);
+	}
+
+	public enum FrameType {
 		NONE(null,  null),
 		FRAME(FRAME_RENDER_TYPE, GUI_FRAME),
 		FRAME_BACK(FRAME_BACK_RENDER_TYPE, GUI_FRAME_BACK),

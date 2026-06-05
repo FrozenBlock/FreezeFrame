@@ -4,6 +4,9 @@
   "package": "net.frozenblock.freezeframe.mixin",
   "compatibilityLevel": "JAVA_21",
   "mixins": [
+    "book.BookCloningRecipeMixin",
+    "book.ItemStackMixin",
+    "book.ServerGamePacketListenerImplMixin",
     "camera.AbstractContainerMenuMixin",
     "camera.ContainerComponentManipulatorsMixin",
     "camera.GoatAiMixin",
@@ -18,6 +21,9 @@
     "film.AbstractContainerMenuMixin"
   ],
   "client": [
+    "client.book.BookEditScreenMixin",
+    "client.book.BookViewScreenBookAccessMixin",
+    "client.book.BookViewScreenMixin",
     "client.camera.AbstractClientPlayerMixin",
     "client.camera.AbstractContainerScreenMixin",
     "client.camera.ArmPoseMixin",
@@ -28,6 +34,7 @@
     "client.camera.ItemInHandRendererMixin",
     "client.camera.LevelRendererMixin",
     "client.camera.MinecraftMixin",
+    "client.camera.MobEffectFogEnvironmentMixin",
     "client.camera.PlayerItemInHandLayerMixin",
     "client.camera.ScreenEffectRendererMixin",
     "client.film.AbstractContainerScreenMixin",

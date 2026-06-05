@@ -1,8 +1,48 @@
 Please clear changelog after each release.
 Put the changelog BELOW the dashes. ANYTHING ABOVE IS IGNORED.
 -----------------
-- Added a config option to render Photo items in third-person, similarly to their first-person counterpart.
+- Bumped Freeze Frame's protocol version to 2.
+- Added Film Filters.
+  - Film Filters come in two variants:
+    - Special
+      - Added the `freezeframe:special_film_filter` Dynamic Registry.
+      - Special Film Filters are data-driven with the following format:
+        - `shader`: The ID of the shader to be applied.
+        - `shader_uniforms`: The uniforms to be passed to the shader.
+      - Can be applied up to one time per Film item each, via crafting recipe.
+    - Dye
+      - Can be applied to Film items via crafting.
+        - When multiple Dyes are applied in a single craft, the average color of all Dyes will be used for the new Filter Layer.
+      - When multiple Dye Filter Layers are present, they be applied separately.
+  - Film Filters are applied to Photographs taken on the Film item, and when looking through a Camera with the Film item inside while its capacity isn't full.
+  - Up to eight Film Filter Layers can be applied to a Film item.
+  - Added the `freezeframe:film_filter` recipe type, with the following format:
+    - `category`: The Recipe Book category for the recipe.
+    - `group`: The Recipe Book group for the recipe.
+    - `film`: The base Ingredient to apply the filter to.
+    - `special_film_filter_and_ingredient`: An optional field to be used when making a Special Filter recipe.
+      - `ingredient`: The Ingredient required for the Special Filter.
+      - `special_film_filter`: The Special Filter's ID.
+    - `dyes`: An optional Ingredient to be used when making a Dye Filter recipe.
+    - `exclusion_tint_material`: An optional Ingredient to be used when making a Dye Filter recipe, which will apply an Exclusion effect to the Dye Filter.
+    - `result`: The output Item. Note that the new Filter component and all existing components will be carried over to the output automatically.
+  - Added a config option to disable Film Filter crafting.
+- Photos can now be placed inside of Books.
+  - A new button has been added to the Book's GUI to open the Inventory, which will allow the user to place a Photo inside of the Book and view a preview of how it will look.
+  - If there is too much text on a page for a Photo to fit, the button will be disabled and display a tooltip when hovered over.
+- Added a statistic for interacting with a Developing Table.
+- Photos now ignore fog created by effects (e.g., Blindness and Darkness.)
+  - Added a config option to toggle this behavior.
+- Added a config option to toggle scope zooming.
+- While scoping, the hotbar and crosshair will no longer render.
+  - Added two config options to toggle these behaviors.
+- Added a config option to render held Photo items in 3D when viewed in third-person.
+  - This is disabled by default.
 - Photo rendering can now render a backside.
   - Added the `FRAME_BACK` Frame Type.
 - Added separate textures for the Camera item, resolving an issue that locked mipmapping to 3 levels.
+- Resetting a scope item's zoom to default now plays multiple increment sounds in succession instead of one, relative to the amount of zoom steps away from the default.
 - Fixed an issue that would cause an error about the `ContainerComponentManipulators` class to log, despite working as intended.
+- Fixed the Film tooltip to now be centered regardless of the tooltip's width.
+- The Film Capacity Upgrade Recipe now supports a custom Source, Material, and Output item like other Vanilla transmute recipes.
+- The Film Capacity Upgrade Recipe now shows up in the Crafting Recipe Book.

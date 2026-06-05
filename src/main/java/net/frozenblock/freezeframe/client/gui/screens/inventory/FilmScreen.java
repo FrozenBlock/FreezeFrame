@@ -122,7 +122,6 @@ public class FilmScreen extends Screen {
 	private EditBox nameEditBox;
 	private Button saveButton;
 	private Button cancelButton;
-
 	@Nullable
 	private Identifier leftPhotograph;
 	@Nullable
@@ -206,9 +205,9 @@ public class FilmScreen extends Screen {
 	}
 
 	@Override
-	public void extractRenderState(GuiGraphicsExtractor graphics, int mouseX, int mouseY, float delta) {
+	public void extractRenderState(GuiGraphicsExtractor graphics, int mouseX, int mouseY, float partialTicks) {
 		this.extractTransparentBackground(graphics);
-		this.extractBackground(graphics, mouseX, mouseY, delta);
+		this.extractBackground(graphics, mouseX, mouseY, partialTicks);
 		final int hoveredOffset = this.getHoveredFilmPhotographOffset(mouseX, mouseY);
 		Photograph hoveredPhotograph = hoveredOffset == Integer.MIN_VALUE ? null : this.getFilmPhotographComponent(this.selectedPhotographIndex + hoveredOffset);
 		final boolean hasPhotographs = this.hasPhotographs();
@@ -332,7 +331,7 @@ public class FilmScreen extends Screen {
 		if (hoveringDeleteButton) graphics.requestCursor(CursorTypes.POINTING_HAND);
 
 		graphics.text(this.font, Component.translatable("screen.freezeframe.film.name"), this.leftPos + NAME_LABEL_X, this.topPos + NAME_LABEL_Y, 0x3f3f3f, false);
-		super.extractRenderState(graphics, mouseX, mouseY, delta);
+		super.extractRenderState(graphics, mouseX, mouseY, partialTicks);
 
 		if (hoveredPhotograph != null) {
 			PhotographHoverTooltipRenderer.extractRenderState(graphics, this.font, this.width, this.height, mouseX, mouseY, hoveredPhotograph);
@@ -386,12 +385,12 @@ public class FilmScreen extends Screen {
 	}
 
 	@Override
-	public boolean mouseDragged(MouseButtonEvent event, double dragX, double dragY) {
+	public boolean mouseDragged(MouseButtonEvent event, double dx, double dy) {
 		if (this.draggingScroller && event.button() == 0 && this.hasMultipleFilmPhotographs()) {
 			this.updatePhotographIndexFromScroller((int) event.x());
 			return true;
 		}
-		return super.mouseDragged(event, dragX, dragY);
+		return super.mouseDragged(event, dx, dy);
 	}
 
 	@Override
@@ -485,9 +484,7 @@ public class FilmScreen extends Screen {
 	private void onSelectedPhotographChanged(boolean updateScrollerFromIndex) {
 		this.setupOrClearFilmPhotographDisplays();
 		this.syncNameEditBox();
-		if (updateScrollerFromIndex) {
-			this.updateScrollerXFromPhotographIndex();
-		}
+		if (updateScrollerFromIndex) this.updateScrollerXFromPhotographIndex();
 		this.updateButtons();
 	}
 

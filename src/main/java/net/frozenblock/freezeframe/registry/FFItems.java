@@ -19,15 +19,16 @@ package net.frozenblock.freezeframe.registry;
 
 import java.util.function.Function;
 import net.fabricmc.fabric.api.creativetab.v1.CreativeModeTabEvents;
-import net.frozenblock.lib.item.api.component.BundleWeightOverride;
-import net.frozenblock.lib.item.api.component.FrozenLibDataComponents;
 import net.frozenblock.freezeframe.FFConstants;
 import net.frozenblock.freezeframe.component.CameraContents;
 import net.frozenblock.freezeframe.component.FilmContents;
+import net.frozenblock.freezeframe.component.FilmFilter;
 import net.frozenblock.freezeframe.item.CameraItem;
 import net.frozenblock.freezeframe.item.FilmItem;
 import net.frozenblock.freezeframe.item.PhotographItem;
 import net.frozenblock.freezeframe.util.ScopeZoomHelper;
+import net.frozenblock.lib.item.api.component.BundleWeightOverride;
+import net.frozenblock.lib.item.api.component.FrozenLibDataComponents;
 import net.minecraft.core.registries.Registries;
 import net.minecraft.resources.ResourceKey;
 import net.minecraft.world.item.CreativeModeTabs;
@@ -59,6 +60,7 @@ public class FFItems {
 		new Item.Properties()
 			.stacksTo(16)
 			.component(FFDataComponents.FILM_CONTENTS, FilmContents.EMPTY)
+			.component(FFDataComponents.FILM_FILTER, FilmFilter.EMPTY)
 			.component(FFDataComponents.FILM_MAX_PHOTOGRAPHS, FilmContents.BASE_MAX_PHOTOGRAPHS)
 			.component(FrozenLibDataComponents.BUNDLE_WEIGHT_OVERRIDE, new BundleWeightOverride(1, 16))
 	);
@@ -68,8 +70,6 @@ public class FFItems {
 		new Item.Properties()
 			.stacksTo(16)
 	);
-
-	// public static final PortfolioItem PORTFOLIO = new PortfolioItem(new Item.Properties().stacksTo(1).component(WRITABLE_PORTFOLIO_CONTENT, WritablePortfolioContent.EMPTY));
 
 	public static void init() {
 		CreativeModeTabEvents.modifyOutputEvent(CreativeModeTabs.TOOLS_AND_UTILITIES).register(

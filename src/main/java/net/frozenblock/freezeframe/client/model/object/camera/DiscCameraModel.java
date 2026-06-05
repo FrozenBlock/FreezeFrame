@@ -62,6 +62,5 @@ public class DiscCameraModel extends TripodCameraModel {
 	}
 
 	@Override
-	protected void setRootYOffset(float offset) {
-	}
+	protected void setRootYOffset(float offset) {}
 }

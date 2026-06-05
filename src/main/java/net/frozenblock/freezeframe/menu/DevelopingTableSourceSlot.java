@@ -22,6 +22,7 @@ import net.frozenblock.freezeframe.registry.FFItems;
 import net.minecraft.world.Container;
 import net.minecraft.world.inventory.Slot;
 import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.item.Items;
 
 public class DevelopingTableSourceSlot extends Slot {
 	private static final int MAX_SOURCE_STACK_SIZE = 1;
@@ -46,11 +47,15 @@ public class DevelopingTableSourceSlot extends Slot {
 	}
 
 	public static boolean isValidAsSource(ItemStack stack) {
-		return isValidFilmForPrinting(stack) || isValidPhotographForCopying(stack);
+		return isValidFilmForPrinting(stack) || isValidPhotographForCopying(stack) || isValidBookSource(stack);
 	}
 
 	public static boolean isValidFilmForPrinting(ItemStack stack) {
 		return stack.is(FFItems.FILM);
+	}
+
+	public static boolean isValidBookSource(ItemStack stack) {
+		return stack.is(Items.WRITABLE_BOOK) || stack.is(Items.WRITTEN_BOOK) && stack.has(FFDataComponents.BOOK_PAGE_PHOTOGRAPHS);
 	}
 
 	public static boolean isValidPhotographForCopying(ItemStack stack) {

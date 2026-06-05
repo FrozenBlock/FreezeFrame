@@ -20,44 +20,54 @@ package net.frozenblock.freezeframe.networking.packet;
 import java.util.OptionalInt;
 import net.fabricmc.fabric.api.networking.v1.ServerPlayNetworking;
 import net.frozenblock.freezeframe.FFConstants;
+import net.frozenblock.freezeframe.component.FilmFilter;
 import net.frozenblock.freezeframe.entity.TripodCamera;
-import net.minecraft.network.FriendlyByteBuf;
+import net.minecraft.network.RegistryFriendlyByteBuf;
 import net.minecraft.network.codec.ByteBufCodecs;
 import net.minecraft.network.codec.StreamCodec;
 import net.minecraft.network.protocol.common.custom.CustomPacketPayload;
 import net.minecraft.server.level.ServerPlayer;
 
-public record CameraTakeScreenshotPacket(OptionalInt entityId, boolean handheldCapture, float zoom, String fileName) implements CustomPacketPayload {
+public record CameraTakeScreenshotPacket(
+	OptionalInt entityId,
+	boolean handheldCapture,
+	boolean wasScoping,
+	float zoom,
+	String fileName,
+	FilmFilter filter
+) implements CustomPacketPayload {
 	public static final Type<CameraTakeScreenshotPacket> PACKET_TYPE = CustomPacketPayload.createType(FFConstants.safeString("camera_take_screenshot"));
-	public static final StreamCodec<FriendlyByteBuf, CameraTakeScreenshotPacket> CODEC = StreamCodec.ofMember(CameraTakeScreenshotPacket::write, CameraTakeScreenshotPacket::new);
+	public static final StreamCodec<RegistryFriendlyByteBuf, CameraTakeScreenshotPacket> CODEC = StreamCodec.ofMember(CameraTakeScreenshotPacket::write, CameraTakeScreenshotPacket::new);
 
-	public CameraTakeScreenshotPacket(FriendlyByteBuf buf) {
-		this(ByteBufCodecs.OPTIONAL_VAR_INT.decode(buf), buf.readBoolean(), buf.readFloat(), buf.readUtf());
+	public CameraTakeScreenshotPacket(RegistryFriendlyByteBuf buf) {
+		this(ByteBufCodecs.OPTIONAL_VAR_INT.decode(buf), buf.readBoolean(), buf.readBoolean(), buf.readFloat(), buf.readUtf(), FilmFilter.STREAM_CODEC.decode(buf));
 	}
 
-	public static void sendToAsCamera(ServerPlayer player, int entityId, String fileName) {
+	public static void sendToAsCamera(ServerPlayer player, int entityId, String fileName, FilmFilter filter) {
 		ServerPlayNetworking.send(
 			player,
-			new CameraTakeScreenshotPacket(OptionalInt.of(entityId), false, 0.04F, fileName)
+			new CameraTakeScreenshotPacket(OptionalInt.of(entityId), false, false, 0.04F, fileName, filter)
 		);
 	}
 
-	public static void sendToAsHandheld(ServerPlayer player, String fileName, float zoom) {
+	public static void sendToAsHandheld(ServerPlayer player, boolean wasScoping, String fileName, float zoom, FilmFilter filter) {
 		ServerPlayNetworking.send(
 			player,
-			new CameraTakeScreenshotPacket(OptionalInt.empty(), true, zoom, fileName)
+			new CameraTakeScreenshotPacket(OptionalInt.empty(), wasScoping, true, zoom, fileName, filter)
 		);
 	}
 
-	public static void sendTo(ServerPlayer player, TripodCamera tripodCamera, String fileName) {
-		sendToAsCamera(player, tripodCamera.getId(), fileName);
+	public static void sendTo(ServerPlayer player, TripodCamera tripodCamera, String fileName, FilmFilter filter) {
+		sendToAsCamera(player, tripodCamera.getId(), fileName, filter);
 	}
 
-	public void write(FriendlyByteBuf buf) {
+	public void write(RegistryFriendlyByteBuf buf) {
 		ByteBufCodecs.OPTIONAL_VAR_INT.encode(buf, this.entityId);
 		buf.writeBoolean(this.handheldCapture);
+		buf.writeBoolean(this.wasScoping);
 		buf.writeFloat(this.zoom);
 		buf.writeUtf(this.fileName);
+		FilmFilter.STREAM_CODEC.encode(buf, this.filter);
 	}
 
 	@Override

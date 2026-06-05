@@ -18,11 +18,15 @@
 package net.frozenblock.freezeframe.mixin.client.camera;
 
 import com.llamalad7.mixinextras.injector.ModifyExpressionValue;
+import com.llamalad7.mixinextras.injector.v2.WrapWithCondition;
+import com.llamalad7.mixinextras.sugar.Share;
+import com.llamalad7.mixinextras.sugar.ref.LocalBooleanRef;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 import net.frozenblock.freezeframe.FFConstants;
+import net.frozenblock.freezeframe.client.screenshot.CameraScreenshotManager;
+import net.frozenblock.freezeframe.config.FFConfig;
 import net.frozenblock.freezeframe.util.ScopeItemHelper;
-import net.frozenblock.freezeframe.util.client.CameraScreenshotManager;
 import net.minecraft.client.DeltaTracker;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.Gui;
@@ -50,7 +54,36 @@ public class GuiMixin {
 
 	@Inject(method = "extractRenderState", at = @At("HEAD"), cancellable = true)
 	public void freezeFrame$removeOverlays(GuiGraphicsExtractor graphics, DeltaTracker deltaTracker, CallbackInfo info) {
-		if (CameraScreenshotManager.isScreenshottingFromTripodCamera()) info.cancel();
+		if (CameraScreenshotManager.isScreenshotting()) info.cancel();
+	}
+
+	@WrapWithCondition(
+		method = "extractRenderState",
+		at = @At(
+			value = "INVOKE",
+			target = "Lnet/minecraft/client/gui/Gui;extractCrosshair(Lnet/minecraft/client/gui/GuiGraphicsExtractor;Lnet/minecraft/client/DeltaTracker;)V"
+		)
+	)
+	public boolean freezeFrame$removeCrosshair(
+		Gui instance, GuiGraphicsExtractor graphics, DeltaTracker deltaTracker,
+		@Share("freezeFrame$isPlayerScopingInFirstPerson") LocalBooleanRef isPlayerScopingInFirstPerson
+	) {
+		isPlayerScopingInFirstPerson.set(this.minecraft.player != null && this.minecraft.player.isScoping() && this.minecraft.options.getCameraType().isFirstPerson());
+		return !FFConfig.SCOPE_HIDES_CROSSHAIR.get() || !isPlayerScopingInFirstPerson.get();
+	}
+
+	@WrapWithCondition(
+		method = "extractRenderState",
+		at = @At(
+			value = "INVOKE",
+			target = "Lnet/minecraft/client/gui/Gui;extractHotbarAndDecorations(Lnet/minecraft/client/gui/GuiGraphicsExtractor;Lnet/minecraft/client/DeltaTracker;)V"
+		)
+	)
+	public boolean freezeFrame$removeHotbar(
+		Gui instance, GuiGraphicsExtractor graphics, DeltaTracker deltaTracker,
+		@Share("freezeFrame$isPlayerScopingInFirstPerson") LocalBooleanRef isPlayerScopingInFirstPerson
+	) {
+		return !FFConfig.SCOPE_HIDES_HOTBAR.get() || !isPlayerScopingInFirstPerson.get();
 	}
 
 	@ModifyExpressionValue(

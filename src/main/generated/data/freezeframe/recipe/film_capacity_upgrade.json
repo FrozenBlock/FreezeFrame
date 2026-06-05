@@ -1,3 +1,10 @@
 {
-  "type": "freezeframe:film_capacity_upgrade"
+  "type": "freezeframe:film_capacity_upgrade",
+  "category": "equipment",
+  "film": "freezeframe:film",
+  "group": "film",
+  "material": "minecraft:paper",
+  "result": {
+    "id": "freezeframe:film"
+  }
 }

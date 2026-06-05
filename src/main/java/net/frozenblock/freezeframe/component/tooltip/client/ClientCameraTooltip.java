@@ -59,12 +59,12 @@ public class ClientCameraTooltip implements ClientTooltipComponent {
 	}
 
 	@Override
-	public int getHeight(final Font font) {
+	public int getHeight(Font font) {
 		return this.contents.isEmpty() ? getEmptyBundleBackgroundHeight(font) : this.backgroundHeight(font);
 	}
 
 	@Override
-	public int getWidth(final Font font) {
+	public int getWidth(Font font) {
 		return GRID_WIDTH;
 	}
 
@@ -73,15 +73,15 @@ public class ClientCameraTooltip implements ClientTooltipComponent {
 		return true;
 	}
 
-	private static int getEmptyBundleBackgroundHeight(final Font font) {
+	private static int getEmptyBundleBackgroundHeight(Font font) {
 		return getEmptyCameraDescriptionTextHeight(font) + 13 + 8;
 	}
 
-	private int backgroundHeight(final Font font) {
+	private int backgroundHeight(Font font) {
 		return getContainsDescriptionTextHeight(font) + PROGRESSBAR_HEIGHT + 8;
 	}
 
-	private static int getContentXOffset(final int tooltipWidth) {
+	private static int getContentXOffset(int tooltipWidth) {
 		return (tooltipWidth - GRID_WIDTH) / 2;
 	}
 
@@ -174,6 +174,5 @@ public class ClientCameraTooltip implements ClientTooltipComponent {
 		return Component.translatable(CAMERA_FULLNESS_KEY, photographCount, maxPhotographs);
 	}
 
-	private record InsertedFilmProgress(Fraction weight, int photographCount, int maxPhotographs) {
-	}
+	private record InsertedFilmProgress(Fraction weight, int photographCount, int maxPhotographs) {}
 }

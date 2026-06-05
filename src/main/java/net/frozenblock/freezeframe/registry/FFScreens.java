@@ -20,6 +20,7 @@ package net.frozenblock.freezeframe.registry;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 import net.frozenblock.freezeframe.client.gui.screens.inventory.DevelopingTableScreen;
+import net.frozenblock.freezeframe.client.gui.screens.inventory.book.BookPagePhotographScreen;
 import net.minecraft.client.gui.screens.MenuScreens;
 
 @Environment(EnvType.CLIENT)
@@ -27,5 +28,6 @@ public class FFScreens {
 
 	public static void init() {
 		MenuScreens.register(FFMenuTypes.DEVELOPING_TABLE, DevelopingTableScreen::new);
+		MenuScreens.register(FFMenuTypes.BOOK_PAGE_PHOTOGRAPH, BookPagePhotographScreen::new);
 	}
 }

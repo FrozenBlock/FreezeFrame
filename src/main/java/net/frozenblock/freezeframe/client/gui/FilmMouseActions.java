@@ -37,7 +37,7 @@ public class FilmMouseActions implements ItemSlotMouseAction {
 	private final Minecraft minecraft;
 	private final ScrollWheelHandler scrollWheelHandler;
 
-	public FilmMouseActions(final Minecraft minecraft) {
+	public FilmMouseActions(Minecraft minecraft) {
 		this.minecraft = minecraft;
 		this.scrollWheelHandler = new ScrollWheelHandler();
 	}
@@ -48,17 +48,18 @@ public class FilmMouseActions implements ItemSlotMouseAction {
 	}
 
 	@Override
-	public boolean onMouseScrolled(double scrollX, double scrollY, int slotIndex, ItemStack stack) {
-		int amountOfShownPhotographs = FilmItem.getNumberOfPhotographs(stack);
+	public boolean onMouseScrolled(double scrollX, double scrollY, int slotIndex, ItemStack itemStack) {
+		final int amountOfShownPhotographs = FilmItem.getNumberOfPhotographs(itemStack);
 		if (amountOfShownPhotographs == 0) return false;
 
 		final Vector2i wheelXY = this.scrollWheelHandler.onMouseScroll(scrollX, scrollY);
 		final int wheel = wheelXY.y == 0 ? wheelXY.x : -wheelXY.y;
 		if (wheel != 0) {
-			final int selectedPhotograph = FilmItem.getSelectedPhotographIndex(stack);
+			final int selectedPhotograph = FilmItem.getSelectedPhotographIndex(itemStack);
 			final int updatedSelectedPhotograph = ScrollWheelHandler.getNextScrollWheelSelection(wheel, selectedPhotograph, amountOfShownPhotographs);
-			if (selectedPhotograph != updatedSelectedPhotograph) this.toggledSelectedFilmPhotograph(stack, slotIndex, updatedSelectedPhotograph);
+			if (selectedPhotograph != updatedSelectedPhotograph) this.toggledSelectedFilmPhotograph(itemStack, slotIndex, updatedSelectedPhotograph);
 		}
+
 		return true;
 	}
 
@@ -77,9 +78,7 @@ public class FilmMouseActions implements ItemSlotMouseAction {
 		if (connection == null || selectedPhotograph >= FilmItem.getNumberOfPhotographs(filmItem)) return;
 
 		FilmItem.toggleSelectedPhotograph(filmItem, selectedPhotograph);
-		connection.send(new ServerboundCustomPayloadPacket(
-			new SelectFilmPhotographPacket(slotIndex, selectedPhotograph)
-		));
+		connection.send(new ServerboundCustomPayloadPacket(new SelectFilmPhotographPacket(slotIndex, selectedPhotograph)));
 	}
 
 	public void unselectedFilmItem(ItemStack filmItem, int slotIndex) {

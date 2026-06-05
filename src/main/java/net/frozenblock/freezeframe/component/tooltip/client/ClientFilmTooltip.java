@@ -23,7 +23,7 @@ import java.util.Optional;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 import net.frozenblock.freezeframe.FFConstants;
-import net.frozenblock.freezeframe.client.photograph.PhotographDetails;
+import net.frozenblock.freezeframe.client.photograph.PhotographDetailsUtil;
 import net.frozenblock.freezeframe.client.photograph.PhotographLoader;
 import net.frozenblock.freezeframe.client.photograph.PhotographRenderer;
 import net.frozenblock.freezeframe.component.FilmContents;
@@ -84,7 +84,7 @@ public class ClientFilmTooltip implements ClientTooltipComponent {
 
 		this.name = photograph == null
 			? null
-			: PhotographDetails.getPhotographNameLine(photograph);
+			: PhotographDetailsUtil.getPhotographNameLine(photograph);
 
 		this.photographer = photograph == null || StringUtil.isNullOrEmpty(photograph.photographer())
 			? null
@@ -144,7 +144,7 @@ public class ClientFilmTooltip implements ClientTooltipComponent {
 	}
 
 	private static int getContentXOffset(int tooltipWidth) {
-		return (tooltipWidth - GRID_WIDTH) / 2;
+		return (tooltipWidth) / 2 - (Math.max(tooltipWidth, GRID_WIDTH) / 2);
 	}
 
 	@Override
@@ -190,10 +190,6 @@ public class ClientFilmTooltip implements ClientTooltipComponent {
 		final int left = x + getContentXOffset(w);
 		final int photoDrawX = left + ((w / 2) - (PHOTOGRAPH_RENDER_SIZE / 2));
 		PhotographRenderer.blit(photoDrawX, y, 0, 0, graphics, this.photographId, PHOTOGRAPH_RENDER_SIZE, PhotographRenderer.FrameType.FILM_EMBED);
-
-		// TODO: extract arrows
-		if (this.hasMultiplePhotographs) {
-		}
 
 		this.extractPhotographTooltips(left, y + TOOLTIP_HEIGHT, font, graphics);
 	}

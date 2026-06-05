@@ -22,7 +22,7 @@ import com.llamalad7.mixinextras.sugar.Share;
 import com.llamalad7.mixinextras.sugar.ref.LocalRef;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
-import net.frozenblock.freezeframe.util.client.CameraScreenshotManager;
+import net.frozenblock.freezeframe.client.screenshot.CameraScreenshotManager;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.renderer.ScreenEffectRenderer;
 import net.minecraft.world.entity.Entity;

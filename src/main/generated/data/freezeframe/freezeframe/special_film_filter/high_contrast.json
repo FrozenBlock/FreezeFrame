@@ -1,0 +1,15 @@
+{
+  "shader": "freezeframe:post/contrast",
+  "shader_uniforms": {
+    "ContrastConfig": [
+      {
+        "type": "float",
+        "value": 1.35
+      },
+      {
+        "type": "float",
+        "value": 0.0
+      }
+    ]
+  }
+}

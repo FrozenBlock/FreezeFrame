@@ -1,0 +1,16 @@
+{
+  "shader": "freezeframe:post/temperature",
+  "shader_uniforms": {
+    "TemperatureConfig": [
+      {
+        "type": "vec4",
+        "value": [
+          0.18,
+          0.02,
+          -0.12,
+          0.0
+        ]
+      }
+    ]
+  }
+}

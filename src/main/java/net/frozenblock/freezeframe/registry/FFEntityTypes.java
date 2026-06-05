@@ -37,7 +37,6 @@ public class FFEntityTypes {
 			.eyeHeight(1.619999999999999F)
 			.clientTrackingRange(10)
 	);
-
 	public static final EntityType<DiscCamera> DISC_CAMERA = register(
 		"disc_camera",
 		EntityType.Builder.of(DiscCamera::new, MobCategory.MISC)
@@ -46,16 +45,15 @@ public class FFEntityTypes {
 			.clientTrackingRange(10)
 	);
 
-	public static void init() {
-	}
+	public static void init() {}
 
 	static {
 		FabricDefaultAttributeRegistry.register(CAMERA, TripodCamera.createTripodCameraAttributes());
 		FabricDefaultAttributeRegistry.register(DISC_CAMERA, DiscCamera.createTripodCameraAttributes());
 	}
 
-	private static <T extends Entity> EntityType<T> register(String id, EntityType.Builder<T> builder) {
-		final ResourceKey<EntityType<?>> key = ResourceKey.create(Registries.ENTITY_TYPE, FFConstants.id(id));
+	private static <T extends Entity> EntityType<T> register(String name, EntityType.Builder<T> builder) {
+		final ResourceKey<EntityType<?>> key = ResourceKey.create(Registries.ENTITY_TYPE, FFConstants.id(name));
 		return Registry.register(BuiltInRegistries.ENTITY_TYPE, key, builder.build(key));
 	}
 }

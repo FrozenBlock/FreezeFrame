@@ -1,0 +1,11 @@
+{
+  "shader": "freezeframe:post/chromatic_aberration",
+  "shader_uniforms": {
+    "OffsetConfig": [
+      {
+        "type": "float",
+        "value": 1.0
+      }
+    ]
+  }
+}

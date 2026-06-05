@@ -20,11 +20,11 @@ package net.frozenblock.freezeframe.config.gui;
 import me.shedaniel.clothconfig2.api.ConfigEntryBuilder;
 import me.shedaniel.clothconfig2.gui.entries.BooleanListEntry;
 import me.shedaniel.clothconfig2.gui.entries.IntegerSliderEntry;
+import static net.frozenblock.freezeframe.FFConstants.text;
+import static net.frozenblock.freezeframe.FFConstants.tooltip;
 import net.frozenblock.lib.config.clothconfig.FrozenClothConfig;
 import net.frozenblock.lib.config.v2.entry.ConfigEntry;
 import net.minecraft.network.chat.Component;
-import static net.frozenblock.freezeframe.FFConstants.text;
-import static net.frozenblock.freezeframe.FFConstants.tooltip;
 
 public final class FFConfigGuiHelper {
 

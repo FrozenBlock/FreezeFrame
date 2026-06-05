@@ -19,10 +19,10 @@ package net.frozenblock.freezeframe.item;
 
 import java.util.Objects;
 import java.util.Optional;
-import net.frozenblock.lib.sound.impl.networking.FrozenLibSoundPackets;
 import net.frozenblock.freezeframe.FFConstants;
 import net.frozenblock.freezeframe.component.CameraContents;
 import net.frozenblock.freezeframe.component.FilmContents;
+import net.frozenblock.freezeframe.component.FilmFilter;
 import net.frozenblock.freezeframe.component.Photograph;
 import net.frozenblock.freezeframe.component.tooltip.CameraTooltip;
 import net.frozenblock.freezeframe.networking.packet.CameraTakeScreenshotPacket;
@@ -31,6 +31,7 @@ import net.frozenblock.freezeframe.registry.FFSounds;
 import net.frozenblock.freezeframe.tag.FFItemTags;
 import net.frozenblock.freezeframe.util.ScopeItemHelper;
 import net.frozenblock.freezeframe.util.ScopeZoomHelper;
+import net.frozenblock.lib.sound.impl.networking.FrozenLibSoundPackets;
 import net.minecraft.core.Holder;
 import net.minecraft.core.component.DataComponents;
 import net.minecraft.core.registries.BuiltInRegistries;
@@ -88,10 +89,10 @@ public class CameraItem extends SpawnEggItem {
 	}
 
 	@Override
-	public InteractionResult useOn(UseOnContext useOnContext) {
-		final Player player = useOnContext.getPlayer();
+	public InteractionResult useOn(UseOnContext context) {
+		final Player player = context.getPlayer();
 		if (player != null && !player.isShiftKeyDown()) return InteractionResult.PASS;
-		return super.useOn(useOnContext);
+		return super.useOn(context);
 	}
 
 	@Override
@@ -143,7 +144,7 @@ public class CameraItem extends SpawnEggItem {
 		setAllCamerasOnCooldown(player, 20);
 		if (player instanceof ServerPlayer serverPlayer) {
 			final String fileName = makeFileName(serverPlayer);
-			CameraTakeScreenshotPacket.sendToAsHandheld(serverPlayer, fileName, captureZoom);
+			CameraTakeScreenshotPacket.sendToAsHandheld(serverPlayer, serverPlayer.getUseItem().equals(stack), fileName, captureZoom, getFilterForNextPhotograph(initialContents));
 			addPhotograph(stack, player, fileName);
 		}
 
@@ -291,6 +292,21 @@ public class CameraItem extends SpawnEggItem {
 
 	public static boolean isCapableOfTakingPhotos(ItemStack stack) {
 		return stack.getOrDefault(FFDataComponents.CAMERA_CONTENTS, CameraContents.EMPTY).hasSpaceForPhotograph();
+	}
+
+	public static FilmFilter getFilterForNextPhotograph(ItemStack cameraStack) {
+		return getFilterForNextPhotograph(cameraStack.getOrDefault(FFDataComponents.CAMERA_CONTENTS, CameraContents.EMPTY));
+	}
+
+	public static FilmFilter getFilterForNextPhotograph(CameraContents contents) {
+		for (ItemStackTemplate filmStack : contents.items()) {
+			final FilmContents filmContents = filmStack.get(FFDataComponents.FILM_CONTENTS);
+			if (filmContents == null) continue;
+			if (FilmItem.getWeightSafe(filmContents, filmStack).compareTo(Fraction.ONE) < 0) {
+				return filmStack.getOrDefault(FFDataComponents.FILM_FILTER, FilmFilter.EMPTY);
+			}
+		}
+		return FilmFilter.EMPTY;
 	}
 
 	@Override

@@ -21,39 +21,41 @@ import java.util.Date;
 import java.util.Optional;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
-import net.frozenblock.lib.texture.client.api.ServerTextureDownloader;
 import net.frozenblock.freezeframe.FFConstants;
+import net.frozenblock.lib.texture.client.api.ServerTextureDownloader;
 import net.minecraft.resources.Identifier;
 
 @Environment(EnvType.CLIENT)
 public class PhotographLoader {
-	private static final Identifier FALLBACK = FFConstants.id("textures/photographs/empty.png");
+	private static final Identifier FALLBACK_TEXTURE = FFConstants.id("textures/photographs/empty.png");
 
-	public static Identifier getAndLoadPhotograph(Identifier photographId) {
-		final String filename = photographId.getPath().replace("photographs/", "");
+	public static Identifier getAndLoadPhotograph(Identifier id) {
+		final String filename = id.getPath().replace("photographs/", "");
 		return ServerTextureDownloader.getOrLoadServerTexture(
-			photographId,
+			id,
 			"photographs",
 			filename,
-			FALLBACK
+			FALLBACK_TEXTURE
 		);
 	}
 
 	public static Optional<Date> parseDate(String fileName) {
 		int lastIndex = fileName.lastIndexOf(".");
 		lastIndex = lastIndex == -1 ? fileName.length() : lastIndex;
-		String strippedFileName = fileName.substring(Math.max(fileName.lastIndexOf("/"), 0), lastIndex);
+		final String strippedFileName = fileName.substring(Math.max(fileName.lastIndexOf("/"), 0), lastIndex);
+
 		try {
 			int firstUnderScoreIndex = strippedFileName.indexOf("_");
 			int lastUnderscoreIndex = strippedFileName.lastIndexOf("_");
 			lastUnderscoreIndex = lastUnderscoreIndex == -1 || lastUnderscoreIndex == firstUnderScoreIndex
-				? strippedFileName.length() : lastUnderscoreIndex;
+				? strippedFileName.length()
+				: lastUnderscoreIndex;
 
-			String unixString = strippedFileName.substring(firstUnderScoreIndex + 1, lastUnderscoreIndex);
-			long unixTime = Long.parseLong(unixString);
+			final String unixString = strippedFileName.substring(firstUnderScoreIndex + 1, lastUnderscoreIndex);
+			final long unixTime = Long.parseLong(unixString);
 			return Optional.of(new Date(unixTime));
-		} catch (Exception ignored) {
-		}
+		} catch (Exception ignored) {}
+
 		return Optional.empty();
 	}
 }

@@ -17,13 +17,19 @@
 
 package net.frozenblock.freezeframe.item;
 
+import java.util.Locale;
 import java.util.Optional;
+import java.util.function.Consumer;
+import net.frozenblock.freezeframe.FFConstants;
 import net.frozenblock.freezeframe.component.FilmContents;
+import net.frozenblock.freezeframe.component.FilmFilter;
 import net.frozenblock.freezeframe.component.Photograph;
 import net.frozenblock.freezeframe.component.tooltip.FilmTooltip;
+import net.frozenblock.freezeframe.item.filter.SpecialFilmFilter;
 import net.frozenblock.freezeframe.networking.packet.OpenFilmScreenPacket;
 import net.frozenblock.freezeframe.registry.FFDataComponents;
 import net.minecraft.core.component.DataComponents;
+import net.minecraft.network.chat.Component;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.util.ARGB;
@@ -37,13 +43,17 @@ import net.minecraft.world.inventory.tooltip.TooltipComponent;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemInstance;
 import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.item.TooltipFlag;
 import net.minecraft.world.item.component.TooltipDisplay;
+import net.minecraft.world.level.Level;
 import org.apache.commons.lang3.math.Fraction;
 import org.jspecify.annotations.Nullable;
+import net.minecraft.ChatFormatting;
 
 public class FilmItem extends Item {
 	private static final int FULL_BAR_COLOR = ARGB.colorFromFloat(1F, 1F, 0.33F, 0.33F);
 	private static final int BAR_COLOR = 0xFFB8895F;
+	private static final String COLOR_LINE_KEY = "item." + FFConstants.MOD_ID + ".film.filter.color";
 
 	public FilmItem(Properties properties) {
 		super(properties);
@@ -72,13 +82,15 @@ public class FilmItem extends Item {
 		return getWeightSafe(contents, stack).floatValue();
 	}
 
+	public static FilmFilter getFilter(ItemStack stack) {
+		return stack.getOrDefault(FFDataComponents.FILM_FILTER, FilmFilter.EMPTY);
+	}
+
 	@Override
-	public InteractionResult use(net.minecraft.world.level.Level level, Player player, InteractionHand hand) {
+	public InteractionResult use(Level level, Player player, InteractionHand hand) {
 		final ItemStack stack = player.getItemInHand(hand);
 		if (!stack.isEmpty() && !stack.getOrDefault(FFDataComponents.FILM_CONTENTS, FilmContents.EMPTY).isEmpty()) {
-			if (player instanceof ServerPlayer serverPlayer) {
-				OpenFilmScreenPacket.sendTo(serverPlayer, hand);
-			}
+			if (player instanceof ServerPlayer serverPlayer) OpenFilmScreenPacket.sendTo(serverPlayer, hand);
 			return InteractionResult.SUCCESS;
 		}
 
@@ -86,7 +98,7 @@ public class FilmItem extends Item {
 	}
 
 	@Override
-	public void inventoryTick(ItemStack stack, ServerLevel level, Entity entity, EquipmentSlot equipmentSlot) {
+	public void inventoryTick(ItemStack stack, ServerLevel level, Entity entity, EquipmentSlot slot) {
 		if (needsStackingRefresh(stack)) refreshStackingState(stack);
 	}
 
@@ -120,13 +132,15 @@ public class FilmItem extends Item {
 
 	public static void refreshStackingState(ItemStack stack) {
 		final FilmContents contents = stack.getOrDefault(FFDataComponents.FILM_CONTENTS, FilmContents.EMPTY);
-		final int expectedMaxStackSize = contents.isEmpty() ? stack.getItem().getDefaultMaxStackSize() : 1;
+		final FilmFilter filter = getFilter(stack);
+		final int expectedMaxStackSize = contents.isEmpty() && filter.isEmpty() ? stack.getItem().getDefaultMaxStackSize() : 1;
 		stack.set(DataComponents.MAX_STACK_SIZE, expectedMaxStackSize);
 	}
 
 	private static boolean needsStackingRefresh(ItemStack stack) {
 		final FilmContents contents = stack.getOrDefault(FFDataComponents.FILM_CONTENTS, FilmContents.EMPTY);
-		final int expectedMaxStackSize = contents.isEmpty() ? stack.getItem().getDefaultMaxStackSize() : 1;
+		final FilmFilter filter = getFilter(stack);
+		final int expectedMaxStackSize = contents.isEmpty() && filter.isEmpty() ? stack.getItem().getDefaultMaxStackSize() : 1;
 		return stack.getOrDefault(DataComponents.MAX_STACK_SIZE, stack.getItem().getDefaultMaxStackSize()) != expectedMaxStackSize;
 	}
 
@@ -154,4 +168,24 @@ public class FilmItem extends Item {
 		return Optional.empty();
 	}
 
+	@Override
+	public void appendHoverText(ItemStack stack, TooltipContext context, TooltipDisplay tooltipDisplay, Consumer<Component> tooltipAdder, TooltipFlag tooltipFlag) {
+		super.appendHoverText(stack, context, tooltipDisplay, tooltipAdder, tooltipFlag);
+		final FilmFilter filter = getFilter(stack);
+		if (filter.isEmpty()) return;
+
+		for (FilmFilter.Layer layer : filter.layers()) {
+			if (layer.isDye()) {
+				final int color = layer.color();
+				final String hex = String.format(Locale.ROOT, "#%06X", color);
+				final String colorLineKey = layer.exclusionTint() ? COLOR_LINE_KEY + ".exclusion" : COLOR_LINE_KEY;
+				tooltipAdder.accept(Component.translatable(colorLineKey, Component.literal(hex).withColor(color)).withStyle(ChatFormatting.GRAY));
+				continue;
+			}
+
+			if (layer.isSpecial()) {
+				layer.specialFilmFilter().ifPresent(specialFilmFilter -> tooltipAdder.accept(SpecialFilmFilter.tooltipComponent(specialFilmFilter)));
+			}
+		}
+	}
 }

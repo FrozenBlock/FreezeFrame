@@ -28,21 +28,27 @@ import net.frozenblock.freezeframe.registry.FFEntityTypes;
 import net.frozenblock.freezeframe.registry.FFItems;
 import net.frozenblock.freezeframe.registry.FFMenuTypes;
 import net.frozenblock.freezeframe.registry.FFRecipeSerializers;
+import net.frozenblock.freezeframe.registry.FFRegistries;
+import net.frozenblock.freezeframe.registry.FFSlotDisplays;
 import net.frozenblock.freezeframe.registry.FFSounds;
+import net.frozenblock.freezeframe.registry.FFStats;
 
 public class FreezeFrame implements ModInitializer {
 
 	@Override
 	public void onInitialize() {
+		FFRegistries.init();
 		FFEntityTypes.init();
-		FFBlocks.register();
+		FFBlocks.init();
 		FFItems.init();
 		FFContainerComponentManipulators.init();
 		FFDataComponentPredicates.init();
 		FFSounds.init();
 		FFDataComponents.init();
 		FFRecipeSerializers.init();
-		FFMenuTypes.register();
+		FFSlotDisplays.bootstrap();
+		FFMenuTypes.init();
+		FFStats.init();
 
 		FFNetworking.init();
 

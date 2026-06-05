@@ -22,8 +22,9 @@ import com.llamalad7.mixinextras.injector.wrapoperation.WrapOperation;
 import com.llamalad7.mixinextras.sugar.Local;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
+import net.frozenblock.freezeframe.client.scope.ScopeZoomManager;
+import net.frozenblock.freezeframe.config.FFConfig;
 import net.frozenblock.freezeframe.util.ScopeItemHelper;
-import net.frozenblock.freezeframe.util.client.ScopeZoomManager;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.MouseHandler;
 import net.minecraft.world.entity.player.Inventory;
@@ -51,7 +52,7 @@ public class MouseHandlerMixin {
 		Inventory instance, int selected, Operation<Void> original,
 		@Local(name = "wheel") int wheel
 	) {
-		if (this.minecraft.player == null || !ScopeItemHelper.isPlayerUsingScopeItem(this.minecraft.player)) {
+		if (this.minecraft.player == null || !(ScopeItemHelper.isPlayerUsingScopeItem(this.minecraft.player) && FFConfig.SCOPE_SCROLLING.get())) {
 			original.call(instance, selected);
 			return;
 		}

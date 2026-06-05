@@ -19,6 +19,7 @@ package net.frozenblock.freezeframe.block;
 
 import com.mojang.serialization.MapCodec;
 import net.frozenblock.freezeframe.menu.DevelopingTableMenu;
+import net.frozenblock.freezeframe.registry.FFStats;
 import net.minecraft.core.BlockPos;
 import net.minecraft.network.chat.Component;
 import net.minecraft.world.InteractionResult;
@@ -43,7 +44,7 @@ public class DevelopingTableBlock extends HorizontalDirectionalBlock {
 	}
 
 	@Override
-	protected MapCodec<? extends HorizontalDirectionalBlock> codec() {
+	protected MapCodec<? extends DevelopingTableBlock> codec() {
 		return CODEC;
 	}
 
@@ -52,8 +53,7 @@ public class DevelopingTableBlock extends HorizontalDirectionalBlock {
 		if (level.isClientSide()) return InteractionResult.SUCCESS;
 
 		player.openMenu(state.getMenuProvider(level, pos));
-		//player.awardStat(Stats.INTERACT_WITH_LOOM);
-		//TODO: Might want to add an award?
+		player.awardStat(FFStats.INTERACT_WITH_DEVELOPING_TABLE);
 		return InteractionResult.CONSUME;
 	}
 

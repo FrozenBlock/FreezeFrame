@@ -1,0 +1,10 @@
+{
+  "type": "freezeframe:film_filter",
+  "category": "equipment",
+  "dye": "#minecraft:dyes",
+  "film": "freezeframe:film",
+  "group": "film_filter",
+  "result": {
+    "id": "freezeframe:film"
+  }
+}

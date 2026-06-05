@@ -27,10 +27,9 @@ import net.minecraft.core.registries.BuiltInRegistries;
 public class FFDataComponentPredicates {
 	public static final DataComponentPredicate.Type<CameraPredicate> CAMERA_CONTENTS = register("camera_contents", CameraPredicate.CODEC);
 
-	public static void init() {
-	}
+	public static void init() {}
 
-	private static <T extends DataComponentPredicate> DataComponentPredicate.Type<T> register(String id, Codec<T> codec) {
-		return Registry.register(BuiltInRegistries.DATA_COMPONENT_PREDICATE_TYPE, FFConstants.id(id), new DataComponentPredicate.ConcreteType<>(codec));
+	private static <T extends DataComponentPredicate> DataComponentPredicate.Type<T> register(String name, Codec<T> codec) {
+		return Registry.register(BuiltInRegistries.DATA_COMPONENT_PREDICATE_TYPE, FFConstants.id(name), new DataComponentPredicate.ConcreteType<>(codec));
 	}
 }

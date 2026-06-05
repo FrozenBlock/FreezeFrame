@@ -1,0 +1,15 @@
+{
+  "shader": "freezeframe:post/crunchy",
+  "shader_uniforms": {
+    "CrunchConfig": [
+      {
+        "type": "float",
+        "value": 2.0
+      },
+      {
+        "type": "float",
+        "value": 6.0
+      }
+    ]
+  }
+}

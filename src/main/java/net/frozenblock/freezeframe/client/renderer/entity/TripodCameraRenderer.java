@@ -21,8 +21,8 @@ import com.mojang.blaze3d.vertex.PoseStack;
 import com.mojang.math.Axis;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
-import net.frozenblock.freezeframe.FreezeFrameClient;
 import net.frozenblock.freezeframe.FFConstants;
+import net.frozenblock.freezeframe.FreezeFrameClient;
 import net.frozenblock.freezeframe.client.model.object.camera.TripodCameraModel;
 import net.frozenblock.freezeframe.client.renderer.entity.state.TripodCameraRenderState;
 import net.frozenblock.freezeframe.entity.TripodCamera;
@@ -48,13 +48,13 @@ public class TripodCameraRenderer extends MobRenderer<TripodCamera, TripodCamera
 	public void extractRenderState(TripodCamera entity, TripodCameraRenderState renderState, float partialTicks) {
 		super.extractRenderState(entity, renderState, partialTicks);
 		renderState.trackedHeight = entity.getTrackedHeight();
-		renderState.lerpedTimer = entity.getLerpedTimer(partialTicks);
+		renderState.timer = entity.getLerpedTimer(partialTicks);
 		renderState.wiggle = (float)(entity.level().getGameTime() - entity.lastHit) + partialTicks;
 	}
 
 	@Override
 	protected float getWhiteOverlayProgress(TripodCameraRenderState renderState) {
-		final float timer = renderState.lerpedTimer;
+		final float timer = renderState.timer;
 		final float timedTimer = (timer * (float) Math.PI) * 0.1F;
 		final float sin = (float) (Math.sin(timedTimer - (float) Math.PI * 0.5F) + 1F) * 0.5F;
 		return sin;

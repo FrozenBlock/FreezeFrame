@@ -19,9 +19,9 @@ package net.frozenblock.freezeframe.mixin.client.camera;
 
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
+import net.frozenblock.freezeframe.client.scope.ScopeZoomManager;
 import net.frozenblock.freezeframe.util.ScopeItemHelper;
 import net.frozenblock.freezeframe.util.ScopeZoomHelper;
-import net.frozenblock.freezeframe.util.client.ScopeZoomManager;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.player.AbstractClientPlayer;
 import net.minecraft.util.Mth;

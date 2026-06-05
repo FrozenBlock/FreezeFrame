@@ -17,13 +17,13 @@
 
 package net.frozenblock.freezeframe.entity;
 
-import net.frozenblock.lib.sound.api.predicate.SoundPredicate;
-import net.frozenblock.lib.sound.impl.networking.FrozenLibSoundPackets;
 import net.frozenblock.freezeframe.component.CameraContents;
 import net.frozenblock.freezeframe.item.CameraItem;
 import net.frozenblock.freezeframe.networking.packet.CameraTakeScreenshotPacket;
 import net.frozenblock.freezeframe.registry.FFDataComponents;
 import net.frozenblock.freezeframe.registry.FFSounds;
+import net.frozenblock.lib.sound.api.predicate.SoundPredicate;
+import net.frozenblock.lib.sound.impl.networking.FrozenLibSoundPackets;
 import net.minecraft.core.component.DataComponentGetter;
 import net.minecraft.core.component.DataComponentType;
 import net.minecraft.core.component.DataComponents;
@@ -166,7 +166,7 @@ public class TripodCamera extends Mob {
 			);
 
 			if (isSuccess) {
-				CameraTakeScreenshotPacket.sendTo(photographer, this, fileName);
+				CameraTakeScreenshotPacket.sendTo(photographer, this, fileName, CameraItem.getFilterForNextPhotograph(this.cameraContents));
 				this.setComponent(FFDataComponents.CAMERA_CONTENTS, cameraContents);
 			}
 		}
@@ -435,8 +435,7 @@ public class TripodCamera extends Mob {
 	}
 
 	@Override
-	public void thunderHit(ServerLevel level, LightningBolt lightningBolt) {
-	}
+	public void thunderHit(ServerLevel level, LightningBolt lightningBolt) {}
 
 	@Override
 	public boolean attackable() {
@@ -444,8 +443,7 @@ public class TripodCamera extends Mob {
 	}
 
 	@Override
-	public void doPush(Entity entity) {
-	}
+	public void doPush(Entity entity) {}
 
 	@Override
 	@Nullable

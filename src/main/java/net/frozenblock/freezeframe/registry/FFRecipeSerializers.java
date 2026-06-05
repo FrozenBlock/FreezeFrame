@@ -17,25 +17,24 @@
 
 package net.frozenblock.freezeframe.registry;
 
-import com.mojang.serialization.MapCodec;
 import net.frozenblock.freezeframe.FFConstants;
-import net.frozenblock.freezeframe.recipe.FilmCapacityUpgradeRecipe;
+import net.frozenblock.freezeframe.item.crafting.FilmCapacityUpgradeRecipe;
+import net.frozenblock.freezeframe.item.crafting.FilmFilterRecipe;
 import net.minecraft.core.Registry;
 import net.minecraft.core.registries.BuiltInRegistries;
-import net.minecraft.network.codec.StreamCodec;
 import net.minecraft.world.item.crafting.RecipeSerializer;
 
 public class FFRecipeSerializers {
-	private static final FilmCapacityUpgradeRecipe FILM_CAPACITY_UPGRADE_RECIPE = new FilmCapacityUpgradeRecipe();
 	public static final RecipeSerializer<FilmCapacityUpgradeRecipe> FILM_CAPACITY_UPGRADE = Registry.register(
 		BuiltInRegistries.RECIPE_SERIALIZER,
 		FFConstants.id("film_capacity_upgrade"),
-		new RecipeSerializer<>(
-			MapCodec.unit(FILM_CAPACITY_UPGRADE_RECIPE),
-			StreamCodec.unit(FILM_CAPACITY_UPGRADE_RECIPE)
-		)
+		FilmCapacityUpgradeRecipe.SERIALIZER
+	);
+	public static final RecipeSerializer<FilmFilterRecipe> FILM_FILTER = Registry.register(
+		BuiltInRegistries.RECIPE_SERIALIZER,
+		FFConstants.id("film_filter"),
+		FilmFilterRecipe.SERIALIZER
 	);
 
-	public static void init() {
-	}
+	public static void init() {}
 }
