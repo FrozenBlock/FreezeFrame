@@ -142,33 +142,31 @@ public final class ScopePostEffectController {
 	private static List<PassSpec> buildPassSpecs(FilmFilter filter) {
 		final List<PassSpec> passSpecs = new ArrayList<>();
 		for (FilmFilter.Layer layer : filter.layers()) {
-			if (layer.isDye()) {
-				passSpecs.add(dyePass(layer));
-				continue;
-			}
-
-			if (layer.isSpecial()) {
-				final Optional<Holder<SpecialFilmFilter>> specialFilmFilter = layer.specialFilmFilter();
-				if (specialFilmFilter.isEmpty()) continue;
-
-				passSpecs.add(specialPass(specialFilmFilter.get().value()));
-				continue;
-			}
+			createPassSpecForLayer(layer).ifPresent(passSpecs::add);
 		}
 		return passSpecs;
 	}
 
-	private static PassSpec dyePass(FilmFilter.Layer layer) {
-		final float red = ARGB.red(layer.color()) / 255F;
-		final float green = ARGB.green(layer.color()) / 255F;
-		final float blue = ARGB.blue(layer.color()) / 255F;
-		return new PassSpec(
-			DYE_PASS_SPEC_ID,
-			Map.of("TintConfig", List.of(
-				new UniformValue.Vec4Uniform(new Vector4f(red, green, blue, 1F)),
-				layer.exclusionTint() ? DYE_TINT_EXCLUSION : DYE_TINT_NO_EXCLUSION
-			))
-		);
+	private static Optional<PassSpec> createPassSpecForLayer(FilmFilter.Layer layer) {
+		if (layer.isDye()) {
+			final float red = ARGB.red(layer.color()) / 255F;
+			final float green = ARGB.green(layer.color()) / 255F;
+			final float blue = ARGB.blue(layer.color()) / 255F;
+			return Optional.of(new PassSpec(
+				DYE_PASS_SPEC_ID,
+				Map.of("TintConfig", List.of(
+					new UniformValue.Vec4Uniform(new Vector4f(red, green, blue, 1F)),
+					layer.exclusionTint() ? DYE_TINT_EXCLUSION : DYE_TINT_NO_EXCLUSION
+				))
+			));
+		}
+
+		if (layer.isSpecial()) {
+			final Optional<Holder<SpecialFilmFilter>> specialFilmFilter = layer.specialFilmFilter();
+			return specialFilmFilter.map(specialFilmFilterHolder -> specialPass(specialFilmFilterHolder.value()));
+		}
+
+		return Optional.empty();
 	}
 
 	private static PassSpec specialPass(SpecialFilmFilter definition) {
