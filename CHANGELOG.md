@@ -40,7 +40,7 @@ Put the changelog BELOW the dashes. ANYTHING ABOVE IS IGNORED.
   - Added two config options to toggle these behaviors.
 - Added a config option to render held Photo items in 3D when viewed in third-person.
   - This is disabled by default.
-- Photo rendering now supports rendering a back side.
+- Photo item rendering now supports rendering a back side.
   - Added the `FRAME_BACK` Frame Type.
 - Added separate textures for the Camera item, resolving an issue that locked mipmapping to 3 levels.
 - Resetting a scope item's zoom to default now plays multiple increment sounds in succession instead of one, relative to the amount of zoom steps away from the default.

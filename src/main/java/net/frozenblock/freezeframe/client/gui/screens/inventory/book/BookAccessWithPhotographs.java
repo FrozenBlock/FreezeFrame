@@ -17,11 +17,11 @@
 
 package net.frozenblock.freezeframe.client.gui.screens.inventory.book;
 
+import java.util.Optional;
 import net.frozenblock.freezeframe.component.BookPagePhotographs;
 import net.frozenblock.freezeframe.component.Photograph;
 import net.frozenblock.freezeframe.registry.FFDataComponents;
 import net.minecraft.world.item.ItemStack;
-import java.util.Optional;
 
 public interface BookAccessWithPhotographs {
 

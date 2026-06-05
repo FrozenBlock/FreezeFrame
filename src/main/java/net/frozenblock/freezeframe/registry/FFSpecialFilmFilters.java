@@ -17,6 +17,9 @@
 
 package net.frozenblock.freezeframe.registry;
 
+import java.util.List;
+import java.util.Map;
+import java.util.Optional;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 import net.frozenblock.freezeframe.FFConstants;
@@ -27,9 +30,6 @@ import net.minecraft.resources.Identifier;
 import net.minecraft.resources.ResourceKey;
 import net.minecraft.util.ARGB;
 import org.joml.Vector4f;
-import java.util.List;
-import java.util.Map;
-import java.util.Optional;
 
 public class FFSpecialFilmFilters {
 	public static final ResourceKey<SpecialFilmFilter> BLOOM = createKey("bloom");
