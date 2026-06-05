@@ -24,6 +24,7 @@ import net.fabricmc.fabric.api.client.networking.v1.ClientPlayNetworking;
 import net.frozenblock.freezeframe.FreezeFrameClient;
 import net.frozenblock.freezeframe.component.FilmFilter;
 import net.frozenblock.freezeframe.component.ScopeZoomConfig;
+import net.frozenblock.freezeframe.config.FFConfig;
 import net.frozenblock.freezeframe.item.CameraItem;
 import net.frozenblock.freezeframe.networking.packet.ChangeScopeZoomPacket;
 import net.frozenblock.freezeframe.networking.packet.QuickCameraPhotographPacket;
@@ -77,15 +78,16 @@ public final class ScopeAndCameraUseController {
 		}
 
 		final boolean isScopeConfigDifferent = !previousScopeItem.getOrDefault(FFDataComponents.SCOPE_ZOOM_CONFIG, ScopeZoomConfig.EMPTY)
-				.equals(scopeItem.getOrDefault(FFDataComponents.SCOPE_ZOOM_CONFIG, ScopeZoomConfig.EMPTY));
+			.equals(scopeItem.getOrDefault(FFDataComponents.SCOPE_ZOOM_CONFIG, ScopeZoomConfig.EMPTY));
 		if (!usingScopeItem || isScopeConfigDifferent) {
 			ScopeZoomManager.resetActiveZoomProfile();
 			ScopeZoomManager.resetZoom();
 		}
 
-		if (usingScopeItem && isScopeConfigDifferent) applyZoomProfile(scopeItem);
+		final boolean scopeScrollingEnabled = FFConfig.SCOPE_SCROLLING.get();
+		if (usingScopeItem && isScopeConfigDifferent) applyZoomProfile(scopeItem, !scopeScrollingEnabled);
 
-		final boolean resetZoomDown = FreezeFrameClient.RESET_SCOPE_ZOOM.isDown();
+		final boolean resetZoomDown = scopeScrollingEnabled && FreezeFrameClient.RESET_SCOPE_ZOOM.isDown();
 		if (resetZoomDown && !wasResetZoomDown) ScopeZoomManager.setZoomToDefault(minecraft, player);
 
 		final boolean attackDown = minecraft.options.keyAttack.isDown();
@@ -126,7 +128,7 @@ public final class ScopeAndCameraUseController {
 		previousScopeItem = ItemStack.EMPTY;
 	}
 
-	private static void applyZoomProfile(ItemStack stack) {
+	private static void applyZoomProfile(ItemStack stack, boolean useBase) {
 		ScopeZoomManager.setActiveZoomProfile(
 			ScopeZoomHelper.getMinZoomFor(stack),
 			ScopeZoomHelper.getMaxZoomFor(stack),
@@ -135,6 +137,6 @@ public final class ScopeAndCameraUseController {
 			ScopeZoomHelper.getZoomOutSoundFor(stack)
 		);
 		ScopeZoomManager.setActiveZoomStep(ScopeZoomHelper.getZoomIncrementFor(stack));
-		ScopeZoomManager.setZoom(ScopeZoomHelper.getStoredZoom(stack));
+		ScopeZoomManager.setZoom(!useBase ? ScopeZoomHelper.getStoredZoom(stack) : ScopeZoomHelper.getDefaultZoomFor(stack));
 	}
 }

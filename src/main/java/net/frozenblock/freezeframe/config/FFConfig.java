@@ -34,6 +34,26 @@ public class FFConfig {
 	public static final ConfigData<?> CONFIG = ConfigData.createAndRegister(ID.of(FFConstants.id("config")), ConfigSettings.JSON5);
 	private static final EntryType<PhotographFormat> PHOTOGRAPH_FORMAT_ENTRY_TYPE = EntryType.create(PhotographFormat.CODEC, PhotographFormat.STREAM_CODEC);
 
+	public static final ConfigEntry<Boolean> CAMERA_IGNORES_EFFECT_FOG = CONFIG.entryBuilder("cameraIgnoresEffectFog", EntryType.BOOL, true)
+		.comment("Photos will not include fog from effects.")
+		.build();
+
+	public static final ConfigEntry<Boolean> FILM_FILTER_RECIPES = CONFIG.entryBuilder("filmFilterRecipes", EntryType.BOOL, true)
+		.comment("Enables filter recipes for the Film Roll item.")
+		.build();
+
+	public static final ConfigEntry<Boolean> SCOPE_SCROLLING = CONFIG.entryBuilder("scopeScrolling", EntryType.BOOL, true)
+		.comment("Scope items (Spyglasses and Cameras) will let you change their zoom level with the mouse wheel.")
+		.build();
+
+	public static final ConfigEntry<Boolean> SCOPE_HIDES_HOTBAR = CONFIG.unsyncableEntryBuilder("scopeHidesHotbar", EntryType.BOOL, true)
+		.comment("The hotbar will be hidden when scoping.")
+		.build();
+
+	public static final ConfigEntry<Boolean> SCOPE_HIDES_CROSSHAIR = CONFIG.unsyncableEntryBuilder("scopeHidesCrosshair", EntryType.BOOL, true)
+		.comment("The crosshair will be hidden when scoping.")
+		.build();
+
 	public static final ConfigEntry<Boolean> USE_LATEST_PHOTO_AS_WORLD_ICON = CONFIG.entryBuilder("useLatestPhotoAsWorldIcon", EntryType.BOOL, true)
 		.comment("Whether the latest-taken Photo in a world should replace the world icon.")
 		.build();
@@ -48,10 +68,6 @@ public class FFConfig {
 
 	public static final ConfigEntry<Boolean> THIRD_PERSON_PHOTOGRAPH_ITEM = CONFIG.entryBuilder("thirdPersonPhotographItem", EntryType.BOOL, false)
 		.comment("Photo items render similarly to their first-person counterpart in third-person.")
-		.build();
-
-	public static final ConfigEntry<Boolean> FILM_FILTER_RECIPES = CONFIG.entryBuilder("filmFilterRecipes", EntryType.BOOL, true)
-		.comment("Enables filter recipes for the Film Roll item.")
 		.build();
 
 	public static final ConfigEntry<Integer> PHOTOGRAPH_RESOLUTION = CONFIG.entryBuilder("photographResolution", EntryType.INT, 256)

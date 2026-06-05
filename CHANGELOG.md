@@ -31,7 +31,13 @@ Put the changelog BELOW the dashes. ANYTHING ABOVE IS IGNORED.
   - A new button has been added to the Book's GUI to open the Inventory, which will allow the user to place a Photo inside of the Book and view a preview of how it will look.
   - If there is too much text on a page for a Photo to fit, the button will be disabled and display a tooltip when hovered over.
 - Added a statistic for interacting with a Developing Table.
-- Added a config option to render Photo items in third-person, similarly to their first-person counterpart.
+- Photos now ignore fog created by effects (e.g., Blindness and Darkness.)
+  - Added a config option to toggle this behavior.
+- Added a config option to toggle scope zooming.
+- While scoping, the hotbar and crosshair will no longer render.
+  - Added two config options to toggle these behaviors.
+- Added a config option to render held Photo items in 3D when viewed in third-person.
+  - This is disabled by default.
 - Photo rendering can now render a backside.
   - Added the `FRAME_BACK` Frame Type.
 - Added separate textures for the Camera item, resolving an issue that locked mipmapping to 3 levels.
