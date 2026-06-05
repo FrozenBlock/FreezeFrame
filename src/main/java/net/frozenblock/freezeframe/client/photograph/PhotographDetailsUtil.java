@@ -29,6 +29,9 @@ import org.jetbrains.annotations.Nullable;
 import net.minecraft.ChatFormatting;
 
 public final class PhotographDetailsUtil {
+	public static final Component ORIGINAL_TOOLTIP = Component.translatable("photograph.original").withStyle(ChatFormatting.GRAY);
+	public static final Component COPY_TOOLTIP = Component.translatable("photograph.copy").withStyle(ChatFormatting.GRAY);
+	public static final Component COPY_OF_COPY_TOOLTIP = Component.translatable("photograph.copy_of_copy").withStyle(ChatFormatting.GRAY);
 
 	public static List<Component> buildTooltipLines(Photograph photograph) {
 		final List<Component> lines = new ArrayList<>(3);
@@ -41,13 +44,14 @@ public final class PhotographDetailsUtil {
 		final Component date = getDateLine(photograph);
 		if (date != null) lines.add(date);
 
+		final Component generation = getGenerationLine(photograph.generation(), true);
+		if (generation != null) lines.add(generation);
+
 		return lines;
 	}
 
 	public static Component getPhotographNameLine(Photograph photograph) {
-		if (StringUtil.isNullOrEmpty(photograph.name())) {
-			return Component.translatable("item.freezeframe.photograph").withStyle(ChatFormatting.GRAY);
-		}
+		if (StringUtil.isNullOrEmpty(photograph.name())) return Component.translatable("item.freezeframe.photograph").withStyle(ChatFormatting.GRAY);
 		return Component.literal(photograph.name()).withStyle(ChatFormatting.GRAY);
 	}
 
@@ -67,5 +71,15 @@ public final class PhotographDetailsUtil {
 
 	private static String formatDate(Date date) {
 		return DateFormat.getDateTimeInstance(DateFormat.SHORT, DateFormat.SHORT).format(date);
+	}
+
+	@Nullable
+	public static Component getGenerationLine(int generation, boolean ignoreOriginal) {
+		if (generation <= 0 && ignoreOriginal) return null;
+		return switch (generation) {
+			case 0 -> ORIGINAL_TOOLTIP;
+			case 1 -> COPY_TOOLTIP;
+			default -> COPY_OF_COPY_TOOLTIP;
+		};
 	}
 }

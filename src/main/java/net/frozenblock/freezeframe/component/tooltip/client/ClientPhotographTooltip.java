@@ -30,7 +30,6 @@ import net.minecraft.client.gui.screens.inventory.tooltip.ClientTooltipComponent
 import net.minecraft.network.chat.Component;
 import net.minecraft.resources.Identifier;
 import org.jetbrains.annotations.Nullable;
-import net.minecraft.ChatFormatting;
 
 @Environment(EnvType.CLIENT)
 public class ClientPhotographTooltip implements ClientTooltipComponent {
@@ -39,9 +38,6 @@ public class ClientPhotographTooltip implements ClientTooltipComponent {
 	private static final int BELOW_PHOTOGRAPH_SPACING = 6;
 	private static final int TOOLTIP_HEIGHT = PHOTOGRAPH_RENDER_SIZE + BELOW_PHOTOGRAPH_SPACING;
 	private static final int TOOLTIP_WIDTH = PHOTOGRAPH_RENDER_SIZE + (PHOTOGRAPH_RENDER_OFFSET_X * 2);
-	public static final Component ORIGINAL_COMPONENT = Component.translatable("photograph.original").withStyle(ChatFormatting.GRAY);
-	public static final Component COPY_COMPONENT = Component.translatable("photograph.copy").withStyle(ChatFormatting.GRAY);
-	public static final Component COPY_OF_COPY_COMPONENT = Component.translatable("photograph.copy_of_copy").withStyle(ChatFormatting.GRAY);
 	private final Identifier photographId;
 	@Nullable
 	private final Component name;
@@ -60,11 +56,7 @@ public class ClientPhotographTooltip implements ClientTooltipComponent {
 		this.photographer = PhotographDetailsUtil.getPhotographerLine(photograph);
 		this.dateAndTime = PhotographDetailsUtil.getDateLine(photograph);
 
-		this.generationLabel = switch (component.generation()) {
-			case 0 -> ORIGINAL_COMPONENT;
-			case 1 -> COPY_COMPONENT;
-			default -> COPY_OF_COPY_COMPONENT;
-		};
+		this.generationLabel = PhotographDetailsUtil.getGenerationLine(component.generation(), false);
 
 		this.previewHidden = FFConfig.HIDE_PHOTOGRAPH_PREVIEW.get();
 	}

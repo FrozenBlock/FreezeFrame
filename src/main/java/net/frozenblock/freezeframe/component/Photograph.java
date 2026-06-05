@@ -52,6 +52,10 @@ public record Photograph(Identifier identifier, String photographer, String name
 		this(id, photographer, "", generation);
 	}
 
+	public boolean isOriginal() {
+		return this.generation <= ORIGINAL;
+	}
+
 	public boolean isCopy() {
 		return this.generation > ORIGINAL;
 	}
