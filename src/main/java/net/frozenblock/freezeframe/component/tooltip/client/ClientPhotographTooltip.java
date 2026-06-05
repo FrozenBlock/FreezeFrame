@@ -55,7 +55,6 @@ public class ClientPhotographTooltip implements ClientTooltipComponent {
 		this.name = null;
 		this.photographer = PhotographDetailsUtil.getPhotographerLine(photograph);
 		this.dateAndTime = PhotographDetailsUtil.getDateLine(photograph);
-
 		this.generationLabel = PhotographDetailsUtil.getGenerationLine(component.generation(), false);
 
 		this.previewHidden = FFConfig.HIDE_PHOTOGRAPH_PREVIEW.get();
