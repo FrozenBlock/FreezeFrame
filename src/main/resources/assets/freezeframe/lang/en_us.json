@@ -81,7 +81,7 @@
   "option.freezeframe.component.title": "Camera Port Options",
   "option.freezeframe.config": "Config",
   "option.freezeframe.camera_ignores_effect_fog": "Camera Ignores Effect Fog",
-  "tooltip.freezeframe.camera_ignores_effect_fog": "Whether Photos will not include fog from effects (e.g., Blindness and Darkness).",
+  "tooltip.freezeframe.camera_ignores_effect_fog": "Whether Photos will not include fog from effects (e.g., Blindness and Darkness.)",
   "option.freezeframe.film_filter_recipes": "Film Filter Recipes",
   "tooltip.freezeframe.film_filter_recipes": "Whether Film Filter recipes are enabled.",
   "option.freezeframe.scope_scrolling": "Scope Scrolling",
