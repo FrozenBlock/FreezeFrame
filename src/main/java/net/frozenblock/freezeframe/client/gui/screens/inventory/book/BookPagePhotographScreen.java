@@ -66,7 +66,7 @@ public class BookPagePhotographScreen extends AbstractContainerScreen<BookPagePh
 	private static final int IMAGE_HEIGHT = 140;
 	private static final int PHOTOGRAPH_PREVIEW_SIZE = 84;
 	private static final int PHOTOGRAPH_PREVIEW_X_OFFSET = 41;
-	private static final int PHOTOGRAPH_PREVIEW_Y_OFFSET = -75;
+	private static final int PHOTOGRAPH_PREVIEW_Y_OFFSET = 2 + 33;
 	private static final int PHOTOGRAPH_HOLDER_SIZE = 98;
 	private static final int PHOTOGRAPH_HOLDER_X_OFFSET = -7;
 	private static final int PHOTOGRAPH_HOLDER_Y_OFFSET = -7;
@@ -158,7 +158,7 @@ public class BookPagePhotographScreen extends AbstractContainerScreen<BookPagePh
 		if (slot != this.menu.getSlot(BookPagePhotographMenu.PHOTO_SLOT)) return super.isHovering(slot, mouseX, mouseY);
 		return this.isHovering(
 			PHOTOGRAPH_PREVIEW_X_OFFSET,
-			PHOTOGRAPH_PREVIEW_Y_OFFSET,
+			-this.topPos + PHOTOGRAPH_PREVIEW_Y_OFFSET,
 			PHOTOGRAPH_PREVIEW_SIZE,
 			PHOTOGRAPH_PREVIEW_SIZE,
 			mouseX,
@@ -269,7 +269,7 @@ public class BookPagePhotographScreen extends AbstractContainerScreen<BookPagePh
 
 	private void renderSlotPhotograph(GuiGraphicsExtractor graphics, int mouseX, int mouseY) {
 		final int x = this.leftPos + PHOTOGRAPH_PREVIEW_X_OFFSET;
-		final int y = this.topPos + PHOTOGRAPH_PREVIEW_Y_OFFSET;
+		final int y = PHOTOGRAPH_PREVIEW_Y_OFFSET;
 		final int photoX = x + PHOTOGRAPH_HOLDER_X_OFFSET;
 		final int photoY = y + PHOTOGRAPH_HOLDER_Y_OFFSET;
 
