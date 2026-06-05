@@ -217,7 +217,7 @@ public abstract class BookEditScreenMixin extends Screen {
 		if (hovered && !canOpen) {
 			graphics.setTooltipForNextFrame(
 				this.font,
-				Component.translatable("screen.freezeframe.book_photograph.empty_page_only"),
+				Component.translatable("book.edit.photograph.empty_page_only"),
 				mouseX,
 				mouseY
 			);

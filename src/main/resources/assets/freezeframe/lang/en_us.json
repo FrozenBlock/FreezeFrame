@@ -74,7 +74,8 @@
   "subtitles.item.film.rename": "Film contents renamed",
   "subtitles.item.film.tear": "Film trimmed",
 
-  "screen.freezeframe.book_photograph.empty_page_only": "Too much text on current page.",
+  "book.edit.photograph.empty_page_only": "Too much text on current page.",
+  "book.edit.photograph.title": "Book Photograph Screen",
 
   "key.resetScopeZoom": "Reset Item Zoom",
 

@@ -66,7 +66,7 @@ public record OpenBookPagePhotographInventoryPacket(InteractionHand hand, int pa
 		player.openMenu(
 			new SimpleMenuProvider(
 				(id, inventory, menuPlayer) -> new BookPagePhotographMenu(id, inventory, packet.hand, packet.pageIndex),
-				Component.translatable("container.inventory")
+				Component.translatable("book.edit.photograph.title")
 			)
 		);
 	}
