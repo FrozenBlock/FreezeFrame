@@ -20,13 +20,12 @@ package net.frozenblock.freezeframe.mixin.client.book;
 import com.llamalad7.mixinextras.injector.wrapoperation.Operation;
 import com.llamalad7.mixinextras.injector.wrapoperation.WrapOperation;
 import com.mojang.blaze3d.platform.Window;
+import java.util.Optional;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
-import net.frozenblock.freezeframe.client.gui.screens.inventory.book.BookPagePhotographCache;
 import net.frozenblock.freezeframe.client.photograph.PhotographHoverTooltipRenderer;
 import net.frozenblock.freezeframe.client.photograph.PhotographRenderer;
 import net.frozenblock.freezeframe.component.Photograph;
-import net.frozenblock.freezeframe.registry.FFDataComponents;
 import net.minecraft.client.gui.ActiveTextCollector;
 import net.minecraft.client.gui.GuiGraphicsExtractor;
 import net.minecraft.client.gui.screens.Screen;
@@ -34,7 +33,6 @@ import net.minecraft.client.gui.screens.inventory.BookViewScreen;
 import net.minecraft.network.chat.Component;
 import net.minecraft.resources.Identifier;
 import net.minecraft.util.FormattedCharSequence;
-import net.minecraft.world.item.ItemStack;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Shadow;
 import org.spongepowered.asm.mixin.Unique;
@@ -76,19 +74,17 @@ public abstract class BookViewScreenMixin extends Screen {
 		)
 	)
 	private void freezeFrame$shiftWrittenBookTextForPhotos(ActiveTextCollector instance, int x, int y, FormattedCharSequence text, Operation<Void> original) {
-		if (!BookPagePhotographCache.getPhoto(this.bookAccess, this.currentPage).isEmpty()) y += FREEZE_FRAME$PHOTO_TEXT_Y_SHIFT;
+		if (this.bookAccess.freezeFrame$hasPhotographOnPage(this.currentPage)) y += FREEZE_FRAME$PHOTO_TEXT_Y_SHIFT;
 		original.call(instance, x, y, text);
 	}
 
 	@Inject(method = "extractRenderState", at = @At("TAIL"))
 	private void freezeFrame$renderBookPhotograph(GuiGraphicsExtractor graphics, int mouseX, int mouseY, float partialTicks, CallbackInfo info) {
-		final ItemStack photo = BookPagePhotographCache.getPhoto(this.bookAccess, this.currentPage);
-		if (photo.isEmpty()) return;
+		final Optional<Photograph> optionalPhotograph = this.bookAccess.freezeFrame$tryGetPhotographOnPage(this.currentPage);
+		if (optionalPhotograph.isEmpty()) return;
 
-		final Photograph photograph = photo.get(FFDataComponents.PHOTOGRAPH);
-		final Identifier photoId = photograph == null ? null : photograph.identifier();
-		if (photoId == null) return;
-
+		final Photograph photograph = optionalPhotograph.get();
+		final Identifier photoId = photograph.identifier();
 		final int backgroundLeft = this.backgroundLeft();
 		final int x = backgroundLeft + FREEZE_FRAME$PHOTO_X_OFFSET;
 		final int y = 2 + FREEZE_FRAME$PHOTO_Y_OFFSET;

@@ -17,23 +17,43 @@
 
 package net.frozenblock.freezeframe.mixin.client.book;
 
+import com.llamalad7.mixinextras.injector.ModifyReturnValue;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
-import net.frozenblock.freezeframe.client.gui.screens.inventory.book.BookPagePhotographCache;
+import net.frozenblock.freezeframe.client.gui.screens.inventory.book.BookAccessWithPhotographs;
+import net.frozenblock.freezeframe.component.BookPagePhotographs;
+import net.frozenblock.freezeframe.registry.FFDataComponents;
 import net.minecraft.client.gui.screens.inventory.BookViewScreen;
 import net.minecraft.world.item.ItemStack;
 import org.spongepowered.asm.mixin.Mixin;
+import org.spongepowered.asm.mixin.Unique;
 import org.spongepowered.asm.mixin.injection.At;
-import org.spongepowered.asm.mixin.injection.Inject;
-import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
 
 @Environment(EnvType.CLIENT)
 @Mixin(BookViewScreen.BookAccess.class)
-public class BookViewScreenBookAccessMixin {
+public class BookViewScreenBookAccessMixin implements BookAccessWithPhotographs {
 
-	@Inject(method = "fromItem", at = @At("RETURN"))
-	private static void freezeFrame$rememberBookPhotographs(ItemStack itemStack, CallbackInfoReturnable<BookViewScreen.BookAccess> info) {
-		final BookViewScreen.BookAccess access = info.getReturnValue();
-		if (access != null) BookPagePhotographCache.remember(access, itemStack);
+	@Unique
+	private BookPagePhotographs freezeframe$photographs;
+
+	@ModifyReturnValue(method = "fromItem", at = @At("RETURN"))
+	private static BookViewScreen.BookAccess freezeFrame$rememberBookPhotographs(
+		BookViewScreen.BookAccess original,
+		ItemStack itemStack
+	) {
+		if (original != null) original.freezeFrame$setPhotographs(itemStack.getOrDefault(FFDataComponents.BOOK_PAGE_PHOTOGRAPHS, BookPagePhotographs.EMPTY));
+		return original;
+	}
+
+	@Unique
+	@Override
+	public void freezeFrame$setPhotographs(BookPagePhotographs photographs) {
+		this.freezeframe$photographs = photographs;
+	}
+
+	@Unique
+	@Override
+	public BookPagePhotographs freezeFrame$getPhotographs() {
+		return this.freezeframe$photographs;
 	}
 }
