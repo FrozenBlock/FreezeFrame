@@ -47,3 +47,4 @@ Put the changelog BELOW the dashes. ANYTHING ABOVE IS IGNORED.
 - Fixed an issue that would cause an error about the `ContainerComponentManipulators` class to log, despite working as intended.
 - Fixed the Film tooltip to now be centered regardless of the tooltip's width.
 - Fixed the dark border on the inner part of the Camera's scope ovelay not being transparent.
+- Unloaded Photos no longer display as Minecraft's instance icon, and are now completely transparent.
