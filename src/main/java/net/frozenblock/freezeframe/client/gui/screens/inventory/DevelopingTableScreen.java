@@ -57,6 +57,7 @@ import org.lwjgl.glfw.GLFW;
 @Environment(EnvType.CLIENT)
 public class DevelopingTableScreen extends AbstractContainerScreen<DevelopingTableMenu> {
 	private static final int FILM_PHOTOGRAPH_SIZE = 52;
+	private static final int BOOK_PHOTOGRAPH_BORDER_SIZE = 54;
 	private static final int FILM_PHOTOGRAPH_Y = 39;
 	private static final int FILM_LEFT_PHOTOGRAPH_X = 5;
 	private static final int FILM_MIDDLE_PHOTOGRAPH_X = 62;
@@ -169,117 +170,25 @@ public class DevelopingTableScreen extends AbstractContainerScreen<DevelopingTab
 			&& this.isHovering(RESULT_SLOT_X, RESULT_SLOT_Y, RESULT_SLOT_SIZE, RESULT_SLOT_SIZE, mouseX, mouseY);
 
 		if (this.displayFilm || this.displayBook) {
-			if (this.displayFilm && this.isAtBeginning()) {
-				this.extractFilmPhotographBlocker(graphics, FILM_LEFT_PHOTOGRAPH_X);
-			}
-
-			if (this.displayFilm && this.isAtEnd() && this.isFilmFull()) {
-				this.extractFilmPhotographBlocker(graphics, FILM_RIGHT_PHOTOGRAPH_X);
+			if (this.displayFilm) {
+				if (this.isAtBeginning()) this.extractFilmPhotographBlocker(graphics, FILM_LEFT_PHOTOGRAPH_X);
+				if (this.isAtEnd() && this.isFilmFull()) this.extractFilmPhotographBlocker(graphics, FILM_RIGHT_PHOTOGRAPH_X);
 			}
 
 			if (this.middlePhotograph != null) {
-				PhotographRenderer.blit(
-					this.leftPos,
-					this.topPos,
-					FILM_MIDDLE_PHOTOGRAPH_X,
-					FILM_PHOTOGRAPH_Y,
-					graphics,
-					this.middlePhotograph,
-					FILM_PHOTOGRAPH_SIZE,
-					PhotographRenderer.FrameType.NONE
-				);
-				if (hoveredOffset == 0 || hoveringResultSlot) {
-					graphics.blitSprite(
-						RenderPipelines.GUI_TEXTURED,
-						FILM_PHOTOGRAPH_HIGHLIGHT,
-						this.leftPos + FILM_MIDDLE_PHOTOGRAPH_X,
-						this.topPos + FILM_PHOTOGRAPH_Y,
-						FILM_PHOTOGRAPH_SIZE,
-						FILM_PHOTOGRAPH_SIZE
-					);
-				}
-				if (this.displayBook) {
-					graphics.blitSprite(
-						RenderPipelines.GUI_TEXTURED,
-						BOOK_PHOTOGRAPH_BORDER,
-						this.leftPos + FILM_MIDDLE_PHOTOGRAPH_X - 1,
-						this.topPos + FILM_PHOTOGRAPH_Y - 1,
-						54,
-						54
-					);
-				}
-				if (hoveredOffset == 0) {
-					graphics.requestCursor(CursorTypes.POINTING_HAND);
-				}
+				this.extractPhotographSlot(graphics, this.middlePhotograph, hoveredOffset == 0 || hoveringResultSlot, FILM_MIDDLE_PHOTOGRAPH_X);
+				if (hoveredOffset == 0) graphics.requestCursor(CursorTypes.POINTING_HAND);
 			}
 
 			if (this.hasMultipleSourcePhotographs()) {
 				if (this.rightPhotograph != null) {
-					PhotographRenderer.blit(
-						this.leftPos,
-						this.topPos,
-						FILM_RIGHT_PHOTOGRAPH_X,
-						FILM_PHOTOGRAPH_Y,
-						graphics,
-						this.rightPhotograph,
-						FILM_PHOTOGRAPH_SIZE,
-						PhotographRenderer.FrameType.NONE
-					);
-					if (hoveredOffset == 1) {
-						graphics.blitSprite(
-							RenderPipelines.GUI_TEXTURED,
-							FILM_PHOTOGRAPH_HIGHLIGHT,
-							this.leftPos + FILM_RIGHT_PHOTOGRAPH_X,
-							this.topPos + FILM_PHOTOGRAPH_Y,
-							FILM_PHOTOGRAPH_SIZE,
-							FILM_PHOTOGRAPH_SIZE
-						);
-						graphics.requestCursor(CursorTypes.POINTING_HAND);
-					}
-					if (this.displayBook) {
-						graphics.blitSprite(
-							RenderPipelines.GUI_TEXTURED,
-							BOOK_PHOTOGRAPH_BORDER,
-							this.leftPos + FILM_RIGHT_PHOTOGRAPH_X - 1,
-							this.topPos + FILM_PHOTOGRAPH_Y - 1,
-							54,
-							54
-						);
-					}
+					this.extractPhotographSlot(graphics, this.middlePhotograph, hoveredOffset == 1, FILM_RIGHT_PHOTOGRAPH_X);
+					if (hoveredOffset == 1) graphics.requestCursor(CursorTypes.POINTING_HAND);
 				}
 
 				if (this.leftPhotograph != null) {
-					PhotographRenderer.blit(
-						this.leftPos,
-						this.topPos,
-						FILM_LEFT_PHOTOGRAPH_X,
-						FILM_PHOTOGRAPH_Y,
-						graphics,
-						this.leftPhotograph,
-						FILM_PHOTOGRAPH_SIZE,
-						PhotographRenderer.FrameType.NONE
-					);
-					if (hoveredOffset == -1) {
-						graphics.blitSprite(
-							RenderPipelines.GUI_TEXTURED,
-							FILM_PHOTOGRAPH_HIGHLIGHT,
-							this.leftPos + FILM_LEFT_PHOTOGRAPH_X,
-							this.topPos + FILM_PHOTOGRAPH_Y,
-							FILM_PHOTOGRAPH_SIZE,
-							FILM_PHOTOGRAPH_SIZE
-						);
-						graphics.requestCursor(CursorTypes.POINTING_HAND);
-					}
-					if (this.displayBook) {
-						graphics.blitSprite(
-							RenderPipelines.GUI_TEXTURED,
-							BOOK_PHOTOGRAPH_BORDER,
-							this.leftPos + FILM_LEFT_PHOTOGRAPH_X - 1,
-							this.topPos + FILM_PHOTOGRAPH_Y - 1,
-							54,
-							54
-						);
-					}
+					this.extractPhotographSlot(graphics, this.middlePhotograph, hoveredOffset == -1, FILM_LEFT_PHOTOGRAPH_X);
+					if (hoveredOffset == -1) graphics.requestCursor(CursorTypes.POINTING_HAND);
 				}
 
 				graphics.blitSprite(
@@ -328,6 +237,39 @@ public class DevelopingTableScreen extends AbstractContainerScreen<DevelopingTab
 
 		if (hoveredPhotograph != null) {
 			PhotographHoverTooltipRenderer.extractRenderState(graphics, this.font, this.width, this.height, mouseX, mouseY, hoveredPhotograph);
+		}
+	}
+
+	public void extractPhotographSlot(GuiGraphicsExtractor graphics, Identifier photoId, boolean extractHighlight, int x) {
+		PhotographRenderer.blit(
+			this.leftPos,
+			this.topPos,
+			x,
+			FILM_PHOTOGRAPH_Y,
+			graphics,
+			photoId,
+			FILM_PHOTOGRAPH_SIZE,
+			PhotographRenderer.FrameType.NONE
+		);
+		if (extractHighlight) {
+			graphics.blitSprite(
+				RenderPipelines.GUI_TEXTURED,
+				FILM_PHOTOGRAPH_HIGHLIGHT,
+				this.leftPos + x,
+				this.topPos + FILM_PHOTOGRAPH_Y,
+				FILM_PHOTOGRAPH_SIZE,
+				FILM_PHOTOGRAPH_SIZE
+			);
+		}
+		if (this.displayBook) {
+			graphics.blitSprite(
+				RenderPipelines.GUI_TEXTURED,
+				BOOK_PHOTOGRAPH_BORDER,
+				this.leftPos + x - 1,
+				this.topPos + FILM_PHOTOGRAPH_Y - 1,
+				BOOK_PHOTOGRAPH_BORDER_SIZE,
+				BOOK_PHOTOGRAPH_BORDER_SIZE
+			);
 		}
 	}
 
