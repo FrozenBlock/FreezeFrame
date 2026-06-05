@@ -69,8 +69,8 @@ public abstract class ItemInHandRendererMixin {
 		float frameInterp,
 		float xRot,
 		InteractionHand hand,
-		float attackValue,
-		ItemStack stack,
+		float attack,
+		ItemStack itemStack,
 		float inverseArmHeight,
 		PoseStack poseStack,
 		SubmitNodeCollector collector,
@@ -78,12 +78,12 @@ public abstract class ItemInHandRendererMixin {
 		CallbackInfo info,
 		@Local(name = "arm") HumanoidArm arm
 	) {
-		if (!stack.is(FFItems.PHOTOGRAPH)) return;
+		if (!itemStack.is(FFItems.PHOTOGRAPH)) return;
 
-		final Photograph photograph = stack.get(FFDataComponents.PHOTOGRAPH);
+		final Photograph photograph = itemStack.get(FFDataComponents.PHOTOGRAPH);
 		if (photograph == null) return;
 
-		this.freezeFrame$submitPhotographInHand(poseStack, collector, lightCoords, inverseArmHeight, attackValue, arm, photograph.identifier());
+		this.freezeFrame$submitPhotographInHand(poseStack, collector, lightCoords, inverseArmHeight, attack, arm, photograph.identifier());
 		info.cancel();
 	}
 

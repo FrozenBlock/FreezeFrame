@@ -87,7 +87,7 @@ public class ItemFrameRendererMixin<T extends ItemFrame> {
 		)
 	)
 	public void freezeFrame$submit(
-		ItemStackRenderState instance, PoseStack poseStack, SubmitNodeCollector collector, int lightVal, int overlay, int outlineColor, Operation<Void> original,
+		ItemStackRenderState instance, PoseStack poseStack, SubmitNodeCollector submitNodeCollector, int lightCoords, int overlayCoords, int outlineColor, Operation<Void> original,
 		@Share("freezeFrame$photographId") LocalRef<Identifier> photographIdRef
 	) {
 		final Identifier photographId = photographIdRef.get();
@@ -95,9 +95,9 @@ public class ItemFrameRendererMixin<T extends ItemFrame> {
 			// 0.625F
 			poseStack.scale(1.25F, 1.25F, 1.25F);
 			poseStack.translate(0F, 0F, 0.03125F);
-			PhotographRenderer.submit(poseStack, collector, photographId, lightVal, PhotographRenderer.FrameType.NONE, PhotographRenderer.FrameType.NONE);
+			PhotographRenderer.submit(poseStack, submitNodeCollector, photographId, lightCoords, PhotographRenderer.FrameType.NONE, PhotographRenderer.FrameType.NONE);
 			return;
 		}
-		original.call(instance, poseStack, collector, lightVal, overlay, outlineColor);
+		original.call(instance, poseStack, submitNodeCollector, lightCoords, overlayCoords, outlineColor);
 	}
 }
