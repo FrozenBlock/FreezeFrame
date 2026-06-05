@@ -83,7 +83,7 @@ public class DevelopingTableScreen extends AbstractContainerScreen<DevelopingTab
 	private static final Identifier BOOK_SCROLLER_DISABLED = FFConstants.id("container/developing_table/book_scroller_disabled");
 	private static final Identifier FILM_PHOTOGRAPH_BLOCKER = FFConstants.id("container/developing_table/film_photograph_blocker");
 	private static final Identifier FILM_PHOTOGRAPH_HIGHLIGHT = FFConstants.id("container/developing_table/film_photograph_highlight");
-	private static final Identifier BOOK_PHOTOGRAPH_BORDER = FFConstants.id("container/developing_table/book_photograph_boarder_overlay");
+	private static final Identifier BOOK_PHOTOGRAPH_BORDER = FFConstants.id("container/developing_table/book_photograph_border");
 	private static final Identifier BOOK_ERROR_ARROW = FFConstants.id("container/developing_table/book_error");
 	private static final int BOOK_ERROR_ARROW_X = 64;
 	private static final int BOOK_ERROR_ARROW_Y = 111;

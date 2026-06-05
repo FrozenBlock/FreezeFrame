@@ -1,6 +1,5 @@
 {
 	"parent": "minecraft:block/block",
-	"texture_size": [40, 40],
   "textures": {
     "bottom": "freezeframe:block/camera_bottom",
     "west": "freezeframe:block/camera_west",
