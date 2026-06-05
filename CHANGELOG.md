@@ -30,6 +30,8 @@ Put the changelog BELOW the dashes. ANYTHING ABOVE IS IGNORED.
 - Photos can now be placed inside of Books.
   - A new button has been added to the Book's GUI to open the Inventory, which will allow the user to place a Photo inside of the Book and view a preview of how it will look.
   - If there is too much text on a page for a Photo to fit, the button will be disabled and display a tooltip when hovered over.
+- The Film Capacity Upgrade Recipe now supports a custom Source, Material, and Output item like other Vanilla transmute recipes.
+- The Film Capacity Upgrade Recipe now shows up in the Crafting Recipe Book.
 - Added a statistic for interacting with a Developing Table.
 - Photos now ignore fog created by effects (e.g., Blindness and Darkness.)
   - Added a config option to toggle this behavior.
@@ -38,11 +40,10 @@ Put the changelog BELOW the dashes. ANYTHING ABOVE IS IGNORED.
   - Added two config options to toggle these behaviors.
 - Added a config option to render held Photo items in 3D when viewed in third-person.
   - This is disabled by default.
-- Photo rendering can now render a backside.
+- Photo rendering now supports rendering a back side.
   - Added the `FRAME_BACK` Frame Type.
 - Added separate textures for the Camera item, resolving an issue that locked mipmapping to 3 levels.
 - Resetting a scope item's zoom to default now plays multiple increment sounds in succession instead of one, relative to the amount of zoom steps away from the default.
 - Fixed an issue that would cause an error about the `ContainerComponentManipulators` class to log, despite working as intended.
 - Fixed the Film tooltip to now be centered regardless of the tooltip's width.
-- The Film Capacity Upgrade Recipe now supports a custom Source, Material, and Output item like other Vanilla transmute recipes.
-- The Film Capacity Upgrade Recipe now shows up in the Crafting Recipe Book.
+- Fixed the dark border on the inner part of the Camera's scope ovelay not being transparent.
