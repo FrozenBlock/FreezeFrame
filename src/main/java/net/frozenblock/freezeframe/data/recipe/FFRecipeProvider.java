@@ -30,7 +30,7 @@ import net.frozenblock.freezeframe.registry.FFItems;
 import net.frozenblock.freezeframe.registry.FFRegistries;
 import net.frozenblock.freezeframe.registry.FFSpecialFilmFilters;
 import net.frozenblock.lib.recipe.api.RecipeExportNamespaceFix;
-import net.minecraft.advancements.criterion.ItemPredicate;
+import net.minecraft.advancements.predicates.ItemPredicate;
 import net.minecraft.core.Holder;
 import net.minecraft.core.HolderLookup;
 import net.minecraft.core.registries.Registries;
@@ -85,9 +85,9 @@ public final class FFRecipeProvider extends FabricRecipeProvider {
 				this.shaped(RecipeCategory.TOOLS, FFBlocks.DEVELOPING_TABLE)
 					.define('#', Ingredient.of(items.getOrThrow(ItemTags.PLANKS)))
 					.define('S', Ingredient.of(Items.STONE))
-					.define('R', Ingredient.of(Items.RED_DYE))
-					.define('B', Ingredient.of(Items.BLUE_DYE))
-					.define('Y', Ingredient.of(Items.YELLOW_DYE))
+					.define('R', Ingredient.of(Items.DYE.red()))
+					.define('B', Ingredient.of(Items.DYE.blue()))
+					.define('Y', Ingredient.of(Items.DYE.yellow()))
 					.pattern("SSR")
 					.pattern("##B")
 					.pattern("##Y")

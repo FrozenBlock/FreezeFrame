@@ -17,26 +17,19 @@
 
 package net.frozenblock.freezeframe.mixin.client.camera;
 
-import com.llamalad7.mixinextras.injector.ModifyExpressionValue;
-import com.llamalad7.mixinextras.injector.v2.WrapWithCondition;
-import com.llamalad7.mixinextras.sugar.Share;
-import com.llamalad7.mixinextras.sugar.ref.LocalBooleanRef;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
-import net.frozenblock.freezeframe.FFConstants;
+import net.frozenblock.freezeframe.client.gui.screens.inventory.book.BookPagePhotographScreen;
+import net.frozenblock.freezeframe.client.gui.screens.inventory.book.BookPagePhotographUiState;
 import net.frozenblock.freezeframe.client.screenshot.FFScreenshotUtil;
-import net.frozenblock.freezeframe.config.FFConfig;
-import net.frozenblock.freezeframe.util.ScopeItemHelper;
 import net.minecraft.client.DeltaTracker;
-import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.Gui;
-import net.minecraft.client.gui.GuiGraphicsExtractor;
-import net.minecraft.resources.Identifier;
-import org.objectweb.asm.Opcodes;
+import net.minecraft.client.gui.screens.Screen;
+import net.minecraft.client.renderer.state.gui.GuiRenderState;
+import org.jspecify.annotations.Nullable;
 import org.spongepowered.asm.mixin.Final;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Shadow;
-import org.spongepowered.asm.mixin.Unique;
 import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
@@ -47,55 +40,18 @@ public class GuiMixin {
 
 	@Shadow
 	@Final
-	private Minecraft minecraft;
-
-	@Unique
-	private static final Identifier FREEZE_FRAME$CAMERA_SCOPE = FFConstants.id("textures/misc/camera_scope.png");
+	private GuiRenderState guiRenderState;
 
 	@Inject(method = "extractRenderState", at = @At("HEAD"), cancellable = true)
-	public void freezeFrame$removeOverlays(GuiGraphicsExtractor graphics, DeltaTracker deltaTracker, CallbackInfo info) {
-		if (FFScreenshotUtil.screenshotting()) info.cancel();
+	private void freezeFrame$disableGuiWhileScreenshotting(DeltaTracker deltaTracker, boolean shouldRenderLevel, boolean resourcesLoaded, CallbackInfo info) {
+		if (!FFScreenshotUtil.screenshotting()) return;
+		info.cancel();
+		this.guiRenderState.reset();
+		this.guiRenderState.isHudHidden = true;
 	}
 
-	@WrapWithCondition(
-		method = "extractRenderState",
-		at = @At(
-			value = "INVOKE",
-			target = "Lnet/minecraft/client/gui/Gui;extractCrosshair(Lnet/minecraft/client/gui/GuiGraphicsExtractor;Lnet/minecraft/client/DeltaTracker;)V"
-		)
-	)
-	public boolean freezeFrame$removeCrosshair(
-		Gui instance, GuiGraphicsExtractor graphics, DeltaTracker deltaTracker,
-		@Share("freezeFrame$isPlayerScopingInFirstPerson") LocalBooleanRef isPlayerScopingInFirstPerson
-	) {
-		isPlayerScopingInFirstPerson.set(this.minecraft.player != null && this.minecraft.player.isScoping() && this.minecraft.options.getCameraType().isFirstPerson());
-		return !FFConfig.SCOPE_HIDES_CROSSHAIR.get() || !isPlayerScopingInFirstPerson.get();
-	}
-
-	@WrapWithCondition(
-		method = "extractRenderState",
-		at = @At(
-			value = "INVOKE",
-			target = "Lnet/minecraft/client/gui/Gui;extractHotbarAndDecorations(Lnet/minecraft/client/gui/GuiGraphicsExtractor;Lnet/minecraft/client/DeltaTracker;)V"
-		)
-	)
-	public boolean freezeFrame$removeHotbar(
-		Gui instance, GuiGraphicsExtractor graphics, DeltaTracker deltaTracker,
-		@Share("freezeFrame$isPlayerScopingInFirstPerson") LocalBooleanRef isPlayerScopingInFirstPerson
-	) {
-		return !FFConfig.SCOPE_HIDES_HOTBAR.get() || !isPlayerScopingInFirstPerson.get();
-	}
-
-	@ModifyExpressionValue(
-		method = "extractSpyglassOverlay",
-		at = @At(
-			value = "FIELD",
-			target = "Lnet/minecraft/client/gui/Gui;SPYGLASS_SCOPE_LOCATION:Lnet/minecraft/resources/Identifier;",
-			opcode = Opcodes.GETSTATIC
-		)
-	)
-	private Identifier freezeFrame$useCameraOverlay(Identifier original) {
-		if (this.minecraft.player == null || !ScopeItemHelper.isCameraItem(this.minecraft.player.getUseItem())) return original;
-		return FREEZE_FRAME$CAMERA_SCOPE;
+	@Inject(method = "setScreen", at = @At("HEAD"))
+	private void freezeFrame$clearBookPhotoSuppressionOnScreenSwap(@Nullable Screen screen, CallbackInfo info) {
+		if (!(screen instanceof BookPagePhotographScreen)) BookPagePhotographUiState.setSuppressBookEditorPhotoControls(false);
 	}
 }

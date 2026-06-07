@@ -55,7 +55,7 @@ public abstract class ItemInHandRendererMixin {
 	protected abstract void renderPlayerArm(PoseStack poseStack, SubmitNodeCollector submitNodeCollector, int lightCoords, float inverseArmHeight, float attackValue, HumanoidArm arm);
 
 	@Inject(
-		method = "renderArmWithItem",
+		method = "submitArmWithItem",
 		at = @At(
 			value = "INVOKE",
 			target = "Lnet/minecraft/world/item/ItemStack;isEmpty()Z",
@@ -73,7 +73,7 @@ public abstract class ItemInHandRendererMixin {
 		ItemStack itemStack,
 		float inverseArmHeight,
 		PoseStack poseStack,
-		SubmitNodeCollector collector,
+		SubmitNodeCollector submitNodeCollector,
 		int lightCoords,
 		CallbackInfo info,
 		@Local(name = "arm") HumanoidArm arm
@@ -83,7 +83,7 @@ public abstract class ItemInHandRendererMixin {
 		final Photograph photograph = itemStack.get(FFDataComponents.PHOTOGRAPH);
 		if (photograph == null) return;
 
-		this.freezeFrame$submitPhotographInHand(poseStack, collector, lightCoords, inverseArmHeight, attack, arm, photograph.identifier());
+		this.freezeFrame$submitPhotographInHand(poseStack, submitNodeCollector, lightCoords, inverseArmHeight, attack, arm, photograph.identifier());
 		info.cancel();
 	}
 

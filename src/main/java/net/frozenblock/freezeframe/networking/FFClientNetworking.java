@@ -30,7 +30,7 @@ public class FFClientNetworking {
 		ClientPlayNetworking.registerGlobalReceiver(OpenFilmScreenPacket.PACKET_TYPE, (packet, ctx) -> {
 			ctx.client().execute(() -> {
 				if (ctx.player() == null) return;
-				ctx.client().setScreen(new FilmScreen(ctx.player(), packet.hand()));
+				ctx.client().gui.setScreen(new FilmScreen(ctx.player(), packet.hand()));
 			});
 		});
 

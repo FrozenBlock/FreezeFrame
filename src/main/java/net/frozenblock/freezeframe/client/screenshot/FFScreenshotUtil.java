@@ -36,6 +36,7 @@ import net.minecraft.client.renderer.GameRenderer;
 import net.minecraft.world.attribute.EnvironmentAttributeProbe;
 import net.minecraft.world.entity.Entity;
 import org.jetbrains.annotations.Nullable;
+import com.mojang.blaze3d.GpuFormat;
 
 @Environment(EnvType.CLIENT)
 public class FFScreenshotUtil {
@@ -83,15 +84,15 @@ public class FFScreenshotUtil {
 		if (minecraft.level == null) return;
 
 		final Window window = minecraft.getWindow();
-		final Camera camera = minecraft.gameRenderer.getMainCamera();
+		final Camera camera = minecraft.gameRenderer.mainCamera();
 		final Pair<Integer, Integer> preResolution = Pair.of(window.getWidth(), window.getHeight());
 		final Entity preCameraEntity = entity != null ? minecraft.getCameraEntity() : null;
 		final Pair<Float, Float> preEyeHeight = Pair.of(camera.eyeHeightOld, camera.eyeHeight);
-		final boolean preHideGui = minecraft.options.hideGui;
+		final boolean preHudHidden = minecraft.gui.hud.isHidden;
 
 		screenshotting = true;
 		handheld = handheldCapture;
-		minecraft.options.hideGui = true;
+		minecraft.gui.hud.isHidden = true;
 
 		if (handheldCapture) {
 			ScopeZoomManager.pushForcedZoom(zoom);
@@ -104,7 +105,7 @@ public class FFScreenshotUtil {
 		handheld = false;
 		renderTarget = null;
 		environmentAttributeProbe = null;
-		minecraft.options.hideGui = preHideGui;
+		minecraft.gui.hud.isHidden = preHudHidden;
 
 		window.setWidth(preResolution.getFirst());
 		window.setHeight(preResolution.getSecond());
@@ -126,7 +127,7 @@ public class FFScreenshotUtil {
 		boolean updateAttributeProbe,
 		Consumer<NativeImage> callback
 	) {
-		renderTarget = new TextureTarget("photograph", width, height, true);
+		renderTarget = new TextureTarget("photograph", width, height, true, GpuFormat.RGBA8_UNORM);
 
 		final GameRenderer gameRenderer = minecraft.gameRenderer;
 		gameRenderer.setRenderBlockOutline(false);
@@ -138,7 +139,7 @@ public class FFScreenshotUtil {
 
 			ScopePostEffectController.applyFromFilter(minecraft, filter);
 
-			gameRenderer.update(DeltaTracker.ONE, true);
+			gameRenderer.update(DeltaTracker.ONE);
 			if (updateAttributeProbe) {
 				environmentAttributeProbe = new EnvironmentAttributeProbe();
 				environmentAttributeProbe.tick(minecraft.level, camera.position());

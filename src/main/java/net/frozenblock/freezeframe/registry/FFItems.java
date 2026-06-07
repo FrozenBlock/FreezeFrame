@@ -17,27 +17,27 @@
 
 package net.frozenblock.freezeframe.registry;
 
-import java.util.function.Function;
 import net.fabricmc.fabric.api.creativetab.v1.CreativeModeTabEvents;
-import net.frozenblock.freezeframe.FFConstants;
 import net.frozenblock.freezeframe.component.CameraContents;
 import net.frozenblock.freezeframe.component.FilmContents;
 import net.frozenblock.freezeframe.component.FilmFilter;
 import net.frozenblock.freezeframe.item.CameraItem;
 import net.frozenblock.freezeframe.item.FilmItem;
 import net.frozenblock.freezeframe.item.PhotographItem;
+import net.frozenblock.freezeframe.references.FFBlockItemIds;
+import net.frozenblock.freezeframe.references.FFItemIds;
 import net.frozenblock.freezeframe.util.ScopeZoomHelper;
 import net.frozenblock.lib.item.api.component.BundleWeightOverride;
 import net.frozenblock.lib.item.api.component.FrozenLibDataComponents;
-import net.minecraft.core.registries.Registries;
-import net.minecraft.resources.ResourceKey;
 import net.minecraft.world.item.CreativeModeTabs;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.Items;
 
 public class FFItems {
-	public static final CameraItem CAMERA = register(
-		"camera",
+	public static final Item DEVELOPING_TABLE = Items.registerBlock(FFBlockItemIds.DEVELOPING_TABLE, FFBlocks.DEVELOPING_TABLE);
+
+	public static final Item CAMERA = Items.registerItem(
+		FFItemIds.CAMERA,
 		CameraItem::new,
 		new Item.Properties()
 			.stacksTo(1)
@@ -45,8 +45,8 @@ public class FFItems {
 			.component(FFDataComponents.CAMERA_CONTENTS, CameraContents.EMPTY)
 			.component(FFDataComponents.SCOPE_ZOOM_CONFIG, ScopeZoomHelper.CAMERA_DEFAULTS)
 	);
-	public static final CameraItem DISC_CAMERA = register(
-		"disc_camera",
+	public static final Item DISC_CAMERA = Items.registerItem(
+		FFItemIds.DISC_CAMERA,
 		CameraItem::new,
 		new Item.Properties()
 			.stacksTo(1)
@@ -54,8 +54,8 @@ public class FFItems {
 			.component(FFDataComponents.CAMERA_CONTENTS, CameraContents.EMPTY)
 			.component(FFDataComponents.SCOPE_ZOOM_CONFIG, ScopeZoomHelper.CAMERA_DEFAULTS)
 	);
-	public static final FilmItem FILM = register(
-		"film",
+	public static final Item FILM = Items.registerItem(
+		FFItemIds.FILM,
 		FilmItem::new,
 		new Item.Properties()
 			.stacksTo(16)
@@ -64,23 +64,23 @@ public class FFItems {
 			.component(FFDataComponents.FILM_MAX_PHOTOGRAPHS, FilmContents.BASE_MAX_PHOTOGRAPHS)
 			.component(FrozenLibDataComponents.BUNDLE_WEIGHT_OVERRIDE, new BundleWeightOverride(1, 16))
 	);
-	public static final PhotographItem PHOTOGRAPH = register(
-		"photograph",
+	public static final Item PHOTOGRAPH = Items.registerItem(
+		FFItemIds.PHOTOGRAPH,
 		PhotographItem::new,
 		new Item.Properties()
 			.stacksTo(16)
 	);
 
 	public static void init() {
+		CreativeModeTabEvents.modifyOutputEvent(CreativeModeTabs.FUNCTIONAL_BLOCKS).register(
+			output -> output.insertAfter(Items.LOOM, DEVELOPING_TABLE)
+		);
+
 		CreativeModeTabEvents.modifyOutputEvent(CreativeModeTabs.TOOLS_AND_UTILITIES).register(
 			entries -> {
 				entries.insertAfter(Items.SPYGLASS, CAMERA);
 				entries.insertAfter(CAMERA, FILM);
 			}
 		);
-	}
-
-	private static <T extends Item> T register(String name, Function<Item.Properties, Item> function, Item.Properties properties) {
-		return (T) Items.registerItem(ResourceKey.create(Registries.ITEM, FFConstants.id(name)), function, properties);
 	}
 }

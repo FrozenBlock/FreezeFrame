@@ -59,7 +59,7 @@ public class PhotographScreenshotter {
 				screenshot,
 				minecraft,
 				fileName,
-				text -> minecraft.execute(() -> minecraft.gui.getChat().addClientSystemMessage(text))
+				message -> minecraft.execute(() -> minecraft.showDebugChat(message))
 			)
 		);
 	}

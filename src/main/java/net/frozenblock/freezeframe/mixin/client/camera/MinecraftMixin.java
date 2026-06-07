@@ -17,19 +17,13 @@
 
 package net.frozenblock.freezeframe.mixin.client.camera;
 
-import com.llamalad7.mixinextras.injector.ModifyReturnValue;
 import com.llamalad7.mixinextras.injector.wrapoperation.Operation;
 import com.llamalad7.mixinextras.injector.wrapoperation.WrapOperation;
 import com.llamalad7.mixinextras.sugar.Local;
-import com.mojang.blaze3d.pipeline.RenderTarget;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
-import net.frozenblock.freezeframe.client.gui.screens.inventory.book.BookPagePhotographScreen;
-import net.frozenblock.freezeframe.client.gui.screens.inventory.book.BookPagePhotographUiState;
-import net.frozenblock.freezeframe.client.screenshot.FFScreenshotUtil;
 import net.frozenblock.freezeframe.util.ScopeItemHelper;
 import net.minecraft.client.Minecraft;
-import net.minecraft.client.gui.screens.Screen;
 import net.minecraft.client.player.LocalPlayer;
 import net.minecraft.world.InteractionHand;
 import net.minecraft.world.flag.FeatureFlagSet;
@@ -83,15 +77,5 @@ public class MinecraftMixin {
 		return this.player == null || hand != InteractionHand.OFF_HAND || !ScopeItemHelper.isPlayerHoldingPhotoTakingCamera(this.player);
 	}
 
-	@ModifyReturnValue(method = "getMainRenderTarget", at = @At("RETURN"))
-	public RenderTarget freezeFrame$getMainRenderTarget(RenderTarget original) {
-		if (!FFScreenshotUtil.screenshotting()) return original;
-		final RenderTarget screenshotTarget = FFScreenshotUtil.getRenderTarget();
-		return screenshotTarget != null ? screenshotTarget : original;
-	}
 
-	@Inject(method = "setScreen", at = @At("HEAD"))
-	private void freezeFrame$clearBookPhotoSuppressionOnScreenSwap(@Nullable Screen screen, CallbackInfo info) {
-		if (!(screen instanceof BookPagePhotographScreen)) BookPagePhotographUiState.setSuppressBookEditorPhotoControls(false);
-	}
 }

@@ -48,7 +48,7 @@ public class ScreenEffectRendererMixin {
 	}
 
 	@ModifyExpressionValue(
-		method = "renderScreenEffect",
+		method = "getViewBlockingState",
 		at = @At(
 			value = "FIELD",
 			target = "Lnet/minecraft/world/entity/player/Player;noPhysics:Z",

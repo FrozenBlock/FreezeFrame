@@ -18,7 +18,7 @@ buildscript {
 }
 
 plugins {
-    id("net.fabricmc.fabric-loom") version("1.15-SNAPSHOT")
+    id("net.fabricmc.fabric-loom") version("1.16-SNAPSHOT")
     id("org.quiltmc.gradle.licenser") version("+")
     id("org.ajoberstar.grgit") version("+")
     id("com.modrinth.minotaur") version("+")
@@ -173,10 +173,10 @@ dependencies {
     api("maven.modrinth:frozenlib:${frozenlib_version}")
 
     // Mod Menu
-    implementation("maven.modrinth:modmenu:${modmenu_version}")
+    compileOnly("maven.modrinth:modmenu:${modmenu_version}")
 
     // Cloth Config
-    implementation("me.shedaniel.cloth:cloth-config-fabric:$cloth_config_version") {
+    compileOnly("me.shedaniel.cloth:cloth-config-fabric:$cloth_config_version") {
         exclude(group = "net.fabricmc.fabric-api")
         exclude(group = "com.terraformersmc")
     }
@@ -190,7 +190,7 @@ tasks {
             "mod_id" to mod_id,
             "version" to version,
             "protocol_version" to protocol_version,
-            "minecraft_version" to "~26.1-",//minecraft_version,
+            "minecraft_version" to "~26.2-",//minecraft_version,
 
             "fabric_api_version" to ">=$fabric_api_version",
             "frozenlib_version" to ">=${frozenlib_version.split('-').firstOrNull()}-"

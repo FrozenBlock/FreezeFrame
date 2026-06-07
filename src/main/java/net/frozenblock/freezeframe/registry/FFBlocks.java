@@ -17,31 +17,17 @@
 
 package net.frozenblock.freezeframe.registry;
 
-import java.util.function.BiFunction;
-import java.util.function.Function;
-import net.fabricmc.fabric.api.creativetab.v1.CreativeModeTabEvents;
-import net.frozenblock.freezeframe.FFConstants;
 import net.frozenblock.freezeframe.block.DevelopingTableBlock;
-import net.minecraft.core.Registry;
-import net.minecraft.core.registries.BuiltInRegistries;
-import net.minecraft.core.registries.Registries;
-import net.minecraft.resources.Identifier;
-import net.minecraft.resources.ResourceKey;
-import net.minecraft.world.item.BlockItem;
-import net.minecraft.world.item.CreativeModeTabs;
-import net.minecraft.world.item.DoubleHighBlockItem;
-import net.minecraft.world.item.Item;
-import net.minecraft.world.item.Items;
+import net.frozenblock.freezeframe.references.FFBlockItemIds;
 import net.minecraft.world.level.block.Block;
-import net.minecraft.world.level.block.DoorBlock;
+import net.minecraft.world.level.block.Blocks;
 import net.minecraft.world.level.block.SoundType;
-import net.minecraft.world.level.block.TallFlowerBlock;
 import net.minecraft.world.level.block.state.BlockBehaviour;
 import net.minecraft.world.level.block.state.properties.NoteBlockInstrument;
 import net.minecraft.world.level.material.MapColor;
 
 public class FFBlocks {
-	public static final DevelopingTableBlock DEVELOPING_TABLE = register("developing_table",
+	public static final Block DEVELOPING_TABLE = Blocks.register(FFBlockItemIds.DEVELOPING_TABLE,
 		DevelopingTableBlock::new,
 		BlockBehaviour.Properties.of()
 			.mapColor(MapColor.WOOD)
@@ -51,35 +37,5 @@ public class FFBlocks {
 			.ignitedByLava()
 	);
 
-	public static void init() {
-		CreativeModeTabEvents.modifyOutputEvent(CreativeModeTabs.FUNCTIONAL_BLOCKS).register(
-			output -> output.insertAfter(Items.LOOM, DEVELOPING_TABLE)
-		);
-	}
-
-	private static <T extends Block> T registerWithoutItem(String name, Function<BlockBehaviour.Properties, T> block, BlockBehaviour.Properties properties) {
-		Identifier id = FFConstants.id(name);
-		return doRegister(id, makeBlock(block, properties, id));
-	}
-
-	private static <T extends Block> T register(String name, Function<BlockBehaviour.Properties, T> block, BlockBehaviour.Properties properties) {
-		T registered = registerWithoutItem(name, block, properties);
-		registerBlockItem(registered);
-		return registered;
-	}
-
-	private static <T extends Block> T doRegister(Identifier id, T block) {
-		if (BuiltInRegistries.BLOCK.getOptional(id).isEmpty()) return Registry.register(BuiltInRegistries.BLOCK, id, block);
-		throw new IllegalArgumentException("Block with identifier " + id + " is already in the block registry.");
-	}
-
-	private static <T extends Block> T makeBlock(Function<BlockBehaviour.Properties, T> function, BlockBehaviour.Properties properties, Identifier id) {
-		return function.apply(properties.setId(ResourceKey.create(Registries.BLOCK, id)));
-	}
-
-	private static void registerBlockItem(Block block) {
-		BiFunction<Block, Item.Properties, Item> itemSupplier = BlockItem::new;
-		if (block instanceof DoorBlock || block instanceof TallFlowerBlock) itemSupplier = DoubleHighBlockItem::new;
-		Items.registerBlock(block, itemSupplier);
-	}
+	public static void init() {}
 }

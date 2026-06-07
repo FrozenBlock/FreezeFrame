@@ -229,7 +229,7 @@ public class BookPagePhotographScreen extends AbstractContainerScreen<BookPagePh
 
 		final BookEditScreen screen = new BookEditScreen(this.minecraft.player, book, this.menu.getHand(), content);
 		screen.currentPage = this.targetPageIndex();
-		this.minecraft.setScreen(screen);
+		this.minecraft.gui.setScreen(screen);
 		return true;
 	}
 

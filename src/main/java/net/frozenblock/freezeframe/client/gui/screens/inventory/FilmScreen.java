@@ -416,12 +416,12 @@ public class FilmScreen extends Screen {
 	private void saveChangesAndClose() {
 		if (this.minecraft == null) return;
 		ClientPlayNetworking.send(new SaveFilmChangesPacket(this.hand, this.toFilmContents(), !this.modifiedPhotographIds.isEmpty()));
-		this.minecraft.setScreen(null);
+		this.minecraft.gui.setScreen(null);
 	}
 
 	private void cancelChangesAndClose() {
 		if (this.minecraft == null) return;
-		this.minecraft.setScreen(null);
+		this.minecraft.gui.setScreen(null);
 	}
 
 	private FilmContents toFilmContents() {

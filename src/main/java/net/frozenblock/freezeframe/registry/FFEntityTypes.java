@@ -18,27 +18,24 @@
 package net.frozenblock.freezeframe.registry;
 
 import net.fabricmc.fabric.api.object.builder.v1.entity.FabricDefaultAttributeRegistry;
-import net.frozenblock.freezeframe.FFConstants;
 import net.frozenblock.freezeframe.entity.DiscCamera;
 import net.frozenblock.freezeframe.entity.TripodCamera;
+import net.frozenblock.freezeframe.references.FFEntityTypeIds;
 import net.minecraft.core.Registry;
 import net.minecraft.core.registries.BuiltInRegistries;
-import net.minecraft.core.registries.Registries;
 import net.minecraft.resources.ResourceKey;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.EntityType;
 import net.minecraft.world.entity.MobCategory;
 
 public class FFEntityTypes {
-	public static final EntityType<TripodCamera> CAMERA = register(
-		"camera",
+	public static final EntityType<TripodCamera> CAMERA = register(FFEntityTypeIds.CAMERA,
 		EntityType.Builder.of(TripodCamera::new, MobCategory.MISC)
 			.sized(0.6F, 1.75F)
 			.eyeHeight(1.619999999999999F)
 			.clientTrackingRange(10)
 	);
-	public static final EntityType<DiscCamera> DISC_CAMERA = register(
-		"disc_camera",
+	public static final EntityType<DiscCamera> DISC_CAMERA = register(FFEntityTypeIds.DISC_CAMERA,
 		EntityType.Builder.of(DiscCamera::new, MobCategory.MISC)
 			.sized(0.55F, 0.9F)
 			.eyeHeight(0.81F)
@@ -52,8 +49,7 @@ public class FFEntityTypes {
 		FabricDefaultAttributeRegistry.register(DISC_CAMERA, DiscCamera.createTripodCameraAttributes());
 	}
 
-	private static <T extends Entity> EntityType<T> register(String name, EntityType.Builder<T> builder) {
-		final ResourceKey<EntityType<?>> key = ResourceKey.create(Registries.ENTITY_TYPE, FFConstants.id(name));
-		return Registry.register(BuiltInRegistries.ENTITY_TYPE, key, builder.build(key));
+	private static <T extends Entity> EntityType<T> register(ResourceKey<EntityType<?>> id, EntityType.Builder<T> builder) {
+		return Registry.register(BuiltInRegistries.ENTITY_TYPE, id, builder.build(id));
 	}
 }

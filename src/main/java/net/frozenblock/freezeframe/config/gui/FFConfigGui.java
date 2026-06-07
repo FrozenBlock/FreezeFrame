@@ -23,10 +23,10 @@ import me.shedaniel.clothconfig2.api.ConfigEntryBuilder;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 import static net.frozenblock.freezeframe.FFConstants.*;
+import static net.frozenblock.freezeframe.FFConstants.text;
+import static net.frozenblock.freezeframe.FFConstants.tooltip;
 import net.frozenblock.freezeframe.config.FFConfig;
-import static net.frozenblock.freezeframe.config.gui.FFConfigGuiHelper.booleanEntry;
-import static net.frozenblock.freezeframe.config.gui.FFConfigGuiHelper.intSliderEntry;
-import net.frozenblock.lib.config.clothconfig.FrozenClothConfig;
+import static net.frozenblock.lib.config.clothconfig.FrozenLibClothConfigGuiHelper.*;
 import net.minecraft.client.gui.screens.Screen;
 
 @Environment(EnvType.CLIENT)
@@ -44,7 +44,7 @@ public final class FFConfigGui {
 		category.addEntry(booleanEntry(builder, "third_person_photo_item", FFConfig.THIRD_PERSON_PHOTOGRAPH_ITEM));
 		category.addEntry(intSliderEntry(builder, "photograph_resolution", FFConfig.PHOTOGRAPH_RESOLUTION, 128, 1024));
 		category.addEntry(
-			FrozenClothConfig.syncedEntry(
+			syncedEntry(
 				builder.startEnumSelector(text("photograph_format"), FFConfig.PhotographFormat.class, FFConfig.PHOTOGRAPH_FORMAT.get())
 					.setEnumNameProvider(value -> enumNameProvider("photograph_format." + ((FFConfig.PhotographFormat)value).getSerializedName()))
 					.setTooltip(tooltip("photograph_format")),

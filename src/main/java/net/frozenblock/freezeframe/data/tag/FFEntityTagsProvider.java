@@ -20,11 +20,10 @@ package net.frozenblock.freezeframe.data.tag;
 import java.util.concurrent.CompletableFuture;
 import net.fabricmc.fabric.api.datagen.v1.FabricPackOutput;
 import net.fabricmc.fabric.api.datagen.v1.provider.FabricTagsProvider;
-import net.frozenblock.freezeframe.registry.FFEntityTypes;
+import net.frozenblock.freezeframe.references.FFEntityTypeIds;
 import net.frozenblock.freezeframe.tag.FFEntityTypeTags;
 import net.minecraft.core.HolderLookup;
 import net.minecraft.tags.EntityTypeTags;
-import net.minecraft.tags.TagEntry;
 
 public final class FFEntityTagsProvider extends FabricTagsProvider.EntityTypeTagsProvider {
 
@@ -34,11 +33,11 @@ public final class FFEntityTagsProvider extends FabricTagsProvider.EntityTypeTag
 
 	@Override
 	protected void addTags(HolderLookup.Provider arg) {
-		this.valueLookupBuilder(FFEntityTypeTags.CAMERAS)
-			.add(FFEntityTypes.CAMERA)
-			.add(FFEntityTypes.DISC_CAMERA);
+		this.builder(FFEntityTypeTags.CAMERAS)
+			.add(FFEntityTypeIds.CAMERA)
+			.add(FFEntityTypeIds.DISC_CAMERA);
 
-		this.getOrCreateRawBuilder(EntityTypeTags.CAN_BREATHE_UNDER_WATER)
-			.add(TagEntry.optionalTag(FFEntityTypeTags.CAMERAS.location()));
+		this.builder(EntityTypeTags.CAN_BREATHE_UNDER_WATER)
+			.addOptionalTag(FFEntityTypeTags.CAMERAS);
 	}
 }

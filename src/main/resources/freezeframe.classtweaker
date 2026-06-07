@@ -30,5 +30,6 @@ accessible field net/minecraft/client/renderer/PostChainConfig$Pass UNIFORM_BLOC
 accessible field net/minecraft/client/Camera eyeHeightOld F
 accessible field net/minecraft/client/Camera eyeHeight F
 accessible field net/minecraft/client/Camera attributeProbe Lnet/minecraft/world/attribute/EnvironmentAttributeProbe;
+accessible field net/minecraft/client/gui/Hud isHidden Z
 
 transitive-inject-interface net/minecraft/client/gui/screens/inventory/BookViewScreen$BookAccess net/frozenblock/freezeframe/client/gui/screens/inventory/book/BookAccessWithPhotographs

@@ -20,7 +20,7 @@ package net.frozenblock.freezeframe.data.tag;
 import java.util.concurrent.CompletableFuture;
 import net.fabricmc.fabric.api.datagen.v1.FabricPackOutput;
 import net.fabricmc.fabric.api.datagen.v1.provider.FabricTagsProvider;
-import net.frozenblock.freezeframe.registry.FFBlocks;
+import net.frozenblock.freezeframe.references.FFBlockItemIds;
 import net.minecraft.core.HolderLookup;
 import net.minecraft.resources.Identifier;
 import net.minecraft.resources.ResourceKey;
@@ -44,8 +44,8 @@ public final class FFBlockTagsProvider extends FabricTagsProvider.BlockTagsProvi
 
 	@Override
 	protected void addTags(HolderLookup.Provider arg) {
-		this.valueLookupBuilder(BlockTags.MINEABLE_WITH_AXE)
-			.add(FFBlocks.DEVELOPING_TABLE);
+		this.builder(BlockTags.MINEABLE_WITH_AXE)
+			.add(FFBlockItemIds.DEVELOPING_TABLE);
 	}
 
 }
