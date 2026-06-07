@@ -146,7 +146,7 @@ public class FFScreenshotUtil {
 			gameRenderer.extract(DeltaTracker.ONE, true);
 			gameRenderer.render(DeltaTracker.ONE, true);
 
-			Screenshot.takeScreenshot(getRenderTarget(), callback);
+			Screenshot.takeScreenshot(renderTarget, callback);
 		} catch (Exception ignored) {} finally {
 			ScopePostEffectController.clearIfApplied(minecraft);
 			gameRenderer.setRenderBlockOutline(true);
