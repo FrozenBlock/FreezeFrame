@@ -70,10 +70,8 @@ public class CameraScreenshotManager {
 
 	public static void executeScreenshot(@Nullable Entity entity, boolean handheldCapture, boolean wasScoping, @Nullable String fileName, float zoom, FilmFilter filter) {
 		final Minecraft minecraft = Minecraft.getInstance();
-
 		SCREENSHOT_DATA.startScreenshotting(handheldCapture);
-		SCREENSHOT_DATA.extractPreHideGui(minecraft);
-		minecraft.options.hideGui = true;
+		SCREENSHOT_DATA.extractPreHideGuiAndSetHidden(minecraft);
 
 		final int resolution = Math.clamp(FFConfig.PHOTOGRAPH_RESOLUTION.get(), 128, 1024);
 		if (handheldCapture) ScopeZoomManager.pushForcedZoom(zoom);
@@ -285,8 +283,9 @@ public class CameraScreenshotManager {
 			this.preEyeHeight = Pair.of(camera.eyeHeightOld, camera.eyeHeight);
 		}
 
-		public void extractPreHideGui(Minecraft minecraft) {
+		public void extractPreHideGuiAndSetHidden(Minecraft minecraft) {
 			this.preHideGui = minecraft.options.hideGui;
+			minecraft.options.hideGui = true;
 		}
 
 		public void extractPreWindowResolution(Window window) {
