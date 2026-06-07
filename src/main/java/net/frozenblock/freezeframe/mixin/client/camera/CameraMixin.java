@@ -26,6 +26,7 @@ import net.frozenblock.freezeframe.util.ScopeItemHelper;
 import net.frozenblock.freezeframe.util.ScopeZoomHelper;
 import net.minecraft.client.Camera;
 import net.minecraft.client.Minecraft;
+import net.minecraft.world.attribute.EnvironmentAttributeProbe;
 import net.minecraft.world.entity.Entity;
 import org.jspecify.annotations.Nullable;
 import org.spongepowered.asm.mixin.Final;
@@ -46,8 +47,17 @@ public class CameraMixin {
 	private Entity entity;
 
 	@ModifyReturnValue(method = "isDetached", at = @At("RETURN"))
-	public boolean freezeFrame$isDetached(boolean original) {
-		return original && !CameraScreenshotManager.isScreenshotting();
+	public boolean freezeFrame$ignoreDetachedIfScreenshotting(boolean original) {
+		return original && !CameraScreenshotManager.screenshotData().screenshotting();
+	}
+
+	@ModifyReturnValue(method = "attributeProbe", at = @At("RETURN"))
+	public EnvironmentAttributeProbe freezeFrame$useTripodAttributeProbe(EnvironmentAttributeProbe original) {
+		if (CameraScreenshotManager.screenshotData().screenshottingAndTripod()) {
+			final EnvironmentAttributeProbe probe = CameraScreenshotManager.screenshotData().environmentAttributeProbe();
+			if (probe != null) return probe;
+		}
+		return original;
 	}
 
 	@ModifyReturnValue(
@@ -59,7 +69,7 @@ public class CameraMixin {
 	)
 	private float freezeFrame$applyFovToPhotograph(float original) {
 		if (this.minecraft.player == null || this.entity != minecraft.player) return original;
-		if (!CameraScreenshotManager.isScreenshottingFromHandheldCamera() && !ScopeItemHelper.isPlayerUsingCamera(this.minecraft.player)) return original;
+		if (!CameraScreenshotManager.screenshotData().screenshottingAndHandheld() && !ScopeItemHelper.isPlayerUsingCamera(this.minecraft.player)) return original;
 
 		final float cameraFovModifier = ScopeZoomHelper.toFovModifier(ScopeZoomManager.getZoom());
 		return original * cameraFovModifier;

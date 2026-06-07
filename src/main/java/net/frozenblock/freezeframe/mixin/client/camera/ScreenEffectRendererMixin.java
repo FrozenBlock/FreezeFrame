@@ -44,7 +44,7 @@ public class ScreenEffectRendererMixin {
 		Player player, CallbackInfoReturnable<BlockState> info,
 		@Share("freezeFrame$cameraEntity") LocalRef<Entity> entityLocalRef
 	) {
-		if (CameraScreenshotManager.isScreenshottingFromTripodCamera()) entityLocalRef.set(Minecraft.getInstance().getCameraEntity());
+		if (CameraScreenshotManager.screenshotData().screenshottingAndTripod()) entityLocalRef.set(Minecraft.getInstance().getCameraEntity());
 	}
 
 	@ModifyExpressionValue(
@@ -56,7 +56,7 @@ public class ScreenEffectRendererMixin {
 		)
 	)
 	private static boolean freezeFrame$fixNoPhysicsCheck(boolean original) {
-		if (CameraScreenshotManager.isScreenshottingFromTripodCamera()) return false;
+		if (CameraScreenshotManager.screenshotData().screenshottingAndTripod()) return false;
 		return original;
 	}
 

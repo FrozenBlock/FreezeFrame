@@ -54,7 +54,7 @@ public class GuiMixin {
 
 	@Inject(method = "extractRenderState", at = @At("HEAD"), cancellable = true)
 	public void freezeFrame$removeOverlays(GuiGraphicsExtractor graphics, DeltaTracker deltaTracker, CallbackInfo info) {
-		if (CameraScreenshotManager.isScreenshotting()) info.cancel();
+		if (CameraScreenshotManager.screenshotData().screenshotting()) info.cancel();
 	}
 
 	@WrapWithCondition(

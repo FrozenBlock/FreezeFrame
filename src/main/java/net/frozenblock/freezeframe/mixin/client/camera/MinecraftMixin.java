@@ -85,9 +85,9 @@ public class MinecraftMixin {
 
 	@ModifyReturnValue(method = "getMainRenderTarget", at = @At("RETURN"))
 	public RenderTarget freezeFrame$getMainRenderTarget(RenderTarget original) {
-		if (!CameraScreenshotManager.isScreenshotting()) return original;
-		final RenderTarget cameraTarget = CameraScreenshotManager.getRenderTarget();
-		return cameraTarget != null ? cameraTarget : original;
+		if (!CameraScreenshotManager.screenshotData().screenshotting()) return original;
+		final RenderTarget screenshotTarget = CameraScreenshotManager.screenshotData().getRenderTarget();
+		return screenshotTarget != null ? screenshotTarget : original;
 	}
 
 	@Inject(method = "setScreen", at = @At("HEAD"))

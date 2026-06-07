@@ -32,6 +32,6 @@ public class MobEffectFogEnvironmentMixin {
 
 	@ModifyReturnValue(method = "isApplicable", at = @At("RETURN"))
 	public boolean freezeFrame$removeFog(boolean original) {
-		return !(CameraScreenshotManager.isScreenshotting() && FFConfig.CAMERA_IGNORES_EFFECT_FOG.get()) && original;
+		return !(CameraScreenshotManager.screenshotData().screenshotting() && FFConfig.CAMERA_IGNORES_EFFECT_FOG.get()) && original;
 	}
 }
