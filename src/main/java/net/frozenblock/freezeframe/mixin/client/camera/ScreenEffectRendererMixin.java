@@ -139,5 +139,4 @@ public class ScreenEffectRendererMixin {
 		if (cameraEntity != null) return (cameraEntity instanceof LivingEntity livingEntity) ? livingEntity.getScale() : 1F;
 		return original;
 	}
-
 }

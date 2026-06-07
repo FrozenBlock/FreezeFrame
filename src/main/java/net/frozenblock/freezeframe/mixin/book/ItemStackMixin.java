@@ -50,5 +50,4 @@ public abstract class ItemStackMixin {
 		);
 		if (result.isError()) info.setReturnValue(result);
 	}
-
 }

@@ -45,5 +45,4 @@ public abstract class ItemStackMixin {
 		final DataResult<?> result = validateContainedItemSizes(cameraContents.items());
 		if (result.isError()) info.setReturnValue(result);
 	}
-
 }

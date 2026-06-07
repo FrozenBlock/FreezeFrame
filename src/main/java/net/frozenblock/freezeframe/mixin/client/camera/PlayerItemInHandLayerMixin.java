@@ -93,5 +93,4 @@ public abstract class PlayerItemInHandLayerMixin {
 		item.submit(poseStack, submitNodeCollector, lightCoords, OverlayTexture.NO_OVERLAY, state.outlineColor);
 		poseStack.popPose();
 	}
-
 }

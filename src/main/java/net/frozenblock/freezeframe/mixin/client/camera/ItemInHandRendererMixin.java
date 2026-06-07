@@ -48,5 +48,4 @@ public class ItemInHandRendererMixin {
 	) {
 		if (CameraItem.isCapableOfTakingPhotos(mainHandItem)) info.setReturnValue(ItemInHandRenderer.HandRenderSelection.RENDER_MAIN_HAND_ONLY);
 	}
-
 }

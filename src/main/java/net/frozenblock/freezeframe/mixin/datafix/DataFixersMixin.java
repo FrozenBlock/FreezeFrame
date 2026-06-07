@@ -51,5 +51,4 @@ public class DataFixersMixin {
 		builder.addFixer(new AddNewChoices(schema, FFConstants.string("disc_camera"), References.ENTITY));
 		return schema;
 	}
-
 }

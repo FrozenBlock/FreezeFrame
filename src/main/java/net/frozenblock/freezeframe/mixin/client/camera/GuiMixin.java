@@ -98,5 +98,4 @@ public class GuiMixin {
 		if (this.minecraft.player == null || !ScopeItemHelper.isCameraItem(this.minecraft.player.getUseItem())) return original;
 		return FREEZE_FRAME$CAMERA_SCOPE;
 	}
-
 }

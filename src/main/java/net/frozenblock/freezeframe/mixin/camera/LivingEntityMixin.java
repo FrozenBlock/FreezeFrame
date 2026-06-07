@@ -53,5 +53,4 @@ public abstract class LivingEntityMixin {
 			info.cancel();
 		}
 	}
-
 }

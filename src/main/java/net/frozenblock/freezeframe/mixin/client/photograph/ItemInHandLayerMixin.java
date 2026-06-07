@@ -68,5 +68,4 @@ public abstract class ItemInHandLayerMixin {
 
 		original.call(instance, poseStack, submitNodeCollector, lightCoords, overlayCoords, outlineColor);
 	}
-
 }

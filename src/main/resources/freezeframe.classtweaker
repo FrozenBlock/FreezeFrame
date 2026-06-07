@@ -27,5 +27,8 @@ accessible field net/minecraft/client/renderer/ShaderManager compilationCache Ln
 accessible class net/minecraft/client/renderer/ShaderManager$CompilationCache
 accessible field net/minecraft/client/renderer/ShaderManager$CompilationCache postChains Ljava/util/Map;
 accessible field net/minecraft/client/renderer/PostChainConfig$Pass UNIFORM_BLOCKS_CODEC Lcom/mojang/serialization/Codec;
+accessible field net/minecraft/client/Camera eyeHeightOld F
+accessible field net/minecraft/client/Camera eyeHeight F
+accessible field net/minecraft/client/Camera attributeProbe Lnet/minecraft/world/attribute/EnvironmentAttributeProbe;
 
 transitive-inject-interface net/minecraft/client/gui/screens/inventory/BookViewScreen$BookAccess net/frozenblock/freezeframe/client/gui/screens/inventory/book/BookAccessWithPhotographs

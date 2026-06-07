@@ -57,5 +57,4 @@ public class NativeImageMixin {
 		}
 		return original.call(func, context, w, h, comp, data, stride_in_bytes);
 	}
-
 }

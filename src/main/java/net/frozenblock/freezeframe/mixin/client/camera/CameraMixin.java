@@ -64,5 +64,4 @@ public class CameraMixin {
 		final float cameraFovModifier = ScopeZoomHelper.toFovModifier(ScopeZoomManager.getZoom());
 		return original * cameraFovModifier;
 	}
-
 }

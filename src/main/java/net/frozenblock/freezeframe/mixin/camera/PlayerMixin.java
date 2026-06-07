@@ -38,5 +38,4 @@ public class PlayerMixin {
 	private boolean freezeFrame$enableScopingForCamera(ItemStack instance, Object o, Operation<Boolean> original) {
 		return original.call(instance, o) || ScopeItemHelper.isScopeItem(instance);
 	}
-
 }

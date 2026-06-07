@@ -32,5 +32,4 @@ public class WolfMixin {
 	private void freezeFrame$cancelAttacksOnCameras(LivingEntity target, LivingEntity owner, CallbackInfoReturnable<Boolean> info) {
 		if (target instanceof TripodCamera) info.setReturnValue(false);
 	}
-
 }

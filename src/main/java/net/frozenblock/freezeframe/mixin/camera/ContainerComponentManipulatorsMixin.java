@@ -40,5 +40,4 @@ public interface ContainerComponentManipulatorsMixin {
 		newStream.add(FFContainerComponentManipulators.CAMERA_CONTENTS);
 		return newStream.build();
 	}
-
 }

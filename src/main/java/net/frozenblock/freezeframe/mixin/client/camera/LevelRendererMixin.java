@@ -55,5 +55,4 @@ public class LevelRendererMixin {
 
 		return entity == this.minecraft.player ? entity : original;
 	}
-
 }
