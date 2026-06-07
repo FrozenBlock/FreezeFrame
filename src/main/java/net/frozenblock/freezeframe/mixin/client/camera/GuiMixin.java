@@ -24,7 +24,7 @@ import com.llamalad7.mixinextras.sugar.ref.LocalBooleanRef;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 import net.frozenblock.freezeframe.FFConstants;
-import net.frozenblock.freezeframe.client.screenshot.CameraScreenshotManager;
+import net.frozenblock.freezeframe.client.screenshot.FFScreenshotUtil;
 import net.frozenblock.freezeframe.config.FFConfig;
 import net.frozenblock.freezeframe.util.ScopeItemHelper;
 import net.minecraft.client.DeltaTracker;
@@ -54,7 +54,7 @@ public class GuiMixin {
 
 	@Inject(method = "extractRenderState", at = @At("HEAD"), cancellable = true)
 	public void freezeFrame$removeOverlays(GuiGraphicsExtractor graphics, DeltaTracker deltaTracker, CallbackInfo info) {
-		if (CameraScreenshotManager.screenshotData().screenshotting()) info.cancel();
+		if (FFScreenshotUtil.screenshotting()) info.cancel();
 	}
 
 	@WrapWithCondition(

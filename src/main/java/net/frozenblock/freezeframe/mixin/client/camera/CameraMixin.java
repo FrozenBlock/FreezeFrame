@@ -21,7 +21,7 @@ import com.llamalad7.mixinextras.injector.ModifyReturnValue;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 import net.frozenblock.freezeframe.client.scope.ScopeZoomManager;
-import net.frozenblock.freezeframe.client.screenshot.CameraScreenshotManager;
+import net.frozenblock.freezeframe.client.screenshot.FFScreenshotUtil;
 import net.frozenblock.freezeframe.util.ScopeItemHelper;
 import net.frozenblock.freezeframe.util.ScopeZoomHelper;
 import net.minecraft.client.Camera;
@@ -48,13 +48,13 @@ public class CameraMixin {
 
 	@ModifyReturnValue(method = "isDetached", at = @At("RETURN"))
 	public boolean freezeFrame$ignoreDetachedIfScreenshotting(boolean original) {
-		return original && !CameraScreenshotManager.screenshotData().screenshotting();
+		return original && !FFScreenshotUtil.screenshotting();
 	}
 
 	@ModifyReturnValue(method = "attributeProbe", at = @At("RETURN"))
 	public EnvironmentAttributeProbe freezeFrame$useTripodAttributeProbe(EnvironmentAttributeProbe original) {
-		if (CameraScreenshotManager.screenshotData().screenshottingAndTripod()) {
-			final EnvironmentAttributeProbe probe = CameraScreenshotManager.screenshotData().environmentAttributeProbe();
+		if (FFScreenshotUtil.screenshottingAndTripod()) {
+			final EnvironmentAttributeProbe probe = FFScreenshotUtil.environmentAttributeProbe();
 			if (probe != null) return probe;
 		}
 		return original;
@@ -69,7 +69,7 @@ public class CameraMixin {
 	)
 	private float freezeFrame$applyFovToPhotograph(float original) {
 		if (this.minecraft.player == null || this.entity != minecraft.player) return original;
-		if (!CameraScreenshotManager.screenshotData().screenshottingAndHandheld() && !ScopeItemHelper.isPlayerUsingCamera(this.minecraft.player)) return original;
+		if (!FFScreenshotUtil.screenshottingAndHandheld() && !ScopeItemHelper.isPlayerUsingCamera(this.minecraft.player)) return original;
 
 		final float cameraFovModifier = ScopeZoomHelper.toFovModifier(ScopeZoomManager.getZoom());
 		return original * cameraFovModifier;

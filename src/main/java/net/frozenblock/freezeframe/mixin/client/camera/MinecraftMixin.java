@@ -26,7 +26,7 @@ import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 import net.frozenblock.freezeframe.client.gui.screens.inventory.book.BookPagePhotographScreen;
 import net.frozenblock.freezeframe.client.gui.screens.inventory.book.BookPagePhotographUiState;
-import net.frozenblock.freezeframe.client.screenshot.CameraScreenshotManager;
+import net.frozenblock.freezeframe.client.screenshot.FFScreenshotUtil;
 import net.frozenblock.freezeframe.util.ScopeItemHelper;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.screens.Screen;
@@ -85,8 +85,8 @@ public class MinecraftMixin {
 
 	@ModifyReturnValue(method = "getMainRenderTarget", at = @At("RETURN"))
 	public RenderTarget freezeFrame$getMainRenderTarget(RenderTarget original) {
-		if (!CameraScreenshotManager.screenshotData().screenshotting()) return original;
-		final RenderTarget screenshotTarget = CameraScreenshotManager.screenshotData().getRenderTarget();
+		if (!FFScreenshotUtil.screenshotting()) return original;
+		final RenderTarget screenshotTarget = FFScreenshotUtil.getRenderTarget();
 		return screenshotTarget != null ? screenshotTarget : original;
 	}
 

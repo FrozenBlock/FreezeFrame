@@ -20,7 +20,7 @@ package net.frozenblock.freezeframe.mixin.client.camera;
 import com.llamalad7.mixinextras.injector.ModifyReturnValue;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
-import net.frozenblock.freezeframe.client.screenshot.CameraScreenshotManager;
+import net.frozenblock.freezeframe.client.screenshot.FFScreenshotUtil;
 import net.frozenblock.freezeframe.config.FFConfig;
 import net.minecraft.client.renderer.fog.environment.MobEffectFogEnvironment;
 import org.spongepowered.asm.mixin.Mixin;
@@ -32,6 +32,6 @@ public class MobEffectFogEnvironmentMixin {
 
 	@ModifyReturnValue(method = "isApplicable", at = @At("RETURN"))
 	public boolean freezeFrame$removeFog(boolean original) {
-		return !(CameraScreenshotManager.screenshotData().screenshotting() && FFConfig.CAMERA_IGNORES_EFFECT_FOG.get()) && original;
+		return !(FFScreenshotUtil.screenshotting() && FFConfig.CAMERA_IGNORES_EFFECT_FOG.get()) && original;
 	}
 }

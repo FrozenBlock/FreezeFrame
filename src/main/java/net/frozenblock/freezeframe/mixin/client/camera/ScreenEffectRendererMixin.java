@@ -22,7 +22,7 @@ import com.llamalad7.mixinextras.sugar.Share;
 import com.llamalad7.mixinextras.sugar.ref.LocalRef;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
-import net.frozenblock.freezeframe.client.screenshot.CameraScreenshotManager;
+import net.frozenblock.freezeframe.client.screenshot.FFScreenshotUtil;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.renderer.ScreenEffectRenderer;
 import net.minecraft.world.entity.Entity;
@@ -44,7 +44,7 @@ public class ScreenEffectRendererMixin {
 		Player player, CallbackInfoReturnable<BlockState> info,
 		@Share("freezeFrame$cameraEntity") LocalRef<Entity> entityLocalRef
 	) {
-		if (CameraScreenshotManager.screenshotData().screenshottingAndTripod()) entityLocalRef.set(Minecraft.getInstance().getCameraEntity());
+		if (FFScreenshotUtil.screenshottingAndTripod()) entityLocalRef.set(Minecraft.getInstance().getCameraEntity());
 	}
 
 	@ModifyExpressionValue(
@@ -56,7 +56,7 @@ public class ScreenEffectRendererMixin {
 		)
 	)
 	private static boolean freezeFrame$fixNoPhysicsCheck(boolean original) {
-		if (CameraScreenshotManager.screenshotData().screenshottingAndTripod()) return false;
+		if (FFScreenshotUtil.screenshottingAndTripod()) return false;
 		return original;
 	}
 

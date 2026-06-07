@@ -21,7 +21,7 @@ import com.llamalad7.mixinextras.injector.ModifyExpressionValue;
 import com.llamalad7.mixinextras.sugar.Local;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
-import net.frozenblock.freezeframe.client.screenshot.CameraScreenshotManager;
+import net.frozenblock.freezeframe.client.screenshot.FFScreenshotUtil;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.renderer.LevelRenderer;
 import net.minecraft.world.entity.Entity;
@@ -51,7 +51,7 @@ public class LevelRendererMixin {
 		@Local(name = "entity") Entity entity
 	) {
 		if (this.minecraft.player == null) return original;
-		if (CameraScreenshotManager.screenshotData().notScreenshottingOrIsTripod()) return original;
+		if (FFScreenshotUtil.notScreenshottingOrIsTripod()) return original;
 
 		return entity == this.minecraft.player ? entity : original;
 	}
