@@ -59,19 +59,19 @@ public class PhotographScreenshotter {
 				screenshot,
 				minecraft,
 				fileName,
+				entity,
 				text -> minecraft.execute(() -> minecraft.gui.getChat().addClientSystemMessage(text))
 			)
 		);
 	}
 
-	private static void saveAndSendPhotograph(NativeImage screenshot, Minecraft minecraft, @Nullable String fileName, Consumer<Component> callback) {
+	private static void saveAndSendPhotograph(NativeImage screenshot, Minecraft minecraft, @Nullable String fileName, @Nullable Entity entity, Consumer<Component> callback) {
 		makeSnapSoundAndSmoke: {
-			final Entity camEntity = minecraft.getCameraEntity();
-			if (camEntity == null) break makeSnapSoundAndSmoke;
+			if (entity == null) break makeSnapSoundAndSmoke;
 
-			final int smokeCount = minecraft.level.getRandom().nextInt(1, 5);
+			final int smokeCount = entity.getRandom().nextInt(1, 5);
 			for (int i = 0; i < smokeCount; i++) {
-				minecraft.level.addParticle(ParticleTypes.LARGE_SMOKE, camEntity.getX(), camEntity.getEyeY(), camEntity.getZ(), 0D, 0.15D, 0D);
+				minecraft.level.addParticle(ParticleTypes.LARGE_SMOKE, entity.getX(), entity.getEyeY(), entity.getZ(), 0D, 0.15D, 0D);
 			}
 		}
 
