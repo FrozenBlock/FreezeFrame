@@ -424,6 +424,11 @@ public class TripodCamera extends Mob {
 	}
 
 	@Override
+	public boolean removeWhenFarAway(double distSqr) {
+		return false;
+	}
+
+	@Override
 	public void kill(ServerLevel level) {
 		this.remove(Entity.RemovalReason.KILLED);
 		this.gameEvent(GameEvent.ENTITY_DIE);
