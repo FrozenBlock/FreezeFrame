@@ -32,6 +32,7 @@ import net.frozenblock.lib.file.transfer.FileTransferPacket;
 import net.frozenblock.lib.networking.FrozenNetworking;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.multiplayer.ClientPacketListener;
+import net.minecraft.core.particles.ParticleTypes;
 import net.minecraft.network.chat.ClickEvent;
 import net.minecraft.network.chat.Component;
 import net.minecraft.network.protocol.common.ServerboundCustomPayloadPacket;
@@ -64,6 +65,16 @@ public class PhotographScreenshotter {
 	}
 
 	private static void saveAndSendPhotograph(NativeImage screenshot, Minecraft minecraft, @Nullable String fileName, Consumer<Component> callback) {
+		makeSnapSoundAndSmoke: {
+			final Entity camEntity = minecraft.getCameraEntity();
+			if (camEntity == null) break makeSnapSoundAndSmoke;
+
+			final int smokeCount = minecraft.level.getRandom().nextInt(1, 5);
+			for (int i = 0; i < smokeCount; i++) {
+				minecraft.level.addParticle(ParticleTypes.LARGE_SMOKE, camEntity.getX(), camEntity.getEyeY(), camEntity.getZ(), 0D, 0.15D, 0D);
+			}
+		}
+
 		Optional<Path> iconPath = Optional.empty();
 		if (FFConfig.USE_LATEST_PHOTO_AS_WORLD_ICON.get() && FrozenNetworking.connectedToIntegratedServer()) {
 			iconPath = minecraft.getSingleplayerServer().getWorldScreenshotFile();

@@ -33,7 +33,6 @@ import net.minecraft.client.DeltaTracker;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.Screenshot;
 import net.minecraft.client.renderer.GameRenderer;
-import net.minecraft.core.particles.ParticleTypes;
 import net.minecraft.world.attribute.EnvironmentAttributeProbe;
 import net.minecraft.world.entity.Entity;
 import org.jetbrains.annotations.Nullable;
@@ -44,10 +43,6 @@ public class FFScreenshotUtil {
 	private static boolean handheld = false;
 	private static RenderTarget renderTarget = null;
 	private static EnvironmentAttributeProbe environmentAttributeProbe = null;
-	private static Entity preCameraEntity = null;
-	private static Pair<Float, Float> preEyeHeight = null;
-	private static boolean preHideGui = false;
-	private static Pair<Integer, Integer> preResolution = null;
 
 	public static boolean screenshotting() {
 		return screenshotting;
@@ -75,31 +70,6 @@ public class FFScreenshotUtil {
 		return environmentAttributeProbe;
 	}
 
-	public static void restorePreScreenshotData(Minecraft minecraft) {
-		minecraft.options.hideGui = preHideGui;
-		if (preResolution != null) {
-			minecraft.getWindow().setWidth(preResolution.getFirst());
-			minecraft.getWindow().setHeight(preResolution.getSecond());
-		}
-		if (preEyeHeight != null) {
-			final Camera camera = minecraft.gameRenderer.getMainCamera();
-			camera.eyeHeightOld = preEyeHeight.getFirst();
-			camera.eyeHeight = preEyeHeight.getSecond();
-		}
-		minecraft.setCameraEntity(preCameraEntity);
-	}
-
-	public static void reset(Minecraft minecraft) {
-		screenshotting = false;
-		handheld = false;
-		renderTarget = null;
-		environmentAttributeProbe = null;
-
-		restorePreScreenshotData(minecraft);
-		preEyeHeight = null;
-		preCameraEntity = null;
-	}
-
 	public static void executeScreenshot(
 		@Nullable Entity entity,
 		boolean handheldCapture,
@@ -110,58 +80,66 @@ public class FFScreenshotUtil {
 		Consumer<NativeImage> callback
 	) {
 		final Minecraft minecraft = Minecraft.getInstance();
+		if (minecraft.level == null) return;
+
+		final Window window = minecraft.getWindow();
+		final Camera camera = minecraft.gameRenderer.getMainCamera();
+		final Pair<Integer, Integer> preResolution = Pair.of(window.getWidth(), window.getHeight());
+		final Entity preCameraEntity = entity != null ? minecraft.getCameraEntity() : null;
+		final Pair<Float, Float> preEyeHeight = Pair.of(camera.eyeHeightOld, camera.eyeHeight);
+		final boolean preHideGui = minecraft.options.hideGui;
+
 		screenshotting = true;
 		handheld = handheldCapture;
-		preHideGui = minecraft.options.hideGui;
 		minecraft.options.hideGui = true;
 
-		if (handheldCapture) ScopeZoomManager.pushForcedZoom(zoom);
-		screenshotAsCamera(resolution, resolution, filter, entity, callback);
-
-		makeSnapSoundAndSmoke: {
-			if (minecraft.level == null) break makeSnapSoundAndSmoke;
-
-			final Entity camEntity = entity != null ? entity : minecraft.getCameraEntity();
-			if (camEntity == null) break makeSnapSoundAndSmoke;
-
-			final int smokeCount = minecraft.level.getRandom().nextInt(1, 5);
-			for (int i = 0; i < smokeCount; i++) {
-				minecraft.level.addParticle(ParticleTypes.LARGE_SMOKE, camEntity.getX(), camEntity.getEyeY(), camEntity.getZ(), 0D, 0.15D, 0D);
-			}
+		if (handheldCapture) {
+			ScopeZoomManager.pushForcedZoom(zoom);
+		} else if (entity != null) {
+			camera.setEntity(entity);
 		}
+		screenshotAsCamera(minecraft, window, camera, resolution, resolution, filter, entity != null, callback);
 
-		reset(minecraft);
+		screenshotting = false;
+		handheld = false;
+		renderTarget = null;
+		environmentAttributeProbe = null;
+		minecraft.options.hideGui = preHideGui;
 
+		window.setWidth(preResolution.getFirst());
+		window.setHeight(preResolution.getSecond());
+		camera.eyeHeightOld = preEyeHeight.getFirst();
+		camera.eyeHeight = preEyeHeight.getSecond();
+
+		if (entity != null) minecraft.setCameraEntity(preCameraEntity);
 		if (handheldCapture) ScopeZoomManager.clearForcedZoom();
 		if (handheldCapture && wasScoping && !filter.isEmpty()) ScopePostEffectController.applyFromFilter(minecraft, filter);
 	}
 
-	private static void screenshotAsCamera(int width, int height, FilmFilter filter, @Nullable Entity entity, Consumer<NativeImage> callback) {
-		final Minecraft minecraft = Minecraft.getInstance();
-
-		final Window window = minecraft.getWindow();
-		preResolution = Pair.of(window.getWidth(), window.getHeight());
+	private static void screenshotAsCamera(
+		Minecraft minecraft,
+		Window window,
+		Camera camera,
+		int width,
+		int height,
+		FilmFilter filter,
+		boolean updateAttributeProbe,
+		Consumer<NativeImage> callback
+	) {
 		renderTarget = new TextureTarget("photograph", width, height, true);
 
 		final GameRenderer gameRenderer = minecraft.gameRenderer;
-		final Camera camera = gameRenderer.getMainCamera();
 		gameRenderer.setRenderBlockOutline(false);
-		if (entity != null) preCameraEntity = camera.entity();
 
 		try {
 			camera.enablePanoramicMode();
 			window.setWidth(width);
 			window.setHeight(height);
 
-			if (entity != null) {
-				preEyeHeight = Pair.of(camera.eyeHeightOld, camera.eyeHeight);
-				camera.setEntity(entity);
-			}
-
 			ScopePostEffectController.applyFromFilter(minecraft, filter);
 
 			gameRenderer.update(DeltaTracker.ONE, true);
-			if (entity != null) {
+			if (updateAttributeProbe) {
 				environmentAttributeProbe = new EnvironmentAttributeProbe();
 				environmentAttributeProbe.tick(minecraft.level, camera.position());
 			}
