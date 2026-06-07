@@ -52,3 +52,5 @@ Put the changelog BELOW the dashes. ANYTHING ABOVE IS IGNORED.
 - Fixed a bug that caused Tripods to despawn when far from a Player.
 - Photos taken by Tripods now use Environment Attributes at their position instead of the Player's.
 - Photos taken by Tripods now use the Tripod's eye height instead of the Player's.
+- Fixed a bug that allowed GUIs to render while a Photo is being taken.
+- Debug renderers no longer render while a Photo is being taken.

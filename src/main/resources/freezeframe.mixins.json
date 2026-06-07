@@ -29,6 +29,7 @@
     "client.camera.ArmPoseMixin",
     "client.camera.AvatarRendererMixin",
     "client.camera.CameraMixin",
+    "client.camera.GameRendererMixin",
     "client.camera.GuiMixin",
     "client.camera.HumanoidModelMixin",
     "client.camera.ItemInHandRendererMixin",
