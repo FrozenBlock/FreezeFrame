@@ -97,6 +97,7 @@ public class FFScreenshotUtil {
 			ScopeZoomManager.pushForcedZoom(zoom);
 		} else if (entity != null) {
 			camera.setEntity(entity);
+			camera.eyeHeightOld = camera.eyeHeight = entity.getEyeHeight();
 		}
 		screenshotAsCamera(minecraft, window, camera, resolution, resolution, filter, entity != null, callback);
 
