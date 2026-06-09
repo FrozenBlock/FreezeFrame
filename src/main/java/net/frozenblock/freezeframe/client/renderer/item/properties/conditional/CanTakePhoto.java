@@ -23,7 +23,6 @@ import net.fabricmc.api.Environment;
 import net.frozenblock.freezeframe.item.CameraItem;
 import net.minecraft.client.multiplayer.ClientLevel;
 import net.minecraft.client.renderer.item.properties.conditional.ConditionalItemModelProperty;
-import net.minecraft.world.entity.HumanoidArm;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.item.ItemDisplayContext;
 import net.minecraft.world.item.ItemStack;
@@ -36,7 +35,7 @@ public class CanTakePhoto implements ConditionalItemModelProperty {
 
 	@Override
 	public boolean get(ItemStack stack, @Nullable ClientLevel level, @Nullable LivingEntity owner, int seed, ItemDisplayContext displayContext) {
-		return owner != null && isItemInHand(displayContext) && ((owner.getMainArm() == HumanoidArm.LEFT) == displayContext.leftHand()) && CameraItem.isCapableOfTakingPhotos(stack);
+		return owner != null && isItemInHand(displayContext) && owner.getOffhandItem() != stack && CameraItem.isCapableOfTakingPhotos(stack);
 	}
 
 	private static boolean isItemInHand(ItemDisplayContext displayContext) {

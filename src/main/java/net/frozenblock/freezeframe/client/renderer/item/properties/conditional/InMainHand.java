@@ -22,7 +22,6 @@ import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 import net.minecraft.client.multiplayer.ClientLevel;
 import net.minecraft.client.renderer.item.properties.conditional.ConditionalItemModelProperty;
-import net.minecraft.world.entity.HumanoidArm;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.item.ItemDisplayContext;
 import net.minecraft.world.item.ItemStack;
@@ -35,12 +34,7 @@ public class InMainHand implements ConditionalItemModelProperty {
 
 	@Override
 	public boolean get(ItemStack stack, @Nullable ClientLevel level, @Nullable LivingEntity owner, int seed, ItemDisplayContext displayContext) {
-		if (owner == null || !isItemInHand(displayContext)) return false;
-		return (owner.getMainArm() == HumanoidArm.LEFT) == displayContext.leftHand();
-	}
-
-	private static boolean isItemInHand(ItemDisplayContext displayContext) {
-		return displayContext.firstPerson() || displayContext == ItemDisplayContext.THIRD_PERSON_LEFT_HAND || displayContext == ItemDisplayContext.THIRD_PERSON_RIGHT_HAND;
+		return owner != null && owner.getMainHandItem() == stack;
 	}
 
 	@Override
