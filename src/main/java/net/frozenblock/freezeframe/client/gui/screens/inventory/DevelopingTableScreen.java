@@ -518,6 +518,7 @@ public class DevelopingTableScreen extends AbstractContainerScreen<DevelopingTab
 			this.photographIndex = 0;
 			this.displayFilm = false;
 			this.displayBook = false;
+			this.displayCopy = false;
 			this.draggingScroller = false;
 			this.scrollerX = SCROLLER_TRACK_X;
 			this.lastSourceItem = ItemStack.EMPTY;
