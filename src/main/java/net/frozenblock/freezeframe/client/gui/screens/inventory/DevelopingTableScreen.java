@@ -69,9 +69,9 @@ public class DevelopingTableScreen extends AbstractContainerScreen<DevelopingTab
 	private static final int SCROLLER_TRACK_X = FILM_LEFT_PHOTOGRAPH_X - 1;
 	private static final int SCROLLER_TRACK_Y = 93;
 	private static final int SCROLLER_TRACK_WIDTH = FILM_RIGHT_PHOTOGRAPH_X + FILM_PHOTOGRAPH_SIZE - FILM_LEFT_PHOTOGRAPH_X + 2;
-	private static final int COPY_PHOTOGRAPH_SIZE = 67;
-	private static final int COPY_PHOTOGRAPH_Y = 31;
-	private static final int COPY_PHOTOGRAPH_X = 55;
+	private static final int COPY_PHOTOGRAPH_SIZE = 65;
+	private static final int COPY_PHOTOGRAPH_Y = 32;
+	private static final int COPY_PHOTOGRAPH_X = 56;
 	private static final int RESULT_SLOT_X = 116;
 	private static final int RESULT_SLOT_Y = 113;
 	private static final int RESULT_SLOT_SIZE = 16;
@@ -447,7 +447,7 @@ public class DevelopingTableScreen extends AbstractContainerScreen<DevelopingTab
 			final int right = left + FILM_PHOTOGRAPH_SIZE;
 			minX = Math.min(minX, left);
 			maxX = Math.max(maxX, right);
-			final double distance = Math.abs(mouseX - (left + (FILM_PHOTOGRAPH_SIZE / 2.0)));
+			final double distance = Math.abs(mouseX - (left + (FILM_PHOTOGRAPH_SIZE / 2D)));
 			if (distance < closestDistance) {
 				closestDistance = distance;
 				closestOffset = -1;
@@ -459,7 +459,7 @@ public class DevelopingTableScreen extends AbstractContainerScreen<DevelopingTab
 			final int right = left + FILM_PHOTOGRAPH_SIZE;
 			minX = Math.min(minX, left);
 			maxX = Math.max(maxX, right);
-			final double distance = Math.abs(mouseX - (left + (FILM_PHOTOGRAPH_SIZE / 2.0)));
+			final double distance = Math.abs(mouseX - (left + (FILM_PHOTOGRAPH_SIZE / 2D)));
 			if (distance < closestDistance) {
 				closestDistance = distance;
 				closestOffset = 0;
@@ -471,7 +471,7 @@ public class DevelopingTableScreen extends AbstractContainerScreen<DevelopingTab
 			final int right = left + FILM_PHOTOGRAPH_SIZE;
 			minX = Math.min(minX, left);
 			maxX = Math.max(maxX, right);
-			final double distance = Math.abs(mouseX - (left + (FILM_PHOTOGRAPH_SIZE / 2.0)));
+			final double distance = Math.abs(mouseX - (left + (FILM_PHOTOGRAPH_SIZE / 2D)));
 			if (distance < closestDistance) {
 				closestDistance = distance;
 				closestOffset = 1;

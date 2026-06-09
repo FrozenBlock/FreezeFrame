@@ -34,6 +34,7 @@ public class PhotographRenderer {
 	private static final float IN_WORLD_FRAME_EXTENSION = 1.125F / 16F;
 	private static final float IN_WORLD_FRAME_MAX = 1F + IN_WORLD_FRAME_EXTENSION;
 	private static final float IN_WORLD_FRAME_MIN = -IN_WORLD_FRAME_EXTENSION;
+	private static final float PHOTO_TO_FRAME_SCALE = 80F / 70F;
 	private static final int BOOK_PHOTO_SIZE = 84;
 	private static final int BOOK_PHOTOGRAPH_HOLDER_SIZE = 98;
 	private static final int BOOK_PHOTOGRAPH_HOLDER_X_OFFSET = -7;
@@ -105,17 +106,22 @@ public class PhotographRenderer {
 
 		final Identifier frameSprite = frameType.guiSprite;
 		if (frameSprite != null) {
-			final double frameOffsetScale = renderSize / 80D;
-			final int posOffset = (int) (5 * frameOffsetScale);
-			final int sizeOffset = (int) (10 * frameOffsetScale);
-			final int frameRenderSize = renderSize + sizeOffset;
+			// This calculates the size of one pixel in the Frame texture. All Frame textures are 80x80.
+			final float relativeScale = renderSize / 80F;
+
+			graphics.pose().pushMatrix();
+			graphics.pose().translate(renderX, renderY);
+			graphics.pose().pushMatrix();
+			graphics.pose().scale(PHOTO_TO_FRAME_SCALE);
+			graphics.pose().translate(-relativeScale * 5F, -relativeScale * 5F);
 			graphics.blitSprite(
 				RenderPipelines.GUI_TEXTURED,
 				frameSprite,
-				renderX - posOffset,
-				renderY - posOffset,
-				frameRenderSize, frameRenderSize
+				0, 0,
+				renderSize, renderSize
 			);
+			graphics.pose().popMatrix();
+			graphics.pose().popMatrix();
 		}
 		graphics.blit(
 			RenderPipelines.GUI_TEXTURED,
@@ -123,7 +129,8 @@ public class PhotographRenderer {
 			renderX, renderY,
 			0F,
 			0F,
-			renderSize, renderSize, renderSize, renderSize
+			renderSize, renderSize,
+			renderSize, renderSize
 		);
 	}
 
