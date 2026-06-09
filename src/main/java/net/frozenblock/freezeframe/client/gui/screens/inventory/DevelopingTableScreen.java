@@ -69,9 +69,9 @@ public class DevelopingTableScreen extends AbstractContainerScreen<DevelopingTab
 	private static final int SCROLLER_TRACK_X = FILM_LEFT_PHOTOGRAPH_X - 1;
 	private static final int SCROLLER_TRACK_Y = 93;
 	private static final int SCROLLER_TRACK_WIDTH = FILM_RIGHT_PHOTOGRAPH_X + FILM_PHOTOGRAPH_SIZE - FILM_LEFT_PHOTOGRAPH_X + 2;
-	private static final int COPY_PHOTOGRAPH_SIZE = 67;
-	private static final int COPY_PHOTOGRAPH_Y = 31;
-	private static final int COPY_PHOTOGRAPH_X = 55;
+	private static final int COPY_PHOTOGRAPH_SIZE = 65;
+	private static final int COPY_PHOTOGRAPH_Y = 32;
+	private static final int COPY_PHOTOGRAPH_X = 56;
 	private static final int RESULT_SLOT_X = 116;
 	private static final int RESULT_SLOT_Y = 113;
 	private static final int RESULT_SLOT_SIZE = 16;
@@ -111,11 +111,11 @@ public class DevelopingTableScreen extends AbstractContainerScreen<DevelopingTab
 	private int photographIndex = 0;
 	private boolean displayFilm = false;
 	private boolean displayBook = false;
+	private boolean displayCopy = false;
 	private boolean draggingScroller = false;
 	private int scrollerX = SCROLLER_TRACK_X;
 	private int filmMaxPhotographs = FilmContents.BASE_MAX_PHOTOGRAPHS;
 	private ItemStack lastSourceItem = ItemStack.EMPTY;
-	private Identifier photographCopyId;
 
 	public DevelopingTableScreen(DevelopingTableMenu menu, Inventory inventory, Component title) {
 		super(menu, inventory, title, DEFAULT_IMAGE_WIDTH, 226);
@@ -177,18 +177,15 @@ public class DevelopingTableScreen extends AbstractContainerScreen<DevelopingTab
 
 			if (this.middlePhotograph != null) {
 				this.extractPhotographSlot(graphics, this.middlePhotograph, hoveredOffset == 0 || hoveringResultSlot, FILM_MIDDLE_PHOTOGRAPH_X);
-				if (hoveredOffset == 0) graphics.requestCursor(CursorTypes.POINTING_HAND);
 			}
 
 			if (this.hasMultipleSourcePhotographs()) {
 				if (this.rightPhotograph != null) {
-					this.extractPhotographSlot(graphics, this.middlePhotograph, hoveredOffset == 1, FILM_RIGHT_PHOTOGRAPH_X);
-					if (hoveredOffset == 1) graphics.requestCursor(CursorTypes.POINTING_HAND);
+					this.extractPhotographSlot(graphics, this.rightPhotograph, hoveredOffset == 1, FILM_RIGHT_PHOTOGRAPH_X);
 				}
 
 				if (this.leftPhotograph != null) {
-					this.extractPhotographSlot(graphics, this.middlePhotograph, hoveredOffset == -1, FILM_LEFT_PHOTOGRAPH_X);
-					if (hoveredOffset == -1) graphics.requestCursor(CursorTypes.POINTING_HAND);
+					this.extractPhotographSlot(graphics, this.leftPhotograph, hoveredOffset == -1, FILM_LEFT_PHOTOGRAPH_X);
 				}
 
 				graphics.blitSprite(
@@ -222,17 +219,28 @@ public class DevelopingTableScreen extends AbstractContainerScreen<DevelopingTab
 			);
 		}
 
-		if (this.photographCopyId != null) {
+		if (this.displayCopy) {
 			PhotographRenderer.blit(
 				this.leftPos,
 				this.topPos,
 				COPY_PHOTOGRAPH_X,
 				COPY_PHOTOGRAPH_Y,
 				graphics,
-				this.photographCopyId,
+				this.middlePhotograph,
 				COPY_PHOTOGRAPH_SIZE,
 				PhotographRenderer.FrameType.FRAME
 			);
+			if (hoveredOffset == 0) {
+				graphics.blitSprite(
+					RenderPipelines.GUI_TEXTURED,
+					FILM_PHOTOGRAPH_HIGHLIGHT,
+					this.leftPos + COPY_PHOTOGRAPH_X,
+					this.topPos + COPY_PHOTOGRAPH_Y,
+					COPY_PHOTOGRAPH_SIZE,
+					COPY_PHOTOGRAPH_SIZE
+				);
+				graphics.requestCursor(CursorTypes.POINTING_HAND);
+			}
 		}
 
 		if (hoveredPhotograph != null) {
@@ -240,7 +248,7 @@ public class DevelopingTableScreen extends AbstractContainerScreen<DevelopingTab
 		}
 	}
 
-	public void extractPhotographSlot(GuiGraphicsExtractor graphics, Identifier photoId, boolean extractHighlight, int x) {
+	public void extractPhotographSlot(GuiGraphicsExtractor graphics, Identifier photoId, boolean selected, int x) {
 		PhotographRenderer.blit(
 			this.leftPos,
 			this.topPos,
@@ -251,7 +259,7 @@ public class DevelopingTableScreen extends AbstractContainerScreen<DevelopingTab
 			FILM_PHOTOGRAPH_SIZE,
 			PhotographRenderer.FrameType.NONE
 		);
-		if (extractHighlight) {
+		if (selected) {
 			graphics.blitSprite(
 				RenderPipelines.GUI_TEXTURED,
 				FILM_PHOTOGRAPH_HIGHLIGHT,
@@ -260,6 +268,7 @@ public class DevelopingTableScreen extends AbstractContainerScreen<DevelopingTab
 				FILM_PHOTOGRAPH_SIZE,
 				FILM_PHOTOGRAPH_SIZE
 			);
+			graphics.requestCursor(CursorTypes.POINTING_HAND);
 		}
 		if (this.displayBook) {
 			graphics.blitSprite(
@@ -433,7 +442,9 @@ public class DevelopingTableScreen extends AbstractContainerScreen<DevelopingTab
 	}
 
 	private int getHoveredFilmPhotographOffset(double mouseX, double mouseY) {
-		if ((!this.displayFilm && !this.displayBook) || this.sourcePhotographs.isEmpty()) return Integer.MIN_VALUE;
+		if (this.sourcePhotographs.isEmpty()) return Integer.MIN_VALUE;
+		if (this.displayCopy) return this.isHovering(COPY_PHOTOGRAPH_X, COPY_PHOTOGRAPH_Y, COPY_PHOTOGRAPH_SIZE, COPY_PHOTOGRAPH_SIZE, mouseX, mouseY) ? 0 : Integer.MIN_VALUE;
+		if ((!this.displayFilm && !this.displayBook)) return Integer.MIN_VALUE;
 
 		final int top = this.topPos + FILM_PHOTOGRAPH_Y;
 		final int bottom = top + FILM_PHOTOGRAPH_SIZE;
@@ -449,7 +460,7 @@ public class DevelopingTableScreen extends AbstractContainerScreen<DevelopingTab
 			final int right = left + FILM_PHOTOGRAPH_SIZE;
 			minX = Math.min(minX, left);
 			maxX = Math.max(maxX, right);
-			final double distance = Math.abs(mouseX - (left + (FILM_PHOTOGRAPH_SIZE / 2.0)));
+			final double distance = Math.abs(mouseX - (left + (FILM_PHOTOGRAPH_SIZE / 2D)));
 			if (distance < closestDistance) {
 				closestDistance = distance;
 				closestOffset = -1;
@@ -461,7 +472,7 @@ public class DevelopingTableScreen extends AbstractContainerScreen<DevelopingTab
 			final int right = left + FILM_PHOTOGRAPH_SIZE;
 			minX = Math.min(minX, left);
 			maxX = Math.max(maxX, right);
-			final double distance = Math.abs(mouseX - (left + (FILM_PHOTOGRAPH_SIZE / 2.0)));
+			final double distance = Math.abs(mouseX - (left + (FILM_PHOTOGRAPH_SIZE / 2D)));
 			if (distance < closestDistance) {
 				closestDistance = distance;
 				closestOffset = 0;
@@ -473,7 +484,7 @@ public class DevelopingTableScreen extends AbstractContainerScreen<DevelopingTab
 			final int right = left + FILM_PHOTOGRAPH_SIZE;
 			minX = Math.min(minX, left);
 			maxX = Math.max(maxX, right);
-			final double distance = Math.abs(mouseX - (left + (FILM_PHOTOGRAPH_SIZE / 2.0)));
+			final double distance = Math.abs(mouseX - (left + (FILM_PHOTOGRAPH_SIZE / 2D)));
 			if (distance < closestDistance) {
 				closestDistance = distance;
 				closestOffset = 1;
@@ -507,9 +518,9 @@ public class DevelopingTableScreen extends AbstractContainerScreen<DevelopingTab
 			this.photographIndex = 0;
 			this.displayFilm = false;
 			this.displayBook = false;
+			this.displayCopy = false;
 			this.draggingScroller = false;
 			this.scrollerX = SCROLLER_TRACK_X;
-			this.photographCopyId = null;
 			this.lastSourceItem = ItemStack.EMPTY;
 			return;
 		}
@@ -525,13 +536,6 @@ public class DevelopingTableScreen extends AbstractContainerScreen<DevelopingTab
 
 		this.setupOrClearFilmPhotographDisplays();
 
-		if (sourceItem.is(FFItems.PHOTOGRAPH)) {
-			final Photograph photograph = sourceItem.get(FFDataComponents.PHOTOGRAPH);
-			this.photographCopyId = (photograph == null || !photograph.canCopy()) ? null : photograph.identifier();
-		} else {
-			this.photographCopyId = null;
-		}
-
 		this.lastSourceItem = sourceItem.copyWithCount(1);
 	}
 
@@ -539,7 +543,8 @@ public class DevelopingTableScreen extends AbstractContainerScreen<DevelopingTab
 		final ItemStack sourceItem = this.menu.getSourceItem();
 		this.displayFilm = sourceItem.is(FFItems.FILM) && sourceItem.has(FFDataComponents.FILM_CONTENTS);
 		this.displayBook = this.isBookSource(sourceItem);
-		if (!this.displayFilm && !this.displayBook) {
+		this.displayCopy = sourceItem.is(FFItems.PHOTOGRAPH) && sourceItem.has(FFDataComponents.PHOTOGRAPH) && sourceItem.get(FFDataComponents.PHOTOGRAPH).canCopy();
+		if (!this.displayFilm && !this.displayBook && !this.displayCopy) {
 			this.filmContents = null;
 			this.sourcePhotographs = List.of();
 			this.filmMaxPhotographs = FilmContents.BASE_MAX_PHOTOGRAPHS;
@@ -554,10 +559,14 @@ public class DevelopingTableScreen extends AbstractContainerScreen<DevelopingTab
 				this.filmContents = sourceItem.get(FFDataComponents.FILM_CONTENTS);
 				this.filmMaxPhotographs = FilmItem.getMaxPhotographs(sourceItem);
 				this.sourcePhotographs = this.filmContents == null ? List.of() : this.filmContents.photographs();
-			} else {
+			} else if (this.displayBook) {
 				this.filmContents = null;
 				this.filmMaxPhotographs = FilmContents.BASE_MAX_PHOTOGRAPHS;
 				this.sourcePhotographs = this.getBookPhotographs(sourceItem);
+			} else if (this.displayCopy) {
+				this.filmContents = null;
+				this.filmMaxPhotographs = FilmContents.BASE_MAX_PHOTOGRAPHS;
+				this.sourcePhotographs = List.of(sourceItem.get(FFDataComponents.PHOTOGRAPH));
 			}
 
 			this.photographIndex = Math.clamp(this.photographIndex, 0, this.getMaxPhotographIndex());

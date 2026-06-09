@@ -91,6 +91,8 @@
   "tooltip.freezeframe.scope_hides_hotbar": "Whether the hotbar will be hidden while scoping.",
   "option.freezeframe.scope_hides_crosshair": "Scoping Hides Crosshair",
   "tooltip.freezeframe.scope_hides_crosshair": "Whether the crosshair will be hidden while scoping.",
+  "option.freezeframe.scope_hides_block_outline": "Scoping Hides Block Outlines",
+  "tooltip.freezeframe.scope_hides_block_outline": "Whether block outlines will be hidden while scoping.",
   "option.freezeframe.use_as_world_icon": "Use Photos As World Icons",
   "tooltip.freezeframe.use_as_world_icon": "Whether the latest-taken Photo in a world should replace the world icon.",
   "option.freezeframe.hide_film_photo_preview_and_info": "Hide Film Photo Preview & Info",

@@ -42,6 +42,7 @@
     "client.photograph.ItemInHandRendererMixin",
     "client.photograph.NativeImageMixin",
     "client.scope.CameraMixin",
+    "client.scope.GameRendererMixin",
     "client.scope.MouseHandlerMixin",
     "client.screenshot.CameraMixin",
     "client.screenshot.GameRendererMixin",

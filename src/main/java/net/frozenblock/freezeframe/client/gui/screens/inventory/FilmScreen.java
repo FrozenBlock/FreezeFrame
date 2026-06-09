@@ -204,6 +204,28 @@ public class FilmScreen extends Screen {
 		}
 	}
 
+	public void extractPhotographSlot(GuiGraphicsExtractor graphics, Identifier photoId, boolean selected, int x, boolean delete, boolean saveAndModified) {
+		PhotographRenderer.blit(
+			this.leftPos,
+			this.topPos,
+			x,
+			FILM_PHOTOGRAPH_Y,
+			graphics,
+			photoId,
+			FILM_PHOTOGRAPH_SIZE,
+			PhotographRenderer.FrameType.NONE
+		);
+		if (selected) graphics.requestCursor(CursorTypes.POINTING_HAND);
+
+		if (delete) {
+			this.extractFilmPhotographOverlay(graphics, x, FILM_PHOTOGRAPH_DELETE);
+		} else if (saveAndModified) {
+			this.extractFilmPhotographOverlay(graphics, x, FILM_PHOTOGRAPH_SAVE);
+		} else if (selected) {
+			this.extractFilmPhotographOverlay(graphics, x, FILM_PHOTOGRAPH_HIGHLIGHT);
+		}
+	}
+
 	@Override
 	public void extractRenderState(GuiGraphicsExtractor graphics, int mouseX, int mouseY, float partialTicks) {
 		this.extractTransparentBackground(graphics);
@@ -215,82 +237,42 @@ public class FilmScreen extends Screen {
 		final boolean hoveringDeleteButton = this.isHovering(DELETE_BUTTON_X, DELETE_BUTTON_Y, DELETE_BUTTON_WIDTH, DELETE_BUTTON_HEIGHT, mouseX, mouseY) && hasPhotographs;
 		final boolean showSaveHighlights = hoveringSaveButton && hasPhotographs;
 
-		if (this.isAtBeginning()) {
-			this.extractFilmPhotographBlocker(graphics, FILM_LEFT_PHOTOGRAPH_X);
-		}
+		if (this.isAtBeginning()) this.extractFilmPhotographBlocker(graphics, FILM_LEFT_PHOTOGRAPH_X);
 
-		if (this.isAtEnd() && this.isFilmFull()) {
-			this.extractFilmPhotographBlocker(graphics, FILM_RIGHT_PHOTOGRAPH_X);
-		}
+		if (this.isAtEnd() && this.isFilmFull()) this.extractFilmPhotographBlocker(graphics, FILM_RIGHT_PHOTOGRAPH_X);
 
 		if (this.middlePhotograph != null) {
-			PhotographRenderer.blit(
-				this.leftPos,
-				this.topPos,
-				FILM_MIDDLE_PHOTOGRAPH_X,
-				FILM_PHOTOGRAPH_Y,
+			this.extractPhotographSlot(
 				graphics,
 				this.middlePhotograph,
-				FILM_PHOTOGRAPH_SIZE,
-				PhotographRenderer.FrameType.NONE
+				hoveredOffset == 0,
+				FILM_MIDDLE_PHOTOGRAPH_X,
+				hoveringDeleteButton,
+				showSaveHighlights && this.isPhotographModified(this.selectedPhotographIndex)
 			);
-
-			if (hoveringDeleteButton) {
-				this.extractFilmPhotographOverlay(graphics, FILM_MIDDLE_PHOTOGRAPH_X, FILM_PHOTOGRAPH_DELETE);
-			} else if (showSaveHighlights && this.isPhotographModified(this.selectedPhotographIndex)) {
-				this.extractFilmPhotographOverlay(graphics, FILM_MIDDLE_PHOTOGRAPH_X, FILM_PHOTOGRAPH_SAVE);
-			} else if (hoveredOffset == 0) {
-				this.extractFilmPhotographOverlay(graphics, FILM_MIDDLE_PHOTOGRAPH_X, FILM_PHOTOGRAPH_HIGHLIGHT);
-			}
-
-			if (hoveredOffset == 0) {
-				graphics.requestCursor(CursorTypes.POINTING_HAND);
-			}
 		}
 
 		if (this.hasMultipleFilmPhotographs()) {
 			if (this.rightPhotograph != null) {
-				PhotographRenderer.blit(
-					this.leftPos,
-					this.topPos,
-					FILM_RIGHT_PHOTOGRAPH_X,
-					FILM_PHOTOGRAPH_Y,
+				this.extractPhotographSlot(
 					graphics,
 					this.rightPhotograph,
-					FILM_PHOTOGRAPH_SIZE,
-					PhotographRenderer.FrameType.NONE
+					hoveredOffset == 1,
+					FILM_RIGHT_PHOTOGRAPH_X,
+					false,
+					showSaveHighlights && this.isPhotographModified(this.selectedPhotographIndex + 1)
 				);
-				if (hoveredOffset == 1) {
-					graphics.requestCursor(CursorTypes.POINTING_HAND);
-				}
-
-				if (showSaveHighlights && this.isPhotographModified(this.selectedPhotographIndex + 1)) {
-					this.extractFilmPhotographOverlay(graphics, FILM_RIGHT_PHOTOGRAPH_X, FILM_PHOTOGRAPH_SAVE);
-				} else if (hoveredOffset == 1) {
-					this.extractFilmPhotographOverlay(graphics, FILM_RIGHT_PHOTOGRAPH_X, FILM_PHOTOGRAPH_HIGHLIGHT);
-				}
 			}
 
 			if (this.leftPhotograph != null) {
-				PhotographRenderer.blit(
-					this.leftPos,
-					this.topPos,
-					FILM_LEFT_PHOTOGRAPH_X,
-					FILM_PHOTOGRAPH_Y,
+				this.extractPhotographSlot(
 					graphics,
 					this.leftPhotograph,
-					FILM_PHOTOGRAPH_SIZE,
-					PhotographRenderer.FrameType.NONE
+					hoveredOffset == -1,
+					FILM_LEFT_PHOTOGRAPH_X,
+					false,
+					showSaveHighlights && this.isPhotographModified(this.selectedPhotographIndex - 1)
 				);
-				if (hoveredOffset == -1) {
-					graphics.requestCursor(CursorTypes.POINTING_HAND);
-				}
-
-				if (showSaveHighlights && this.isPhotographModified(this.selectedPhotographIndex - 1)) {
-					this.extractFilmPhotographOverlay(graphics, FILM_LEFT_PHOTOGRAPH_X, FILM_PHOTOGRAPH_SAVE);
-				} else if (hoveredOffset == -1) {
-					this.extractFilmPhotographOverlay(graphics, FILM_LEFT_PHOTOGRAPH_X, FILM_PHOTOGRAPH_HIGHLIGHT);
-				}
 			}
 
 			graphics.blitSprite(
