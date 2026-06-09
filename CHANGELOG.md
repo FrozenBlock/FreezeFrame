@@ -36,8 +36,8 @@ Put the changelog BELOW the dashes. ANYTHING ABOVE IS IGNORED.
 - Photos now ignore fog created by effects (e.g., Blindness and Darkness.)
   - Added a config option to toggle this behavior.
 - Added a config option to toggle scope zooming.
-- While scoping, the hotbar and crosshair will no longer render.
-  - Added two config options to toggle these behaviors.
+- While scoping, the hotbar, crosshair, and block outlines will no longer render.
+  - Added three config options to toggle these behaviors.
 - Added a config option to render held Photo items in 3D when viewed in third-person.
   - This is disabled by default.
 - Photo item rendering now supports rendering a back side.

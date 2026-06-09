@@ -54,6 +54,10 @@ public class FFConfig {
 		.comment("The crosshair will be hidden when scoping.")
 		.build();
 
+	public static final ConfigEntry<Boolean> SCOPE_HIDES_BLOCK_OUTLINE = CONFIG.unsyncableEntryBuilder("scopeHidesBlockOutline", EntryType.BOOL, true)
+		.comment("Block outlines will be hidden when scoping.")
+		.build();
+
 	public static final ConfigEntry<Boolean> USE_LATEST_PHOTO_AS_WORLD_ICON = CONFIG.entryBuilder("useLatestPhotoAsWorldIcon", EntryType.BOOL, true)
 		.comment("Whether the latest-taken Photo in a world should replace the world icon.")
 		.build();

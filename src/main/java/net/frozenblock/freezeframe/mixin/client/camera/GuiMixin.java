@@ -68,7 +68,12 @@ public class GuiMixin {
 		Gui instance, GuiGraphicsExtractor graphics, DeltaTracker deltaTracker,
 		@Share("freezeFrame$isPlayerScopingInFirstPerson") LocalBooleanRef isPlayerScopingInFirstPerson
 	) {
-		isPlayerScopingInFirstPerson.set(this.minecraft.player != null && this.minecraft.player.isScoping() && this.minecraft.options.getCameraType().isFirstPerson());
+		isPlayerScopingInFirstPerson.set(
+			this.minecraft.player != null
+			&& this.minecraft.player.isScoping()
+			&& ScopeItemHelper.isPlayerUsingScopeItem(this.minecraft.player)
+			&& this.minecraft.options.getCameraType().isFirstPerson()
+		);
 		return !FFConfig.SCOPE_HIDES_CROSSHAIR.get() || !isPlayerScopingInFirstPerson.get();
 	}
 

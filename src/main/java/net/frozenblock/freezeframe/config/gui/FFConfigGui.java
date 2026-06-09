@@ -38,6 +38,7 @@ public final class FFConfigGui {
 		category.addEntry(booleanEntry(builder, "scope_scrolling", FFConfig.SCOPE_SCROLLING));
 		category.addEntry(booleanEntry(builder, "scope_hides_hotbar", FFConfig.SCOPE_HIDES_HOTBAR));
 		category.addEntry(booleanEntry(builder, "scope_hides_crosshair", FFConfig.SCOPE_HIDES_CROSSHAIR));
+		category.addEntry(booleanEntry(builder, "scope_hides_block_outline", FFConfig.SCOPE_HIDES_BLOCK_OUTLINE));
 		category.addEntry(booleanEntry(builder, "use_as_world_icon", FFConfig.USE_LATEST_PHOTO_AS_WORLD_ICON));
 		category.addEntry(booleanEntry(builder, "hide_film_photo_preview_and_info", FFConfig.HIDE_FILM_PHOTO_PREVIEW_AND_INFO));
 		category.addEntry(booleanEntry(builder, "hide_photograph_preview", FFConfig.HIDE_PHOTOGRAPH_PREVIEW));

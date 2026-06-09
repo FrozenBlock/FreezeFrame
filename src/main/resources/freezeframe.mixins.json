@@ -45,6 +45,7 @@
     "client.photograph.ItemInHandLayerMixin",
     "client.photograph.ItemInHandRendererMixin",
     "client.photograph.NativeImageMixin",
+    "client.scope.GameRendererMixin",
     "client.scope.MouseHandlerMixin"
   ],
   "injectors": {
