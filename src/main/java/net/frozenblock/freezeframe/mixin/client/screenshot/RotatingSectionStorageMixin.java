@@ -15,7 +15,7 @@
  * along with this program; if not, see <https://github.com/FrozenBlock/Licenses>.
  */
 
-package net.frozenblock.freezeframe.mixin.client.camera;
+package net.frozenblock.freezeframe.mixin.client.screenshot;
 
 import com.llamalad7.mixinextras.injector.v2.WrapWithCondition;
 import net.fabricmc.api.EnvType;
@@ -36,7 +36,7 @@ public class RotatingSectionStorageMixin {
 			target = "Lnet/minecraft/client/RotatingSectionStorage$Value;setSectionNode(J)V"
 		)
 	)
-	public boolean freezeFrame$cancelRecompileChunksInFeed(RotatingSectionStorage.Value instance, long sectionNode) {
+	public boolean freezeFrame$skipSectionResetWhileScreenshotting(RotatingSectionStorage.Value instance, long sectionNode) {
 		return !FFScreenshotUtil.screenshottingAndTripod();
 	}
 }

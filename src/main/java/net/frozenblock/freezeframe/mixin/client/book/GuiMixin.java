@@ -15,24 +15,26 @@
  * along with this program; if not, see <https://github.com/FrozenBlock/Licenses>.
  */
 
-package net.frozenblock.freezeframe.mixin.client.camera;
+package net.frozenblock.freezeframe.mixin.client.book;
 
-import com.llamalad7.mixinextras.injector.ModifyReturnValue;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
-import net.frozenblock.freezeframe.client.screenshot.FFScreenshotUtil;
-import net.minecraft.client.CameraType;
-import net.minecraft.client.Options;
+import net.frozenblock.freezeframe.client.gui.screens.inventory.book.BookPagePhotographScreen;
+import net.frozenblock.freezeframe.client.gui.screens.inventory.book.BookPagePhotographUiState;
+import net.minecraft.client.gui.Gui;
+import net.minecraft.client.gui.screens.Screen;
+import org.jspecify.annotations.Nullable;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.injection.At;
+import org.spongepowered.asm.mixin.injection.Inject;
+import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 
 @Environment(EnvType.CLIENT)
-@Mixin(Options.class)
-public class OptionsMixin {
+@Mixin(Gui.class)
+public class GuiMixin {
 
-	@ModifyReturnValue(method = "getCameraType", at = @At("RETURN"))
-	public CameraType freezeFrame$ignoreCameraTypeWhileScreenshotting(CameraType original) {
-		if (!FFScreenshotUtil.screenshotting()) return original;
-		return CameraType.FIRST_PERSON;
+	@Inject(method = "setScreen", at = @At("HEAD"))
+	private void freezeFrame$clearBookPhotoSuppressionOnScreenSwap(@Nullable Screen screen, CallbackInfo info) {
+		if (!(screen instanceof BookPagePhotographScreen)) BookPagePhotographUiState.setSuppressBookEditorPhotoControls(false);
 	}
 }

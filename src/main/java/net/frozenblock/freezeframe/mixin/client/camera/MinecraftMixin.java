@@ -76,6 +76,4 @@ public class MinecraftMixin {
 		if (!original.call(instance, enabledFeatures)) return false;
 		return this.player == null || hand != InteractionHand.OFF_HAND || !ScopeItemHelper.isPlayerHoldingPhotoTakingCamera(this.player);
 	}
-
-
 }

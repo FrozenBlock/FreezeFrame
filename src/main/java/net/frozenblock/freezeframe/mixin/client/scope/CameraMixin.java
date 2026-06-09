@@ -15,7 +15,7 @@
  * along with this program; if not, see <https://github.com/FrozenBlock/Licenses>.
  */
 
-package net.frozenblock.freezeframe.mixin.client.camera;
+package net.frozenblock.freezeframe.mixin.client.scope;
 
 import com.llamalad7.mixinextras.injector.ModifyReturnValue;
 import net.fabricmc.api.EnvType;
@@ -26,7 +26,6 @@ import net.frozenblock.freezeframe.util.ScopeItemHelper;
 import net.frozenblock.freezeframe.util.ScopeZoomHelper;
 import net.minecraft.client.Camera;
 import net.minecraft.client.Minecraft;
-import net.minecraft.world.attribute.EnvironmentAttributeProbe;
 import net.minecraft.world.entity.Entity;
 import org.jspecify.annotations.Nullable;
 import org.spongepowered.asm.mixin.Final;
@@ -46,20 +45,6 @@ public class CameraMixin {
 	@Nullable
 	private Entity entity;
 
-	@ModifyReturnValue(method = "isDetached", at = @At("RETURN"))
-	public boolean freezeFrame$ignoreDetachedIfScreenshotting(boolean original) {
-		return original && !FFScreenshotUtil.screenshotting();
-	}
-
-	@ModifyReturnValue(method = "attributeProbe", at = @At("RETURN"))
-	public EnvironmentAttributeProbe freezeFrame$useTripodAttributeProbe(EnvironmentAttributeProbe original) {
-		if (FFScreenshotUtil.screenshottingAndTripod()) {
-			final EnvironmentAttributeProbe probe = FFScreenshotUtil.environmentAttributeProbe();
-			if (probe != null) return probe;
-		}
-		return original;
-	}
-
 	@ModifyReturnValue(
 		method = "calculateFov",
 		at = @At(
@@ -67,7 +52,7 @@ public class CameraMixin {
 			ordinal = 0
 		)
 	)
-	private float freezeFrame$applyFovToPhotograph(float original) {
+	private float freezeFrame$applyScopeFov(float original) {
 		if (this.minecraft.player == null || this.entity != minecraft.player) return original;
 		if (!FFScreenshotUtil.screenshottingAndHandheld() && !ScopeItemHelper.isPlayerUsingCamera(this.minecraft.player)) return original;
 

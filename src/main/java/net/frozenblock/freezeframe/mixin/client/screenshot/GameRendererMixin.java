@@ -15,7 +15,7 @@
  * along with this program; if not, see <https://github.com/FrozenBlock/Licenses>.
  */
 
-package net.frozenblock.freezeframe.mixin.client.camera;
+package net.frozenblock.freezeframe.mixin.client.screenshot;
 
 import com.llamalad7.mixinextras.injector.ModifyExpressionValue;
 import com.llamalad7.mixinextras.injector.ModifyReturnValue;
@@ -40,14 +40,14 @@ public class GameRendererMixin {
 			opcode = Opcodes.GETFIELD
 		)
 	)
-	public RenderTarget freezeFrame$useCorrectRenderTarget(RenderTarget original) {
+	public RenderTarget freezeFrame$useScreenshotRenderTargetForRender(RenderTarget original) {
 		if (!FFScreenshotUtil.screenshotting()) return original;
 		final RenderTarget screenshotTarget = FFScreenshotUtil.getRenderTarget();
 		return screenshotTarget != null ? screenshotTarget : original;
 	}
 
 	@ModifyReturnValue(method = "mainRenderTarget", at = @At("RETURN"))
-	public RenderTarget freezeFrame$getMainRenderTarget(RenderTarget original) {
+	public RenderTarget freezeFrame$useScreenshotRenderTarget(RenderTarget original) {
 		if (!FFScreenshotUtil.screenshotting()) return original;
 		final RenderTarget screenshotTarget = FFScreenshotUtil.getRenderTarget();
 		return screenshotTarget != null ? screenshotTarget : original;

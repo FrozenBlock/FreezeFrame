@@ -15,18 +15,14 @@
  * along with this program; if not, see <https://github.com/FrozenBlock/Licenses>.
  */
 
-package net.frozenblock.freezeframe.mixin.client.camera;
+package net.frozenblock.freezeframe.mixin.client.screenshot;
 
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
-import net.frozenblock.freezeframe.client.gui.screens.inventory.book.BookPagePhotographScreen;
-import net.frozenblock.freezeframe.client.gui.screens.inventory.book.BookPagePhotographUiState;
 import net.frozenblock.freezeframe.client.screenshot.FFScreenshotUtil;
 import net.minecraft.client.DeltaTracker;
 import net.minecraft.client.gui.Gui;
-import net.minecraft.client.gui.screens.Screen;
 import net.minecraft.client.renderer.state.gui.GuiRenderState;
-import org.jspecify.annotations.Nullable;
 import org.spongepowered.asm.mixin.Final;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Shadow;
@@ -48,10 +44,5 @@ public class GuiMixin {
 		info.cancel();
 		this.guiRenderState.reset();
 		this.guiRenderState.isHudHidden = true;
-	}
-
-	@Inject(method = "setScreen", at = @At("HEAD"))
-	private void freezeFrame$clearBookPhotoSuppressionOnScreenSwap(@Nullable Screen screen, CallbackInfo info) {
-		if (!(screen instanceof BookPagePhotographScreen)) BookPagePhotographUiState.setSuppressBookEditorPhotoControls(false);
 	}
 }
