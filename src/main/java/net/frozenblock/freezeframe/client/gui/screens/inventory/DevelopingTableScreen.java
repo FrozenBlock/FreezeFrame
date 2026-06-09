@@ -111,11 +111,11 @@ public class DevelopingTableScreen extends AbstractContainerScreen<DevelopingTab
 	private int photographIndex = 0;
 	private boolean displayFilm = false;
 	private boolean displayBook = false;
+	private boolean displayCopy = false;
 	private boolean draggingScroller = false;
 	private int scrollerX = SCROLLER_TRACK_X;
 	private int filmMaxPhotographs = FilmContents.BASE_MAX_PHOTOGRAPHS;
 	private ItemStack lastSourceItem = ItemStack.EMPTY;
-	private Identifier photographCopyId;
 
 	public DevelopingTableScreen(DevelopingTableMenu menu, Inventory inventory, Component title) {
 		super(menu, inventory, title, DEFAULT_IMAGE_WIDTH, 226);
@@ -219,17 +219,28 @@ public class DevelopingTableScreen extends AbstractContainerScreen<DevelopingTab
 			);
 		}
 
-		if (this.photographCopyId != null) {
+		if (this.displayCopy) {
 			PhotographRenderer.blit(
 				this.leftPos,
 				this.topPos,
 				COPY_PHOTOGRAPH_X,
 				COPY_PHOTOGRAPH_Y,
 				graphics,
-				this.photographCopyId,
+				this.middlePhotograph,
 				COPY_PHOTOGRAPH_SIZE,
 				PhotographRenderer.FrameType.FRAME
 			);
+			if (hoveredOffset == 0) {
+				graphics.blitSprite(
+					RenderPipelines.GUI_TEXTURED,
+					FILM_PHOTOGRAPH_HIGHLIGHT,
+					this.leftPos + COPY_PHOTOGRAPH_X,
+					this.topPos + COPY_PHOTOGRAPH_Y,
+					COPY_PHOTOGRAPH_SIZE,
+					COPY_PHOTOGRAPH_SIZE
+				);
+				graphics.requestCursor(CursorTypes.POINTING_HAND);
+			}
 		}
 
 		if (hoveredPhotograph != null) {
@@ -431,7 +442,9 @@ public class DevelopingTableScreen extends AbstractContainerScreen<DevelopingTab
 	}
 
 	private int getHoveredFilmPhotographOffset(double mouseX, double mouseY) {
-		if ((!this.displayFilm && !this.displayBook) || this.sourcePhotographs.isEmpty()) return Integer.MIN_VALUE;
+		if (this.sourcePhotographs.isEmpty()) return Integer.MIN_VALUE;
+		if (this.displayCopy) return this.isHovering(COPY_PHOTOGRAPH_X, COPY_PHOTOGRAPH_Y, COPY_PHOTOGRAPH_SIZE, COPY_PHOTOGRAPH_SIZE, mouseX, mouseY) ? 0 : Integer.MIN_VALUE;
+		if ((!this.displayFilm && !this.displayBook)) return Integer.MIN_VALUE;
 
 		final int top = this.topPos + FILM_PHOTOGRAPH_Y;
 		final int bottom = top + FILM_PHOTOGRAPH_SIZE;
@@ -507,7 +520,6 @@ public class DevelopingTableScreen extends AbstractContainerScreen<DevelopingTab
 			this.displayBook = false;
 			this.draggingScroller = false;
 			this.scrollerX = SCROLLER_TRACK_X;
-			this.photographCopyId = null;
 			this.lastSourceItem = ItemStack.EMPTY;
 			return;
 		}
@@ -523,13 +535,6 @@ public class DevelopingTableScreen extends AbstractContainerScreen<DevelopingTab
 
 		this.setupOrClearFilmPhotographDisplays();
 
-		if (sourceItem.is(FFItems.PHOTOGRAPH)) {
-			final Photograph photograph = sourceItem.get(FFDataComponents.PHOTOGRAPH);
-			this.photographCopyId = (photograph == null || !photograph.canCopy()) ? null : photograph.identifier();
-		} else {
-			this.photographCopyId = null;
-		}
-
 		this.lastSourceItem = sourceItem.copyWithCount(1);
 	}
 
@@ -537,7 +542,8 @@ public class DevelopingTableScreen extends AbstractContainerScreen<DevelopingTab
 		final ItemStack sourceItem = this.menu.getSourceItem();
 		this.displayFilm = sourceItem.is(FFItems.FILM) && sourceItem.has(FFDataComponents.FILM_CONTENTS);
 		this.displayBook = this.isBookSource(sourceItem);
-		if (!this.displayFilm && !this.displayBook) {
+		this.displayCopy = sourceItem.is(FFItems.PHOTOGRAPH) && sourceItem.has(FFDataComponents.PHOTOGRAPH) && sourceItem.get(FFDataComponents.PHOTOGRAPH).canCopy();
+		if (!this.displayFilm && !this.displayBook && !this.displayCopy) {
 			this.filmContents = null;
 			this.sourcePhotographs = List.of();
 			this.filmMaxPhotographs = FilmContents.BASE_MAX_PHOTOGRAPHS;
@@ -552,10 +558,14 @@ public class DevelopingTableScreen extends AbstractContainerScreen<DevelopingTab
 				this.filmContents = sourceItem.get(FFDataComponents.FILM_CONTENTS);
 				this.filmMaxPhotographs = FilmItem.getMaxPhotographs(sourceItem);
 				this.sourcePhotographs = this.filmContents == null ? List.of() : this.filmContents.photographs();
-			} else {
+			} else if (this.displayBook) {
 				this.filmContents = null;
 				this.filmMaxPhotographs = FilmContents.BASE_MAX_PHOTOGRAPHS;
 				this.sourcePhotographs = this.getBookPhotographs(sourceItem);
+			} else if (this.displayCopy) {
+				this.filmContents = null;
+				this.filmMaxPhotographs = FilmContents.BASE_MAX_PHOTOGRAPHS;
+				this.sourcePhotographs = List.of(sourceItem.get(FFDataComponents.PHOTOGRAPH));
 			}
 
 			this.photographIndex = Math.clamp(this.photographIndex, 0, this.getMaxPhotographIndex());

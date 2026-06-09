@@ -46,6 +46,7 @@ Put the changelog BELOW the dashes. ANYTHING ABOVE IS IGNORED.
 - Added separate textures for the Camera item, resolving an issue that locked mipmapping to 3 levels.
 - Resetting a scope item's zoom to default now plays multiple increment sounds in succession instead of one, relative to the amount of zoom steps away from the default.
 - Frames rendered around Photos in GUIs are now properly scaled and aligned with the Photo regardless of scale.
+- Hovering over the Photo Copy preview in the Developing Table now shows the highlight overlay and tooltip.
 - Fixed an issue that would cause an error about the `ContainerComponentManipulators` class to log, despite working as intended.
 - Fixed the Film tooltip to now be centered regardless of the tooltip's width.
 - Fixed the dark border on the inner part of the Camera's scope ovelay not being transparent.
