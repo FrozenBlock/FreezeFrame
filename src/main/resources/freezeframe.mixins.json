@@ -37,6 +37,7 @@
     "client.camera.LevelExtractorMixin",
     "client.camera.MinecraftMixin",
     "client.camera.MobEffectFogEnvironmentMixin",
+    "client.camera.OptionsMixin",
     "client.camera.PlayerItemInHandLayerMixin",
     "client.camera.ScreenEffectRendererMixin",
     "client.film.AbstractContainerScreenMixin",
