@@ -177,18 +177,15 @@ public class DevelopingTableScreen extends AbstractContainerScreen<DevelopingTab
 
 			if (this.middlePhotograph != null) {
 				this.extractPhotographSlot(graphics, this.middlePhotograph, hoveredOffset == 0 || hoveringResultSlot, FILM_MIDDLE_PHOTOGRAPH_X);
-				if (hoveredOffset == 0) graphics.requestCursor(CursorTypes.POINTING_HAND);
 			}
 
 			if (this.hasMultipleSourcePhotographs()) {
 				if (this.rightPhotograph != null) {
 					this.extractPhotographSlot(graphics, this.rightPhotograph, hoveredOffset == 1, FILM_RIGHT_PHOTOGRAPH_X);
-					if (hoveredOffset == 1) graphics.requestCursor(CursorTypes.POINTING_HAND);
 				}
 
 				if (this.leftPhotograph != null) {
 					this.extractPhotographSlot(graphics, this.leftPhotograph, hoveredOffset == -1, FILM_LEFT_PHOTOGRAPH_X);
-					if (hoveredOffset == -1) graphics.requestCursor(CursorTypes.POINTING_HAND);
 				}
 
 				graphics.blitSprite(
@@ -240,7 +237,7 @@ public class DevelopingTableScreen extends AbstractContainerScreen<DevelopingTab
 		}
 	}
 
-	public void extractPhotographSlot(GuiGraphicsExtractor graphics, Identifier photoId, boolean extractHighlight, int x) {
+	public void extractPhotographSlot(GuiGraphicsExtractor graphics, Identifier photoId, boolean selected, int x) {
 		PhotographRenderer.blit(
 			this.leftPos,
 			this.topPos,
@@ -251,7 +248,7 @@ public class DevelopingTableScreen extends AbstractContainerScreen<DevelopingTab
 			FILM_PHOTOGRAPH_SIZE,
 			PhotographRenderer.FrameType.NONE
 		);
-		if (extractHighlight) {
+		if (selected) {
 			graphics.blitSprite(
 				RenderPipelines.GUI_TEXTURED,
 				FILM_PHOTOGRAPH_HIGHLIGHT,
@@ -260,6 +257,7 @@ public class DevelopingTableScreen extends AbstractContainerScreen<DevelopingTab
 				FILM_PHOTOGRAPH_SIZE,
 				FILM_PHOTOGRAPH_SIZE
 			);
+			graphics.requestCursor(CursorTypes.POINTING_HAND);
 		}
 		if (this.displayBook) {
 			graphics.blitSprite(
