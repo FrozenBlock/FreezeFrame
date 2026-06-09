@@ -182,12 +182,12 @@ public class DevelopingTableScreen extends AbstractContainerScreen<DevelopingTab
 
 			if (this.hasMultipleSourcePhotographs()) {
 				if (this.rightPhotograph != null) {
-					this.extractPhotographSlot(graphics, this.middlePhotograph, hoveredOffset == 1, FILM_RIGHT_PHOTOGRAPH_X);
+					this.extractPhotographSlot(graphics, this.rightPhotograph, hoveredOffset == 1, FILM_RIGHT_PHOTOGRAPH_X);
 					if (hoveredOffset == 1) graphics.requestCursor(CursorTypes.POINTING_HAND);
 				}
 
 				if (this.leftPhotograph != null) {
-					this.extractPhotographSlot(graphics, this.middlePhotograph, hoveredOffset == -1, FILM_LEFT_PHOTOGRAPH_X);
+					this.extractPhotographSlot(graphics, this.leftPhotograph, hoveredOffset == -1, FILM_LEFT_PHOTOGRAPH_X);
 					if (hoveredOffset == -1) graphics.requestCursor(CursorTypes.POINTING_HAND);
 				}
 
