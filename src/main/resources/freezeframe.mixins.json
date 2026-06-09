@@ -39,6 +39,7 @@
     "client.camera.MobEffectFogEnvironmentMixin",
     "client.camera.OptionsMixin",
     "client.camera.PlayerItemInHandLayerMixin",
+    "client.camera.RotatingSectionStorageMixin",
     "client.camera.ScreenEffectRendererMixin",
     "client.film.AbstractContainerScreenMixin",
     "client.item_properties.ConditionalItemModelPropertiesMixin",
