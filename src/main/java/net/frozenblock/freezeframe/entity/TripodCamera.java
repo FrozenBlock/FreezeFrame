@@ -506,7 +506,7 @@ public class TripodCamera extends Mob {
 		this.cameraContents = input.read("CameraContents", CameraContents.CODEC).orElse(CameraContents.EMPTY);
 	}
 
-	public float getLerpedTimer(float partialTicks) {
+	public float getTimer(float partialTicks) {
 		return Mth.lerp(partialTicks, this.prevTimer, this.timer);
 	}
 
