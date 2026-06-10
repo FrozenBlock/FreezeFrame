@@ -23,6 +23,7 @@ import net.fabricmc.api.Environment;
 import net.frozenblock.freezeframe.FFConstants;
 import net.frozenblock.freezeframe.client.renderer.item.properties.conditional.CanTakePhoto;
 import net.frozenblock.freezeframe.client.renderer.item.properties.conditional.InMainHand;
+import net.frozenblock.freezeframe.client.renderer.item.properties.conditional.IsUsingItemFixed;
 import net.minecraft.client.renderer.item.properties.conditional.ConditionalItemModelProperties;
 import net.minecraft.client.renderer.item.properties.conditional.ConditionalItemModelProperty;
 import net.minecraft.resources.Identifier;
@@ -46,5 +47,6 @@ public class ConditionalItemModelPropertiesMixin {
 	private static void freezeFrame$bootstrap(CallbackInfo info) {
 		ID_MAPPER.put(FFConstants.id("can_take_photo"), CanTakePhoto.MAP_CODEC);
 		ID_MAPPER.put(FFConstants.id("in_main_hand"), InMainHand.MAP_CODEC);
+		ID_MAPPER.put(FFConstants.id("using_item_fixed"), IsUsingItemFixed.MAP_CODEC);
 	}
 }

@@ -23,6 +23,7 @@ import net.fabricmc.fabric.api.client.datagen.v1.provider.FabricModelProvider;
 import net.fabricmc.fabric.api.datagen.v1.FabricPackOutput;
 import net.frozenblock.freezeframe.client.renderer.item.properties.conditional.CanTakePhoto;
 import net.frozenblock.freezeframe.client.renderer.item.properties.conditional.InMainHand;
+import net.frozenblock.freezeframe.client.renderer.item.properties.conditional.IsUsingItemFixed;
 import net.frozenblock.freezeframe.registry.FFBlocks;
 import net.frozenblock.freezeframe.registry.FFItems;
 import net.minecraft.client.data.models.BlockModelGenerators;
@@ -34,7 +35,6 @@ import net.minecraft.client.data.models.model.TextureMapping;
 import net.minecraft.client.data.models.model.TextureSlot;
 import net.minecraft.client.data.models.model.TexturedModel;
 import net.minecraft.client.renderer.item.ItemModel;
-import net.minecraft.client.renderer.item.properties.conditional.IsUsingItem;
 import net.minecraft.world.item.Item;
 
 @Environment(EnvType.CLIENT)
@@ -81,7 +81,7 @@ public final class FFModelProvider extends FabricModelProvider {
 			ItemModelUtils.conditional(
 				InMainHand.INSTANCE,
 				ItemModelUtils.conditional(
-					new IsUsingItem(),
+					IsUsingItemFixed.INSTANCE,
 					activeModel,
 					inactiveModel
 				),

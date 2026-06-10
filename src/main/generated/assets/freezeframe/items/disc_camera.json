@@ -17,7 +17,7 @@
           "type": "minecraft:model",
           "model": "freezeframe:item/disc_camera_active"
         },
-        "property": "minecraft:using_item"
+        "property": "freezeframe:using_item_fixed"
       },
       "property": "freezeframe:in_main_hand"
     },
