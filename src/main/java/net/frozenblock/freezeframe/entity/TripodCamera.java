@@ -66,6 +66,10 @@ import org.jspecify.annotations.Nullable;
 
 public class TripodCamera extends Mob {
 	private static final EntityDataAccessor<Float> TRACKED_HEIGHT = SynchedEntityData.defineId(TripodCamera.class, EntityDataSerializers.FLOAT);
+	public static final float MAX_HEIGHT = 1.75F;
+	public static final float MIN_HEIGHT = 0.8F;
+	public static final float MAX_EYE_EIGHT = 1.62585F;
+	public static final float MIN_EYE_HEIGHT = 0.67225F;
 	private CameraContents cameraContents = CameraContents.EMPTY;
 	private EntityReference<Player> photographer = null;
 	public long lastHit;
@@ -84,7 +88,16 @@ public class TripodCamera extends Mob {
 
 	@Override
 	protected EntityDimensions getDefaultDimensions(Pose pose) {
-		return EntityDimensions.scalable(this.getBoundingBoxRadius() * 2F, this.getTrackedHeight()).scale(this.getAgeScale());
+		final float trackedHeight = this.getTrackedHeight();
+		return EntityDimensions.scalable(this.getType().getWidth(), trackedHeight)
+			.withEyeHeight(
+				Mth.lerp(
+					1F - ((this.getMaxHeight() - trackedHeight) / (this.getMaxHeight() - this.getMinHeight())),
+					MIN_EYE_HEIGHT,
+					MAX_EYE_EIGHT
+				)
+			)
+			.scale(this.getAgeScale());
 	}
 
 	@Override
@@ -280,15 +293,11 @@ public class TripodCamera extends Mob {
 	}
 
 	public float getMaxHeight() {
-		return 1.75F;
+		return MAX_HEIGHT;
 	}
 
 	public float getMinHeight() {
-		return 0.8F;
-	}
-
-	public float getBoundingBoxRadius() {
-		return 0.3F;
+		return MIN_HEIGHT;
 	}
 
 	public boolean canBeAdjusted() {

@@ -33,8 +33,8 @@ public class FFEntityTypes {
 	public static final EntityType<TripodCamera> CAMERA = register(
 		"camera",
 		EntityType.Builder.of(TripodCamera::new, MobCategory.MISC)
-			.sized(0.6F, 1.75F)
-			.eyeHeight(1.619999999999999F)
+			.sized(0.6F, TripodCamera.MAX_HEIGHT)
+			.eyeHeight(TripodCamera.MAX_EYE_EIGHT)
 			.clientTrackingRange(10)
 	);
 	public static final EntityType<DiscCamera> DISC_CAMERA = register(

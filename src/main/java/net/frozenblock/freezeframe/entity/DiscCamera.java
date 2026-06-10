@@ -24,27 +24,21 @@ public class DiscCamera extends TripodCamera {
 
 	public DiscCamera(EntityType<? extends DiscCamera> type, Level level) {
 		super(type, level);
-		this.setTrackedHeight(0.9F);
+		this.setTrackedHeight(this.getType().getHeight());
 	}
 
 	@Override
 	public float getMaxHeight() {
-		return 0.9F;
+		return this.getType().getHeight();
 	}
 
 	@Override
 	public float getMinHeight() {
-		return 0.9F;
-	}
-
-	@Override
-	public float getBoundingBoxRadius() {
-		return 0.275F;
+		return this.getType().getHeight();
 	}
 
 	@Override
 	public boolean canBeAdjusted() {
 		return false;
 	}
-
 }
