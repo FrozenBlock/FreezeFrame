@@ -20,26 +20,28 @@ package net.frozenblock.freezeframe.client.renderer.item.properties.conditional;
 import com.mojang.serialization.MapCodec;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
-import net.frozenblock.freezeframe.item.CameraItem;
 import net.minecraft.client.multiplayer.ClientLevel;
 import net.minecraft.client.renderer.item.properties.conditional.ConditionalItemModelProperty;
+import net.minecraft.world.InteractionHand;
+import net.minecraft.world.entity.HumanoidArm;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.item.ItemDisplayContext;
 import net.minecraft.world.item.ItemStack;
 import org.jspecify.annotations.Nullable;
 
 @Environment(EnvType.CLIENT)
-public class CanTakePhoto implements ConditionalItemModelProperty {
-	public static final CanTakePhoto INSTANCE = new CanTakePhoto();
-	public static final MapCodec<CanTakePhoto> MAP_CODEC = MapCodec.unit(INSTANCE);
+public class IsUsingItemFixed implements ConditionalItemModelProperty {
+	public static final IsUsingItemFixed INSTANCE = new IsUsingItemFixed();
+	public static final MapCodec<IsUsingItemFixed> MAP_CODEC = MapCodec.unit(INSTANCE);
 
 	@Override
 	public boolean get(ItemStack stack, @Nullable ClientLevel level, @Nullable LivingEntity owner, int seed, ItemDisplayContext displayContext) {
-		return owner != null && InMainHand.isInHand(displayContext) && owner.getOffhandItem() != stack && CameraItem.isCapableOfTakingPhotos(stack);
+		if (owner == null || !owner.isUsingItem() || !InMainHand.isInHand(displayContext)) return false;
+		return displayContext.leftHand() == ((owner.getMainArm() == HumanoidArm.LEFT) == (owner.getUsedItemHand() == InteractionHand.MAIN_HAND));
 	}
 
 	@Override
-	public MapCodec<CanTakePhoto> type() {
+	public MapCodec<IsUsingItemFixed> type() {
 		return MAP_CODEC;
 	}
 }
