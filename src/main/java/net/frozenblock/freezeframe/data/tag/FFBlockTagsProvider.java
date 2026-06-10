@@ -47,5 +47,4 @@ public final class FFBlockTagsProvider extends FabricTagsProvider.BlockTagsProvi
 		this.builder(BlockTags.MINEABLE_WITH_AXE)
 			.add(FFBlockItemIds.DEVELOPING_TABLE);
 	}
-
 }
