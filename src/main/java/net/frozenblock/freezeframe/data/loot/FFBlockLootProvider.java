@@ -37,5 +37,4 @@ public final class FFBlockLootProvider extends FabricBlockLootSubProvider {
 
 		this.dropSelf(FFBlocks.DEVELOPING_TABLE);
 	}
-
 }

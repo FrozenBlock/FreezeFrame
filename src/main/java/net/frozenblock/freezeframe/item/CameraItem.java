@@ -415,5 +415,4 @@ public class CameraItem extends SpawnEggItem {
 		final AbstractContainerMenu containerMenu = player.containerMenu;
 		if (containerMenu != null) containerMenu.slotsChanged(player.getInventory());
 	}
-
 }
