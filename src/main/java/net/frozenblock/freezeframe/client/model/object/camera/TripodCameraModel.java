@@ -17,8 +17,8 @@
 
 package net.frozenblock.freezeframe.client.model.object.camera;
 
+import java.util.Arrays;
 import net.frozenblock.freezeframe.client.renderer.entity.state.TripodCameraRenderState;
-import net.minecraft.client.model.EntityModel;
 import net.minecraft.client.model.geom.ModelPart;
 import net.minecraft.client.model.geom.PartPose;
 import net.minecraft.client.model.geom.builders.CubeListBuilder;
@@ -27,24 +27,17 @@ import net.minecraft.client.model.geom.builders.MeshDefinition;
 import net.minecraft.client.model.geom.builders.PartDefinition;
 import net.minecraft.util.Mth;
 
-public class TripodCameraModel extends EntityModel<TripodCameraRenderState> {
+public class TripodCameraModel extends AbstractCameraModel {
 	private static final float HEIGHT_INCREMENT = 1.75F;
 	private static final float HEIGHT_SCALE = 15F / HEIGHT_INCREMENT;
 	private static final float LEG_ANGLE_MULTIPLIER = 6.7F;
 	private static final float ROOT_ADJUSTMENT_BY_HEIGHT = LEG_ANGLE_MULTIPLIER / 3.575F;
-	private final ModelPart head;
-	private final ModelPart leg1;
-	private final ModelPart leg2;
-	private final ModelPart leg3;
-	private final ModelPart leg4;
+	private static final int LEG_COUNT = 3;
+	private final ModelPart[] legs = new ModelPart[3];
 
 	public TripodCameraModel(ModelPart root) {
 		super(root);
-		this.leg1 = root.getChild("leg1");
-		this.leg2 = root.getChild("leg2");
-		this.leg3 = root.getChild("leg3");
-		this.leg4 = root.getChild("leg4");
-		this.head = root.getChild("head");
+		Arrays.setAll(this.legs, i -> root.getChild(createLegName(i)));
 	}
 
 	public static LayerDefinition createBodyLayer() {
@@ -53,31 +46,28 @@ public class TripodCameraModel extends EntityModel<TripodCameraRenderState> {
 
 		createHead(root, 2F);
 
-		final CubeListBuilder legCube = createLegCube();
-		createLeg(root, 1, legCube, 0F, 1F);
-		createLeg(root, 2, legCube, 0F, -1F);
-		createLeg(root, 3, legCube, 1F, 0F);
-		createLeg(root, 4, legCube, -1F, 0F);
+		final CubeListBuilder leg = CubeListBuilder.create().texOffs(36, 0).addBox(-0.5F, 0F, -0.5F, 1F, 25F, 1F);
+		for (int i = 0; i < LEG_COUNT; i++) {
+			final float rot = (i - 0.25F) * Mth.TWO_PI / LEG_COUNT;
+			root.addOrReplaceChild(
+				createLegName(i),
+				leg,
+				PartPose.offsetAndRotation(
+					Mth.cos(rot),
+					0F,
+					Mth.sin(rot),
+					0F,
+					(i - 0.25F) * -Mth.TWO_PI / LEG_COUNT + Mth.HALF_PI,
+					0F
+				)
+			);
+		}
 
 		return LayerDefinition.create(mesh, 40, 40);
 	}
 
-	public static PartDefinition createHead(PartDefinition root, float verticalOffset) {
-		return root.addOrReplaceChild(
-			"head",
-			CubeListBuilder.create()
-				.texOffs(0, 0)
-				.addBox(-4F, -8F, -5F, 8F, 8F, 10F),
-			PartPose.offset(0F, verticalOffset, 0F)
-		);
-	}
-
-	public static PartDefinition createLeg(PartDefinition root, int index, CubeListBuilder cubeListBuilder, float xOffset, float zOffset) {
-		return root.addOrReplaceChild("leg" + index, cubeListBuilder, PartPose.offset(xOffset, 0F, zOffset));
-	}
-
-	public static CubeListBuilder createLegCube() {
-		return CubeListBuilder.create().texOffs(36, 0).addBox(-0.5F, 0F, -0.5F, 1F, 25F, 1F);
+	protected static String createLegName(int number) {
+		return "leg" + number;
 	}
 
 	@Override
@@ -85,19 +75,9 @@ public class TripodCameraModel extends EntityModel<TripodCameraRenderState> {
 		super.setupAnim(renderState);
 
 		float inverseHeight = (HEIGHT_INCREMENT - renderState.trackedHeight) * HEIGHT_SCALE;
-		this.setRootYOffset(inverseHeight * ROOT_ADJUSTMENT_BY_HEIGHT);
+		this.root.y += inverseHeight * ROOT_ADJUSTMENT_BY_HEIGHT;
 
 		final float legAngle = (15F + (inverseHeight * LEG_ANGLE_MULTIPLIER)) * Mth.DEG_TO_RAD;
-		this.leg1.xRot = legAngle;
-		this.leg2.xRot = -legAngle;
-		this.leg3.zRot = -legAngle;
-		this.leg4.zRot = legAngle;
-
-		this.head.yRot = renderState.yRot * Mth.DEG_TO_RAD;
-		this.head.xRot = renderState.xRot * Mth.DEG_TO_RAD;
-	}
-
-	protected void setRootYOffset(float offset) {
-		this.root.y += offset;
+		Arrays.stream(this.legs).forEach(leg -> leg.xRot = legAngle);
 	}
 }

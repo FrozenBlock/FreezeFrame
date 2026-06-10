@@ -43,6 +43,9 @@ Put the changelog BELOW the dashes. ANYTHING ABOVE IS IGNORED.
 - Photo item rendering now supports rendering a back side.
   - Added the `FRAME_BACK` Frame Type.
 - Added the `FRAME_CENTER` Frame Type.
+- Tripods now have three legs instead of four.
+- The rotation of the Tripod's legs is now relative to the center of the Tripod.
+- Decreased the chance for the creaky sound to play when adjusting the height of a Tripod.
 - Added separate textures for the Camera item, resolving an issue that locked mipmapping to 3 levels.
 - Resetting a scope item's zoom to default now plays multiple increment sounds in succession instead of one, relative to the amount of zoom steps away from the default.
 - Frames rendered around Photos in GUIs are now properly scaled and aligned with the Photo regardless of scale.
@@ -52,6 +55,7 @@ Put the changelog BELOW the dashes. ANYTHING ABOVE IS IGNORED.
 - Fixed the dark border on the inner part of the Camera's scope ovelay not being transparent.
 - Unloaded Photos no longer display as Minecraft's instance icon, and are now completely transparent.
 - Fixed a bug that caused Tripods to despawn when far from a Player.
+- Fixed a bug that caused the eye height of Tripods to significantly visually desync from its model after having its height adjusted.
 - Photos taken by Tripods now use Environment Attributes at their position instead of the Player's.
 - Photos taken by Tripods now use the Tripod's eye height instead of the Player's.
 - Fixed a bug that allowed GUIs to render while a Photo is being taken.

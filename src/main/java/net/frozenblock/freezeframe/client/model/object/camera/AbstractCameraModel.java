@@ -17,40 +17,37 @@
 
 package net.frozenblock.freezeframe.client.model.object.camera;
 
+import net.frozenblock.freezeframe.client.renderer.entity.state.TripodCameraRenderState;
+import net.minecraft.client.model.EntityModel;
 import net.minecraft.client.model.geom.ModelPart;
 import net.minecraft.client.model.geom.PartPose;
 import net.minecraft.client.model.geom.builders.CubeListBuilder;
-import net.minecraft.client.model.geom.builders.LayerDefinition;
-import net.minecraft.client.model.geom.builders.MeshDefinition;
 import net.minecraft.client.model.geom.builders.PartDefinition;
 import net.minecraft.util.Mth;
 
-public class DiscCameraModel extends AbstractCameraModel {
-	final ModelPart disc;
+public abstract class AbstractCameraModel extends EntityModel<TripodCameraRenderState> {
+	protected final ModelPart head;
 
-	public DiscCameraModel(ModelPart root) {
+	public AbstractCameraModel(ModelPart root) {
 		super(root);
-		this.disc = root.getChild("disc");
+		this.head = root.getChild("head");
 	}
 
-	public static LayerDefinition createBodyLayer() {
-		final MeshDefinition mesh = new MeshDefinition();
-		final PartDefinition root = mesh.getRoot();
-
-		TripodCameraModel.createHead(root, 15F);
-
-		root.addOrReplaceChild(
-			"disc",
+	public static PartDefinition createHead(PartDefinition root, float verticalOffset) {
+		return root.addOrReplaceChild(
+			"head",
 			CubeListBuilder.create()
-				.texOffs(0, 18)
-				.addBox(-7.5F, 0F, 0F, 15F, 10F, 0F)
-				.texOffs(0, 3)
-				.addBox(0F, 0F, -7.5F, 0F, 10F, 15F)
-				.mirror(),
-			PartPose.offsetAndRotation(0F, 16.5F, 0F, 0F, Mth.DEG_TO_RAD * 45F, 0F)
-				.scaled(1.3F, 0.9F, 1.3F)
+				.texOffs(0, 0)
+				.addBox(-4F, -8F, -5F, 8F, 8F, 10F),
+			PartPose.offset(0F, verticalOffset, 0F)
 		);
+	}
 
-		return LayerDefinition.create(mesh, 40, 40);
+	@Override
+	public void setupAnim(TripodCameraRenderState renderState) {
+		super.setupAnim(renderState);
+
+		this.head.yRot = renderState.yRot * Mth.DEG_TO_RAD;
+		this.head.xRot = renderState.xRot * Mth.DEG_TO_RAD;
 	}
 }

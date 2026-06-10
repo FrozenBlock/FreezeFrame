@@ -103,10 +103,12 @@
     "sounds": [
       {
         "name":  "freezeframe:camera/tripod_adjust1",
+        "weight": 5,
         "volume": 0.45
       },
       {
         "name":  "freezeframe:camera/tripod_adjust2",
+        "weight": 5,
         "volume": 0.45
       },
       {
