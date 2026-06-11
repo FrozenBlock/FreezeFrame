@@ -86,11 +86,11 @@ public class BookPagePhotographMenu extends AbstractContainerMenu {
 	@Override
 	public ItemStack quickMoveStack(Player player, int slotIndex) {
 		final Slot slot = this.slots.get(slotIndex);
-		ItemStack clicked = ItemStack.EMPTY;
-		if (slot == null || !slot.hasItem()) return clicked;
+		ItemStack stack = ItemStack.EMPTY;
+		if (slot == null || !slot.hasItem()) return stack;
 
 		final ItemStack item = slot.getItem();
-		clicked = item.copy();
+		stack = item.copy();
 		if (slotIndex == PHOTO_SLOT) {
 			if (!this.moveItemStackTo(item, INVENTORY_START_SLOT, HOTBAR_END_SLOT, true)) return ItemStack.EMPTY;
 		} else if (item.is(FFItems.PHOTOGRAPH)) {
@@ -105,9 +105,9 @@ public class BookPagePhotographMenu extends AbstractContainerMenu {
 
 		if (item.isEmpty()) slot.set(ItemStack.EMPTY);
 		slot.setChanged();
-		if (item.getCount() == clicked.getCount()) return ItemStack.EMPTY;
+		if (item.getCount() == stack.getCount()) return ItemStack.EMPTY;
 		slot.onTake(player, item);
-		return clicked;
+		return stack;
 	}
 
 	@Override

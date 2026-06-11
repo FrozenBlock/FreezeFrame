@@ -20,7 +20,10 @@ package net.frozenblock.freezeframe.networking;
 import net.fabricmc.fabric.api.networking.v1.PayloadTypeRegistry;
 import net.fabricmc.fabric.api.networking.v1.ServerPlayNetworking;
 import net.frozenblock.freezeframe.networking.packet.CameraTakeScreenshotPacket;
+import net.frozenblock.freezeframe.networking.packet.ChangeItemStackSizePacket;
 import net.frozenblock.freezeframe.networking.packet.ChangeScopeZoomPacket;
+import net.frozenblock.freezeframe.networking.packet.CloneItemStackPacket;
+import net.frozenblock.freezeframe.networking.packet.DeleteItemStackPacket;
 import net.frozenblock.freezeframe.networking.packet.DevelopingTableSyncSelectPhotographIndexPacket;
 import net.frozenblock.freezeframe.networking.packet.OpenBookPagePhotographInventoryPacket;
 import net.frozenblock.freezeframe.networking.packet.OpenFilmScreenPacket;
@@ -64,6 +67,15 @@ public class FFNetworking {
 
 		c2sRegistry.register(OpenBookPagePhotographInventoryPacket.PACKET_TYPE, OpenBookPagePhotographInventoryPacket.CODEC);
 		ServerPlayNetworking.registerGlobalReceiver(OpenBookPagePhotographInventoryPacket.PACKET_TYPE, OpenBookPagePhotographInventoryPacket::handle);
+
+		c2sRegistry.register(DeleteItemStackPacket.PACKET_TYPE, DeleteItemStackPacket.CODEC);
+		ServerPlayNetworking.registerGlobalReceiver(DeleteItemStackPacket.PACKET_TYPE, DeleteItemStackPacket::handle);
+
+		c2sRegistry.register(CloneItemStackPacket.PACKET_TYPE, CloneItemStackPacket.CODEC);
+		ServerPlayNetworking.registerGlobalReceiver(CloneItemStackPacket.PACKET_TYPE, CloneItemStackPacket::handle);
+
+		c2sRegistry.register(ChangeItemStackSizePacket.PACKET_TYPE, ChangeItemStackSizePacket.CODEC);
+		ServerPlayNetworking.registerGlobalReceiver(ChangeItemStackSizePacket.PACKET_TYPE, ChangeItemStackSizePacket::handle);
 
 		FileTransferFilter.whitelistDestinationPath("photographs", false);
 		FileTransferFilter.whitelistDestinationPath("photographs", true);

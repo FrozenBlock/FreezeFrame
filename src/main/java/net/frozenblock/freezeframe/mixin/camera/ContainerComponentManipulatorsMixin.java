@@ -36,7 +36,7 @@ public interface ContainerComponentManipulatorsMixin {
 	)
 	private static Stream freezeFrame$addCameraContainerComponentManipulator(Stream original) {
 		final Stream.Builder newStream = Stream.builder();
-		original.forEach(object -> newStream.add(object));
+		original.forEach(newStream::add);
 		newStream.add(FFContainerComponentManipulators.CAMERA_CONTENTS);
 		return newStream.build();
 	}

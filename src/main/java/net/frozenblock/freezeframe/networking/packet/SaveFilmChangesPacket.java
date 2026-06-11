@@ -21,6 +21,7 @@ import net.fabricmc.fabric.api.networking.v1.ServerPlayNetworking;
 import net.frozenblock.freezeframe.FFConstants;
 import net.frozenblock.freezeframe.component.FilmContents;
 import net.frozenblock.freezeframe.item.FilmItem;
+import net.frozenblock.freezeframe.item.photograph.PhotographTracker;
 import net.frozenblock.freezeframe.registry.FFDataComponents;
 import net.frozenblock.freezeframe.registry.FFItems;
 import net.frozenblock.freezeframe.registry.FFSounds;
@@ -68,6 +69,9 @@ public record SaveFilmChangesPacket(InteractionHand hand, FilmContents contents,
 		if (reducedMaxPhotographs <= 0) {
 			player.setItemInHand(packet.hand, ItemStack.EMPTY);
 			player.onEquippedItemBroken(stack.getItem(), hand.asEquipmentSlot());
+			existingContents.photographs().forEach(photograph -> {
+				PhotographTracker.incrementPhotographCountAndDeleteIfEmpty(player.level(), photograph.identifier().getPath(), -1);
+			});
 			return;
 		} else {
 			final Level level = player.level();
@@ -100,5 +104,10 @@ public record SaveFilmChangesPacket(InteractionHand hand, FilmContents contents,
 		stack.set(FFDataComponents.FILM_CONTENTS, packet.contents);
 		stack.set(FFDataComponents.FILM_MAX_PHOTOGRAPHS, FilmItem.normalizeMaxPhotographs(reducedMaxPhotographs));
 		FilmItem.refreshStackingState(stack);
+		existingContents.photographs().stream()
+			.filter(photograph -> !packet.contents.photographs().contains(photograph))
+			.map(photograph -> photograph.identifier().getPath())
+			.toList()
+			.forEach(photographName -> PhotographTracker.incrementPhotographCountAndDeleteIfEmpty(player.level(), photographName, -1));
 	}
 }
