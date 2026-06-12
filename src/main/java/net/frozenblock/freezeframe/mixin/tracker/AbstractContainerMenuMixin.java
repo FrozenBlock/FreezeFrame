@@ -24,9 +24,9 @@ import com.llamalad7.mixinextras.sugar.Share;
 import com.llamalad7.mixinextras.sugar.ref.LocalBooleanRef;
 import net.fabricmc.fabric.api.client.networking.v1.ClientPlayNetworking;
 import net.frozenblock.freezeframe.FFConstants;
+import net.frozenblock.freezeframe.config.FFConfig;
 import net.frozenblock.freezeframe.item.photograph.PhotographTracker;
 import net.frozenblock.freezeframe.networking.packet.ChangeItemStackSizePacket;
-import net.frozenblock.freezeframe.networking.packet.DeleteItemStackPacket;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.inventory.AbstractContainerMenu;
 import net.minecraft.world.inventory.Slot;
@@ -68,7 +68,7 @@ public abstract class AbstractContainerMenuMixin {
 		@Local(name = "source") ItemStack source,
 		@Share("freezeFrame$adjustedForFirst") LocalBooleanRef adjustedForFirst
 	) {
-		if (this.quickcraftType == QUICKCRAFT_TYPE_CLONE) {
+		if (this.quickcraftType == QUICKCRAFT_TYPE_CLONE && FFConfig.PHOTOGRAPH_TRACKER.get()) {
 			final int increaseCount = itemStack.getCount() - instance.getItem().getCount();
 			if (increaseCount > 0) {
 				if (player.level().isClientSide()) {
@@ -81,7 +81,7 @@ public abstract class AbstractContainerMenuMixin {
 
 			if (!adjustedForFirst.get()) {
 				if (player.level().isClientSide()) {
-					ClientPlayNetworking.send(new DeleteItemStackPacket(source.copy()));
+					ClientPlayNetworking.send(ChangeItemStackSizePacket.itemStackDeleted(source.copy()));
 				} else {
 					PhotographTracker.incrementOnItemStackDeletion(player.level(), source.copy());
 				}
@@ -110,7 +110,7 @@ public abstract class AbstractContainerMenuMixin {
 	)
 	public ItemStack freezeframe$onClone(ItemStack instance, int count, Operation<ItemStack> original) {
 		final ItemStack copyWithCount = original.call(instance, count);
-		if (count > 0) {
+		if (FFConfig.PHOTOGRAPH_TRACKER.get() && count > 0) {
 			ClientPlayNetworking.send(new ChangeItemStackSizePacket(instance.copy(), count));
 			FFConstants.log("onClone - AbstractContainerMenu", FFConstants.UNSTABLE_LOGGING);
 		}

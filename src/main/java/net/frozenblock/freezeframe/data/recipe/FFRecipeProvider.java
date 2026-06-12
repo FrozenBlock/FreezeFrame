@@ -24,7 +24,7 @@ import net.fabricmc.fabric.api.datagen.v1.provider.FabricRecipeProvider;
 import net.frozenblock.freezeframe.FFConstants;
 import net.frozenblock.freezeframe.item.crafting.FilmCapacityUpgradeRecipe;
 import net.frozenblock.freezeframe.item.crafting.FilmFilterRecipe;
-import net.frozenblock.freezeframe.item.filter.SpecialFilmFilter;
+import net.frozenblock.freezeframe.component.filter.SpecialFilmFilter;
 import net.frozenblock.freezeframe.registry.FFBlocks;
 import net.frozenblock.freezeframe.registry.FFItems;
 import net.frozenblock.freezeframe.registry.FFRegistries;

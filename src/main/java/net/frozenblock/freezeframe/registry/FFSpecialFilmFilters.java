@@ -23,7 +23,7 @@ import java.util.Optional;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 import net.frozenblock.freezeframe.FFConstants;
-import net.frozenblock.freezeframe.item.filter.SpecialFilmFilter;
+import net.frozenblock.freezeframe.component.filter.SpecialFilmFilter;
 import net.minecraft.client.renderer.UniformValue;
 import net.minecraft.data.worldgen.BootstrapContext;
 import net.minecraft.resources.Identifier;

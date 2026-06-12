@@ -30,6 +30,14 @@ Put the changelog BELOW the dashes. ANYTHING ABOVE IS IGNORED.
 - Photos can now be placed inside of Books.
   - A new button has been added to the Book's GUI to open the Inventory, which will allow the user to place a Photo inside of the Book and view a preview of how it will look.
   - If there is too much text on a page for a Photo to fit, the button will be disabled and display a tooltip when hovered over.
+  - Added a config option to disable Photo placement inside of Books.
+- Added the Photograph Tracking system.
+  - Lists out all Photo IDs, and the count of active instances for each Photo.
+  - Each Photo taken, developed, and cloned will increment the tracker.
+  - Each Photo destroyed or deleted will decrement the tracker.
+    - When the tracker reaches zero, the respective file for the Photo will be deleted.
+  - Added a config option to disable Photograph tracking.
+    - It is recommended to disable Photograph Tracking if you intend on using a world that already has Photos, or if you encounter any Photos suddenly missing.
 - The Film Capacity Upgrade Recipe now supports a custom Source, Material, and Output item like other Vanilla transmute recipes.
 - The Film Capacity Upgrade Recipe now shows up in the Crafting Recipe Book.
 - Added a statistic for interacting with a Developing Table.
@@ -42,7 +50,6 @@ Put the changelog BELOW the dashes. ANYTHING ABOVE IS IGNORED.
   - This is disabled by default.
 - Photo item rendering now supports rendering a back side.
   - Added the `FRAME_BACK` Frame Type.
-- Added the `FRAME_CENTER` Frame Type.
 - Tripods now have three legs instead of four.
 - The rotation of the Tripod's legs is now relative to the center of the Tripod.
 - Decreased the chance for the creaky sound to play when adjusting the height of a Tripod.

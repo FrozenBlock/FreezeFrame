@@ -23,7 +23,8 @@ import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 import net.fabricmc.fabric.api.client.networking.v1.ClientPlayNetworking;
 import net.frozenblock.freezeframe.FFConstants;
-import net.frozenblock.freezeframe.networking.packet.DeleteItemStackPacket;
+import net.frozenblock.freezeframe.config.FFConfig;
+import net.frozenblock.freezeframe.networking.packet.ChangeItemStackSizePacket;
 import net.frozenblock.freezeframe.networking.packet.SetCreativeModeCarriedItemPacket;
 import net.frozenblock.freezeframe.registry.FFAttachmentTypes;
 import net.minecraft.client.Minecraft;
@@ -48,6 +49,8 @@ public abstract class CreativeInventoryScreenItemPickerMenuMixin extends Abstrac
 
 	@Inject(method = "setCarried", at = @At("RETURN"))
 	public void freezeFrame$onSetCarried(ItemStack carried, CallbackInfo info) {
+		if (!FFConfig.PHOTOGRAPH_TRACKER.get()) return;
+
 		final Minecraft minecraft = Minecraft.getInstance();
 		if (minecraft.player != null) minecraft.player.setAttached(FFAttachmentTypes.CREATIVE_MODE_CARRIED_ITEM, carried.copy());
 		ClientPlayNetworking.send(new SetCreativeModeCarriedItemPacket(carried.copy()));
@@ -62,8 +65,8 @@ public abstract class CreativeInventoryScreenItemPickerMenuMixin extends Abstrac
 		)
 	)
 	public void freezeFrame$onDeleteFromQuickMove(Slot instance, ItemStack itemStack, Operation<Void> original) {
-		if (!instance.getItem().isEmpty()) {
-			ClientPlayNetworking.send(new DeleteItemStackPacket(instance.getItem().copy()));
+		if (!instance.getItem().isEmpty() && FFConfig.PHOTOGRAPH_TRACKER.get()) {
+			ClientPlayNetworking.send(ChangeItemStackSizePacket.itemStackDeleted(instance.getItem().copy()));
 			FFConstants.log("onDeleteFromQuickMove - CreativeModeInventoryScreen$ItemPickerMenu", FFConstants.UNSTABLE_LOGGING);
 		}
 		original.call(instance, itemStack);

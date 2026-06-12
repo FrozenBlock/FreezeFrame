@@ -30,6 +30,14 @@ public record ChangeItemStackSizePacket(ItemStack stack, int delta) implements C
 	public static final Type<ChangeItemStackSizePacket> PACKET_TYPE = CustomPacketPayload.createType(FFConstants.safeString("change_item_stack_size"));
 	public static final StreamCodec<RegistryFriendlyByteBuf, ChangeItemStackSizePacket> CODEC = StreamCodec.ofMember(ChangeItemStackSizePacket::write, ChangeItemStackSizePacket::new);
 
+	public static ChangeItemStackSizePacket itemStackCloned(ItemStack stack) {
+		return new ChangeItemStackSizePacket(stack, stack.getCount());
+	}
+
+	public static ChangeItemStackSizePacket itemStackDeleted(ItemStack stack) {
+		return new ChangeItemStackSizePacket(stack, -stack.getCount());
+	}
+
 	public ChangeItemStackSizePacket(RegistryFriendlyByteBuf buf) {
 		this(ItemStack.STREAM_CODEC.decode(buf), buf.readVarInt());
 	}

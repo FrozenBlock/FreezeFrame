@@ -22,7 +22,7 @@ import net.fabricmc.api.Environment;
 import net.fabricmc.fabric.api.client.event.lifecycle.v1.ClientTickEvents;
 import net.fabricmc.fabric.api.client.networking.v1.ClientPlayNetworking;
 import net.frozenblock.freezeframe.FreezeFrameClient;
-import net.frozenblock.freezeframe.component.FilmFilter;
+import net.frozenblock.freezeframe.component.filter.FilmFilter;
 import net.frozenblock.freezeframe.component.ScopeZoomConfig;
 import net.frozenblock.freezeframe.config.FFConfig;
 import net.frozenblock.freezeframe.item.CameraItem;

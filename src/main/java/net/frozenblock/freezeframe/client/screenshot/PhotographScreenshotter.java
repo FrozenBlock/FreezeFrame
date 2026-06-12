@@ -26,7 +26,7 @@ import java.util.function.Consumer;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 import net.frozenblock.freezeframe.FFConstants;
-import net.frozenblock.freezeframe.component.FilmFilter;
+import net.frozenblock.freezeframe.component.filter.FilmFilter;
 import net.frozenblock.freezeframe.config.FFConfig;
 import net.frozenblock.lib.file.transfer.FileTransferPacket;
 import net.frozenblock.lib.networking.FrozenNetworking;

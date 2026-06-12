@@ -20,7 +20,7 @@ package net.frozenblock.freezeframe.networking.packet;
 import java.util.OptionalInt;
 import net.fabricmc.fabric.api.networking.v1.ServerPlayNetworking;
 import net.frozenblock.freezeframe.FFConstants;
-import net.frozenblock.freezeframe.component.FilmFilter;
+import net.frozenblock.freezeframe.component.filter.FilmFilter;
 import net.frozenblock.freezeframe.entity.TripodCamera;
 import net.minecraft.network.RegistryFriendlyByteBuf;
 import net.minecraft.network.codec.ByteBufCodecs;

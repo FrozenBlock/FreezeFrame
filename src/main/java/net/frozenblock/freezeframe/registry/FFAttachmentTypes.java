@@ -21,7 +21,7 @@ import net.fabricmc.fabric.api.attachment.v1.AttachmentRegistry;
 import net.fabricmc.fabric.api.attachment.v1.AttachmentSyncPredicate;
 import net.fabricmc.fabric.api.attachment.v1.AttachmentType;
 import net.frozenblock.freezeframe.FFConstants;
-import net.frozenblock.freezeframe.component.FilmFilter;
+import net.frozenblock.freezeframe.component.filter.FilmFilter;
 import net.frozenblock.freezeframe.item.photograph.PhotographTracker;
 import net.minecraft.world.item.ItemStack;
 

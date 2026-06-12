@@ -20,6 +20,7 @@ package net.frozenblock.freezeframe.mixin.tracker;
 import com.llamalad7.mixinextras.injector.wrapoperation.Operation;
 import com.llamalad7.mixinextras.injector.wrapoperation.WrapOperation;
 import net.frozenblock.freezeframe.FFConstants;
+import net.frozenblock.freezeframe.config.FFConfig;
 import net.frozenblock.freezeframe.item.photograph.PhotographTracker;
 import net.minecraft.world.entity.item.ItemEntity;
 import org.spongepowered.asm.mixin.Mixin;
@@ -37,8 +38,10 @@ public class ItemEntityMixin {
 		)
 	)
 	public void freezeFrame$onItemEntityDespawned(ItemEntity instance, Operation<Void> original) {
-		PhotographTracker.incrementOnItemStackDeletion(instance.level(), instance.getItem());
-		FFConstants.log("onItemEntityDespawned - ItemEntity", FFConstants.UNSTABLE_LOGGING);
+		if (FFConfig.PHOTOGRAPH_TRACKER.get()) {
+			PhotographTracker.incrementOnItemStackDeletion(instance.level(), instance.getItem());
+			FFConstants.log("onItemEntityDespawned - ItemEntity", FFConstants.UNSTABLE_LOGGING);
+		}
 		original.call(instance);
 	}
 
@@ -50,8 +53,10 @@ public class ItemEntityMixin {
 		)
 	)
 	public void freezeFrame$onItemEntityDestroyed(ItemEntity instance, Operation<Void> original) {
-		PhotographTracker.incrementOnItemStackDeletion(instance.level(), instance.getItem(), false);
-		FFConstants.log("onItemEntityDestroyed - ItemEntity", FFConstants.UNSTABLE_LOGGING);
+		if (FFConfig.PHOTOGRAPH_TRACKER.get()) {
+			PhotographTracker.incrementOnItemStackDeletion(instance.level(), instance.getItem(), false);
+			FFConstants.log("onItemEntityDestroyed - ItemEntity", FFConstants.UNSTABLE_LOGGING);
+		}
 		original.call(instance);
 	}
 }

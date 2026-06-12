@@ -15,7 +15,7 @@
  * along with this program; if not, see <https://github.com/FrozenBlock/Licenses>.
  */
 
-package net.frozenblock.freezeframe.component;
+package net.frozenblock.freezeframe.component.filter;
 
 import com.mojang.serialization.Codec;
 import com.mojang.serialization.JavaOps;
@@ -23,7 +23,6 @@ import com.mojang.serialization.codecs.RecordCodecBuilder;
 import io.netty.buffer.ByteBuf;
 import java.util.List;
 import java.util.Optional;
-import net.frozenblock.freezeframe.item.filter.SpecialFilmFilter;
 import net.minecraft.core.Holder;
 import net.minecraft.network.RegistryFriendlyByteBuf;
 import net.minecraft.network.codec.ByteBufCodecs;

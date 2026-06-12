@@ -21,7 +21,7 @@ import net.fabricmc.api.EnvType;
 import net.fabricmc.fabric.api.event.registry.DynamicRegistries;
 import net.fabricmc.loader.api.FabricLoader;
 import net.frozenblock.freezeframe.FFConstants;
-import net.frozenblock.freezeframe.item.filter.SpecialFilmFilter;
+import net.frozenblock.freezeframe.component.filter.SpecialFilmFilter;
 import net.minecraft.core.Registry;
 import net.minecraft.resources.ResourceKey;
 

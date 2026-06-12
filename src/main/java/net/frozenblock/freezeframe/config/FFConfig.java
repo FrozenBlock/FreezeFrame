@@ -42,6 +42,10 @@ public class FFConfig {
 		.comment("Enables filter recipes for the Film Roll item.")
 		.build();
 
+	public static final ConfigEntry<Boolean> BOOKS_SUPPORT_PHOTOGRAPHS = CONFIG.entryBuilder("booksSupportPhotographs", EntryType.BOOL, true)
+		.comment("Whether Photographs can be placed inside of Books. If you notice visual issues with Book screens, it is likely a mod compat issue.")
+		.build();
+
 	public static final ConfigEntry<Boolean> SCOPE_SCROLLING = CONFIG.entryBuilder("scopeScrolling", EntryType.BOOL, true)
 		.comment("Scope items (Spyglasses and Cameras) will let you change their zoom level with the mouse wheel.")
 		.build();
@@ -72,6 +76,10 @@ public class FFConfig {
 
 	public static final ConfigEntry<Boolean> THIRD_PERSON_PHOTOGRAPH_ITEM = CONFIG.entryBuilder("thirdPersonPhotographItem", EntryType.BOOL, false)
 		.comment("Photo items render similarly to their first-person counterpart in third-person.")
+		.build();
+
+	public static final ConfigEntry<Boolean> PHOTOGRAPH_TRACKER = CONFIG.entryBuilder("photographTracker", EntryType.BOOL, true)
+		.comment("Whether items containing Photos will be tracked, deleting the Photograph's file if all items are destroyed. If Photographs randomly go missing, please let us know and disable this options.")
 		.build();
 
 	public static final ConfigEntry<Integer> PHOTOGRAPH_RESOLUTION = CONFIG.entryBuilder("photographResolution", EntryType.INT, 256)

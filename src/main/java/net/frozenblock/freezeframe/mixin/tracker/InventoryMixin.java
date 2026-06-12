@@ -20,6 +20,7 @@ package net.frozenblock.freezeframe.mixin.tracker;
 import com.llamalad7.mixinextras.injector.wrapoperation.Operation;
 import com.llamalad7.mixinextras.injector.wrapoperation.WrapOperation;
 import net.frozenblock.freezeframe.FFConstants;
+import net.frozenblock.freezeframe.config.FFConfig;
 import net.frozenblock.freezeframe.item.photograph.PhotographTracker;
 import net.minecraft.world.entity.player.Inventory;
 import net.minecraft.world.entity.player.Player;
@@ -53,7 +54,7 @@ public class InventoryMixin {
 		)
 	)
 	public void freezeFrame$onItemAbsorbedFromCreativePlayer(ItemStack instance, int count, Operation<Void> original) {
-		if (!this.player.level().isClientSide()) {
+		if (!this.player.level().isClientSide() && FFConfig.PHOTOGRAPH_TRACKER.get()) {
 			if (count != 0) {
 				FFConstants.log("onItemAbsorbedFromCreativePlayer - Inventory: Non-zero setCount called!", FFConstants.UNSTABLE_LOGGING);
 			} else {
@@ -80,7 +81,7 @@ public class InventoryMixin {
 		)
 	)
 	public void freezeFrame$onDamagedItemAbsorbedFromCreativePlayer(ItemStack instance, int count, Operation<Void> original) {
-		if (!this.player.level().isClientSide()) {
+		if (!this.player.level().isClientSide() && FFConfig.PHOTOGRAPH_TRACKER.get()) {
 			if (count != 0) {
 				FFConstants.log("onDamagedItemAbsorbedFromCreativePlayer - Inventory: Non-zero setCount called!", FFConstants.UNSTABLE_LOGGING);
 			} else {

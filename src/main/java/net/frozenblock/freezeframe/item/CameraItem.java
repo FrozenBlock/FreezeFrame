@@ -22,7 +22,7 @@ import java.util.Optional;
 import net.frozenblock.freezeframe.FFConstants;
 import net.frozenblock.freezeframe.component.CameraContents;
 import net.frozenblock.freezeframe.component.FilmContents;
-import net.frozenblock.freezeframe.component.FilmFilter;
+import net.frozenblock.freezeframe.component.filter.FilmFilter;
 import net.frozenblock.freezeframe.component.Photograph;
 import net.frozenblock.freezeframe.component.tooltip.CameraTooltip;
 import net.frozenblock.freezeframe.item.photograph.PhotographTracker;
