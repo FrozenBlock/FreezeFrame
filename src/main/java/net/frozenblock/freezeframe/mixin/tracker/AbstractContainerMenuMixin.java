@@ -17,7 +17,6 @@
 
 package net.frozenblock.freezeframe.mixin.tracker;
 
-import com.llamalad7.mixinextras.injector.ModifyExpressionValue;
 import com.llamalad7.mixinextras.injector.wrapoperation.Operation;
 import com.llamalad7.mixinextras.injector.wrapoperation.WrapOperation;
 import com.llamalad7.mixinextras.sugar.Local;
@@ -28,7 +27,6 @@ import net.frozenblock.freezeframe.FFConstants;
 import net.frozenblock.freezeframe.item.photograph.PhotographTracker;
 import net.frozenblock.freezeframe.networking.packet.ChangeItemStackSizePacket;
 import net.frozenblock.freezeframe.networking.packet.DeleteItemStackPacket;
-import net.frozenblock.freezeframe.registry.FFAttachmentTypes;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.inventory.AbstractContainerMenu;
 import net.minecraft.world.inventory.Slot;
@@ -49,30 +47,6 @@ public abstract class AbstractContainerMenuMixin {
 
 	@Shadow
 	private int quickcraftType;
-
-	@Shadow
-	private static void dropOrPlaceInInventory(Player player, ItemStack carried) {
-		throw new UnsupportedOperationException("Implemented via mixin");
-	}
-
-	@ModifyExpressionValue(
-		method = "removed",
-		at = @At(
-			value = "INVOKE",
-			target = "Lnet/minecraft/world/item/ItemStack;isEmpty()Z"
-		)
-	)
-	public boolean freezeFrame$onRemovedWithEmptyCarried(
-		boolean original,
-		@Local(argsOnly = true) Player player
-	) {
-		if (original && player != null) {
-			final ItemStack carriedAttachment = player.getAttachedOrElse(FFAttachmentTypes.CREATIVE_MODE_CARRIED_ITEM, ItemStack.EMPTY);
-			if (!carriedAttachment.isEmpty()) dropOrPlaceInInventory(player, carriedAttachment);
-			player.removeAttached(FFAttachmentTypes.CREATIVE_MODE_CARRIED_ITEM);
-		}
-		return original;
-	}
 
 	@WrapOperation(
 		method = "doClick",

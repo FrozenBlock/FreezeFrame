@@ -27,6 +27,9 @@ import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import net.fabricmc.fabric.api.entity.event.v1.ServerEntityLevelChangeEvents;
+import net.fabricmc.fabric.api.entity.event.v1.ServerLivingEntityEvents;
+import net.fabricmc.fabric.api.entity.event.v1.ServerPlayerEvents;
 import net.frozenblock.freezeframe.FFConstants;
 import net.frozenblock.freezeframe.component.FilmContents;
 import net.frozenblock.freezeframe.component.Photograph;
@@ -35,6 +38,8 @@ import net.frozenblock.freezeframe.registry.FFAttachmentTypes;
 import net.frozenblock.freezeframe.registry.FFDataComponents;
 import net.frozenblock.lib.file.transfer.FileTransferPacket;
 import net.minecraft.server.level.ServerLevel;
+import net.minecraft.server.level.ServerPlayer;
+import net.minecraft.world.entity.Entity;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.storage.loot.ContainerComponentManipulators;
@@ -47,6 +52,19 @@ public record PhotographTracker(Map<String, Integer> photographCounts) {
 	public static final Codec<PhotographTracker> CODEC = RecordCodecBuilder.create(instance -> instance.group(
 		Codec.unboundedMap(Codec.STRING, Codec.INT).fieldOf("photograph_counts").forGetter(PhotographTracker::photographCounts)
 	).apply(instance, PhotographTracker::new));
+
+	public static void init() {
+		ServerLivingEntityEvents.AFTER_DEATH.register((entity, source) -> removeCreativeModeCarriedItem(entity));
+		ServerEntityLevelChangeEvents.AFTER_PLAYER_CHANGE_LEVEL.register((player, origin, destination) -> removeCreativeModeCarriedItem(player));
+		ServerPlayerEvents.LEAVE.register(PhotographTracker::removeCreativeModeCarriedItem);
+	}
+
+	public static void removeCreativeModeCarriedItem(Entity entity) {
+		if (!(entity instanceof ServerPlayer player)) return;
+		final ItemStack carriedAttachment = player.getAttachedOrElse(FFAttachmentTypes.CREATIVE_MODE_CARRIED_ITEM, ItemStack.EMPTY);
+		if (!carriedAttachment.isEmpty()) incrementOnItemStackDeletion(player.level(), carriedAttachment);
+		player.removeAttached(FFAttachmentTypes.CREATIVE_MODE_CARRIED_ITEM);
+	}
 
 	public static PhotographTracker get(Level level) {
 		return level.getServer().overworld().getAttachedOrElse(FFAttachmentTypes.PHOTOGRAPH_TRACKER, EMPTY);

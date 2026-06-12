@@ -19,6 +19,7 @@ package net.frozenblock.freezeframe;
 
 import net.fabricmc.api.ModInitializer;
 import net.frozenblock.freezeframe.config.FFConfig;
+import net.frozenblock.freezeframe.item.photograph.PhotographTracker;
 import net.frozenblock.freezeframe.networking.FFNetworking;
 import net.frozenblock.freezeframe.registry.FFAttachmentTypes;
 import net.frozenblock.freezeframe.registry.FFBlocks;
@@ -45,6 +46,7 @@ public class FreezeFrame implements ModInitializer {
 		FFAttachmentTypes.init();
 		FFContainerComponentManipulators.init();
 		FFDataComponentPredicates.init();
+		PhotographTracker.init();
 		FFSounds.init();
 		FFDataComponents.init();
 		FFRecipeSerializers.init();
