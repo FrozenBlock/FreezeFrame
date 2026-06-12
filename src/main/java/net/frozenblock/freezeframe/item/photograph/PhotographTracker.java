@@ -27,9 +27,7 @@ import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.concurrent.atomic.AtomicBoolean;
 import net.frozenblock.freezeframe.FFConstants;
-import net.frozenblock.freezeframe.component.CameraContents;
 import net.frozenblock.freezeframe.component.FilmContents;
 import net.frozenblock.freezeframe.component.Photograph;
 import net.frozenblock.freezeframe.config.FFConfig;
@@ -148,19 +146,21 @@ public record PhotographTracker(Map<String, Integer> photographCounts) {
 		incrementOnItemStackSizeChange(level, stack, delta, true);
 	}
 
-	public static boolean containsAnyPhotographComponents(ItemStack stack) {
-		if (stack.has(FFDataComponents.PHOTOGRAPH)
-			|| !stack.getOrDefault(FFDataComponents.FILM_CONTENTS, FilmContents.EMPTY).photographs().isEmpty()
-			|| !stack.getOrDefault(FFDataComponents.CAMERA_CONTENTS, CameraContents.EMPTY).isEmpty()
-		) return true;
+	public static ItemStack stripAllPhotographComponents(ItemStack stack) {
+		stack.remove(FFDataComponents.PHOTOGRAPH);
 
-		final AtomicBoolean hasComponent = new AtomicBoolean(false);
+		final FilmContents initialFilmContents = stack.getOrDefault(FFDataComponents.FILM_CONTENTS, FilmContents.EMPTY);
+		if (!initialFilmContents.isEmpty()) {
+			final FilmContents.Mutable filmContents = new FilmContents.Mutable(initialFilmContents);
+			filmContents.removeAllPhotographs();
+			stack.set(FFDataComponents.FILM_CONTENTS, filmContents.toImmutable());
+		}
+
 		ContainerComponentManipulators.ALL_MANIPULATORS.forEach((type, manipulator) -> {
-			manipulator.getSlots(stack).itemCopies().forEach(nested -> {
-				hasComponent.set(hasComponent.get() || containsAnyPhotographComponents(nested));
-			});
+			manipulator.modifyItems(stack, PhotographTracker::stripAllPhotographComponents);
 		});
-		return hasComponent.get();
+
+		return stack;
 	}
 
 	public Mutable mutable() {

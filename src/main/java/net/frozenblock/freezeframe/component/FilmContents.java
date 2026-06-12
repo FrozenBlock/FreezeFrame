@@ -165,6 +165,12 @@ public final class FilmContents {
 			return true;
 		}
 
+		public void removeAllPhotographs() {
+			this.photographs.clear();
+			this.weight = Fraction.ZERO;
+			this.selectedPhotograph = 0;
+		}
+
 		private boolean indexIsOutsideAllowedBounds(int selectedPhotograph) {
 			return selectedPhotograph < 0 || selectedPhotograph >= this.photographs.size();
 		}

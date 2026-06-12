@@ -25,21 +25,28 @@ import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 import net.fabricmc.fabric.api.client.networking.v1.ClientPlayNetworking;
 import net.frozenblock.freezeframe.FFConstants;
-import net.frozenblock.freezeframe.item.photograph.PhotographTracker;
 import net.frozenblock.freezeframe.networking.packet.ChangeItemStackSizePacket;
 import net.frozenblock.freezeframe.networking.packet.DeleteItemStackPacket;
+import net.frozenblock.freezeframe.networking.packet.SetCreativeModeCarriedItemPacket;
+import net.frozenblock.freezeframe.registry.FFAttachmentTypes;
 import net.minecraft.client.gui.screens.inventory.AbstractContainerScreen;
 import net.minecraft.client.gui.screens.inventory.CreativeModeInventoryScreen;
+import net.minecraft.client.input.KeyEvent;
+import net.minecraft.client.input.MouseButtonEvent;
 import net.minecraft.network.chat.Component;
 import net.minecraft.world.entity.player.Inventory;
+import net.minecraft.world.entity.player.Player;
+import net.minecraft.world.inventory.AbstractContainerMenu;
 import net.minecraft.world.inventory.Slot;
 import net.minecraft.world.item.ItemStack;
 import org.objectweb.asm.Opcodes;
 import org.spongepowered.asm.mixin.Mixin;
+import org.spongepowered.asm.mixin.Unique;
 import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.Slice;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
+import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
 
 @Environment(EnvType.CLIENT)
 @Mixin(CreativeModeInventoryScreen.class)
@@ -47,6 +54,48 @@ public abstract class CreativeModeInventoryScreenMixin extends AbstractContainer
 
 	public CreativeModeInventoryScreenMixin(CreativeModeInventoryScreen.ItemPickerMenu menu, Inventory inventory, Component title) {
 		super(menu, inventory, title);
+	}
+
+	@Unique
+	private static void freezeFrame$sendCreativeModeCarriedItemPacket(Player player, AbstractContainerMenu menu) {
+		if (player == null) return;
+
+		final ItemStack attachedCarried = player.getAttachedOrElse(FFAttachmentTypes.CREATIVE_MODE_CARRIED_ITEM, ItemStack.EMPTY);
+		final ItemStack carried = menu.getCarried();
+		if (ItemStack.isSameItemSameComponents(attachedCarried, carried) && (carried.count() == attachedCarried.count())) return;
+
+		player.setAttached(FFAttachmentTypes.CREATIVE_MODE_CARRIED_ITEM, carried.copy());
+		ClientPlayNetworking.send(new SetCreativeModeCarriedItemPacket(carried.copy()));
+	}
+
+	@Inject(method = "containerTick", at = @At("HEAD"))
+	public void freezeFrame$onContainerTick(CallbackInfo info) {
+		freezeFrame$sendCreativeModeCarriedItemPacket(this.minecraft.player, this.menu);
+	}
+
+	@Inject(method = "slotClicked", at = @At("RETURN"))
+	public void freezeFrame$onSlotClickedEnd(CallbackInfo info) {
+		freezeFrame$sendCreativeModeCarriedItemPacket(this.minecraft.player, this.menu);
+	}
+
+	@Inject(method = "keyPressed", at = @At("RETURN"))
+	public void freezeFrame$onKeyPressedEnd(KeyEvent event, CallbackInfoReturnable<Boolean> info) {
+		freezeFrame$sendCreativeModeCarriedItemPacket(this.minecraft.player, this.menu);
+	}
+
+	@Inject(method = "keyReleased", at = @At("RETURN"))
+	public void freezeFrame$onKeyReleasedEnd(KeyEvent event, CallbackInfoReturnable<Boolean> info) {
+		freezeFrame$sendCreativeModeCarriedItemPacket(this.minecraft.player, this.menu);
+	}
+
+	@Inject(method = "mouseClicked", at = @At("RETURN"))
+	public void freezeFrame$onMouseClickedEnd(MouseButtonEvent event, boolean doubleClick, CallbackInfoReturnable<Boolean> info) {
+		freezeFrame$sendCreativeModeCarriedItemPacket(this.minecraft.player, this.menu);
+	}
+
+	@Inject(method = "mouseReleased", at = @At("RETURN"))
+	public void freezeFrame$onMouseReleasedEnd(MouseButtonEvent event, CallbackInfoReturnable<Boolean> info) {
+		freezeFrame$sendCreativeModeCarriedItemPacket(this.minecraft.player, this.menu);
 	}
 
 	@ModifyExpressionValue(
@@ -285,16 +334,20 @@ public abstract class CreativeModeInventoryScreenMixin extends AbstractContainer
 		original.call(instance, amount);
 	}
 
-	@Inject(method = "removed", at = @At("HEAD"))
-	public void freezeFrame$onRemoved(CallbackInfo info) {
-		// TODO: figure out how to make this work on force-closing game. Packet never gets received obviously.
-		FFConstants.log("onRemoved - CreativeModeInventoryScreen", FFConstants.UNSTABLE_LOGGING);
+	@WrapOperation(
+		method = "handleHotbarLoadOrSave",
+		at = @At(
+			value = "INVOKE",
+			target = "Lnet/minecraft/world/entity/player/Inventory;setItem(ILnet/minecraft/world/item/ItemStack;)V"
+		)
+	)
+	private static void freezeFrame$onDeletedFromHotbarLoad(Inventory instance, int slot, ItemStack itemStack, Operation<Void> original) {
+		final ItemStack originalInSlot = instance.getItem(slot);
+		if (!originalInSlot.isEmpty()) {
+			ClientPlayNetworking.send(new DeleteItemStackPacket(originalInSlot.copy()));
+			FFConstants.log("onDeletedFromHotbarLoad - CreativeModeInventoryScreen", FFConstants.UNSTABLE_LOGGING);
+		}
 
-		final ItemStack carried = this.menu.getCarried();
-		if (carried.isEmpty()) return;
-		if (!PhotographTracker.containsAnyPhotographComponents(carried)) return;
-
-		ClientPlayNetworking.send(new DeleteItemStackPacket(carried.copy()));
-		this.menu.setCarried(ItemStack.EMPTY);
+		original.call(instance, slot, itemStack);
 	}
 }

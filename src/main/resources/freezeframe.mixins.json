@@ -51,7 +51,8 @@
     "client.scope.GameRendererMixin",
     "client.scope.MouseHandlerMixin",
     "client.tracker.CreativeInventoryScreenItemPickerMenuMixin",
-    "client.tracker.CreativeModeInventoryScreenMixin"
+    "client.tracker.CreativeModeInventoryScreenMixin",
+    "client.tracker.HotbarMixin"
   ],
   "injectors": {
     "defaultRequire": 1

@@ -23,6 +23,7 @@ import net.fabricmc.fabric.api.attachment.v1.AttachmentType;
 import net.frozenblock.freezeframe.FFConstants;
 import net.frozenblock.freezeframe.component.FilmFilter;
 import net.frozenblock.freezeframe.item.photograph.PhotographTracker;
+import net.minecraft.world.item.ItemStack;
 
 public class FFAttachmentTypes {
 	public static final AttachmentType<PhotographTracker> PHOTOGRAPH_TRACKER = AttachmentRegistry.create(
@@ -36,6 +37,12 @@ public class FFAttachmentTypes {
 		builder -> {
 			builder.persistent(FilmFilter.CODEC);
 			builder.syncWith(FilmFilter.STREAM_CODEC, AttachmentSyncPredicate.all());
+		}
+	);
+	public static final AttachmentType<ItemStack> CREATIVE_MODE_CARRIED_ITEM = AttachmentRegistry.create(
+		FFConstants.id("creative_mode_carried_item"),
+		builder -> {
+			builder.syncWith(ItemStack.STREAM_CODEC, AttachmentSyncPredicate.targetOnly());
 		}
 	);
 

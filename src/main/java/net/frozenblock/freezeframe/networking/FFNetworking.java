@@ -32,6 +32,7 @@ import net.frozenblock.freezeframe.networking.packet.SaveFilmChangesPacket;
 import net.frozenblock.freezeframe.networking.packet.SelectCameraFilmPacket;
 import net.frozenblock.freezeframe.networking.packet.SelectFilmPhotographPacket;
 import net.frozenblock.freezeframe.networking.packet.SetBookPagePhotographPacket;
+import net.frozenblock.freezeframe.networking.packet.SetCreativeModeCarriedItemPacket;
 import net.frozenblock.lib.file.transfer.FileTransferFilter;
 import net.minecraft.network.RegistryFriendlyByteBuf;
 
@@ -76,6 +77,9 @@ public class FFNetworking {
 
 		c2sRegistry.register(ChangeItemStackSizePacket.PACKET_TYPE, ChangeItemStackSizePacket.CODEC);
 		ServerPlayNetworking.registerGlobalReceiver(ChangeItemStackSizePacket.PACKET_TYPE, ChangeItemStackSizePacket::handle);
+
+		c2sRegistry.register(SetCreativeModeCarriedItemPacket.PACKET_TYPE, SetCreativeModeCarriedItemPacket.CODEC);
+		ServerPlayNetworking.registerGlobalReceiver(SetCreativeModeCarriedItemPacket.PACKET_TYPE, SetCreativeModeCarriedItemPacket::handle);
 
 		FileTransferFilter.whitelistDestinationPath("photographs", false);
 		FileTransferFilter.whitelistDestinationPath("photographs", true);
