@@ -27,7 +27,9 @@ import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.concurrent.atomic.AtomicBoolean;
 import net.frozenblock.freezeframe.FFConstants;
+import net.frozenblock.freezeframe.component.CameraContents;
 import net.frozenblock.freezeframe.component.FilmContents;
 import net.frozenblock.freezeframe.component.Photograph;
 import net.frozenblock.freezeframe.config.FFConfig;
@@ -40,6 +42,8 @@ import net.minecraft.world.level.Level;
 import net.minecraft.world.level.storage.loot.ContainerComponentManipulators;
 
 public record PhotographTracker(Map<String, Integer> photographCounts) {
+	private static final boolean LOG_DELETION_ATTEMPTS = false;
+	private static final boolean LOG_INCREMENTS = true;
 	private static final PhotographTracker EMPTY = new PhotographTracker(Map.of());
 	public static final Codec<PhotographTracker> CODEC = RecordCodecBuilder.create(instance -> instance.group(
 		Codec.unboundedMap(Codec.STRING, Codec.INT).fieldOf("photograph_counts").forGetter(PhotographTracker::photographCounts)
@@ -57,6 +61,7 @@ public record PhotographTracker(Map<String, Integer> photographCounts) {
 		if (!(level instanceof ServerLevel)) return;
 
 		final PhotographTracker initialTracker = get(level);
+		final int oldCount = initialTracker.photographCounts.getOrDefault(photographName, 0);
 
 		final Mutable tracker = initialTracker.mutable();
 		tracker.incrementPhotographCount(photographName, step);
@@ -70,18 +75,26 @@ public record PhotographTracker(Map<String, Integer> photographCounts) {
 				paths.forEach(path -> {
 					try {
 						if (Files.deleteIfExists(path)) {
-							FFConstants.log("Deleted photograph file " + path, FFConstants.UNSTABLE_LOGGING);
+							FFConstants.log(
+								"Deleted photograph file " + path,
+								LOG_DELETION_ATTEMPTS && FFConstants.UNSTABLE_LOGGING
+							);
 						} else {
-							FFConstants.log("Failed to delete photograph file " + path, FFConstants.UNSTABLE_LOGGING);
+							FFConstants.log(
+								"Failed to delete photograph file " + path,
+								LOG_DELETION_ATTEMPTS && FFConstants.UNSTABLE_LOGGING
+							);
 						}
 					} catch (Exception e) {
-						FFConstants.log("Failed to delete photograph file DUE TO CRASH" + path, FFConstants.UNSTABLE_LOGGING);
+						FFConstants.log("Failed to delete photograph file " + path, FFConstants.UNSTABLE_LOGGING);
 					}
 				});
 			});
 
-		System.out.println("Incremented photograph count for " + photographName + " by " + step);
-		System.out.println("Current counts: " + tracker.photographCounts);
+		FFConstants.log(
+			"Incremented " + photographName + " by " + step + ": " + oldCount + " -> " +  finalTracker.photographCounts.getOrDefault(photographName, 0),
+			LOG_INCREMENTS && FFConstants.UNSTABLE_LOGGING
+		);
 	}
 
 	private static List<Path> getPossiblePhotographPaths(Level level, String photographName) {
@@ -133,6 +146,22 @@ public record PhotographTracker(Map<String, Integer> photographCounts) {
 
 	public static void incrementOnItemStackSizeChange(Level level, ItemStack stack, int delta) {
 		incrementOnItemStackSizeChange(level, stack, delta, true);
+	}
+
+	public static boolean containsAnyPhotographComponents(ItemStack stack) {
+		if (
+			stack.has(FFDataComponents.PHOTOGRAPH)
+			|| !stack.getOrDefault(FFDataComponents.FILM_CONTENTS, FilmContents.EMPTY).photographs().isEmpty()
+			|| !stack.getOrDefault(FFDataComponents.CAMERA_CONTENTS, CameraContents.EMPTY).isEmpty()
+		) return true;
+
+		final AtomicBoolean hasComponent = new AtomicBoolean(false);
+		ContainerComponentManipulators.ALL_MANIPULATORS.forEach((type, manipulator) -> {
+			manipulator.getSlots(stack).itemCopies().forEach(nested -> {
+				hasComponent.set(hasComponent.get() || containsAnyPhotographComponents(nested));
+			});
+		});
+		return hasComponent.get();
 	}
 
 	public Mutable mutable() {

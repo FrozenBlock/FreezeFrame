@@ -19,6 +19,8 @@
     "datafix.DataFixersMixin",
     "datafix.V3328Mixin",
     "film.AbstractContainerMenuMixin",
+    "tracker.AbstractContainerMenuMixin",
+    "tracker.InventoryMixin",
     "tracker.ItemEntityMixin"
   ],
   "client": [
@@ -49,8 +51,7 @@
     "client.scope.GameRendererMixin",
     "client.scope.MouseHandlerMixin",
     "client.tracker.CreativeInventoryScreenItemPickerMenuMixin",
-    "client.tracker.CreativeModeInventoryScreenMixin",
-    "tracker.AbstractContainerMenuMixin"
+    "client.tracker.CreativeModeInventoryScreenMixin"
   ],
   "injectors": {
     "defaultRequire": 1

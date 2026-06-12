@@ -25,6 +25,7 @@ import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 import net.fabricmc.fabric.api.client.networking.v1.ClientPlayNetworking;
 import net.frozenblock.freezeframe.FFConstants;
+import net.frozenblock.freezeframe.item.photograph.PhotographTracker;
 import net.frozenblock.freezeframe.networking.packet.ChangeItemStackSizePacket;
 import net.frozenblock.freezeframe.networking.packet.DeleteItemStackPacket;
 import net.minecraft.client.gui.screens.inventory.AbstractContainerScreen;
@@ -36,7 +37,9 @@ import net.minecraft.world.item.ItemStack;
 import org.objectweb.asm.Opcodes;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.injection.At;
+import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.Slice;
+import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 
 @Environment(EnvType.CLIENT)
 @Mixin(CreativeModeInventoryScreen.class)
@@ -65,7 +68,7 @@ public abstract class CreativeModeInventoryScreenMixin extends AbstractContainer
 	public Slot freezeFrame$onTrashAll(Slot original) {
 		if (!original.getItem().isEmpty()) {
 			ClientPlayNetworking.send(new DeleteItemStackPacket(original.getItem().copy()));
-			FFConstants.log("freezeFrame$onTrashAll - CreativeModeInventoryScreen", FFConstants.UNSTABLE_LOGGING);
+			FFConstants.log("onTrashAll - CreativeModeInventoryScreen", FFConstants.UNSTABLE_LOGGING);
 		}
 		return original;
 	}
@@ -89,7 +92,7 @@ public abstract class CreativeModeInventoryScreenMixin extends AbstractContainer
 	public void freezeFrame$onTrash(CreativeModeInventoryScreen.ItemPickerMenu instance, ItemStack carried, Operation<Void> original) {
 		if (!this.menu.getCarried().isEmpty()) {
 			ClientPlayNetworking.send(new DeleteItemStackPacket(this.menu.getCarried().copy()));
-			FFConstants.log("freezeFrame$onTrash - CreativeModeInventoryScreen", FFConstants.UNSTABLE_LOGGING);
+			FFConstants.log("onTrash - CreativeModeInventoryScreen", FFConstants.UNSTABLE_LOGGING);
 		}
 		original.call(instance, carried);
 	}
@@ -116,7 +119,7 @@ public abstract class CreativeModeInventoryScreenMixin extends AbstractContainer
 	) {
 		if (!original.getItem(buttonNum).isEmpty()) {
 			ClientPlayNetworking.send(new DeleteItemStackPacket(original.getItem(buttonNum).copy()));
-			FFConstants.log("freezeFrame$onReplacedByNumpadFromPicker - CreativeModeInventoryScreen", FFConstants.UNSTABLE_LOGGING);
+			FFConstants.log("onReplacedByNumpadFromPicker - CreativeModeInventoryScreen", FFConstants.UNSTABLE_LOGGING);
 		}
 		return original;
 	}
@@ -140,7 +143,7 @@ public abstract class CreativeModeInventoryScreenMixin extends AbstractContainer
 	public ItemStack freezeframe$onClone(ItemStack instance, int count, Operation<ItemStack> original) {
 		if (count > 0) {
 			ClientPlayNetworking.send(new ChangeItemStackSizePacket(instance.copy(), count));
-			FFConstants.log("freezeframe$onClone - CreativeModeInventoryScreen", FFConstants.UNSTABLE_LOGGING);
+			FFConstants.log("onClone - CreativeModeInventoryScreen", FFConstants.UNSTABLE_LOGGING);
 		}
 		return original.call(instance, count);
 	}
@@ -164,7 +167,7 @@ public abstract class CreativeModeInventoryScreenMixin extends AbstractContainer
 		final int delta = count - instance.getCount();
 		if (delta > 0) {
 			ClientPlayNetworking.send(new ChangeItemStackSizePacket(instance.copy(), delta));
-			FFConstants.log("freezeFrame$onSameItemMaxedFromPicker - CreativeModeInventoryScreen", FFConstants.UNSTABLE_LOGGING);
+			FFConstants.log("onSameItemMaxedFromPicker - CreativeModeInventoryScreen", FFConstants.UNSTABLE_LOGGING);
 		}
 		original.call(instance, count);
 	}
@@ -187,7 +190,7 @@ public abstract class CreativeModeInventoryScreenMixin extends AbstractContainer
 	public void freezeFrame$onSameItemGrownFromPicker(ItemStack instance, int amount, Operation<Void> original) {
 		if (amount > 0) {
 			ClientPlayNetworking.send(new ChangeItemStackSizePacket(instance.copy(), amount));
-			FFConstants.log("freezeFrame$onSameItemGrownFromPicker - CreativeModeInventoryScreen", FFConstants.UNSTABLE_LOGGING);
+			FFConstants.log("onSameItemGrownFromPicker - CreativeModeInventoryScreen", FFConstants.UNSTABLE_LOGGING);
 		}
 		original.call(instance, amount);
 	}
@@ -210,7 +213,7 @@ public abstract class CreativeModeInventoryScreenMixin extends AbstractContainer
 	public void freezeFrame$onSameItemShrankFromPicker(ItemStack instance, int amount, Operation<Void> original) {
 		if (amount > 0) {
 			ClientPlayNetworking.send(new ChangeItemStackSizePacket(instance.copy(), -amount));
-			FFConstants.log("freezeFrame$onSameItemShrankFromPicker - CreativeModeInventoryScreen", FFConstants.UNSTABLE_LOGGING);
+			FFConstants.log("onSameItemShrankFromPicker - CreativeModeInventoryScreen", FFConstants.UNSTABLE_LOGGING);
 		}
 		original.call(instance, amount);
 	}
@@ -233,7 +236,7 @@ public abstract class CreativeModeInventoryScreenMixin extends AbstractContainer
 	public ItemStack freezeFrame$onCopiedFromPicker(ItemStack instance, int count, Operation<ItemStack> original) {
 		if (count > 0) {
 			ClientPlayNetworking.send(new ChangeItemStackSizePacket(instance.copy(), count));
-			FFConstants.log("freezeFrame$onCopiedFromPicker - CreativeModeInventoryScreen", FFConstants.UNSTABLE_LOGGING);
+			FFConstants.log("onCopiedFromPicker - CreativeModeInventoryScreen", FFConstants.UNSTABLE_LOGGING);
 		}
 		return original.call(instance, count);
 	}
@@ -256,7 +259,7 @@ public abstract class CreativeModeInventoryScreenMixin extends AbstractContainer
 	public void freezeFrame$onDeletedFromPicker(CreativeModeInventoryScreen.ItemPickerMenu instance, ItemStack carried, Operation<Void> original) {
 		if (!this.menu.getCarried().isEmpty()) {
 			ClientPlayNetworking.send(new DeleteItemStackPacket(this.menu.getCarried().copy()));
-			FFConstants.log("freezeFrame$onDeletedFromPicker - CreativeModeInventoryScreen", FFConstants.UNSTABLE_LOGGING);
+			FFConstants.log("onDeletedFromPicker - CreativeModeInventoryScreen", FFConstants.UNSTABLE_LOGGING);
 		}
 		original.call(instance, carried);
 	}
@@ -278,7 +281,20 @@ public abstract class CreativeModeInventoryScreenMixin extends AbstractContainer
 	)
 	public void freezeFrame$onShrankFromPicker(ItemStack instance, int amount, Operation<Void> original) {
 		ClientPlayNetworking.send(new ChangeItemStackSizePacket(instance.copy(), -amount));
-		FFConstants.log("freezeFrame$onShrankFromPicker - CreativeModeInventoryScreen", FFConstants.UNSTABLE_LOGGING);
+		FFConstants.log("onShrankFromPicker - CreativeModeInventoryScreen", FFConstants.UNSTABLE_LOGGING);
 		original.call(instance, amount);
+	}
+
+	@Inject(method = "removed", at = @At("HEAD"))
+	public void freezeFrame$onRemoved(CallbackInfo info) {
+		// TODO: figure out how to make this work on force-closing game. Packet never gets received obviously.
+		FFConstants.log("onRemoved - CreativeModeInventoryScreen", FFConstants.UNSTABLE_LOGGING);
+
+		final ItemStack carried = this.menu.getCarried();
+		if (carried.isEmpty()) return;
+		if (!PhotographTracker.containsAnyPhotographComponents(carried)) return;
+
+		ClientPlayNetworking.send(new DeleteItemStackPacket(carried.copy()));
+		this.menu.setCarried(ItemStack.EMPTY);
 	}
 }

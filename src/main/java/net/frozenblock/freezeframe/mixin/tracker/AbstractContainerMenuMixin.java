@@ -19,11 +19,15 @@ package net.frozenblock.freezeframe.mixin.tracker;
 
 import com.llamalad7.mixinextras.injector.wrapoperation.Operation;
 import com.llamalad7.mixinextras.injector.wrapoperation.WrapOperation;
-import net.fabricmc.api.EnvType;
-import net.fabricmc.api.Environment;
+import com.llamalad7.mixinextras.sugar.Local;
+import com.llamalad7.mixinextras.sugar.Share;
+import com.llamalad7.mixinextras.sugar.ref.LocalBooleanRef;
 import net.fabricmc.fabric.api.client.networking.v1.ClientPlayNetworking;
 import net.frozenblock.freezeframe.FFConstants;
+import net.frozenblock.freezeframe.item.photograph.PhotographTracker;
 import net.frozenblock.freezeframe.networking.packet.ChangeItemStackSizePacket;
+import net.frozenblock.freezeframe.networking.packet.DeleteItemStackPacket;
+import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.inventory.AbstractContainerMenu;
 import net.minecraft.world.inventory.Slot;
 import net.minecraft.world.item.ItemStack;
@@ -34,7 +38,6 @@ import org.spongepowered.asm.mixin.Shadow;
 import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Slice;
 
-@Environment(EnvType.CLIENT)
 @Mixin(AbstractContainerMenu.class)
 public class AbstractContainerMenuMixin {
 
@@ -59,12 +62,31 @@ public class AbstractContainerMenuMixin {
 			)
 		)
 	)
-	public void freezeFrame$onDragCloneQuickCraft(Slot instance, ItemStack itemStack, Operation<Void> original) {
+	public void freezeFrame$onDragCloneQuickCraft(
+		Slot instance, ItemStack itemStack, Operation<Void> original,
+		@Local(argsOnly = true) Player player,
+		@Local(name = "source") ItemStack source,
+		@Share("freezeFrame$adjustedForFirst") LocalBooleanRef adjustedForFirst
+	) {
 		if (this.quickcraftType == QUICKCRAFT_TYPE_CLONE) {
 			final int increaseCount = itemStack.getCount() - instance.getItem().getCount();
 			if (increaseCount > 0) {
-				ClientPlayNetworking.send(new ChangeItemStackSizePacket(itemStack.copy(), increaseCount));
-				FFConstants.log("freezeFrame$onDragCloneQuickCraft - AbstractContainerMenu", FFConstants.UNSTABLE_LOGGING);
+				if (player.level().isClientSide()) {
+					ClientPlayNetworking.send(new ChangeItemStackSizePacket(itemStack.copy(), increaseCount));
+				} else {
+					PhotographTracker.incrementOnItemStackSizeChange(player.level(), itemStack.copy(), increaseCount);
+				}
+				FFConstants.log("onDragCloneQuickCraft - AbstractContainerMenu", FFConstants.UNSTABLE_LOGGING);
+			}
+
+			if (!adjustedForFirst.get()) {
+				if (player.level().isClientSide()) {
+					ClientPlayNetworking.send(new DeleteItemStackPacket(source.copy()));
+				} else {
+					PhotographTracker.incrementOnItemStackDeletion(player.level(), source.copy());
+				}
+				FFConstants.log("onDragCloneQuickCraft (Adjust Against Carried) - AbstractContainerMenu", FFConstants.UNSTABLE_LOGGING);
+				adjustedForFirst.set(true);
 			}
 		}
 		original.call(instance, itemStack);
@@ -87,10 +109,11 @@ public class AbstractContainerMenuMixin {
 		)
 	)
 	public ItemStack freezeframe$onClone(ItemStack instance, int count, Operation<ItemStack> original) {
+		final ItemStack copyWithCount = original.call(instance, count);
 		if (count > 0) {
 			ClientPlayNetworking.send(new ChangeItemStackSizePacket(instance.copy(), count));
-			FFConstants.log("freezeFrame$onClone - AbstractContainerMenu", FFConstants.UNSTABLE_LOGGING);
+			FFConstants.log("onClone - AbstractContainerMenu", FFConstants.UNSTABLE_LOGGING);
 		}
-		return original.call(instance, count);
+		return copyWithCount;
 	}
 }

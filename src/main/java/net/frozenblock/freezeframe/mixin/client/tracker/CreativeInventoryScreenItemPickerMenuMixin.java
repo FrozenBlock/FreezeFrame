@@ -52,7 +52,7 @@ public abstract class CreativeInventoryScreenItemPickerMenuMixin extends Abstrac
 	public void freezeFrame$onDeleteFromQuickMove(Slot instance, ItemStack itemStack, Operation<Void> original) {
 		if (!instance.getItem().isEmpty()) {
 			ClientPlayNetworking.send(new DeleteItemStackPacket(instance.getItem().copy()));
-			FFConstants.log("freezeFrame$onDeleteFromQuickMove - CreativeModeInventoryScreen$ItemPickerMenu", FFConstants.UNSTABLE_LOGGING);
+			FFConstants.log("onDeleteFromQuickMove - CreativeModeInventoryScreen$ItemPickerMenu", FFConstants.UNSTABLE_LOGGING);
 		}
 		original.call(instance, itemStack);
 	}
