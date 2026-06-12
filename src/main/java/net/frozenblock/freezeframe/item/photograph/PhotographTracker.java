@@ -149,8 +149,7 @@ public record PhotographTracker(Map<String, Integer> photographCounts) {
 	}
 
 	public static boolean containsAnyPhotographComponents(ItemStack stack) {
-		if (
-			stack.has(FFDataComponents.PHOTOGRAPH)
+		if (stack.has(FFDataComponents.PHOTOGRAPH)
 			|| !stack.getOrDefault(FFDataComponents.FILM_CONTENTS, FilmContents.EMPTY).photographs().isEmpty()
 			|| !stack.getOrDefault(FFDataComponents.CAMERA_CONTENTS, CameraContents.EMPTY).isEmpty()
 		) return true;
