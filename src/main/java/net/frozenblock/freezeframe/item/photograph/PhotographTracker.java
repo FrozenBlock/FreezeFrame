@@ -40,7 +40,8 @@ import net.minecraft.world.level.Level;
 import net.minecraft.world.level.storage.loot.ContainerComponentManipulators;
 
 public record PhotographTracker(Map<String, Integer> photographCounts) {
-	private static final boolean LOG_DELETION_ATTEMPTS = false;
+	private static final boolean LOG_DELETIONS = true;
+	private static final boolean LOG_FAILED_DELETION_ATTEMPTS = false;
 	private static final boolean LOG_INCREMENTS = true;
 	private static final PhotographTracker EMPTY = new PhotographTracker(Map.of());
 	public static final Codec<PhotographTracker> CODEC = RecordCodecBuilder.create(instance -> instance.group(
@@ -73,15 +74,9 @@ public record PhotographTracker(Map<String, Integer> photographCounts) {
 				paths.forEach(path -> {
 					try {
 						if (Files.deleteIfExists(path)) {
-							FFConstants.log(
-								"Deleted photograph file " + path,
-								LOG_DELETION_ATTEMPTS && FFConstants.UNSTABLE_LOGGING
-							);
+							FFConstants.log("Deleted photograph file " + path, LOG_DELETIONS && FFConstants.UNSTABLE_LOGGING);
 						} else {
-							FFConstants.log(
-								"Failed to delete photograph file " + path,
-								LOG_DELETION_ATTEMPTS && FFConstants.UNSTABLE_LOGGING
-							);
+							FFConstants.log("Failed to delete photograph file " + path, LOG_FAILED_DELETION_ATTEMPTS && FFConstants.UNSTABLE_LOGGING);
 						}
 					} catch (Exception e) {
 						FFConstants.log("Failed to delete photograph file " + path, FFConstants.UNSTABLE_LOGGING);

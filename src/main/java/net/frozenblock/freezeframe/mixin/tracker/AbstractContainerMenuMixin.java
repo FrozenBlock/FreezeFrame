@@ -68,10 +68,7 @@ public abstract class AbstractContainerMenuMixin {
 	) {
 		if (original && player != null) {
 			final ItemStack carriedAttachment = player.getAttachedOrElse(FFAttachmentTypes.CREATIVE_MODE_CARRIED_ITEM, ItemStack.EMPTY);
-			if (!carriedAttachment.isEmpty()) {
-				PhotographTracker.incrementOnItemStackDeletion(player.level(), carriedAttachment.copy());
-				dropOrPlaceInInventory(player, carriedAttachment);
-			}
+			if (!carriedAttachment.isEmpty()) dropOrPlaceInInventory(player, carriedAttachment);
 			player.removeAttached(FFAttachmentTypes.CREATIVE_MODE_CARRIED_ITEM);
 		}
 		return original;
