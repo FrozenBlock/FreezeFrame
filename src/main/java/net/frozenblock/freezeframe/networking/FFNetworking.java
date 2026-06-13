@@ -22,6 +22,7 @@ import net.fabricmc.fabric.api.networking.v1.ServerPlayNetworking;
 import net.frozenblock.freezeframe.networking.packet.CameraTakeScreenshotPacket;
 import net.frozenblock.freezeframe.networking.packet.ChangeItemStackSizePacket;
 import net.frozenblock.freezeframe.networking.packet.ChangeScopeZoomPacket;
+import net.frozenblock.freezeframe.networking.packet.DeletePhotographPacket;
 import net.frozenblock.freezeframe.networking.packet.DevelopingTableSyncSelectPhotographIndexPacket;
 import net.frozenblock.freezeframe.networking.packet.OpenBookPagePhotographInventoryPacket;
 import net.frozenblock.freezeframe.networking.packet.OpenFilmScreenPacket;
@@ -42,6 +43,7 @@ public class FFNetworking {
 
 		registry.register(CameraTakeScreenshotPacket.PACKET_TYPE, CameraTakeScreenshotPacket.CODEC);
 		registry.register(OpenFilmScreenPacket.PACKET_TYPE, OpenFilmScreenPacket.CODEC);
+		registry.register(DeletePhotographPacket.PACKET_TYPE, DeletePhotographPacket.CODEC);
 
 		c2sRegistry.register(DevelopingTableSyncSelectPhotographIndexPacket.PACKET_TYPE, DevelopingTableSyncSelectPhotographIndexPacket.CODEC);
 		ServerPlayNetworking.registerGlobalReceiver(DevelopingTableSyncSelectPhotographIndexPacket.PACKET_TYPE, DevelopingTableSyncSelectPhotographIndexPacket::handle);
