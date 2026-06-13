@@ -34,11 +34,8 @@ import net.minecraft.world.item.Items;
 import net.minecraft.world.item.component.WritableBookContent;
 
 public record SetBookPagePhotographPacket(InteractionHand hand, int pageIndex, int sourceInventorySlot, boolean removePhoto) implements CustomPacketPayload {
-	public static final Type<SetBookPagePhotographPacket> PACKET_TYPE = CustomPacketPayload.createType(FFConstants.safeString("set_book_page_photograph"));
-	public static final StreamCodec<FriendlyByteBuf, SetBookPagePhotographPacket> CODEC = StreamCodec.ofMember(
-		SetBookPagePhotographPacket::write,
-		SetBookPagePhotographPacket::new
-	);
+	public static final Type<SetBookPagePhotographPacket> TYPE = new Type<>(FFConstants.id("set_book_page_photograph"));
+	public static final StreamCodec<FriendlyByteBuf, SetBookPagePhotographPacket> CODEC = StreamCodec.ofMember(SetBookPagePhotographPacket::write, SetBookPagePhotographPacket::new);
 
 	public SetBookPagePhotographPacket(FriendlyByteBuf buf) {
 		this(buf.readEnum(InteractionHand.class), buf.readVarInt(), buf.readVarInt(), buf.readBoolean());
@@ -53,7 +50,7 @@ public record SetBookPagePhotographPacket(InteractionHand hand, int pageIndex, i
 
 	@Override
 	public Type<? extends CustomPacketPayload> type() {
-		return PACKET_TYPE;
+		return TYPE;
 	}
 
 	public static void handle(SetBookPagePhotographPacket packet, ServerPlayNetworking.Context context) {

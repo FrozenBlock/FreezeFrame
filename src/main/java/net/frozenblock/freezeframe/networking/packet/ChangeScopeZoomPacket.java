@@ -29,7 +29,7 @@ import net.minecraft.world.InteractionHand;
 import net.minecraft.world.item.ItemStack;
 
 public record ChangeScopeZoomPacket(InteractionHand hand, float zoom) implements CustomPacketPayload {
-	public static final Type<ChangeScopeZoomPacket> PACKET_TYPE = CustomPacketPayload.createType(FFConstants.safeString("change_scope_zoom"));
+	public static final Type<ChangeScopeZoomPacket> TYPE = new Type<>(FFConstants.id("change_scope_zoom"));
 	public static final StreamCodec<FriendlyByteBuf, ChangeScopeZoomPacket> CODEC = StreamCodec.ofMember(ChangeScopeZoomPacket::write, ChangeScopeZoomPacket::new);
 
 	public ChangeScopeZoomPacket(FriendlyByteBuf buf) {
@@ -43,7 +43,7 @@ public record ChangeScopeZoomPacket(InteractionHand hand, float zoom) implements
 
 	@Override
 	public Type<? extends CustomPacketPayload> type() {
-		return PACKET_TYPE;
+		return TYPE;
 	}
 
 	public static void handle(ChangeScopeZoomPacket packet, ServerPlayNetworking.Context context) {

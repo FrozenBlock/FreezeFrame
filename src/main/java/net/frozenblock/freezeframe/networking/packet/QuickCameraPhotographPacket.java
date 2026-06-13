@@ -26,7 +26,7 @@ import net.minecraft.network.protocol.common.custom.CustomPacketPayload;
 import net.minecraft.server.level.ServerPlayer;
 
 public record QuickCameraPhotographPacket() implements CustomPacketPayload {
-	public static final Type<QuickCameraPhotographPacket> PACKET_TYPE = CustomPacketPayload.createType(FFConstants.safeString("quick_camera_photograph"));
+	public static final Type<QuickCameraPhotographPacket> TYPE = new Type<>(FFConstants.id("quick_camera_photograph"));
 	public static final StreamCodec<FriendlyByteBuf, QuickCameraPhotographPacket> CODEC = StreamCodec.ofMember(QuickCameraPhotographPacket::write, QuickCameraPhotographPacket::new);
 
 	public QuickCameraPhotographPacket(FriendlyByteBuf buf) {
@@ -37,12 +37,11 @@ public record QuickCameraPhotographPacket() implements CustomPacketPayload {
 
 	@Override
 	public Type<? extends CustomPacketPayload> type() {
-		return PACKET_TYPE;
+		return TYPE;
 	}
 
 	public static void handle(QuickCameraPhotographPacket packet, ServerPlayNetworking.Context context) {
 		final ServerPlayer player = context.player();
-		if (player == null) return;
-		CameraItem.tryTakeInstantPhotograph(player, true);
+		if (player != null) CameraItem.tryTakeInstantPhotograph(player, true);
 	}
 }

@@ -36,7 +36,7 @@ public record CameraTakeScreenshotPacket(
 	String fileName,
 	FilmFilter filter
 ) implements CustomPacketPayload {
-	public static final Type<CameraTakeScreenshotPacket> PACKET_TYPE = CustomPacketPayload.createType(FFConstants.safeString("camera_take_screenshot"));
+	public static final Type<CameraTakeScreenshotPacket> TYPE = new Type<>(FFConstants.id("camera_take_screenshot"));
 	public static final StreamCodec<RegistryFriendlyByteBuf, CameraTakeScreenshotPacket> CODEC = StreamCodec.ofMember(CameraTakeScreenshotPacket::write, CameraTakeScreenshotPacket::new);
 
 	public CameraTakeScreenshotPacket(RegistryFriendlyByteBuf buf) {
@@ -72,6 +72,6 @@ public record CameraTakeScreenshotPacket(
 
 	@Override
 	public Type<?> type() {
-		return PACKET_TYPE;
+		return TYPE;
 	}
 }

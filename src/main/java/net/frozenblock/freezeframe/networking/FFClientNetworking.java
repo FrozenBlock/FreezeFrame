@@ -29,19 +29,19 @@ import net.minecraft.world.entity.Entity;
 public class FFClientNetworking {
 
 	public static void init() {
-		ClientPlayNetworking.registerGlobalReceiver(OpenFilmScreenPacket.PACKET_TYPE, (packet, ctx) -> {
+		ClientPlayNetworking.registerGlobalReceiver(OpenFilmScreenPacket.TYPE, (packet, ctx) -> {
 			ctx.client().execute(() -> {
 				if (ctx.player() == null) return;
 				ctx.client().gui.setScreen(new FilmScreen(ctx.player(), packet.hand()));
 			});
 		});
 
-		ClientPlayNetworking.registerGlobalReceiver(CameraTakeScreenshotPacket.PACKET_TYPE, (packet, ctx) -> {
+		ClientPlayNetworking.registerGlobalReceiver(CameraTakeScreenshotPacket.TYPE, (packet, ctx) -> {
 			final Entity entity = packet.entityId().isPresent() ? ctx.player().level().getEntity(packet.entityId().getAsInt()) : null;
 			PhotographScreenshotter.executeScreenshot(entity, packet.handheldCapture(), packet.wasScoping(), packet.fileName(), packet.zoom(), packet.filter());
 		});
 
-		ClientPlayNetworking.registerGlobalReceiver(DeletePhotographPacket.PACKET_TYPE, (packet, ctx) -> {
+		ClientPlayNetworking.registerGlobalReceiver(DeletePhotographPacket.TYPE, (packet, ctx) -> {
 			PhotographTracker.deletePhotographs(ctx.client().gameDirectory.toPath(), packet.photographNames());
 		});
 	}

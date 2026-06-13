@@ -24,7 +24,7 @@ import net.minecraft.network.protocol.common.custom.CustomPacketPayload;
 import java.util.List;
 
 public record DeletePhotographPacket(List<String> photographNames) implements CustomPacketPayload {
-	public static final Type<DeletePhotographPacket> PACKET_TYPE = CustomPacketPayload.createType(FFConstants.safeString("delete_photograph"));
+	public static final Type<DeletePhotographPacket> TYPE = new Type<>(FFConstants.id("delete_photograph"));
 	public static final StreamCodec<FriendlyByteBuf, DeletePhotographPacket> CODEC = StreamCodec.ofMember(DeletePhotographPacket::write, DeletePhotographPacket::new);
 
 	public DeletePhotographPacket(FriendlyByteBuf buf) {
@@ -37,6 +37,6 @@ public record DeletePhotographPacket(List<String> photographNames) implements Cu
 
 	@Override
 	public Type<?> type() {
-		return PACKET_TYPE;
+		return TYPE;
 	}
 }

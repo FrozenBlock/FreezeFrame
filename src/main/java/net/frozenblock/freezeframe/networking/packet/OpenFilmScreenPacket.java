@@ -26,7 +26,7 @@ import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.InteractionHand;
 
 public record OpenFilmScreenPacket(InteractionHand hand) implements CustomPacketPayload {
-	public static final Type<OpenFilmScreenPacket> PACKET_TYPE = CustomPacketPayload.createType(FFConstants.safeString("open_film_screen"));
+	public static final Type<OpenFilmScreenPacket> TYPE = new Type<>(FFConstants.id("open_film_screen"));
 	public static final StreamCodec<FriendlyByteBuf, OpenFilmScreenPacket> CODEC = StreamCodec.ofMember(OpenFilmScreenPacket::write, OpenFilmScreenPacket::new);
 
 	public OpenFilmScreenPacket(FriendlyByteBuf buf) {
@@ -43,6 +43,6 @@ public record OpenFilmScreenPacket(InteractionHand hand) implements CustomPacket
 
 	@Override
 	public Type<? extends CustomPacketPayload> type() {
-		return PACKET_TYPE;
+		return TYPE;
 	}
 }

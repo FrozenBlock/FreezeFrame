@@ -27,7 +27,7 @@ import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.item.ItemStack;
 
 public record ChangeItemStackSizePacket(ItemStack stack, int delta) implements CustomPacketPayload {
-	public static final Type<ChangeItemStackSizePacket> PACKET_TYPE = CustomPacketPayload.createType(FFConstants.safeString("change_item_stack_size"));
+	public static final Type<ChangeItemStackSizePacket> TYPE = new Type<>(FFConstants.id("change_item_stack_size"));
 	public static final StreamCodec<RegistryFriendlyByteBuf, ChangeItemStackSizePacket> CODEC = StreamCodec.ofMember(ChangeItemStackSizePacket::write, ChangeItemStackSizePacket::new);
 
 	public static ChangeItemStackSizePacket itemStackCloned(ItemStack stack) {
@@ -49,7 +49,7 @@ public record ChangeItemStackSizePacket(ItemStack stack, int delta) implements C
 
 	@Override
 	public Type<? extends CustomPacketPayload> type() {
-		return PACKET_TYPE;
+		return TYPE;
 	}
 
 	public static void handle(ChangeItemStackSizePacket packet, ServerPlayNetworking.Context context) {

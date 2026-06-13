@@ -25,7 +25,7 @@ import net.minecraft.network.protocol.common.custom.CustomPacketPayload;
 import net.minecraft.server.level.ServerPlayer;
 
 public record SelectCameraFilmPacket(int slotId, int selectedFilmIndex) implements CustomPacketPayload {
-	public static final Type<SelectCameraFilmPacket> PACKET_TYPE = CustomPacketPayload.createType(FFConstants.safeString("select_camera_film"));
+	public static final Type<SelectCameraFilmPacket> TYPE = new Type<>(FFConstants.id("select_camera_film"));
 	public static final StreamCodec<FriendlyByteBuf, SelectCameraFilmPacket> CODEC = StreamCodec.ofMember(SelectCameraFilmPacket::write, SelectCameraFilmPacket::new);
 
 	public SelectCameraFilmPacket(FriendlyByteBuf buf) {
@@ -39,12 +39,11 @@ public record SelectCameraFilmPacket(int slotId, int selectedFilmIndex) implemen
 
 	@Override
 	public Type<? extends CustomPacketPayload> type() {
-		return PACKET_TYPE;
+		return TYPE;
 	}
 
 	public static void handle(SelectCameraFilmPacket packet, ServerPlayNetworking.Context context) {
 		final ServerPlayer player = context.player();
-		if (player == null) return;
-		player.containerMenu.freezeFrame$setSelectedCameraFilmIndex(packet.slotId, packet.selectedFilmIndex);
+		if (player != null) player.containerMenu.freezeFrame$setSelectedCameraFilmIndex(packet.slotId, packet.selectedFilmIndex);
 	}
 }

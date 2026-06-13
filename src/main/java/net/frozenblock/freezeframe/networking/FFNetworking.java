@@ -42,39 +42,39 @@ public class FFNetworking {
 		final PayloadTypeRegistry<RegistryFriendlyByteBuf> registry = PayloadTypeRegistry.clientboundPlay();
 		final PayloadTypeRegistry<RegistryFriendlyByteBuf> c2sRegistry = PayloadTypeRegistry.serverboundPlay();
 
-		registry.register(CameraTakeScreenshotPacket.PACKET_TYPE, CameraTakeScreenshotPacket.CODEC);
-		registry.register(OpenFilmScreenPacket.PACKET_TYPE, OpenFilmScreenPacket.CODEC);
-		registry.registerLarge(DeletePhotographPacket.PACKET_TYPE, DeletePhotographPacket.CODEC, ClientboundCustomPayloadPacket.MAX_PAYLOAD_SIZE);
+		registry.register(CameraTakeScreenshotPacket.TYPE, CameraTakeScreenshotPacket.CODEC);
+		registry.register(OpenFilmScreenPacket.TYPE, OpenFilmScreenPacket.CODEC);
+		registry.registerLarge(DeletePhotographPacket.TYPE, DeletePhotographPacket.CODEC, ClientboundCustomPayloadPacket.MAX_PAYLOAD_SIZE);
 
-		c2sRegistry.register(DevelopingTableSyncSelectPhotographIndexPacket.PACKET_TYPE, DevelopingTableSyncSelectPhotographIndexPacket.CODEC);
-		ServerPlayNetworking.registerGlobalReceiver(DevelopingTableSyncSelectPhotographIndexPacket.PACKET_TYPE, DevelopingTableSyncSelectPhotographIndexPacket::handle);
+		c2sRegistry.register(DevelopingTableSyncSelectPhotographIndexPacket.TYPE, DevelopingTableSyncSelectPhotographIndexPacket.CODEC);
+		ServerPlayNetworking.registerGlobalReceiver(DevelopingTableSyncSelectPhotographIndexPacket.TYPE, DevelopingTableSyncSelectPhotographIndexPacket::handle);
 
-		c2sRegistry.register(SelectFilmPhotographPacket.PACKET_TYPE, SelectFilmPhotographPacket.CODEC);
-		ServerPlayNetworking.registerGlobalReceiver(SelectFilmPhotographPacket.PACKET_TYPE, SelectFilmPhotographPacket::handle);
+		c2sRegistry.register(SelectFilmPhotographPacket.TYPE, SelectFilmPhotographPacket.CODEC);
+		ServerPlayNetworking.registerGlobalReceiver(SelectFilmPhotographPacket.TYPE, SelectFilmPhotographPacket::handle);
 
-		c2sRegistry.register(SelectCameraFilmPacket.PACKET_TYPE, SelectCameraFilmPacket.CODEC);
-		ServerPlayNetworking.registerGlobalReceiver(SelectCameraFilmPacket.PACKET_TYPE, SelectCameraFilmPacket::handle);
+		c2sRegistry.register(SelectCameraFilmPacket.TYPE, SelectCameraFilmPacket.CODEC);
+		ServerPlayNetworking.registerGlobalReceiver(SelectCameraFilmPacket.TYPE, SelectCameraFilmPacket::handle);
 
-		c2sRegistry.register(QuickCameraPhotographPacket.PACKET_TYPE, QuickCameraPhotographPacket.CODEC);
-		ServerPlayNetworking.registerGlobalReceiver(QuickCameraPhotographPacket.PACKET_TYPE, QuickCameraPhotographPacket::handle);
+		c2sRegistry.register(QuickCameraPhotographPacket.TYPE, QuickCameraPhotographPacket.CODEC);
+		ServerPlayNetworking.registerGlobalReceiver(QuickCameraPhotographPacket.TYPE, QuickCameraPhotographPacket::handle);
 
-		c2sRegistry.register(SaveFilmChangesPacket.PACKET_TYPE, SaveFilmChangesPacket.CODEC);
-		ServerPlayNetworking.registerGlobalReceiver(SaveFilmChangesPacket.PACKET_TYPE, SaveFilmChangesPacket::handle);
+		c2sRegistry.register(SaveFilmChangesPacket.TYPE, SaveFilmChangesPacket.CODEC);
+		ServerPlayNetworking.registerGlobalReceiver(SaveFilmChangesPacket.TYPE, SaveFilmChangesPacket::handle);
 
-		c2sRegistry.register(ChangeScopeZoomPacket.PACKET_TYPE, ChangeScopeZoomPacket.CODEC);
-		ServerPlayNetworking.registerGlobalReceiver(ChangeScopeZoomPacket.PACKET_TYPE, ChangeScopeZoomPacket::handle);
+		c2sRegistry.register(ChangeScopeZoomPacket.TYPE, ChangeScopeZoomPacket.CODEC);
+		ServerPlayNetworking.registerGlobalReceiver(ChangeScopeZoomPacket.TYPE, ChangeScopeZoomPacket::handle);
 
-		c2sRegistry.register(SetBookPagePhotographPacket.PACKET_TYPE, SetBookPagePhotographPacket.CODEC);
-		ServerPlayNetworking.registerGlobalReceiver(SetBookPagePhotographPacket.PACKET_TYPE, SetBookPagePhotographPacket::handle);
+		c2sRegistry.register(SetBookPagePhotographPacket.TYPE, SetBookPagePhotographPacket.CODEC);
+		ServerPlayNetworking.registerGlobalReceiver(SetBookPagePhotographPacket.TYPE, SetBookPagePhotographPacket::handle);
 
-		c2sRegistry.register(OpenBookPagePhotographInventoryPacket.PACKET_TYPE, OpenBookPagePhotographInventoryPacket.CODEC);
-		ServerPlayNetworking.registerGlobalReceiver(OpenBookPagePhotographInventoryPacket.PACKET_TYPE, OpenBookPagePhotographInventoryPacket::handle);
+		c2sRegistry.register(OpenBookPagePhotographInventoryPacket.TYPE, OpenBookPagePhotographInventoryPacket.CODEC);
+		ServerPlayNetworking.registerGlobalReceiver(OpenBookPagePhotographInventoryPacket.TYPE, OpenBookPagePhotographInventoryPacket::handle);
 
-		c2sRegistry.register(ChangeItemStackSizePacket.PACKET_TYPE, ChangeItemStackSizePacket.CODEC);
-		ServerPlayNetworking.registerGlobalReceiver(ChangeItemStackSizePacket.PACKET_TYPE, ChangeItemStackSizePacket::handle);
+		c2sRegistry.register(ChangeItemStackSizePacket.TYPE, ChangeItemStackSizePacket.CODEC);
+		ServerPlayNetworking.registerGlobalReceiver(ChangeItemStackSizePacket.TYPE, ChangeItemStackSizePacket::handle);
 
-		c2sRegistry.register(SetCreativeModeCarriedItemPacket.PACKET_TYPE, SetCreativeModeCarriedItemPacket.CODEC);
-		ServerPlayNetworking.registerGlobalReceiver(SetCreativeModeCarriedItemPacket.PACKET_TYPE, SetCreativeModeCarriedItemPacket::handle);
+		c2sRegistry.register(SetCreativeModeCarriedItemPacket.TYPE, SetCreativeModeCarriedItemPacket.CODEC);
+		ServerPlayNetworking.registerGlobalReceiver(SetCreativeModeCarriedItemPacket.TYPE, SetCreativeModeCarriedItemPacket::handle);
 
 		FileTransferFilter.whitelistDestinationPath("photographs", false);
 		FileTransferFilter.whitelistDestinationPath("photographs", true);

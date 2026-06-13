@@ -34,7 +34,7 @@ import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.Level;
 
 public record SaveFilmChangesPacket(InteractionHand hand, FilmContents contents, boolean hasModifiedPhotographs) implements CustomPacketPayload {
-	public static final Type<SaveFilmChangesPacket> PACKET_TYPE = CustomPacketPayload.createType(FFConstants.safeString("save_film_changes"));
+	public static final Type<SaveFilmChangesPacket> TYPE = new Type<>(FFConstants.id("save_film_changes"));
 	public static final StreamCodec<FriendlyByteBuf, SaveFilmChangesPacket> CODEC = StreamCodec.ofMember(SaveFilmChangesPacket::write, SaveFilmChangesPacket::new);
 
 	public SaveFilmChangesPacket(FriendlyByteBuf buf) {
@@ -49,7 +49,7 @@ public record SaveFilmChangesPacket(InteractionHand hand, FilmContents contents,
 
 	@Override
 	public Type<? extends CustomPacketPayload> type() {
-		return PACKET_TYPE;
+		return TYPE;
 	}
 
 	public static void handle(SaveFilmChangesPacket packet, ServerPlayNetworking.Context context) {

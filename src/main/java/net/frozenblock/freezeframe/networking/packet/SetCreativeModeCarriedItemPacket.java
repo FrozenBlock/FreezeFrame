@@ -27,7 +27,7 @@ import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.item.ItemStack;
 
 public record SetCreativeModeCarriedItemPacket(ItemStack stack) implements CustomPacketPayload {
-	public static final Type<SetCreativeModeCarriedItemPacket> PACKET_TYPE = CustomPacketPayload.createType(FFConstants.safeString("set_creative_mode_carried_item"));
+	public static final Type<SetCreativeModeCarriedItemPacket> TYPE = new Type<>(FFConstants.id("set_creative_mode_carried_item"));
 	public static final StreamCodec<RegistryFriendlyByteBuf, SetCreativeModeCarriedItemPacket> CODEC = StreamCodec.ofMember(SetCreativeModeCarriedItemPacket::write, SetCreativeModeCarriedItemPacket::new);
 
 	public SetCreativeModeCarriedItemPacket(RegistryFriendlyByteBuf buf) {
@@ -40,7 +40,7 @@ public record SetCreativeModeCarriedItemPacket(ItemStack stack) implements Custo
 
 	@Override
 	public Type<? extends CustomPacketPayload> type() {
-		return PACKET_TYPE;
+		return TYPE;
 	}
 
 	public static void handle(SetCreativeModeCarriedItemPacket packet, ServerPlayNetworking.Context context) {

@@ -33,7 +33,7 @@ import net.minecraft.world.item.Items;
 import net.minecraft.world.item.component.WritableBookContent;
 
 public record OpenBookPagePhotographInventoryPacket(InteractionHand hand, int pageIndex) implements CustomPacketPayload {
-	public static final Type<OpenBookPagePhotographInventoryPacket> PACKET_TYPE = CustomPacketPayload.createType(FFConstants.safeString("open_book_page_photograph_inventory"));
+	public static final Type<OpenBookPagePhotographInventoryPacket> TYPE = new Type<>(FFConstants.id("open_book_page_photograph_inventory"));
 	public static final StreamCodec<FriendlyByteBuf, OpenBookPagePhotographInventoryPacket> CODEC = StreamCodec.ofMember(
 		OpenBookPagePhotographInventoryPacket::write,
 		OpenBookPagePhotographInventoryPacket::new
@@ -50,7 +50,7 @@ public record OpenBookPagePhotographInventoryPacket(InteractionHand hand, int pa
 
 	@Override
 	public Type<? extends CustomPacketPayload> type() {
-		return PACKET_TYPE;
+		return TYPE;
 	}
 
 	public static void handle(OpenBookPagePhotographInventoryPacket packet, ServerPlayNetworking.Context context) {

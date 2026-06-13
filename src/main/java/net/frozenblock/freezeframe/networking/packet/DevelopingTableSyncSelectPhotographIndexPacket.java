@@ -26,9 +26,7 @@ import net.minecraft.network.protocol.common.custom.CustomPacketPayload;
 import net.minecraft.server.level.ServerPlayer;
 
 public record DevelopingTableSyncSelectPhotographIndexPacket(int selectedPhotographIndex) implements CustomPacketPayload {
-	public static final Type<DevelopingTableSyncSelectPhotographIndexPacket> PACKET_TYPE = CustomPacketPayload.createType(
-		FFConstants.safeString("developing_table_sync_selected_photograph_index")
-	);
+	public static final Type<DevelopingTableSyncSelectPhotographIndexPacket> TYPE = new Type<>(FFConstants.id("developing_table_sync_selected_photograph_index"));
 	public static final StreamCodec<FriendlyByteBuf, DevelopingTableSyncSelectPhotographIndexPacket> CODEC = StreamCodec.ofMember(
 		DevelopingTableSyncSelectPhotographIndexPacket::write,
 		DevelopingTableSyncSelectPhotographIndexPacket::new
@@ -44,7 +42,7 @@ public record DevelopingTableSyncSelectPhotographIndexPacket(int selectedPhotogr
 
 	@Override
 	public Type<? extends CustomPacketPayload> type() {
-		return PACKET_TYPE;
+		return TYPE;
 	}
 
 	public static void handle(DevelopingTableSyncSelectPhotographIndexPacket packet, ServerPlayNetworking.Context context) {
