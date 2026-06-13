@@ -61,7 +61,7 @@ Put the changelog BELOW the dashes. ANYTHING ABOVE IS IGNORED.
 - Fixed the Film tooltip to now be centered regardless of the tooltip's width.
 - Fixed the dark border on the inner part of the Camera's scope overlay not being transparent.
 - Unloaded Photos no longer display as Minecraft's instance icon, and are now completely transparent.
-  - Photographs in Item Frames now render their Frame texture behind them, to alleviate edge cases where Item Frames may appear empty as a result of this change.
+  - Photos in Item Frames now render their Frame texture behind them to alleviate edge cases where Item Frames may appear empty as a result of this change.
 - Fixed a bug that caused Tripods to despawn when far from a Player.
 - Fixed a bug that caused the eye height of Tripods to significantly visually desync from its model after having its height adjusted.
 - Photos taken by Tripods now use Environment Attributes at their position instead of the Player's.
