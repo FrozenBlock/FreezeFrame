@@ -173,7 +173,7 @@ public class PhotographRenderer {
 		}
 
 		public static RenderType createRenderType(Identifier id) {
-			return RenderTypes.text(id.withPath(path -> "textures/gui/spries/photograph/" + path + ".png"));
+			return RenderTypes.text(id.withPath(path -> "textures/gui/sprites/photograph/" + path + ".png"));
 		}
 
 		public static Identifier createGuiSprite(Identifier id) {
