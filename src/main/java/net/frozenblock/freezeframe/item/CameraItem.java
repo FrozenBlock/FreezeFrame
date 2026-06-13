@@ -22,9 +22,10 @@ import java.util.Optional;
 import net.frozenblock.freezeframe.FFConstants;
 import net.frozenblock.freezeframe.component.CameraContents;
 import net.frozenblock.freezeframe.component.FilmContents;
-import net.frozenblock.freezeframe.component.FilmFilter;
+import net.frozenblock.freezeframe.component.filter.FilmFilter;
 import net.frozenblock.freezeframe.component.Photograph;
 import net.frozenblock.freezeframe.component.tooltip.CameraTooltip;
+import net.frozenblock.freezeframe.item.photograph.PhotographTracker;
 import net.frozenblock.freezeframe.networking.packet.CameraTakeScreenshotPacket;
 import net.frozenblock.freezeframe.registry.FFDataComponents;
 import net.frozenblock.freezeframe.registry.FFSounds;
@@ -333,6 +334,7 @@ public class CameraItem extends SpawnEggItem {
 		if (initialCameraContents == cameraContents) return;
 
 		stack.set(FFDataComponents.CAMERA_CONTENTS, cameraContents);
+		PhotographTracker.incrementPhotographCountAndDeleteIfEmpty(player.level(), fileName, 1);
 		broadcastChangesOnContainerMenu(player);
 	}
 

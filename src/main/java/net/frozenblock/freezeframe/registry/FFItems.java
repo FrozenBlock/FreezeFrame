@@ -20,7 +20,7 @@ package net.frozenblock.freezeframe.registry;
 import net.fabricmc.fabric.api.creativetab.v1.CreativeModeTabEvents;
 import net.frozenblock.freezeframe.component.CameraContents;
 import net.frozenblock.freezeframe.component.FilmContents;
-import net.frozenblock.freezeframe.component.FilmFilter;
+import net.frozenblock.freezeframe.component.filter.FilmFilter;
 import net.frozenblock.freezeframe.item.CameraItem;
 import net.frozenblock.freezeframe.item.FilmItem;
 import net.frozenblock.freezeframe.item.PhotographItem;

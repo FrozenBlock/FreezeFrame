@@ -28,6 +28,7 @@ import net.frozenblock.freezeframe.client.gui.screens.inventory.book.BookPagePho
 import net.frozenblock.freezeframe.client.photograph.PhotographHoverTooltipRenderer;
 import net.frozenblock.freezeframe.client.photograph.PhotographRenderer;
 import net.frozenblock.freezeframe.component.Photograph;
+import net.frozenblock.freezeframe.config.FFConfig;
 import net.frozenblock.freezeframe.networking.packet.OpenBookPagePhotographInventoryPacket;
 import net.frozenblock.freezeframe.registry.FFDataComponents;
 import net.frozenblock.freezeframe.util.BookPagePhotographHelper;
@@ -121,11 +122,13 @@ public abstract class BookEditScreenMixin extends Screen {
 		if (BookPagePhotographUiState.suppressingBookEditorPhotoControls()) return;
 		final int addButtonX = this.backgroundLeft() + FREEZE_FRAME$ADD_BUTTON_X_OFFSET;
 		final int addButtonY = this.backgroundTop() + FREEZE_FRAME$ADD_BUTTON_Y_OFFSET;
-		this.freezeFrame$addPhotoButton = this.addWidget(
-			Button.builder(Component.empty(), button -> this.freezeFrame$openPhotoInventory())
-				.bounds(addButtonX, addButtonY, FREEZE_FRAME$ADD_BUTTON_SIZE, FREEZE_FRAME$ADD_BUTTON_SIZE)
-				.build()
-		);
+		this.freezeFrame$addPhotoButton = FFConfig.BOOKS_SUPPORT_PHOTOGRAPHS.get()
+			? this.addWidget(
+				Button.builder(Component.empty(), button -> this.freezeFrame$openPhotoInventory())
+					.bounds(addButtonX, addButtonY, FREEZE_FRAME$ADD_BUTTON_SIZE, FREEZE_FRAME$ADD_BUTTON_SIZE)
+					.build()
+			)
+			: null;
 		this.freezeFrame$captureDefaultPageBox();
 		this.freezeFrame$applyPhotoTextLayout();
 		this.freezeFrame$updateButtonState();
@@ -157,9 +160,9 @@ public abstract class BookEditScreenMixin extends Screen {
 	private void freezeFrame$renderPhotoControls(GuiGraphicsExtractor graphics, int mouseX, int mouseY, float partialTicks, CallbackInfo info) {
 		if (BookPagePhotographUiState.suppressingBookEditorPhotoControls()) return;
 		this.freezeFrame$applyPhotoTextLayout();
-		this.freezeFrame$updateButtonState();
+		if (!FFConfig.BOOKS_SUPPORT_PHOTOGRAPHS.get()) this.freezeFrame$updateButtonState();
 		this.freezeFrame$renderPagePhoto(graphics, mouseX, mouseY);
-		this.freezeFrame$renderAddPhotoButton(graphics, mouseX, mouseY);
+		if (!FFConfig.BOOKS_SUPPORT_PHOTOGRAPHS.get()) this.freezeFrame$renderAddPhotoButton(graphics, mouseX, mouseY);
 	}
 
 	@Unique

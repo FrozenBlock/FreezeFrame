@@ -24,6 +24,7 @@ import com.mojang.serialization.DataResult;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
+import java.util.function.Function;
 import java.util.function.Supplier;
 import java.util.stream.Stream;
 import net.frozenblock.freezeframe.item.FilmItem;
@@ -171,6 +172,11 @@ public final class CameraContents {
 			this.items.clear();
 			this.weight = Fraction.ZERO;
 			this.selectedItem = -NO_SELECTED_ITEM_INDEX;
+			return this;
+		}
+
+		public Mutable forEachItem(Function<ItemStack, ItemStack> function) {
+			this.items.replaceAll(function::apply);
 			return this;
 		}
 

@@ -74,7 +74,7 @@ public class DevelopingTableMenu extends AbstractContainerMenu {
 		this.access = access;
 		this.sourceSlot = addSlot(new DevelopingTableSourceSlot(this.inputContainer, SOURCE_SLOT, 14, 15));
 		this.paperSlot = addSlot(new DevelopingTablePaperSlot(this.inputContainer, PAPER_SLOT, 44, 113));
-		this.resultSlot = addSlot(new DevelopingTableResultSlot(this, this.resultContainer, RESULT_SLOT, 116, 113));
+		this.resultSlot = addSlot(new DevelopingTableResultSlot(this, inventory.player, this.resultContainer, RESULT_SLOT, 116, 113));
 		this.addStandardInventorySlots(inventory, 8, 144);
 		this.addDataSlot(this.photographIndex);
 	}
@@ -158,30 +158,29 @@ public class DevelopingTableMenu extends AbstractContainerMenu {
 		ItemStack clicked = ItemStack.EMPTY;
 		if (slot == null || !slot.hasItem()) return clicked;
 
-		final ItemStack item = slot.getItem();
-		clicked = item.copy();
+		final ItemStack stack = slot.getItem();
+		clicked = stack.copy();
 		if (slotIndex == RESULT_SLOT) {
-			item.onCraftedBy(player, 1);
-			if (!this.moveItemStackTo(item, INV_SLOT_START, USE_ROW_SLOT_END, true)) return ItemStack.EMPTY;
-			slot.onQuickCraft(item, clicked);
+			if (!this.moveItemStackTo(stack, INV_SLOT_START, USE_ROW_SLOT_END, true)) return ItemStack.EMPTY;
+			slot.onQuickCraft(stack, clicked);
 		} else if (slotIndex == SOURCE_SLOT || slotIndex == PAPER_SLOT) {
-			if (!this.moveItemStackTo(item, INV_SLOT_START, USE_ROW_SLOT_END, false)) return ItemStack.EMPTY;
-		} else if (DevelopingTableSourceSlot.isValidAsSource(item)) {
-			if (!this.moveItemStackTo(item, SOURCE_SLOT, SOURCE_SLOT + 1, false)) return ItemStack.EMPTY;
-		} else if (item.is(Items.PAPER)) {
-			if (!this.moveItemStackTo(item, PAPER_SLOT, PAPER_SLOT + 1, false)) return ItemStack.EMPTY;
+			if (!this.moveItemStackTo(stack, INV_SLOT_START, USE_ROW_SLOT_END, false)) return ItemStack.EMPTY;
+		} else if (DevelopingTableSourceSlot.isValidAsSource(stack)) {
+			if (!this.moveItemStackTo(stack, SOURCE_SLOT, SOURCE_SLOT + 1, false)) return ItemStack.EMPTY;
+		} else if (stack.is(Items.PAPER)) {
+			if (!this.moveItemStackTo(stack, PAPER_SLOT, PAPER_SLOT + 1, false)) return ItemStack.EMPTY;
 		} else if (slotIndex >= INV_SLOT_START && slotIndex < INV_SLOT_END) {
-			if (!this.moveItemStackTo(item, USE_ROW_SLOT_START, USE_ROW_SLOT_END, false)) return ItemStack.EMPTY;
-		} else if (slotIndex >= USE_ROW_SLOT_START && slotIndex < USE_ROW_SLOT_END && !this.moveItemStackTo(item, INV_SLOT_START, INV_SLOT_END, false)) {
+			if (!this.moveItemStackTo(stack, USE_ROW_SLOT_START, USE_ROW_SLOT_END, false)) return ItemStack.EMPTY;
+		} else if (slotIndex >= USE_ROW_SLOT_START && slotIndex < USE_ROW_SLOT_END && !this.moveItemStackTo(stack, INV_SLOT_START, INV_SLOT_END, false)) {
 			return ItemStack.EMPTY;
 		}
 
-		if (item.isEmpty()) slot.set(ItemStack.EMPTY);
+		if (stack.isEmpty()) slot.set(ItemStack.EMPTY);
 
 		slot.setChanged();
-		if (item.getCount() == clicked.getCount()) return ItemStack.EMPTY;
+		if (stack.getCount() == clicked.getCount()) return ItemStack.EMPTY;
 
-		slot.onTake(player, item);
+		slot.onTake(player, stack);
 		this.setupResultSlot();
 
 		return clicked;

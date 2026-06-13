@@ -35,6 +35,7 @@ public final class FFConfigGui {
 	private static void setupEntries(ConfigCategory category, ConfigEntryBuilder builder) {
 		category.addEntry(booleanEntry(builder, "camera_ignores_effect_fog", FFConfig.CAMERA_IGNORES_EFFECT_FOG));
 		category.addEntry(booleanEntry(builder, "film_filter_recipes", FFConfig.FILM_FILTER_RECIPES));
+		category.addEntry(booleanEntry(builder, "books_support_photographs", FFConfig.BOOKS_SUPPORT_PHOTOGRAPHS));
 		category.addEntry(booleanEntry(builder, "scope_scrolling", FFConfig.SCOPE_SCROLLING));
 		category.addEntry(booleanEntry(builder, "scope_hides_hotbar", FFConfig.SCOPE_HIDES_HOTBAR));
 		category.addEntry(booleanEntry(builder, "scope_hides_crosshair", FFConfig.SCOPE_HIDES_CROSSHAIR));
@@ -43,6 +44,7 @@ public final class FFConfigGui {
 		category.addEntry(booleanEntry(builder, "hide_film_photo_preview_and_info", FFConfig.HIDE_FILM_PHOTO_PREVIEW_AND_INFO));
 		category.addEntry(booleanEntry(builder, "hide_photograph_preview", FFConfig.HIDE_PHOTOGRAPH_PREVIEW));
 		category.addEntry(booleanEntry(builder, "third_person_photo_item", FFConfig.THIRD_PERSON_PHOTOGRAPH_ITEM));
+		category.addEntry(booleanEntry(builder, "photograph_tracker", FFConfig.PHOTOGRAPH_TRACKER));
 		category.addEntry(intSliderEntry(builder, "photograph_resolution", FFConfig.PHOTOGRAPH_RESOLUTION, 128, 1024));
 		category.addEntry(
 			syncedEntry(

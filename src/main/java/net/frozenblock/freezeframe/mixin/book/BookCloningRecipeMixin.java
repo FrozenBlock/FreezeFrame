@@ -32,10 +32,7 @@ import org.spongepowered.asm.mixin.injection.At;
 @Mixin(BookCloningRecipe.class)
 public class BookCloningRecipeMixin {
 
-	@ModifyReturnValue(
-		method = "assemble(Lnet/minecraft/world/item/crafting/CraftingInput;)Lnet/minecraft/world/item/ItemStack;",
-		at = @At("RETURN")
-	)
+	@ModifyReturnValue(method = "assemble(Lnet/minecraft/world/item/crafting/CraftingInput;)Lnet/minecraft/world/item/ItemStack;", at = @At("RETURN"))
 	private ItemStack freezeFrame$incrementBookPhotoGenerationOnClone(
 		ItemStack original,
 		@Local(name = "source") ItemStack source

@@ -15,29 +15,29 @@
  * along with this program; if not, see <https://github.com/FrozenBlock/Licenses>.
  */
 
-package net.frozenblock.freezeframe.mixin.camera;
+package net.frozenblock.freezeframe.mixin.client.tracker;
 
 import com.llamalad7.mixinextras.injector.ModifyExpressionValue;
-import java.util.stream.Stream;
-import net.frozenblock.freezeframe.registry.FFContainerComponentManipulators;
-import net.minecraft.world.level.storage.loot.ContainerComponentManipulators;
+import net.fabricmc.api.EnvType;
+import net.fabricmc.api.Environment;
+import net.frozenblock.freezeframe.item.photograph.PhotographTracker;
+import net.minecraft.client.player.inventory.Hotbar;
+import net.minecraft.world.item.ItemStack;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.injection.At;
 
-@Mixin(ContainerComponentManipulators.class)
-public interface ContainerComponentManipulatorsMixin {
+@Environment(EnvType.CLIENT)
+@Mixin(Hotbar.class)
+public class HotbarMixin {
 
 	@ModifyExpressionValue(
-		method = "<clinit>",
+		method = "storeFrom",
 		at = @At(
 			value = "INVOKE",
-			target = "Ljava/util/stream/Stream;of([Ljava/lang/Object;)Ljava/util/stream/Stream;"
+			target = "Lnet/minecraft/world/entity/player/Inventory;getItem(I)Lnet/minecraft/world/item/ItemStack;"
 		)
 	)
-	private static Stream freezeFrame$addCameraContainerComponentManipulator(Stream original) {
-		final Stream.Builder newStream = Stream.builder();
-		original.forEach(newStream::add);
-		newStream.add(FFContainerComponentManipulators.CAMERA_CONTENTS);
-		return newStream.build();
+	private static ItemStack freezeFrame$onStoreToHotbar(ItemStack original) {
+		return PhotographTracker.stripAllPhotographComponents(original.copy());
 	}
 }

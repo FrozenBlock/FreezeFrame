@@ -2,7 +2,7 @@
   "required": false,
   "minVersion": "0.8.5",
   "package": "net.frozenblock.freezeframe.mixin",
-  "compatibilityLevel": "JAVA_21",
+  "compatibilityLevel": "JAVA_25",
   "mixins": [
     "book.BookCloningRecipeMixin",
     "book.ItemStackMixin",
@@ -18,7 +18,10 @@
     "camera.WolfMixin",
     "datafix.DataFixersMixin",
     "datafix.V3328Mixin",
-    "film.AbstractContainerMenuMixin"
+    "film.AbstractContainerMenuMixin",
+    "tracker.AbstractContainerMenuMixin",
+    "tracker.InventoryMixin",
+    "tracker.ItemEntityMixin"
   ],
   "client": [
     "client.book.BookEditScreenMixin",
@@ -51,7 +54,10 @@
     "client.screenshot.MobEffectFogEnvironmentMixin",
     "client.screenshot.OptionsMixin",
     "client.screenshot.RotatingSectionStorageMixin",
-    "client.screenshot.ScreenEffectRendererMixin"
+    "client.screenshot.ScreenEffectRendererMixin",
+    "client.tracker.CreativeInventoryScreenItemPickerMenuMixin",
+    "client.tracker.CreativeModeInventoryScreenMixin",
+    "client.tracker.HotbarMixin"
   ],
   "injectors": {
     "defaultRequire": 1

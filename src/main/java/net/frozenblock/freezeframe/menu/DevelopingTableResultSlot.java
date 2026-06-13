@@ -17,6 +17,9 @@
 
 package net.frozenblock.freezeframe.menu;
 
+import net.frozenblock.freezeframe.component.Photograph;
+import net.frozenblock.freezeframe.item.photograph.PhotographTracker;
+import net.frozenblock.freezeframe.registry.FFDataComponents;
 import net.frozenblock.freezeframe.registry.FFSounds;
 import net.minecraft.sounds.SoundSource;
 import net.minecraft.world.Container;
@@ -26,10 +29,13 @@ import net.minecraft.world.item.ItemStack;
 
 public class DevelopingTableResultSlot extends Slot {
 	private final DevelopingTableMenu menu;
+	private final Player player;
+	private int removeCount;
 
-	public DevelopingTableResultSlot(DevelopingTableMenu menu, Container container, int slot, int x, int y) {
+	public DevelopingTableResultSlot(DevelopingTableMenu menu, Player player, Container container, int slot, int x, int y) {
 		super(container, slot, x, y);
 		this.menu = menu;
+		this.player = player;
 	}
 
 	@Override
@@ -38,8 +44,31 @@ public class DevelopingTableResultSlot extends Slot {
 	}
 
 	@Override
-	public void onTake(Player player, ItemStack stack) {
-		stack.onCraftedBy(player, stack.getCount());
+	public ItemStack remove(final int amount) {
+		if (this.hasItem()) this.removeCount = this.removeCount + Math.min(amount, this.getItem().getCount());
+		return super.remove(amount);
+	}
+
+	@Override
+	protected void onQuickCraft(final ItemStack picked, final int count) {
+		this.removeCount += count;
+		this.checkTakeAchievements(picked);
+	}
+
+	@Override
+	protected void checkTakeAchievements(ItemStack carried) {
+		carried.onCraftedBy(this.player, this.removeCount);
+
+		final Photograph photograph = carried.get(FFDataComponents.PHOTOGRAPH);
+		if (photograph != null) PhotographTracker.incrementPhotographCountAndDeleteIfEmpty(player.level(), photograph.identifier().getPath(), carried.getCount());
+
+		this.removeCount = 0;
+	}
+
+	@Override
+	public void onTake(Player player, ItemStack carried) {
+		this.checkTakeAchievements(carried);
+
 		final ItemStack input = this.menu.paperSlot.remove(1);
 		if (!input.isEmpty()) this.menu.setupResultSlot();
 
@@ -58,6 +87,11 @@ public class DevelopingTableResultSlot extends Slot {
 			this.menu.lastSoundTime = gameTime;
 		});
 
-		super.onTake(player, stack);
+		super.onTake(player, carried);
+	}
+
+	@Override
+	public boolean isFake() {
+		return true;
 	}
 }

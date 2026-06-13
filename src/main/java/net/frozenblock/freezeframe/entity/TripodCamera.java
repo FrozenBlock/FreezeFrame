@@ -19,6 +19,7 @@ package net.frozenblock.freezeframe.entity;
 
 import net.frozenblock.freezeframe.component.CameraContents;
 import net.frozenblock.freezeframe.item.CameraItem;
+import net.frozenblock.freezeframe.item.photograph.PhotographTracker;
 import net.frozenblock.freezeframe.networking.packet.CameraTakeScreenshotPacket;
 import net.frozenblock.freezeframe.registry.FFDataComponents;
 import net.frozenblock.freezeframe.registry.FFSounds;
@@ -181,6 +182,7 @@ public class TripodCamera extends Mob {
 			if (isSuccess) {
 				CameraTakeScreenshotPacket.sendTo(photographer, this, fileName, CameraItem.getFilterForNextPhotograph(this.cameraContents));
 				this.setComponent(FFDataComponents.CAMERA_CONTENTS, cameraContents);
+				PhotographTracker.incrementPhotographCountAndDeleteIfEmpty(level, fileName, 1);
 			}
 		}
 	}
