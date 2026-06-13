@@ -34,6 +34,7 @@ import net.frozenblock.freezeframe.networking.packet.SetBookPagePhotographPacket
 import net.frozenblock.freezeframe.networking.packet.SetCreativeModeCarriedItemPacket;
 import net.frozenblock.lib.file.transfer.FileTransferFilter;
 import net.minecraft.network.RegistryFriendlyByteBuf;
+import net.minecraft.network.protocol.common.ClientboundCustomPayloadPacket;
 
 public class FFNetworking {
 
@@ -43,7 +44,7 @@ public class FFNetworking {
 
 		registry.register(CameraTakeScreenshotPacket.PACKET_TYPE, CameraTakeScreenshotPacket.CODEC);
 		registry.register(OpenFilmScreenPacket.PACKET_TYPE, OpenFilmScreenPacket.CODEC);
-		registry.register(DeletePhotographPacket.PACKET_TYPE, DeletePhotographPacket.CODEC);
+		registry.registerLarge(DeletePhotographPacket.PACKET_TYPE, DeletePhotographPacket.CODEC, ClientboundCustomPayloadPacket.MAX_PAYLOAD_SIZE);
 
 		c2sRegistry.register(DevelopingTableSyncSelectPhotographIndexPacket.PACKET_TYPE, DevelopingTableSyncSelectPhotographIndexPacket.CODEC);
 		ServerPlayNetworking.registerGlobalReceiver(DevelopingTableSyncSelectPhotographIndexPacket.PACKET_TYPE, DevelopingTableSyncSelectPhotographIndexPacket::handle);
