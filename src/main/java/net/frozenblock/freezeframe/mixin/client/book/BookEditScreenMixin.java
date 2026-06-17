@@ -160,9 +160,9 @@ public abstract class BookEditScreenMixin extends Screen {
 	private void freezeFrame$renderPhotoControls(GuiGraphicsExtractor graphics, int mouseX, int mouseY, float partialTicks, CallbackInfo info) {
 		if (BookPagePhotographUiState.suppressingBookEditorPhotoControls()) return;
 		this.freezeFrame$applyPhotoTextLayout();
-		if (!FFConfig.BOOKS_SUPPORT_PHOTOGRAPHS.get()) this.freezeFrame$updateButtonState();
+		if (FFConfig.BOOKS_SUPPORT_PHOTOGRAPHS.get()) this.freezeFrame$updateButtonState();
 		this.freezeFrame$renderPagePhoto(graphics, mouseX, mouseY);
-		if (!FFConfig.BOOKS_SUPPORT_PHOTOGRAPHS.get()) this.freezeFrame$renderAddPhotoButton(graphics, mouseX, mouseY);
+		if (FFConfig.BOOKS_SUPPORT_PHOTOGRAPHS.get()) this.freezeFrame$renderAddPhotoButton(graphics, mouseX, mouseY);
 	}
 
 	@Unique
