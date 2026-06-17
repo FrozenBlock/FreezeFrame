@@ -101,9 +101,8 @@ public class PhotographScreenshotter {
 					if (connection == null) break sendToServer;
 
 					try {
-						FileTransferPacket.create("photographs", photographFile).forEach(
-							packet -> connection.send(new ServerboundCustomPayloadPacket(packet))
-						);
+						final FileTransferPacket packet = FileTransferPacket.create("photographs", photographFile);
+						connection.send(new ServerboundCustomPayloadPacket(packet));
 					} catch (Exception e) {
 						FFConstants.error("Unable to send photograph to server", e);
 					}

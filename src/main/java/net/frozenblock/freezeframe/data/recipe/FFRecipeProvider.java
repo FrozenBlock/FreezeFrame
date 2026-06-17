@@ -29,7 +29,7 @@ import net.frozenblock.freezeframe.registry.FFBlocks;
 import net.frozenblock.freezeframe.registry.FFItems;
 import net.frozenblock.freezeframe.registry.FFRegistries;
 import net.frozenblock.freezeframe.registry.FFSpecialFilmFilters;
-import net.frozenblock.lib.recipe.api.RecipeExportNamespaceFix;
+import net.frozenblock.lib.item.api.recipe.RecipeExportNamespaceFix;
 import net.minecraft.advancements.predicates.ItemPredicate;
 import net.minecraft.core.Holder;
 import net.minecraft.core.HolderLookup;
