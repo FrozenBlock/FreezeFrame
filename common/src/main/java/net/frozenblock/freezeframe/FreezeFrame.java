@@ -19,10 +19,10 @@ package net.frozenblock.freezeframe;
 
 import net.frozenblock.freezeframe.config.FFConfig;
 import net.frozenblock.freezeframe.item.photograph.PhotographTracker;
-import net.frozenblock.freezeframe.networking.FFNetworking;
 import net.frozenblock.freezeframe.registry.FFAttachmentTypes;
 import net.frozenblock.freezeframe.registry.FFBlocks;
 import net.frozenblock.freezeframe.registry.FFContainerComponentManipulators;
+import net.frozenblock.freezeframe.registry.FFCreativeInventorySorting;
 import net.frozenblock.freezeframe.registry.FFDataComponentPredicates;
 import net.frozenblock.freezeframe.registry.FFDataComponents;
 import net.frozenblock.freezeframe.registry.FFEntityTypes;
@@ -52,13 +52,11 @@ public final class FreezeFrame {
 		FFMenuTypes.init();
 		FFStats.init();
 
-		FFNetworking.setup();
-
 		FFConfig.CONFIG.load(true);
 	}
 
 	public static void setup() {
-
+		FFCreativeInventorySorting.setup();
 	}
 
 	private FreezeFrame() {}

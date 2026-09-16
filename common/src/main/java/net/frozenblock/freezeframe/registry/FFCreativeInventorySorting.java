@@ -17,18 +17,21 @@
 
 package net.frozenblock.freezeframe.registry;
 
-import net.frozenblock.freezeframe.client.gui.screens.inventory.DevelopingTableScreen;
-import net.frozenblock.freezeframe.client.gui.screens.inventory.book.BookPagePhotographScreen;
-import net.mehvahdjukaar.candlelight.api.ClientOnly;
-import net.minecraft.client.gui.screens.MenuScreens;
+import net.frozenblock.lib.item.api.creative.CreativeModeTabSorter;
+import net.minecraft.world.item.CreativeModeTabs;
+import net.minecraft.world.item.Items;
 
-@ClientOnly
-public final class FFMenuScreens {
+public final class FFCreativeInventorySorting {
 
+	/**
+	 * Called separately on Fabric and NeoForge
+	 */
 	public static void setup() {
-		MenuScreens.register(FFMenuTypes.DEVELOPING_TABLE.get(), DevelopingTableScreen::new);
-		MenuScreens.register(FFMenuTypes.BOOK_PAGE_PHOTOGRAPH.get(), BookPagePhotographScreen::new);
+		CreativeModeTabSorter.insertAfter(Items.LOOM, FFItems.DEVELOPING_TABLE.get(), CreativeModeTabs.FUNCTIONAL_BLOCKS);
+
+		CreativeModeTabSorter.insertAfter(Items.SPYGLASS, FFItems.CAMERA.get(), CreativeModeTabs.TOOLS_AND_UTILITIES);
+		CreativeModeTabSorter.insertAfter(FFItems.CAMERA.get(), FFItems.FILM.get(), CreativeModeTabs.TOOLS_AND_UTILITIES);
 	}
 
-	private FFMenuScreens() {}
+	private FFCreativeInventorySorting() {}
 }

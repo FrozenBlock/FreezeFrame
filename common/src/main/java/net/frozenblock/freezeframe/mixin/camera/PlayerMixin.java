@@ -17,25 +17,20 @@
 
 package net.frozenblock.freezeframe.mixin.camera;
 
-import com.llamalad7.mixinextras.injector.wrapoperation.Operation;
-import com.llamalad7.mixinextras.injector.wrapoperation.WrapOperation;
+import com.llamalad7.mixinextras.injector.ModifyReturnValue;
 import net.frozenblock.freezeframe.util.ScopeItemHelper;
 import net.minecraft.world.entity.player.Player;
-import net.minecraft.world.item.ItemStack;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.injection.At;
 
 @Mixin(Player.class)
 public class PlayerMixin {
 
-	@WrapOperation(
+	@ModifyReturnValue(
 		method = "isScoping",
-		at = @At(
-			value = "INVOKE",
-			target = "Lnet/minecraft/world/item/ItemStack;is(Ljava/lang/Object;)Z"
-		)
+		at = @At("RETURN")
 	)
-	private boolean freezeFrame$enableScopingForCamera(ItemStack instance, Object o, Operation<Boolean> original) {
-		return original.call(instance, o) || ScopeItemHelper.isScopeItem(instance);
+	private boolean freezeFrame$enableScopingForCamera(boolean original) {
+		return original || ScopeItemHelper.isScopeItem(Player.class.cast(this).getUseItem());
 	}
 }

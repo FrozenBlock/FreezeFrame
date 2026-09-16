@@ -18,12 +18,6 @@
 package net.frozenblock.freezeframe;
 
 import com.mojang.blaze3d.platform.InputConstants;
-import net.fabricmc.api.ClientModInitializer;
-import net.fabricmc.api.EnvType;
-import net.fabricmc.api.Environment;
-import net.fabricmc.fabric.api.client.keymapping.v1.KeyMappingHelper;
-import net.fabricmc.fabric.api.client.rendering.v1.ClientTooltipComponentCallback;
-import net.fabricmc.fabric.api.client.rendering.v1.ModelLayerRegistry;
 import net.frozenblock.freezeframe.client.FFModelLayers;
 import net.frozenblock.freezeframe.client.scope.ScopeAndCameraUseController;
 import net.frozenblock.freezeframe.component.tooltip.CameraTooltip;
@@ -32,8 +26,9 @@ import net.frozenblock.freezeframe.component.tooltip.PhotographTooltip;
 import net.frozenblock.freezeframe.component.tooltip.client.ClientCameraTooltip;
 import net.frozenblock.freezeframe.component.tooltip.client.ClientFilmTooltip;
 import net.frozenblock.freezeframe.component.tooltip.client.ClientPhotographTooltip;
-import net.frozenblock.freezeframe.networking.FFClientNetworking;
 import net.frozenblock.freezeframe.registry.FFMenuScreens;
+import net.frozenblock.lib.event.api.events.client.ClientTooltipComponentCallback;
+import net.frozenblock.lib.platform.client.KeyMappingRegistry;
 import net.mehvahdjukaar.candlelight.api.ClientOnly;
 import net.minecraft.client.KeyMapping;
 
@@ -43,14 +38,9 @@ public final class FreezeFrameClient {
 
 	public static void init() {
 		FFModelLayers.init();
-
-
-		KeyMappingHelper.registerKeyMapping(RESET_SCOPE_ZOOM);
-
 		ScopeAndCameraUseController.init();
 
-
-
+		KeyMappingRegistry.register(RESET_SCOPE_ZOOM);
 		ClientTooltipComponentCallback.EVENT.register(component -> {
 			if (component instanceof PhotographTooltip tooltip) return new ClientPhotographTooltip(tooltip);
 			if (component instanceof FilmTooltip tooltip) return new ClientFilmTooltip(tooltip.contents(), tooltip.maxPhotographs());

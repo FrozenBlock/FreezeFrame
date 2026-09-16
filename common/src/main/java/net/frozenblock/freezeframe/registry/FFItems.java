@@ -17,7 +17,6 @@
 
 package net.frozenblock.freezeframe.registry;
 
-import net.fabricmc.fabric.api.creativetab.v1.CreativeModeTabEvents;
 import net.frozenblock.freezeframe.FFConstants;
 import net.frozenblock.freezeframe.component.CameraContents;
 import net.frozenblock.freezeframe.component.FilmContents;
@@ -33,9 +32,7 @@ import net.frozenblock.lib.item.api.component.FrozenLibDataComponents;
 import net.frozenblock.lib.platform.api.registry.DeferredItem;
 import net.frozenblock.lib.platform.api.registry.DeferredRegister;
 import net.minecraft.world.item.BlockItem;
-import net.minecraft.world.item.CreativeModeTabs;
 import net.minecraft.world.item.Item;
-import net.minecraft.world.item.Items;
 
 public final class FFItems {
 	private static final DeferredRegister.Items REGISTER = DeferredRegister.createItems(FFConstants.MOD_ID);
@@ -76,18 +73,7 @@ public final class FFItems {
 		REGISTER.register();
 	}
 
-	public static void init() {
-		CreativeModeTabEvents.modifyOutputEvent(CreativeModeTabs.FUNCTIONAL_BLOCKS).register(
-			output -> output.insertAfter(Items.LOOM, DEVELOPING_TABLE)
-		);
-
-		CreativeModeTabEvents.modifyOutputEvent(CreativeModeTabs.TOOLS_AND_UTILITIES).register(
-			entries -> {
-				entries.insertAfter(Items.SPYGLASS, CAMERA);
-				entries.insertAfter(CAMERA, FILM);
-			}
-		);
-	}
+	public static void init() {}
 
 	private FFItems() {}
 }

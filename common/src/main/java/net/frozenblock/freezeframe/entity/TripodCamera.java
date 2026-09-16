@@ -115,7 +115,7 @@ public class TripodCamera extends Mob {
 	@Nullable
 	@Override
 	public <T> T get(DataComponentType<? extends T> type) {
-		if (type == FFDataComponents.CAMERA_CONTENTS) return castComponentValue(type, this.cameraContents);
+		if (type == FFDataComponents.CAMERA_CONTENTS.get()) return castComponentValue(type, this.cameraContents);
 		return super.get(type);
 	}
 
@@ -127,7 +127,7 @@ public class TripodCamera extends Mob {
 
 	@Override
 	protected <T> boolean applyImplicitComponent(final DataComponentType<T> type, final T value) {
-		if (type == FFDataComponents.CAMERA_CONTENTS) {
+		if (type == FFDataComponents.CAMERA_CONTENTS.get()) {
 			this.cameraContents = castComponentValue(FFDataComponents.CAMERA_CONTENTS.get(), value);
 			return true;
 		}
@@ -465,6 +465,7 @@ public class TripodCamera extends Mob {
 	public ItemStack getPickResult() {
 		final ItemStack stack = super.getPickResult();
 		if (stack == null) return stack;
+
 		final CameraContents cameraContents = this.get(FFDataComponents.CAMERA_CONTENTS.get());
 		if (cameraContents != null) stack.set(FFDataComponents.CAMERA_CONTENTS.get(), cameraContents);
 		return stack;

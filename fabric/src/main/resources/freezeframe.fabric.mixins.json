@@ -1,0 +1,16 @@
+{
+  "required": false,
+  "minVersion": "0.8.5",
+  "package": "net.frozenblock.freezeframe.mixin.fabric",
+  "compatibilityLevel": "JAVA_25",
+  "mixins": [
+    "camera.ContainerComponentManipulatorsMixin"
+  ],
+  "client": [
+    "client.camera.HudMixin",
+    "client.screenshot.ScreenEffectRendererMixin"
+  ],
+  "injectors": {
+    "defaultRequire": 1
+  }
+}

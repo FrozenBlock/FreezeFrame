@@ -27,7 +27,7 @@ public final class FreezeFrameNeoForge {
 
 		// AFTER register event
 		modBus.addListener(FMLCommonSetupEvent.class, event -> {
-			FFCreativeInventorySorting.setup();
+			FreezeFrame.setup();
 		});
 	}
 }

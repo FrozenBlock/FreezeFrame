@@ -15,7 +15,7 @@
  * along with this program; if not, see <https://github.com/FrozenBlock/Licenses>.
  */
 
-package net.frozenblock.freezeframe.mixin.camera;
+package net.frozenblock.freezeframe.mixin.fabric.camera;
 
 import com.llamalad7.mixinextras.injector.ModifyExpressionValue;
 import java.util.stream.Stream;
@@ -24,6 +24,7 @@ import net.minecraft.world.level.storage.loot.ContainerComponentManipulators;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.injection.At;
 
+// There is currently no way to safely add new ContainerComponentManipulators on NeoForge.
 @Mixin(ContainerComponentManipulators.class)
 public interface ContainerComponentManipulatorsMixin {
 

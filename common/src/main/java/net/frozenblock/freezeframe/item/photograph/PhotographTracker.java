@@ -35,7 +35,9 @@ import net.frozenblock.freezeframe.config.FFConfig;
 import net.frozenblock.freezeframe.networking.packet.DeletePhotographPacket;
 import net.frozenblock.freezeframe.registry.FFAttachmentTypes;
 import net.frozenblock.freezeframe.registry.FFDataComponents;
-import net.frozenblock.lib.event.api.events.PlayerJoinEvents;
+import net.frozenblock.lib.event.api.events.ServerEntityLevelChangeEvents;
+import net.frozenblock.lib.event.api.events.ServerLivingEntityEvents;
+import net.frozenblock.lib.event.api.events.ServerPlayerEvents;
 import net.frozenblock.lib.file.transfer.FileTransferPacket;
 import net.frozenblock.lib.networking.api.NetworkingHelper;
 import net.frozenblock.lib.networking.api.PlayerLookup;
@@ -58,13 +60,13 @@ public record PhotographTracker(Map<String, Integer> photographCounts, List<Stri
 	).apply(instance, PhotographTracker::new));
 
 	public static void init() {
-		PlayerJoinEvents.ON_JOIN_SERVER.register(((server, player) -> {
+		ServerPlayerEvents.JOIN.register(((server, player) -> {
 			notifyOfAllDeletedPhotographs(player);
 		}));
 
 		ServerLivingEntityEvents.AFTER_DEATH.register((entity, source) -> removeCreativeModeCarriedItem(entity));
 		ServerEntityLevelChangeEvents.AFTER_PLAYER_CHANGE_LEVEL.register((player, origin, destination) -> removeCreativeModeCarriedItem(player));
-		ServerPlayerEvents.LEAVE.register(PhotographTracker::removeCreativeModeCarriedItem);
+		ServerPlayerEvents.LEAVE.register(((server, player) -> removeCreativeModeCarriedItem(player)));
 	}
 
 	public static void notifyOfAllDeletedPhotographs(ServerPlayer player) {
@@ -181,10 +183,10 @@ public record PhotographTracker(Map<String, Integer> photographCounts, List<Stri
 	}
 
 	public static void incrementOnItemStackSizeChange(Level level, ItemStack stack, int delta, boolean allowRecursion) {
-		final Photograph photograph = stack.get(FFDataComponents.PHOTOGRAPH);
+		final Photograph photograph = stack.get(FFDataComponents.PHOTOGRAPH.get());
 		if (photograph != null) incrementPhotographCountAndDeleteIfEmpty(level, photograph.identifier().getPath(), delta);
 
-		final FilmContents filmContents = stack.getOrDefault(FFDataComponents.FILM_CONTENTS, FilmContents.EMPTY);
+		final FilmContents filmContents = stack.getOrDefault(FFDataComponents.FILM_CONTENTS.get(), FilmContents.EMPTY);
 		filmContents.photographs().forEach(filmPhotograph -> incrementPhotographCountAndDeleteIfEmpty(level, filmPhotograph.identifier().getPath(), delta));
 
 		if (!allowRecursion) return;
@@ -198,13 +200,13 @@ public record PhotographTracker(Map<String, Integer> photographCounts, List<Stri
 	}
 
 	public static ItemStack stripAllPhotographComponents(ItemStack stack) {
-		stack.remove(FFDataComponents.PHOTOGRAPH);
+		stack.remove(FFDataComponents.PHOTOGRAPH.get());
 
-		final FilmContents initialFilmContents = stack.getOrDefault(FFDataComponents.FILM_CONTENTS, FilmContents.EMPTY);
+		final FilmContents initialFilmContents = stack.getOrDefault(FFDataComponents.FILM_CONTENTS.get(), FilmContents.EMPTY);
 		if (!initialFilmContents.isEmpty()) {
 			final FilmContents.Mutable filmContents = new FilmContents.Mutable(initialFilmContents);
 			filmContents.removeAllPhotographs();
-			stack.set(FFDataComponents.FILM_CONTENTS, filmContents.toImmutable());
+			stack.set(FFDataComponents.FILM_CONTENTS.get(), filmContents.toImmutable());
 		}
 
 		ContainerComponentManipulators.ALL_MANIPULATORS.forEach((type, manipulator) -> {

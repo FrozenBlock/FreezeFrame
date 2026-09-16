@@ -21,20 +21,21 @@
   "environment": "*",
   "entrypoints": {
     "main": [
-      "net.frozenblock.freezeframe.FreezeFrame"
+      "net.frozenblock.freezeframe.FreezeFrameFabric"
     ],
     "client": [
-      "net.frozenblock.freezeframe.FreezeFrameClient"
+      "net.frozenblock.freezeframe.FreezeFrameFabricClient"
     ],
     "modmenu": [
-      "net.frozenblock.freezeframe.config.gui.ModMenuIntegration"
+      "net.frozenblock.freezeframe.config.gui.FFModMenuIntegration"
     ],
     "fabric-datagen": [
       "net.frozenblock.freezeframe.data.FFDataGenerator"
     ]
   },
   "mixins": [
-    "freezeframe.mixins.json"
+    "freezeframe.mixins.json",
+    "freezeframe.fabric.mixins.json"
   ],
   "accessWidener": "freezeframe.classtweaker",
   "depends": {

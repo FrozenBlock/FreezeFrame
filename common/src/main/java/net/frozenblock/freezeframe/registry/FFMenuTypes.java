@@ -22,8 +22,6 @@ import net.frozenblock.freezeframe.menu.BookPagePhotographMenu;
 import net.frozenblock.freezeframe.menu.DevelopingTableMenu;
 import net.frozenblock.lib.platform.api.registry.DeferredHolder;
 import net.frozenblock.lib.platform.api.registry.DeferredRegister;
-import net.minecraft.core.Registry;
-import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.core.registries.Registries;
 import net.minecraft.world.flag.FeatureFlags;
 import net.minecraft.world.inventory.MenuType;
@@ -37,7 +35,7 @@ public final class FFMenuTypes {
 	public static final DeferredHolder<MenuType<?>, ? extends MenuType<DevelopingTableMenu>> DEVELOPING_TABLE = REGISTER.register("developing_table",
 		() -> new MenuType<>(DevelopingTableMenu::new, FeatureFlags.DEFAULT_FLAGS)
 	);
-	public static final DeferredHolder<MenuType<?>, ? extends MenuType<DevelopingTableMenu>> BOOK_PAGE_PHOTOGRAPH = REGISTER.register("book_page_photograph",
+	public static final DeferredHolder<MenuType<?>, ? extends MenuType<BookPagePhotographMenu>> BOOK_PAGE_PHOTOGRAPH = REGISTER.register("book_page_photograph",
 		() -> new MenuType<>(BookPagePhotographMenu::new, FeatureFlags.DEFAULT_FLAGS)
 	);
 

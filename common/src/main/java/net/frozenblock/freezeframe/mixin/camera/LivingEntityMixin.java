@@ -40,7 +40,8 @@ public abstract class LivingEntityMixin {
 		method = "updatingUsingItem",
 		at = @At(
 			value = "INVOKE",
-			target = "Lnet/minecraft/world/item/ItemStack;isSameItem(Lnet/minecraft/world/item/ItemStack;Lnet/minecraft/world/item/ItemStack;)Z"
+			target = "Lnet/minecraft/world/entity/LivingEntity;getItemInHand(Lnet/minecraft/world/InteractionHand;)Lnet/minecraft/world/item/ItemStack;",
+			ordinal = 0
 		),
 		cancellable = true
 	)

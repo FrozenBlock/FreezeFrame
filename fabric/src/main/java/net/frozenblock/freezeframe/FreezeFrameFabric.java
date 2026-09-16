@@ -18,6 +18,7 @@
 package net.frozenblock.freezeframe;
 
 import net.fabricmc.api.ModInitializer;
+import net.frozenblock.freezeframe.networking.FFNetworking;
 
 public final class FreezeFrameFabric implements ModInitializer {
 
@@ -25,5 +26,6 @@ public final class FreezeFrameFabric implements ModInitializer {
 	public void onInitialize() {
 		FreezeFrame.init();
 		FreezeFrame.setup();
+		FFNetworking.setup();
 	}
 }

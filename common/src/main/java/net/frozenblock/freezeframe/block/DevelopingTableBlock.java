@@ -53,7 +53,7 @@ public class DevelopingTableBlock extends HorizontalDirectionalBlock {
 		if (level.isClientSide()) return InteractionResult.SUCCESS;
 
 		player.openMenu(state.getMenuProvider(level, pos));
-		player.awardStat(FFStats.INTERACT_WITH_DEVELOPING_TABLE);
+		player.awardStat(FFStats.INTERACT_WITH_DEVELOPING_TABLE.get());
 		return InteractionResult.CONSUME;
 	}
 

@@ -26,8 +26,8 @@ public final class FreezeFrameFabricClient implements ClientModInitializer {
 
 	@Override
 	public void onInitializeClient() {
-		FreezeFrame.init();
-		FreezeFrame.setup();
+		FreezeFrameClient.init();
+		FreezeFrameClient.setup();
 		FFClientNetworking.setup();
 	}
 }

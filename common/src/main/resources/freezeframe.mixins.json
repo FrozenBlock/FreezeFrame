@@ -8,7 +8,6 @@
     "book.ItemStackMixin",
     "book.ServerGamePacketListenerImplMixin",
     "camera.AbstractContainerMenuMixin",
-    "camera.ContainerComponentManipulatorsMixin",
     "camera.GoatAiMixin",
     "camera.ItemStackMixin",
     "camera.LivingEntityMixin",
@@ -32,7 +31,6 @@
     "client.camera.AbstractContainerScreenMixin",
     "client.camera.ArmPoseMixin",
     "client.camera.AvatarRendererMixin",
-    "client.camera.HudMixin",
     "client.camera.HumanoidModelMixin",
     "client.camera.ItemInHandRendererMixin",
     "client.camera.MinecraftMixin",
@@ -54,7 +52,6 @@
     "client.screenshot.MobEffectFogEnvironmentMixin",
     "client.screenshot.OptionsMixin",
     "client.screenshot.RotatingSectionStorageMixin",
-    "client.screenshot.ScreenEffectRendererMixin",
     "client.tracker.CreativeInventoryScreenItemPickerMenuMixin",
     "client.tracker.CreativeModeInventoryScreenMixin",
     "client.tracker.HotbarMixin"

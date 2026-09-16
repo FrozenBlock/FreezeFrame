@@ -41,6 +41,7 @@ public class GameRendererMixin {
 	)
 	public RenderTarget freezeFrame$useScreenshotRenderTargetForRender(RenderTarget original) {
 		if (!FFScreenshotUtil.screenshotting()) return original;
+
 		final RenderTarget screenshotTarget = FFScreenshotUtil.getRenderTarget();
 		return screenshotTarget != null ? screenshotTarget : original;
 	}
@@ -48,6 +49,7 @@ public class GameRendererMixin {
 	@ModifyReturnValue(method = "mainRenderTarget", at = @At("RETURN"))
 	public RenderTarget freezeFrame$useScreenshotRenderTarget(RenderTarget original) {
 		if (!FFScreenshotUtil.screenshotting()) return original;
+
 		final RenderTarget screenshotTarget = FFScreenshotUtil.getRenderTarget();
 		return screenshotTarget != null ? screenshotTarget : original;
 	}

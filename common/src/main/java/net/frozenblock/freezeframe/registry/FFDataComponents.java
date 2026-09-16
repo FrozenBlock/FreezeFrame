@@ -18,21 +18,17 @@
 package net.frozenblock.freezeframe.registry;
 
 import com.mojang.serialization.Codec;
-import java.util.function.UnaryOperator;
-import net.fabricmc.fabric.api.item.v1.DefaultItemComponentEvents;
 import net.frozenblock.freezeframe.FFConstants;
 import net.frozenblock.freezeframe.component.BookPagePhotographs;
 import net.frozenblock.freezeframe.component.CameraContents;
 import net.frozenblock.freezeframe.component.FilmContents;
-import net.frozenblock.freezeframe.component.filter.FilmFilter;
 import net.frozenblock.freezeframe.component.Photograph;
 import net.frozenblock.freezeframe.component.ScopeZoomConfig;
+import net.frozenblock.freezeframe.component.filter.FilmFilter;
 import net.frozenblock.freezeframe.util.ScopeZoomHelper;
+import net.frozenblock.lib.event.api.events.DefaultItemComponentEvents;
 import net.frozenblock.lib.platform.api.registry.DeferredDataComponentType;
 import net.frozenblock.lib.platform.api.registry.DeferredRegister;
-import net.minecraft.core.Registry;
-import net.minecraft.core.component.DataComponentType;
-import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.network.codec.ByteBufCodecs;
 import net.minecraft.world.item.Items;
 
@@ -71,7 +67,7 @@ public final class FFDataComponents {
 	public static void init() {
 		DefaultItemComponentEvents.MODIFY.register(modifyContext -> {
 			modifyContext.modify(Items.SPYGLASS, componentBuilder -> {
-				componentBuilder.set(SCOPE_ZOOM_CONFIG, ScopeZoomHelper.SPYGLASS_DEFAULTS);
+				componentBuilder.set(SCOPE_ZOOM_CONFIG.get(), ScopeZoomHelper.SPYGLASS_DEFAULTS);
 			});
 		});
 	}
