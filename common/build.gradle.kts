@@ -49,6 +49,7 @@ dependencies {
     compileOnly("io.github.llamalad7:mixinextras-common:0.5.3")
     annotationProcessor("io.github.llamalad7:mixinextras-common:0.5.3")
 
+    // Cloth Config
     compileOnly("me.shedaniel.cloth:cloth-config:${cloth_config_version}")
 }
 

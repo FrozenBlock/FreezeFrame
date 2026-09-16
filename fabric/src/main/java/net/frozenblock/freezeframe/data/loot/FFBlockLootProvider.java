@@ -35,6 +35,6 @@ public final class FFBlockLootProvider extends FabricBlockLootSubProvider {
 	public void generate() {
 		final HolderLookup.RegistryLookup<Enchantment> enchantments = this.registries.lookupOrThrow(Registries.ENCHANTMENT);
 
-		this.dropSelf(FFBlocks.DEVELOPING_TABLE);
+		this.dropSelf(FFBlocks.DEVELOPING_TABLE.get());
 	}
 }

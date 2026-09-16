@@ -63,15 +63,15 @@ public final class FFRecipeProvider extends FabricRecipeProvider {
 				final HolderLookup.RegistryLookup<Item> items = this.registries.lookupOrThrow(Registries.ITEM);
 				final HolderLookup.RegistryLookup<SpecialFilmFilter> specialFilmFilters = this.registries.lookupOrThrow(FFRegistries.SPECIAL_FILM_FILTER);
 
-				this.shapeless(RecipeCategory.TOOLS, FFItems.FILM)
+				this.shapeless(RecipeCategory.TOOLS, FFItems.FILM.get())
 					.group("film")
 					.requires(Items.PAPER, 3)
 					.requires(Items.COPPER_INGOT)
-					.unlockedBy(RecipeProvider.getHasName(FFItems.CAMERA), this.has(FFItems.CAMERA))
+					.unlockedBy(RecipeProvider.getHasName(FFItems.CAMERA.get()), this.has(FFItems.CAMERA.get()))
 					.unlockedBy(RecipeProvider.getHasName(Items.PAPER), this.has(Items.PAPER))
 					.save(this.output);
 
-				this.shaped(RecipeCategory.TOOLS, FFItems.CAMERA)
+				this.shaped(RecipeCategory.TOOLS, FFItems.CAMERA.get())
 					.define('#', Ingredient.of(items.getOrThrow(ItemTags.PLANKS)))
 					.define('A', Ingredient.of(Items.AMETHYST_SHARD))
 					.define('G', Ingredient.of(Items.GOLD_INGOT))
@@ -82,7 +82,7 @@ public final class FFRecipeProvider extends FabricRecipeProvider {
 					.unlockedBy(RecipeProvider.getHasName(Items.AMETHYST_SHARD), this.has(Items.AMETHYST_SHARD))
 					.save(this.output);
 
-				this.shaped(RecipeCategory.TOOLS, FFBlocks.DEVELOPING_TABLE)
+				this.shaped(RecipeCategory.TOOLS, FFBlocks.DEVELOPING_TABLE.get())
 					.define('#', Ingredient.of(items.getOrThrow(ItemTags.PLANKS)))
 					.define('S', Ingredient.of(Items.STONE))
 					.define('R', Ingredient.of(Items.DYE.red()))
@@ -95,12 +95,12 @@ public final class FFRecipeProvider extends FabricRecipeProvider {
 					.save(this.output);
 
 				SpecialRecipeBuilder.special(() -> new FilmCapacityUpgradeRecipe(
-					Ingredient.of(FFItems.FILM),
+					Ingredient.of(FFItems.FILM.get()),
 					Ingredient.of(Items.PAPER),
 					RecipeBuilder.createCraftingBookInfo(RecipeCategory.TOOLS, "film"),
-					new ItemStackTemplate(FFItems.FILM)
+					new ItemStackTemplate(FFItems.FILM.get())
 				))
-					.unlockedBy(RecipeProvider.getHasName(FFItems.FILM), this.has(FFItems.FILM))
+					.unlockedBy(RecipeProvider.getHasName(FFItems.FILM.get()), this.has(FFItems.FILM.get()))
 					.save(this.output, "film_capacity_upgrade");
 
 				try {
@@ -225,19 +225,19 @@ public final class FFRecipeProvider extends FabricRecipeProvider {
 		if (StringUtil.isNullOrEmpty(recipeSuffix)) throw new IllegalAccessException("recipeSuffix cannot be empty!");
 
 		final SpecialRecipeBuilder builder = SpecialRecipeBuilder.special(() -> new FilmFilterRecipe(
-				Ingredient.of(FFItems.FILM),
+				Ingredient.of(FFItems.FILM.get()),
 				specialFilmFilterAndIngredient.isPresent() || !hasExclusion ? Optional.empty() : Optional.of(Ingredient.of(Items.AMETHYST_SHARD)),
 				specialFilmFilterAndIngredient.isPresent() ? Optional.empty() : Optional.of(Ingredient.of(itemRegistry.getOrThrow(ItemTags.DYES))),
 				specialFilmFilterAndIngredient,
 				RecipeBuilder.createCraftingBookInfo(category, group),
-				new ItemStackTemplate(FFItems.FILM)
+				new ItemStackTemplate(FFItems.FILM.get())
 			));
 
 		if (specialFilmFilterAndIngredient.isPresent()) {
 			builder.unlockedBy(
 				"has_film_and_special_filter_ingredient",
 				RecipeProvider.inventoryTrigger(
-					ItemPredicate.Builder.item().of(itemRegistry, FFItems.FILM),
+					ItemPredicate.Builder.item().of(itemRegistry, FFItems.FILM.get()),
 					ItemPredicate.Builder.item().of(
 						itemRegistry,
 						specialFilmFilterAndIngredient.get().ingredient().items().map(Holder::value).toArray(ItemLike[]::new)
@@ -249,7 +249,7 @@ public final class FFRecipeProvider extends FabricRecipeProvider {
 				builder.unlockedBy(
 					"has_film_and_dye_and_amethyst_shard",
 					RecipeProvider.inventoryTrigger(
-						ItemPredicate.Builder.item().of(itemRegistry, FFItems.FILM),
+						ItemPredicate.Builder.item().of(itemRegistry, FFItems.FILM.get()),
 						ItemPredicate.Builder.item().of(itemRegistry, ItemTags.DYES),
 						ItemPredicate.Builder.item().of(itemRegistry, Items.AMETHYST_SHARD)
 					)
@@ -258,7 +258,7 @@ public final class FFRecipeProvider extends FabricRecipeProvider {
 				builder.unlockedBy(
 					"has_film_and_dye",
 					RecipeProvider.inventoryTrigger(
-						ItemPredicate.Builder.item().of(itemRegistry, FFItems.FILM),
+						ItemPredicate.Builder.item().of(itemRegistry, FFItems.FILM.get()),
 						ItemPredicate.Builder.item().of(itemRegistry, ItemTags.DYES)
 					)
 				);

@@ -110,6 +110,7 @@ dependencies {
         interfaceInjectionData(it)
     }
 
+    // Cloth Config
     compileOnly("me.shedaniel.cloth:cloth-config-neoforge:${cloth_config_version}")
 }
 
@@ -140,6 +141,13 @@ upload {
 
     forEach {
         changelog.set(changelogText)
+    }
+
+    curseforge {
+        dependencies {
+            required("frozenlib")
+            optional("cloth-config")
+        }
     }
 
     modrinth {

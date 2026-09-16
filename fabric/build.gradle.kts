@@ -107,6 +107,7 @@ tasks {
             "protocol_version" to protocol_version,
             "minecraft_version" to "~26.2-",
 
+            "fabric_loader_version" to ">=$min_fabric_loader_version",
             "fabric_api_version" to ">=$fabric_api_version",
             "frozenlib_version" to ">=${frozenlib_version.split('-').firstOrNull()}-"
         )
@@ -183,14 +184,21 @@ upload {
         changelog = changelogText
     }
 
+    curseforge {
+        dependencies {
+            required("fabric-api")
+            required("frozenlib")
+            optional("cloth-config")
+            optional("modmenu")
+        }
+    }
+
     modrinth {
         dependencies {
             required("fabric-api")
             required("frozenlib")
             optional("cloth-config")
             optional("modmenu")
-            optional("trailier-tales")
-            optional("simple-copper-pipes")
         }
     }
 }

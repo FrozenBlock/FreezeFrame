@@ -35,6 +35,12 @@ mod {
     additional.add("minecraft_version", "~26.2-")
     additional.add("frozenlib_version", ">=${frozenlib_version.split('-').firstOrNull()}-")
     additional.add("protocol_version")
+    additional.add("mod_description")
+    additional.add("mod_credits")
+    additional.add("mod_license")
+    additional.add("mod_homepage")
+    additional.add("mod_authors")
+    additional.add("mod_github")
 }
 
 val changelogText = run {

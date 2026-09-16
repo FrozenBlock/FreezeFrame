@@ -1,0 +1,55 @@
+/*
+ * Copyright 2026 FrozenBlock
+ * This file is part of Freeze Frame.
+ *
+ * This program is free software; you can modify it under
+ * the terms of version 1 of the FrozenBlock Modding Oasis License
+ * as published by FrozenBlock Modding Oasis.
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
+ * FrozenBlock Modding Oasis License for more details.
+ *
+ * You should have received a copy of the FrozenBlock Modding Oasis License
+ * along with this program; if not, see <https://github.com/FrozenBlock/Licenses>.
+ */
+
+package net.frozenblock.freezeframe.networking.packet;
+
+import net.frozenblock.freezeframe.FFConstants;
+import net.frozenblock.freezeframe.item.photograph.PhotographTracker;
+import net.minecraft.network.RegistryFriendlyByteBuf;
+import net.minecraft.network.codec.ByteBufCodecs;
+import net.minecraft.network.codec.StreamCodec;
+import net.minecraft.network.protocol.common.custom.CustomPacketPayload;
+import net.minecraft.server.MinecraftServer;
+import net.minecraft.server.level.ServerPlayer;
+import net.minecraft.world.item.ItemStack;
+
+public record ChangeItemStackSizePacket(ItemStack stack, int delta) implements CustomPacketPayload {
+	public static final Type<ChangeItemStackSizePacket> TYPE = new Type<>(FFConstants.id("change_item_stack_size"));
+	public static final StreamCodec<RegistryFriendlyByteBuf, ChangeItemStackSizePacket> CODEC = StreamCodec.composite(
+		ItemStack.STREAM_CODEC, ChangeItemStackSizePacket::stack,
+		ByteBufCodecs.VAR_INT, ChangeItemStackSizePacket::delta,
+		ChangeItemStackSizePacket::new
+	);
+
+	public static ChangeItemStackSizePacket itemStackCloned(ItemStack stack) {
+		return new ChangeItemStackSizePacket(stack, stack.getCount());
+	}
+
+	public static ChangeItemStackSizePacket itemStackDeleted(ItemStack stack) {
+		return new ChangeItemStackSizePacket(stack, -stack.getCount());
+	}
+
+	@Override
+	public Type<? extends CustomPacketPayload> type() {
+		return TYPE;
+	}
+
+	public static void handle(ChangeItemStackSizePacket packet, MinecraftServer server, ServerPlayer player) {
+		if (player == null) return;
+		PhotographTracker.incrementOnItemStackSizeChange(player.level(), packet.stack, packet.delta);
+	}
+}

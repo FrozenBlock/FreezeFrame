@@ -17,8 +17,6 @@
 
 package net.frozenblock.freezeframe.data.model;
 
-import net.fabricmc.api.EnvType;
-import net.fabricmc.api.Environment;
 import net.fabricmc.fabric.api.client.datagen.v1.provider.FabricModelProvider;
 import net.fabricmc.fabric.api.datagen.v1.FabricPackOutput;
 import net.frozenblock.freezeframe.client.renderer.item.properties.conditional.CanTakePhoto;
@@ -26,6 +24,7 @@ import net.frozenblock.freezeframe.client.renderer.item.properties.conditional.I
 import net.frozenblock.freezeframe.client.renderer.item.properties.conditional.IsUsingItemFixed;
 import net.frozenblock.freezeframe.registry.FFBlocks;
 import net.frozenblock.freezeframe.registry.FFItems;
+import net.mehvahdjukaar.candlelight.api.ClientOnly;
 import net.minecraft.client.data.models.BlockModelGenerators;
 import net.minecraft.client.data.models.ItemModelGenerators;
 import net.minecraft.client.data.models.model.ItemModelUtils;
@@ -37,7 +36,7 @@ import net.minecraft.client.data.models.model.TexturedModel;
 import net.minecraft.client.renderer.item.ItemModel;
 import net.minecraft.world.item.Item;
 
-@Environment(EnvType.CLIENT)
+@ClientOnly
 public final class FFModelProvider extends FabricModelProvider {
 
 	public FFModelProvider(FabricPackOutput output) {
@@ -47,7 +46,7 @@ public final class FFModelProvider extends FabricModelProvider {
 	@Override
 	public void generateBlockStateModels(BlockModelGenerators generator) {
 		generator.createHorizontallyRotatedBlock(
-			FFBlocks.DEVELOPING_TABLE,
+			FFBlocks.DEVELOPING_TABLE.get(),
 			TexturedModel.createDefault(
 				block -> new TextureMapping()
 					.put(TextureSlot.PARTICLE, TextureMapping.getBlockTexture(block, "_north"))
@@ -64,11 +63,11 @@ public final class FFModelProvider extends FabricModelProvider {
 
 	@Override
 	public void generateItemModels(ItemModelGenerators generator) {
-		generateCamera(generator, FFItems.CAMERA);
-		generateCamera(generator, FFItems.DISC_CAMERA);
+		generateCamera(generator, FFItems.CAMERA.get());
+		generateCamera(generator, FFItems.DISC_CAMERA.get());
 
-		generator.generateFlatItem(FFItems.FILM.asItem(), ModelTemplates.FLAT_ITEM);
-		generator.generateFlatItem(FFItems.PHOTOGRAPH.asItem(), ModelTemplates.FLAT_ITEM);
+		generator.generateFlatItem(FFItems.FILM.get(), ModelTemplates.FLAT_ITEM);
+		generator.generateFlatItem(FFItems.PHOTOGRAPH.get(), ModelTemplates.FLAT_ITEM);
 	}
 
 	private static void generateCamera(ItemModelGenerators generator, Item camera) {

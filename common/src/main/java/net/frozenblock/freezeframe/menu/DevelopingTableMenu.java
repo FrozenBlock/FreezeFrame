@@ -1,0 +1,215 @@
+/*
+ * Copyright 2026 FrozenBlock
+ * This file is part of Freeze Frame.
+ *
+ * This program is free software; you can modify it under
+ * the terms of version 1 of the FrozenBlock Modding Oasis License
+ * as published by FrozenBlock Modding Oasis.
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
+ * FrozenBlock Modding Oasis License for more details.
+ *
+ * You should have received a copy of the FrozenBlock Modding Oasis License
+ * along with this program; if not, see <https://github.com/FrozenBlock/Licenses>.
+ */
+
+package net.frozenblock.freezeframe.menu;
+
+import java.util.ArrayList;
+import java.util.List;
+import net.frozenblock.freezeframe.component.BookPagePhotographs;
+import net.frozenblock.freezeframe.component.Photograph;
+import net.frozenblock.freezeframe.registry.FFBlocks;
+import net.frozenblock.freezeframe.registry.FFDataComponents;
+import net.frozenblock.freezeframe.registry.FFItems;
+import net.frozenblock.freezeframe.registry.FFMenuTypes;
+import net.minecraft.core.component.DataComponentPatch;
+import net.minecraft.world.Container;
+import net.minecraft.world.SimpleContainer;
+import net.minecraft.world.entity.player.Inventory;
+import net.minecraft.world.entity.player.Player;
+import net.minecraft.world.inventory.AbstractContainerMenu;
+import net.minecraft.world.inventory.ContainerLevelAccess;
+import net.minecraft.world.inventory.DataSlot;
+import net.minecraft.world.inventory.ResultContainer;
+import net.minecraft.world.inventory.Slot;
+import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.item.ItemStackTemplate;
+import net.minecraft.world.item.Items;
+import net.minecraft.world.item.crafting.TransmuteRecipe;
+
+public class DevelopingTableMenu extends AbstractContainerMenu {
+	public static final int SOURCE_SLOT = 0;
+	public static final int PAPER_SLOT = 1;
+	public static final int RESULT_SLOT = 2;
+	private static final int INV_SLOT_START = 3;
+	private static final int INV_SLOT_END = 30;
+	private static final int USE_ROW_SLOT_START = 30;
+	private static final int USE_ROW_SLOT_END = 39;
+	private static final ItemStackTemplate PHOTOGRAPH_COPY_TEMPLATE = new ItemStackTemplate(FFItems.PHOTOGRAPH.asHolder(), 1, DataComponentPatch.EMPTY);
+	protected final ContainerLevelAccess access;
+	public final DataSlot photographIndex = DataSlot.standalone();
+	long lastSoundTime;
+	final Slot sourceSlot;
+	final Slot paperSlot;
+	final Slot resultSlot;
+	Runnable slotUpdateListener = () -> {};
+	public final Container inputContainer = new SimpleContainer(2) {
+		@Override
+		public void setChanged() {
+			super.setChanged();
+			DevelopingTableMenu.this.slotsChanged(this);
+			DevelopingTableMenu.this.slotUpdateListener.run();
+		}
+	};
+	final ResultContainer resultContainer = new ResultContainer();
+
+	public DevelopingTableMenu(int containerId, Inventory inventory) {
+		this(containerId, inventory, ContainerLevelAccess.NULL);
+	}
+
+	public DevelopingTableMenu(int containerId, Inventory inventory, ContainerLevelAccess access) {
+		super(FFMenuTypes.DEVELOPING_TABLE.get(), containerId);
+		this.access = access;
+		this.sourceSlot = addSlot(new DevelopingTableSourceSlot(this.inputContainer, SOURCE_SLOT, 14, 15));
+		this.paperSlot = addSlot(new DevelopingTablePaperSlot(this.inputContainer, PAPER_SLOT, 44, 113));
+		this.resultSlot = addSlot(new DevelopingTableResultSlot(this, inventory.player, this.resultContainer, RESULT_SLOT, 116, 113));
+		this.addStandardInventorySlots(inventory, 8, 144);
+		this.addDataSlot(this.photographIndex);
+	}
+
+	public boolean hasSourceItem() {
+		return this.sourceSlot.hasItem();
+	}
+
+	public ItemStack getSourceItem() {
+		return this.sourceSlot.getItem();
+	}
+
+	public boolean hasPaper() {
+		return this.paperSlot.hasItem() && this.paperSlot.getItem().is(Items.PAPER);
+	}
+
+	@Override
+	public boolean stillValid(Player player) {
+		return stillValid(this.access, player, FFBlocks.DEVELOPING_TABLE.get());
+	}
+
+	@Override
+	public void slotsChanged(Container container) {
+		this.setupResultSlot();
+	}
+
+	void setupResultSlot() {
+		ItemStack stack = ItemStack.EMPTY;
+
+		if (this.hasPaper()) {
+			final ItemStack sourceStack = this.getSourceItem();
+			if (sourceStack.is(FFItems.PHOTOGRAPH.get())) {
+				this.photographIndex.set(0);
+				final Photograph photograph = sourceStack.get(FFDataComponents.PHOTOGRAPH.get());
+				if (photograph != null && photograph.canCopy()) {
+					stack = TransmuteRecipe.createWithOriginalComponents(PHOTOGRAPH_COPY_TEMPLATE, sourceStack);
+					stack.set(FFDataComponents.PHOTOGRAPH.get(), photograph.asCopy());
+				}
+			} else if (sourceStack.is(FFItems.FILM.get()) && sourceStack.has(FFDataComponents.FILM_CONTENTS.get())) {
+				final int clampedIndex = Math.max(0, Math.min(this.photographIndex.get(), sourceStack.get(FFDataComponents.FILM_CONTENTS.get()).size() - 1));
+				this.photographIndex.set(clampedIndex);
+				final Photograph photograph = sourceStack.get(FFDataComponents.FILM_CONTENTS.get()).getPhotographAtIndex(this.photographIndex.get());
+				if (photograph != null) {
+					stack = new ItemStack(FFItems.PHOTOGRAPH.get());
+					stack.set(FFDataComponents.PHOTOGRAPH.get(), photograph);
+				}
+			} else if (DevelopingTableSourceSlot.isValidBookSource(sourceStack)) {
+				final List<Photograph> photographs = this.getBookPhotographs(sourceStack);
+				if (!photographs.isEmpty()) {
+					final int clampedIndex = Math.max(0, Math.min(this.photographIndex.get(), photographs.size() - 1));
+					this.photographIndex.set(clampedIndex);
+					final Photograph photograph = photographs.get(clampedIndex);
+					if (photograph != null && photograph.canCopy()) {
+						stack = new ItemStack(FFItems.PHOTOGRAPH.get());
+						stack.set(FFDataComponents.PHOTOGRAPH.get(), photograph.asCopy());
+					}
+				} else {
+					this.photographIndex.set(0);
+				}
+			} else {
+				this.photographIndex.set(0);
+			}
+		}
+
+		this.resultSlot.set(stack);
+		this.broadcastChanges();
+	}
+
+	public void registerUpdateListener(Runnable listener) {
+		this.slotUpdateListener = listener;
+	}
+
+	@Override
+	public boolean canTakeItemForPickAll(ItemStack stack, Slot slot) {
+		return slot.container != this.resultContainer && super.canTakeItemForPickAll(stack, slot);
+	}
+
+	@Override
+	public ItemStack quickMoveStack(Player player, int slotIndex) {
+		final Slot slot = this.slots.get(slotIndex);
+		ItemStack clicked = ItemStack.EMPTY;
+		if (slot == null || !slot.hasItem()) return clicked;
+
+		final ItemStack stack = slot.getItem();
+		clicked = stack.copy();
+		if (slotIndex == RESULT_SLOT) {
+			if (!this.moveItemStackTo(stack, INV_SLOT_START, USE_ROW_SLOT_END, true)) return ItemStack.EMPTY;
+			slot.onQuickCraft(stack, clicked);
+		} else if (slotIndex == SOURCE_SLOT || slotIndex == PAPER_SLOT) {
+			if (!this.moveItemStackTo(stack, INV_SLOT_START, USE_ROW_SLOT_END, false)) return ItemStack.EMPTY;
+		} else if (DevelopingTableSourceSlot.isValidAsSource(stack)) {
+			if (!this.moveItemStackTo(stack, SOURCE_SLOT, SOURCE_SLOT + 1, false)) return ItemStack.EMPTY;
+		} else if (stack.is(Items.PAPER)) {
+			if (!this.moveItemStackTo(stack, PAPER_SLOT, PAPER_SLOT + 1, false)) return ItemStack.EMPTY;
+		} else if (slotIndex >= INV_SLOT_START && slotIndex < INV_SLOT_END) {
+			if (!this.moveItemStackTo(stack, USE_ROW_SLOT_START, USE_ROW_SLOT_END, false)) return ItemStack.EMPTY;
+		} else if (slotIndex >= USE_ROW_SLOT_START && slotIndex < USE_ROW_SLOT_END && !this.moveItemStackTo(stack, INV_SLOT_START, INV_SLOT_END, false)) {
+			return ItemStack.EMPTY;
+		}
+
+		if (stack.isEmpty()) slot.set(ItemStack.EMPTY);
+
+		slot.setChanged();
+		if (stack.getCount() == clicked.getCount()) return ItemStack.EMPTY;
+
+		slot.onTake(player, stack);
+		this.setupResultSlot();
+
+		return clicked;
+	}
+
+	@Override
+	public void removed(Player player) {
+		super.removed(player);
+		this.resultContainer.removeItemNoUpdate(RESULT_SLOT);
+		this.access.execute((level, pos) -> this.clearContainer(player, this.inputContainer));
+	}
+
+	public void setupDataAndResultSlot(int photographIndex) {
+		this.photographIndex.set(photographIndex);
+		this.setupResultSlot();
+	}
+
+	private List<Photograph> getBookPhotographs(ItemStack sourceStack) {
+		final BookPagePhotographs pagePhotographs = sourceStack.get(FFDataComponents.BOOK_PAGE_PHOTOGRAPHS.get());
+		if (pagePhotographs == null || pagePhotographs.photographs().isEmpty()) return List.of();
+
+		final List<Photograph> photographs = new ArrayList<>();
+		for (BookPagePhotographs.PagePhotograph pagePhotograph : pagePhotographs.photographs()) {
+			final ItemStack photoStack = pagePhotograph.photograph();
+			if (!photoStack.is(FFItems.PHOTOGRAPH.get())) continue;
+			final Photograph photograph = photoStack.get(FFDataComponents.PHOTOGRAPH.get());
+			if (photograph != null) photographs.add(photograph);
+		}
+		return photographs;
+	}
+}

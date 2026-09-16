@@ -1,0 +1,191 @@
+/*
+ * Copyright 2026 FrozenBlock
+ * This file is part of Freeze Frame.
+ *
+ * This program is free software; you can modify it under
+ * the terms of version 1 of the FrozenBlock Modding Oasis License
+ * as published by FrozenBlock Modding Oasis.
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
+ * FrozenBlock Modding Oasis License for more details.
+ *
+ * You should have received a copy of the FrozenBlock Modding Oasis License
+ * along with this program; if not, see <https://github.com/FrozenBlock/Licenses>.
+ */
+
+package net.frozenblock.freezeframe.item;
+
+import java.util.Locale;
+import java.util.Optional;
+import java.util.function.Consumer;
+import net.frozenblock.freezeframe.FFConstants;
+import net.frozenblock.freezeframe.component.FilmContents;
+import net.frozenblock.freezeframe.component.filter.FilmFilter;
+import net.frozenblock.freezeframe.component.Photograph;
+import net.frozenblock.freezeframe.component.tooltip.FilmTooltip;
+import net.frozenblock.freezeframe.component.filter.SpecialFilmFilter;
+import net.frozenblock.freezeframe.networking.packet.OpenFilmScreenPacket;
+import net.frozenblock.freezeframe.registry.FFDataComponents;
+import net.minecraft.core.component.DataComponents;
+import net.minecraft.network.chat.Component;
+import net.minecraft.server.level.ServerLevel;
+import net.minecraft.server.level.ServerPlayer;
+import net.minecraft.util.ARGB;
+import net.minecraft.util.Mth;
+import net.minecraft.world.InteractionHand;
+import net.minecraft.world.InteractionResult;
+import net.minecraft.world.entity.Entity;
+import net.minecraft.world.entity.EquipmentSlot;
+import net.minecraft.world.entity.player.Player;
+import net.minecraft.world.inventory.tooltip.TooltipComponent;
+import net.minecraft.world.item.Item;
+import net.minecraft.world.item.ItemInstance;
+import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.item.TooltipFlag;
+import net.minecraft.world.item.component.TooltipDisplay;
+import net.minecraft.world.level.Level;
+import org.apache.commons.lang3.math.Fraction;
+import org.jspecify.annotations.Nullable;
+import net.minecraft.ChatFormatting;
+
+public class FilmItem extends Item {
+	private static final int FULL_BAR_COLOR = ARGB.colorFromFloat(1F, 1F, 0.33F, 0.33F);
+	private static final int BAR_COLOR = 0xFFB8895F;
+	private static final String COLOR_LINE_KEY = "item." + FFConstants.MOD_ID + ".film.filter.color";
+
+	public FilmItem(Properties properties) {
+		super(properties);
+	}
+
+	public static int normalizeMaxPhotographs(int maxPhotographs) {
+		return Mth.clamp(maxPhotographs, 1, FilmContents.ABSOLUTE_MAX_PHOTOGRAPHS);
+	}
+
+	public static int getMaxPhotographs(ItemInstance filmItem) {
+		final Integer maxPhotographs = filmItem.get(FFDataComponents.FILM_MAX_PHOTOGRAPHS.get());
+		if (maxPhotographs == null) return FilmContents.BASE_MAX_PHOTOGRAPHS;
+		return normalizeMaxPhotographs(maxPhotographs);
+	}
+
+	public static Fraction getWeightSafe(FilmContents contents, int maxPhotographs) {
+		return Fraction.getFraction(contents.size(), Math.max(1, normalizeMaxPhotographs(maxPhotographs)));
+	}
+
+	public static Fraction getWeightSafe(FilmContents contents, ItemInstance filmItem) {
+		return getWeightSafe(contents, getMaxPhotographs(filmItem));
+	}
+
+	public static float getFullnessDisplay(ItemStack stack) {
+		final FilmContents contents = stack.getOrDefault(FFDataComponents.FILM_CONTENTS.get(), FilmContents.EMPTY);
+		return getWeightSafe(contents, stack).floatValue();
+	}
+
+	public static FilmFilter getFilter(ItemStack stack) {
+		return stack.getOrDefault(FFDataComponents.FILM_FILTER.get(), FilmFilter.EMPTY);
+	}
+
+	@Override
+	public InteractionResult use(Level level, Player player, InteractionHand hand) {
+		final ItemStack stack = player.getItemInHand(hand);
+		if (!stack.isEmpty() && !stack.getOrDefault(FFDataComponents.FILM_CONTENTS.get(), FilmContents.EMPTY).isEmpty()) {
+			if (player instanceof ServerPlayer serverPlayer) OpenFilmScreenPacket.sendTo(serverPlayer, hand);
+			return InteractionResult.SUCCESS;
+		}
+
+		return InteractionResult.PASS;
+	}
+
+	@Override
+	public void inventoryTick(ItemStack stack, ServerLevel level, Entity entity, EquipmentSlot slot) {
+		if (needsStackingRefresh(stack)) refreshStackingState(stack);
+	}
+
+	@Override
+	public boolean isBarVisible(ItemStack stack) {
+		final FilmContents contents = stack.getOrDefault(FFDataComponents.FILM_CONTENTS.get(), FilmContents.EMPTY);
+		return getWeightSafe(contents, stack).compareTo(Fraction.ZERO) > 0;
+	}
+
+	@Override
+	public int getBarWidth(ItemStack stack) {
+		final FilmContents contents = stack.getOrDefault(FFDataComponents.FILM_CONTENTS.get(), FilmContents.EMPTY);
+		return Math.min(1 + Mth.mulAndTruncate(getWeightSafe(contents, stack), 12), 13);
+	}
+
+	@Override
+	public int getBarColor(ItemStack stack) {
+		final FilmContents contents = stack.getOrDefault(FFDataComponents.FILM_CONTENTS.get(), FilmContents.EMPTY);
+		return getWeightSafe(contents, stack).compareTo(Fraction.ONE) >= 0 ? FULL_BAR_COLOR : BAR_COLOR;
+	}
+
+	public static void toggleSelectedPhotograph(ItemStack stack, int selectedPhotograph) {
+		final FilmContents initialContents = stack.get(FFDataComponents.FILM_CONTENTS.get());
+		if (initialContents == null) return;
+
+		final FilmContents.Mutable contents = new FilmContents.Mutable(initialContents);
+		contents.toggleSelectedPhotograph(selectedPhotograph);
+		stack.set(FFDataComponents.FILM_CONTENTS.get(), contents.toImmutable());
+		refreshStackingState(stack);
+	}
+
+	public static void refreshStackingState(ItemStack stack) {
+		final FilmContents contents = stack.getOrDefault(FFDataComponents.FILM_CONTENTS.get(), FilmContents.EMPTY);
+		final FilmFilter filter = getFilter(stack);
+		final int expectedMaxStackSize = contents.isEmpty() && filter.isEmpty() ? stack.getItem().getDefaultMaxStackSize() : 1;
+		stack.set(DataComponents.MAX_STACK_SIZE, expectedMaxStackSize);
+	}
+
+	private static boolean needsStackingRefresh(ItemStack stack) {
+		final FilmContents contents = stack.getOrDefault(FFDataComponents.FILM_CONTENTS.get(), FilmContents.EMPTY);
+		final FilmFilter filter = getFilter(stack);
+		final int expectedMaxStackSize = contents.isEmpty() && filter.isEmpty() ? stack.getItem().getDefaultMaxStackSize() : 1;
+		return stack.getOrDefault(DataComponents.MAX_STACK_SIZE, stack.getItem().getDefaultMaxStackSize()) != expectedMaxStackSize;
+	}
+
+	public static int getSelectedPhotographIndex(ItemStack stack) {
+		return stack.getOrDefault(FFDataComponents.FILM_CONTENTS.get(), FilmContents.EMPTY).getSelectedPhotographIndex();
+	}
+
+	@Nullable
+	public static Photograph getSelectedPhotograph(ItemStack stack) {
+		return stack.getOrDefault(FFDataComponents.FILM_CONTENTS.get(), FilmContents.EMPTY).getSelectedPhotograph();
+	}
+
+	public static int getNumberOfPhotographs(ItemStack stack) {
+		final FilmContents contents = stack.getOrDefault(FFDataComponents.FILM_CONTENTS.get(), FilmContents.EMPTY);
+		return contents.size();
+	}
+
+	@Override
+	public Optional<TooltipComponent> getTooltipImage(ItemStack stack) {
+		final TooltipDisplay tooltipDisplay = stack.getOrDefault(DataComponents.TOOLTIP_DISPLAY, TooltipDisplay.DEFAULT);
+		if (!tooltipDisplay.shows(FFDataComponents.FILM_CONTENTS.get())) return Optional.empty();
+
+		final FilmContents contents = stack.get(FFDataComponents.FILM_CONTENTS.get());
+		if (contents != null) return Optional.of(new FilmTooltip(contents, getMaxPhotographs(stack)));
+		return Optional.empty();
+	}
+
+	@Override
+	public void appendHoverText(ItemStack stack, TooltipContext context, TooltipDisplay tooltipDisplay, Consumer<Component> tooltipAdder, TooltipFlag tooltipFlag) {
+		super.appendHoverText(stack, context, tooltipDisplay, tooltipAdder, tooltipFlag);
+		final FilmFilter filter = getFilter(stack);
+		if (filter.isEmpty()) return;
+
+		for (FilmFilter.Layer layer : filter.layers()) {
+			if (layer.isDye()) {
+				final int color = layer.color();
+				final String hex = String.format(Locale.ROOT, "#%06X", color);
+				final String colorLineKey = layer.exclusionTint() ? COLOR_LINE_KEY + ".exclusion" : COLOR_LINE_KEY;
+				tooltipAdder.accept(Component.translatable(colorLineKey, Component.literal(hex).withColor(color)).withStyle(ChatFormatting.GRAY));
+				continue;
+			}
+
+			if (layer.isSpecial()) {
+				layer.specialFilmFilter().ifPresent(specialFilmFilter -> tooltipAdder.accept(SpecialFilmFilter.tooltipComponent(specialFilmFilter)));
+			}
+		}
+	}
+}
