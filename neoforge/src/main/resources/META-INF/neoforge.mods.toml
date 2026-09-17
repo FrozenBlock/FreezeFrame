@@ -8,7 +8,7 @@ issueTrackerURL="https://github.com/FrozenBlock/FreezeFrame/issues"
     version="${mod_version}"
     displayName="Freeze Frame"
     displayURL="https://modrinth.com/mod/freeze-frame"
-    logoFile="assets/freezeframe/icon.png"
+    iconFile="assets/freezeframe/icon.png"
     authors="Lunade/AViewFromTheTop, Lufurrius"
     description='''
 Adds Cameras to Minecraft in an intuitive and vanilla way.
