@@ -9,10 +9,6 @@ checkstyle {
     toolVersion = "10.20.2"
 }
 
-val mod_id: String by project
-val minecraft_version: String by project
-val fabric_loader_version: String by project
-
 val frozenlib_version: String by project
 val cloth_config_version: String by project
 
@@ -40,6 +36,7 @@ tasks {
 }
 
 dependencies {
+    // FrozenLib
     compileOnly("net.frozenblock:frozenlib-common:${frozenlib_version}")?.let {
         accessTransformers(it)
         interfaceInjectionData(it)
@@ -51,6 +48,16 @@ dependencies {
 
     // Cloth Config
     compileOnly("me.shedaniel.cloth:cloth-config:${cloth_config_version}")
+}
+
+tasks {
+    license {
+        if (licenseChecks) {
+            rule(rootProject.file("codeformat/HEADER"))
+
+            include("**/*.java")
+        }
+    }
 }
 
 configurations {

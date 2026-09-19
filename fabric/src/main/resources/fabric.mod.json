@@ -1,8 +1,8 @@
 {
   "schemaVersion": 1,
   "id": "${mod_id}",
-  "version": "${version}",
-  "name": "Freeze Frame",
+  "version": "${mod_version}",
+  "name": "${mod_name}",
   "description": "Adds Cameras to Minecraft in an intuitive and vanilla way.",
   "authors": [
     "Lunade/AViewFromTheTop",
@@ -12,11 +12,11 @@
     "zntm"
   ],
   "contact": {
-    "homepage": "https://modrinth.com/mod/freeze-frame",
-    "sources": "https://github.com/FrozenBlock/FreezeFrame",
-    "issues": "https://github.com/FrozenBlock/FreezeFrame/issues"
+    "homepage": "${mod_url}",
+    "sources": "${source_url}",
+    "issues": "${issues_url}"
   },
-  "license": "FrozenBlock Modding Oasis License v1.0",
+  "license": "${mod_license}",
   "icon": "assets/freezeframe/icon.png",
   "environment": "*",
   "entrypoints": {
