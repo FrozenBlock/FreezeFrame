@@ -1,10 +1,13 @@
 
-# This workflow automatically adds the mod's .jar
-# file to any release published to GitHub.
+# This workflow publishes a release to Modrinth, CurseForge & GitHub Releases,
+# and uploads the maven artifacts (common/fabric/neoforge) to the release maven.
 
 name: release
 on:
   workflow_dispatch:
+
+permissions:
+  contents: write
 
 jobs:
   build:
@@ -20,17 +23,10 @@ jobs:
       MAVEN_PASSWORD: ${{secrets.MAVEN_PASSWORD}}
       GITHUB_TOKEN: ${{secrets.GITHUB_TOKEN}}
       MODRINTH_TOKEN: ${{secrets.MODRINTH_TOKEN}}
+      CURSEFORGE_TOKEN: ${{secrets.CURSEFORGE_TOKEN}}
     steps:
       - name: Checking Out the Repository
         uses: actions/checkout@v4
-      - name: Checkout Cloth Config
-        uses: actions/checkout@v4
-        with:
-          fetch-depth: 0
-          repository: EthanRStokes/cloth-config
-          ref: v26.1
-          submodules: recursive
-          path: cloth-config
       - name: Validating the Gradle Wrapper
         uses: gradle/wrapper-validation-action@v1
       - name: Setting up Java ${{ matrix.java }}
@@ -52,5 +48,5 @@ jobs:
           key: ${{ runner.os }}-gradle-#{{ hashFiles('**/gradle-wrapper.properties') }}
           restore-keys: |
             ${{ runner.os }}-gradle-
-      - name: Publish to Modrinth
-        run: ./gradlew publishMod -PreleaseType=stable -PuseThirdPartyMods=false
+      - name: Publish to Maven, Modrinth, CurseForge & GitHub
+        run: ./gradlew publishMod -PuseThirdPartyMods=false

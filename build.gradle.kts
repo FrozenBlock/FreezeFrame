@@ -28,8 +28,9 @@ checkstyle {
 }
 
 val mod_id: String by project
-val mod_version: String by project
 val mod_name: String by project
+val mod_version: String by project
+val subproject_prefix: String by project
 val license: String by project
 val mod_url: String by project
 val source_url: String by project
@@ -67,13 +68,13 @@ fun mainJarTask(project: Project) =
     else project.tasks.named("jar")
 
 val githubRelease by tasks.registering {
-    val fabricJar = mainJarTask(project(":ff-fabric"))
-    val neoforgeJar = mainJarTask(project(":ff-neoforge"))
+    val fabricJar = mainJarTask(project(":$subproject_prefix-fabric"))
+    val neoforgeJar = mainJarTask(project(":$subproject_prefix-neoforge"))
     dependsOn(fabricJar, neoforgeJar)
 
     val token = env["GITHUB_TOKEN"]
     val repository = mod.repository.get()
-    val tag = project(":ff-fabric").version.toString()
+    val tag = project(":$subproject_prefix-fabric").version.toString()
     val releaseTitle = "$mod_name $tag"
     val isPrerelease = mod.releaseType.get() != "release"
     val commitish = env["GITHUB_SHA"]
@@ -139,7 +140,7 @@ subprojects {
 
     dependencies {
         compileOnly("net.frozenblock:candlelight:+")
-        compileOnly("net.frozenblock:frozenlib-common:${frozenlib_version}")
+        compileOnly("net.frozenblock:frozenlib-common:$frozenlib_version")
     }
 
     repositories {
