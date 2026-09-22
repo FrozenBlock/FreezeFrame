@@ -17,6 +17,7 @@
 
 package net.frozenblock.freezeframe.registry;
 
+import com.mojang.serialization.Codec;
 import net.frozenblock.freezeframe.FFConstants;
 import net.frozenblock.freezeframe.component.filter.FilmFilter;
 import net.frozenblock.freezeframe.item.photograph.PhotographTracker;
@@ -29,6 +30,12 @@ public final class FFAttachmentTypes {
 		FFConstants.id("photograph_tracker"),
 		builder -> {
 			builder.persistent(PhotographTracker.CODEC);
+		}
+	);
+	public static final DataAttachmentType<Long> PHOTOGRAPH_TRACKER_LAST_SYNC_TIMESTAMP = DataAttachmentType.create(
+		FFConstants.id("photograph_tracker_last_sync_timestamp"),
+		builder -> {
+			builder.persistent(Codec.LONG);
 		}
 	);
 	public static final DataAttachmentType<FilmFilter> FILM_FILTER = DataAttachmentType.create(

@@ -29,4 +29,6 @@ public final class FFEntityTypeIds {
 	private static ResourceKey<EntityType<?>> create(String name) {
 		return ResourceKey.create(Registries.ENTITY_TYPE, FFConstants.id(name));
 	}
+
+	private FFEntityTypeIds() {}
 }

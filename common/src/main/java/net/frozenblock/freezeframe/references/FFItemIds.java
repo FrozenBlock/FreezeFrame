@@ -31,4 +31,6 @@ public final class FFItemIds {
 	private static ResourceKey<Item> create(String name) {
 		return ResourceKey.create(Registries.ITEM, FFConstants.id(name));
 	}
+
+	private FFItemIds() {}
 }

@@ -32,4 +32,6 @@ public final class FFBlockItemIds {
 	private static BlockItemId create(String blockName, String itemName) {
 		return BlockItemId.create(FFConstants.id(blockName), FFConstants.id(itemName));
 	}
+
+	private FFBlockItemIds() {}
 }

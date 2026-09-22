@@ -71,7 +71,7 @@ localRepository("FrozenLib",
     "net.frozenblock:frozenlib",
     prefix = "flib",
     multi = true,
-    enabled = true
+    enabled = false
 )
 
 localPluginRepository(

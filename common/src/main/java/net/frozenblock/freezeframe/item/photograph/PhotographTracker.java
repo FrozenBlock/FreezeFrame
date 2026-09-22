@@ -17,7 +17,6 @@
 
 package net.frozenblock.freezeframe.item.photograph;
 
-import com.google.common.collect.ImmutableList;
 import com.google.common.collect.ImmutableMap;
 import com.mojang.serialization.Codec;
 import com.mojang.serialization.codecs.RecordCodecBuilder;
@@ -25,9 +24,10 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import it.unimi.dsi.fastutil.objects.Object2IntOpenHashMap;
+import it.unimi.dsi.fastutil.objects.Object2LongOpenHashMap;
 import net.frozenblock.freezeframe.FFConstants;
 import net.frozenblock.freezeframe.component.FilmContents;
 import net.frozenblock.freezeframe.component.Photograph;
@@ -49,14 +49,14 @@ import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.storage.loot.ContainerComponentManipulators;
 
-public record PhotographTracker(Map<String, Integer> photographCounts, List<String> deletedPhotographs) {
+public record PhotographTracker(Map<String, Integer> photographCounts, Map<String, Long> deletedPhotographs) {
 	private static final boolean LOG_DELETIONS = true;
 	private static final boolean LOG_FAILED_DELETION_ATTEMPTS = false;
 	private static final boolean LOG_INCREMENTS = true;
-	private static final PhotographTracker EMPTY = new PhotographTracker(Map.of(), List.of());
+	private static final PhotographTracker EMPTY = new PhotographTracker(Map.of(), Map.of());
 	public static final Codec<PhotographTracker> CODEC = RecordCodecBuilder.create(instance -> instance.group(
 		Codec.unboundedMap(Codec.STRING, Codec.INT).fieldOf("photograph_counts").forGetter(PhotographTracker::photographCounts),
-		Codec.STRING.listOf().fieldOf("deleted_photographs").forGetter(PhotographTracker::deletedPhotographs)
+		Codec.unboundedMap(Codec.STRING, Codec.LONG).fieldOf("deleted_photographs").forGetter(PhotographTracker::deletedPhotographs)
 	).apply(instance, PhotographTracker::new));
 
 	public static void init() {
@@ -73,11 +73,16 @@ public record PhotographTracker(Map<String, Integer> photographCounts, List<Stri
 		final PhotographTracker tracker = get(player.server);
 		if (tracker.deletedPhotographs.isEmpty()) return;
 		if (NetworkingHelper.isLocalPlayer(player)) return;
-		NetworkingHelper.sendToPlayer(player, new DeletePhotographPacket(tracker.deletedPhotographs));
+
+		DeletePhotographPacket.sendDeletedPhotographsAndHandleTimestamp(player, player.server.overworld().getGameTime(), tracker.deletedPhotographs);
 	}
 
-	public static void notifyOfDeletedPhotograph(MinecraftServer server, List<String> photographNames) {
+	public static void notifyAllOfDeletedPhotographs(MinecraftServer server, List<String> photographNames) {
+		final long gameTime = server.overworld().getGameTime();
+
 		for (ServerPlayer player : PlayerLookup.all(server)) {
+			FFAttachmentTypes.PHOTOGRAPH_TRACKER_LAST_SYNC_TIMESTAMP.set(player, gameTime);
+
 			if (NetworkingHelper.isLocalPlayer(player)) continue;
 			NetworkingHelper.sendToPlayer(player, new DeletePhotographPacket(photographNames));
 		}
@@ -94,10 +99,6 @@ public record PhotographTracker(Map<String, Integer> photographCounts, List<Stri
 		return FFAttachmentTypes.PHOTOGRAPH_TRACKER.getAttachedOrElse(server.overworld(), EMPTY);
 	}
 
-	public static PhotographTracker get(Level level) {
-		return get(level.getServer());
-	}
-
 	public static void setAttached(MinecraftServer server, PhotographTracker tracker) {
 		FFAttachmentTypes.PHOTOGRAPH_TRACKER.set(server.overworld(), tracker);
 	}
@@ -107,22 +108,24 @@ public record PhotographTracker(Map<String, Integer> photographCounts, List<Stri
 	}
 
 	public static void incrementPhotographCountAndDeleteIfEmpty(Level level, String photographName, int step) {
-		if (!(level instanceof ServerLevel)) return;
+		if (!(level instanceof ServerLevel serverLevel)) return;
 
-		final PhotographTracker initialTracker = get(level);
+		final MinecraftServer server = serverLevel.getServer();
+
+		final PhotographTracker initialTracker = get(server);
 		final int oldCount = initialTracker.photographCounts.getOrDefault(photographName, 0);
 
 		final Mutable tracker = initialTracker.mutable();
 		tracker.incrementPhotographCount(photographName, step);
-		final PhotographTracker finalTracker = tracker.toImmutable();
-		setAttached(level, tracker.toImmutable());
+		final PhotographTracker finalTracker = tracker.toImmutable(server);
+		setAttached(level, tracker.toImmutable(server));
 
 		final List<String> newlyDeletedPhotographs = initialTracker.photographCounts.keySet().stream()
 			.filter(key -> !finalTracker.photographCounts.containsKey(key))
 			.toList();
 
-		deletePhotographs(level.getServer().getServerDirectory(), newlyDeletedPhotographs);
-		notifyOfDeletedPhotograph(level.getServer(), newlyDeletedPhotographs);
+		deletePhotographs(server.getServerDirectory(), newlyDeletedPhotographs);
+		notifyAllOfDeletedPhotographs(server, newlyDeletedPhotographs);
 
 		FFConstants.log(
 			"Incremented " + photographName + " by " + step + ": " + oldCount + " -> " +  finalTracker.photographCounts.getOrDefault(photographName, 0),
@@ -222,11 +225,11 @@ public record PhotographTracker(Map<String, Integer> photographCounts, List<Stri
 
 	public static class Mutable {
 		private final Map<String, Integer> photographCounts;
-		private final List<String> deletedPhotographs;
+		private final Map<String, Long> deletedPhotographs;
 
 		public Mutable(PhotographTracker tracker) {
-			this.photographCounts = new HashMap<>(tracker.photographCounts);
-			this.deletedPhotographs = new ArrayList<>(tracker.deletedPhotographs);
+			this.photographCounts = new Object2IntOpenHashMap<>(tracker.photographCounts);
+			this.deletedPhotographs = new Object2LongOpenHashMap<>(tracker.deletedPhotographs);
 		}
 
 		public void incrementPhotographCount(String photographName, int step) {
@@ -234,17 +237,20 @@ public record PhotographTracker(Map<String, Integer> photographCounts, List<Stri
 			this.photographCounts.merge(photographName, step, Integer::sum);
 		}
 
-		public PhotographTracker toImmutable() {
-			final Map<String, Integer> cleanedMap = new HashMap<>(this.photographCounts);
-			final List<String> deletedPhotographs = new ArrayList<>(this.deletedPhotographs);
-			cleanedMap.entrySet().removeIf(entry -> {
+		public PhotographTracker toImmutable(MinecraftServer server) {
+			final Map<String, Integer> cleanPhotographCounts = new Object2IntOpenHashMap<>(this.photographCounts);
+			final Map<String, Long> deletedPhotographs = new Object2LongOpenHashMap<>(this.deletedPhotographs);
+
+			final long gameTime = server.overworld().getGameTime();
+			cleanPhotographCounts.entrySet().removeIf(entry -> {
 				if (entry.getValue() <= 0) {
-					deletedPhotographs.add(entry.getKey());
+					deletedPhotographs.put(entry.getKey(), gameTime);
 					return true;
 				}
 				return false;
 			});
-			return new PhotographTracker(ImmutableMap.copyOf(cleanedMap), ImmutableList.copyOf(deletedPhotographs));
+
+			return new PhotographTracker(ImmutableMap.copyOf(cleanPhotographCounts), ImmutableMap.copyOf(deletedPhotographs));
 		}
 	}
 }
