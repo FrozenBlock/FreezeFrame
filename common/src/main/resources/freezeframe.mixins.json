@@ -15,8 +15,6 @@
     "camera.PlayerMixin",
     "camera.SpawnEggItemMixin",
     "camera.WolfMixin",
-    "datafix.DataFixersMixin",
-    "datafix.V3328Mixin",
     "film.AbstractContainerMenuMixin",
     "tracker.AbstractContainerMenuMixin",
     "tracker.InventoryMixin",

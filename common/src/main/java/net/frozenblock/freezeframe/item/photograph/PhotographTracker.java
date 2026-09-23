@@ -56,7 +56,15 @@ public record PhotographTracker(Map<String, Integer> photographCounts, Map<Strin
 	private static final PhotographTracker EMPTY = new PhotographTracker(Map.of(), Map.of());
 	public static final Codec<PhotographTracker> CODEC = RecordCodecBuilder.create(instance -> instance.group(
 		Codec.unboundedMap(Codec.STRING, Codec.INT).fieldOf("photograph_counts").forGetter(PhotographTracker::photographCounts),
-		Codec.unboundedMap(Codec.STRING, Codec.LONG).fieldOf("deleted_photographs").forGetter(PhotographTracker::deletedPhotographs)
+		Codec.withAlternative(
+			Codec.unboundedMap(Codec.STRING, Codec.LONG),
+			Codec.STRING.listOf(),
+			strings -> {
+				final Map<String, Long> newDeletedPhotographs = new Object2LongOpenHashMap<>();
+				for (String name : strings) newDeletedPhotographs.put(name, 0L);
+				return newDeletedPhotographs;
+			}
+		).fieldOf("deleted_photographs").forGetter(PhotographTracker::deletedPhotographs)
 	).apply(instance, PhotographTracker::new));
 
 	public static void init() {
