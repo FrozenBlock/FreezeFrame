@@ -1,8 +1,9 @@
 #version 330
+#extension GL_ARB_separate_shader_objects : require
 
 uniform sampler2D InSampler;
 
-in vec2 texCoord;
+layout(location = 0) in vec2 texCoord;
 
 layout(std140) uniform SamplerInfo {
     vec2 OutSize;
@@ -14,7 +15,7 @@ layout(std140) uniform CrunchConfig {
     float Levels;
 };
 
-out vec4 fragColor;
+layout(location = 0) out vec4 fragColor;
 
 vec2 toSquareSpace(vec2 uv) {
     float minDimension = max(min(InSize.x, InSize.y), 1.0);

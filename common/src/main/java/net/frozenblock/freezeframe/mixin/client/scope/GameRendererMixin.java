@@ -68,6 +68,6 @@ public class GameRendererMixin {
 	@Inject(method = "update", at = @At("RETURN"))
 	public void freezeFrame$appendScopeFilterPostEffect(CallbackInfo info) {
 		final Identifier filterPostEffect = ScopePostEffectController.getFilterPostEffect();
-		if (filterPostEffect != null) this.requestedPostEffects.remove(filterPostEffect);
+		if (filterPostEffect != null) this.requestedPostEffects.add(filterPostEffect);
 	}
 }

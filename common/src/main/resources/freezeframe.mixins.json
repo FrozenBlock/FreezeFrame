@@ -43,6 +43,7 @@
     "client.scope.CameraMixin",
     "client.scope.GameRendererMixin",
     "client.scope.MouseHandlerMixin",
+    "client.scope.ShaderManagerMixin",
     "client.screenshot.CameraMixin",
     "client.screenshot.GameRendererMixin",
     "client.screenshot.GuiMixin",

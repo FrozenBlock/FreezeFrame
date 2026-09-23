@@ -45,6 +45,7 @@ public final class ScopePostEffectController {
 	private static final Identifier SWAP_TARGET = FFConstants.id("film/scope_swap");
 	private static final Identifier TEMP_TARGET = FFConstants.id("film/scope_temp");
 	private static final PostChainConfig.InternalTarget TRANSIENT_TARGET = new PostChainConfig.InternalTarget(Optional.empty(), Optional.empty(), false, 0);
+	private static final String DYNAMIC_EFFECT_PREFIX = "film/dynamic/";
 	private static final Identifier DYE_PASS_SPEC_ID = FFConstants.id("post/tint_dynamic");
 	private static final UniformValue.Vec4Uniform DYE_TINT_EXCLUSION = new UniformValue.Vec4Uniform(new Vector4f(1F, 1F, 0F, 0F));
 	private static final UniformValue.Vec4Uniform DYE_TINT_NO_EXCLUSION = new UniformValue.Vec4Uniform(new Vector4f(0F, 0.4F, 0F, 0F));
@@ -72,13 +73,23 @@ public final class ScopePostEffectController {
 		return appliedEffect;
 	}
 
+	public static boolean isRegisteredDynamicEffect(ShaderManager shaderManager, Identifier effectId) {
+		if (!effectId.getNamespace().equals(FFConstants.MOD_ID) || !effectId.getPath().startsWith(DYNAMIC_EFFECT_PREFIX)) return false;
+
+		final ShaderManager.PostChainCache cache = shaderManager.postChains;
+		if (cache == null) return false;
+
+		final Optional<PostChain> chain = cache.postChains.get(effectId);
+		return chain != null && chain.isPresent();
+	}
+
 	private static @Nullable Identifier getOrCreateEffect(Minecraft minecraft, FilmFilter filter) {
 		if (filter.isEmpty()) return null;
 
 		final List<PassSpec> passSpecs = buildPassSpecs(filter);
 		if (passSpecs.isEmpty()) return null;
 
-		final Identifier effectId = FFConstants.id("film/dynamic/" + Integer.toUnsignedString(filter.layers().hashCode(), 16));
+		final Identifier effectId = FFConstants.id(DYNAMIC_EFFECT_PREFIX + Integer.toUnsignedString(filter.layers().hashCode(), 16));
 		if (ensurePostChainRegistered(minecraft, effectId, passSpecs)) return effectId;
 
 		return null;
