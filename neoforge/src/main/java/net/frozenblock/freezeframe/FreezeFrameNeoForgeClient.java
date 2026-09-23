@@ -18,7 +18,7 @@
 package net.frozenblock.freezeframe;
 
 import net.frozenblock.freezeframe.config.gui.FFConfigGui;
-import net.frozenblock.lib.FrozenBools;
+import net.frozenblock.lib.FrozenLibEarlyConstants;
 import net.neoforged.api.distmarker.Dist;
 import net.neoforged.bus.api.IEventBus;
 import net.neoforged.fml.ModLoadingContext;
@@ -37,7 +37,7 @@ public final class FreezeFrameNeoForgeClient {
 			FreezeFrameClient.setup();
 		});
 
-		if (FrozenBools.HAS_CLOTH_CONFIG) {
+		if (FrozenLibEarlyConstants.HAS_CLOTH_CONFIG) {
 			ModLoadingContext.get().registerExtensionPoint(
 				IConfigScreenFactory.class,
 				() -> (container, parent) -> FFConfigGui.buildScreen(parent)
