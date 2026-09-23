@@ -30,6 +30,7 @@ import net.frozenblock.freezeframe.registry.FFItems;
 import net.frozenblock.freezeframe.registry.FFRegistries;
 import net.frozenblock.freezeframe.registry.FFSpecialFilmFilters;
 import net.frozenblock.lib.item.api.recipe.RecipeExportNamespaceFix;
+import net.minecraft.advancements.Advancement;
 import net.minecraft.advancements.predicates.ItemPredicate;
 import net.minecraft.core.Holder;
 import net.minecraft.core.HolderLookup;
@@ -39,6 +40,7 @@ import net.minecraft.data.recipes.RecipeCategory;
 import net.minecraft.data.recipes.RecipeOutput;
 import net.minecraft.data.recipes.RecipeProvider;
 import net.minecraft.data.recipes.SpecialRecipeBuilder;
+import net.minecraft.data.worldgen.BootstrapContext;
 import net.minecraft.resources.ResourceKey;
 import net.minecraft.tags.ItemTags;
 import net.minecraft.util.StringUtil;
@@ -46,6 +48,7 @@ import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStackTemplate;
 import net.minecraft.world.item.Items;
 import net.minecraft.world.item.crafting.Ingredient;
+import net.minecraft.world.item.crafting.Recipe;
 import net.minecraft.world.level.ItemLike;
 
 public final class FFRecipeProvider extends FabricRecipeProvider {
@@ -55,13 +58,13 @@ public final class FFRecipeProvider extends FabricRecipeProvider {
 	}
 
 	@Override
-	protected RecipeProvider createRecipeProvider(HolderLookup.Provider registries, RecipeOutput output) {
-		return new RecipeProvider(registries, output) {
+	protected RecipeProvider createRecipeProvider(HolderLookup.Provider registries, BootstrapContext<Recipe<?>> recipes, BootstrapContext<Advancement> advancements) {
+		return new RecipeProvider(recipes, advancements) {
 			@Override
 			public void buildRecipes() {
 				RecipeExportNamespaceFix.setCurrentGeneratingModId(FFConstants.MOD_ID);
-				final HolderLookup.RegistryLookup<Item> items = this.registries.lookupOrThrow(Registries.ITEM);
-				final HolderLookup.RegistryLookup<SpecialFilmFilter> specialFilmFilters = this.registries.lookupOrThrow(FFRegistries.SPECIAL_FILM_FILTER);
+				final HolderLookup.RegistryLookup<Item> items = registries.lookupOrThrow(Registries.ITEM);
+				final HolderLookup.RegistryLookup<SpecialFilmFilter> specialFilmFilters = registries.lookupOrThrow(FFRegistries.SPECIAL_FILM_FILTER);
 
 				this.shapeless(RecipeCategory.TOOLS, FFItems.FILM.get())
 					.group("film")

@@ -118,14 +118,14 @@ public class BookPagePhotographMenu extends AbstractContainerMenu {
 		final ItemStack remainingPhoto = this.photoContainer.getItem(PHOTO_SLOT).copy();
 		final ItemStack book = player.getItemInHand(this.getHand());
 		if (!book.is(Items.WRITABLE_BOOK)) {
-			if (!remainingPhoto.isEmpty()) player.getInventory().placeItemBackInInventory(remainingPhoto);
+			if (!remainingPhoto.isEmpty()) dropOrPlaceInInventory(player, remainingPhoto);
 			this.photoContainer.setItem(PHOTO_SLOT, ItemStack.EMPTY);
 			return;
 		}
 
 		final WritableBookContent bookContent = book.get(DataComponents.WRITABLE_BOOK_CONTENT);
 		if (bookContent == null) {
-			if (!remainingPhoto.isEmpty()) player.getInventory().placeItemBackInInventory(remainingPhoto);
+			if (!remainingPhoto.isEmpty()) dropOrPlaceInInventory(player, remainingPhoto);
 			this.photoContainer.setItem(PHOTO_SLOT, ItemStack.EMPTY);
 			return;
 		}

@@ -17,7 +17,6 @@
 
 package net.frozenblock.freezeframe.block;
 
-import com.mojang.serialization.MapCodec;
 import net.frozenblock.freezeframe.menu.DevelopingTableMenu;
 import net.frozenblock.freezeframe.registry.FFStats;
 import net.minecraft.core.BlockPos;
@@ -36,16 +35,10 @@ import net.minecraft.world.level.block.state.StateDefinition;
 import net.minecraft.world.phys.BlockHitResult;
 
 public class DevelopingTableBlock extends HorizontalDirectionalBlock {
-	public static final MapCodec<DevelopingTableBlock> CODEC = simpleCodec(DevelopingTableBlock::new);
 	private static final Component CONTAINER_TITLE = Component.translatable("container.developing_table");
 
 	public DevelopingTableBlock(Properties properties) {
 		super(properties);
-	}
-
-	@Override
-	protected MapCodec<? extends DevelopingTableBlock> codec() {
-		return CODEC;
 	}
 
 	@Override

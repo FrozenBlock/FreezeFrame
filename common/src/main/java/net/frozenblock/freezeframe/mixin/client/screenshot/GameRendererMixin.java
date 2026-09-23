@@ -32,7 +32,7 @@ import org.spongepowered.asm.mixin.injection.At;
 public class GameRendererMixin {
 
 	@ModifyExpressionValue(
-		method = {"render", "renderLevel"},
+		method = {"render", "renderLevel", "applyPostEffects"},
 		at = @At(
 			value = "FIELD",
 			target = "Lnet/minecraft/client/renderer/GameRenderer;mainRenderTarget:Lcom/mojang/blaze3d/pipeline/RenderTarget;",

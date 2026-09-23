@@ -21,11 +21,14 @@ import com.mojang.blaze3d.pipeline.RenderTarget;
 import com.mojang.blaze3d.pipeline.TextureTarget;
 import com.mojang.blaze3d.platform.NativeImage;
 import com.mojang.blaze3d.platform.Window;
+import com.mojang.blaze3d.systems.RenderSystem;
 import com.mojang.datafixers.util.Pair;
+import com.mojang.renderpearl.api.GpuFormat;
 import java.util.function.Consumer;
 import net.frozenblock.freezeframe.client.scope.ScopePostEffectController;
 import net.frozenblock.freezeframe.client.scope.ScopeZoomManager;
 import net.frozenblock.freezeframe.component.filter.FilmFilter;
+import net.frozenblock.lib.platform.ModLoader;
 import net.mehvahdjukaar.candlelight.api.ClientOnly;
 import net.minecraft.client.Camera;
 import net.minecraft.client.DeltaTracker;
@@ -35,7 +38,6 @@ import net.minecraft.client.renderer.GameRenderer;
 import net.minecraft.world.attribute.EnvironmentAttributeProbe;
 import net.minecraft.world.entity.Entity;
 import org.jetbrains.annotations.Nullable;
-import com.mojang.blaze3d.GpuFormat;
 
 @ClientOnly
 public final class FFScreenshotUtil {
@@ -114,7 +116,7 @@ public final class FFScreenshotUtil {
 
 		if (entity != null) minecraft.setCameraEntity(preCameraEntity);
 		if (handheldCapture) ScopeZoomManager.clearForcedZoom();
-		if (handheldCapture && wasScoping && !filter.isEmpty()) ScopePostEffectController.applyFromFilter(minecraft, filter);
+		if (handheldCapture && wasScoping && !filter.isEmpty()) ScopePostEffectController.storeFilterPostEffect(minecraft, filter);
 	}
 
 	private static void screenshotAsCamera(
@@ -127,7 +129,7 @@ public final class FFScreenshotUtil {
 		boolean updateAttributeProbe,
 		Consumer<NativeImage> callback
 	) {
-		renderTarget = new TextureTarget("photograph", width, height, true, GpuFormat.RGBA8_UNORM);
+		renderTarget = new TextureTarget("photograph", width, height, GpuFormat.RGBA8_UNORM, GpuFormat.D32_FLOAT);
 
 		final GameRenderer gameRenderer = minecraft.gameRenderer;
 		gameRenderer.setRenderBlockOutline(false);
@@ -137,7 +139,7 @@ public final class FFScreenshotUtil {
 			window.setWidth(width);
 			window.setHeight(height);
 
-			ScopePostEffectController.applyFromFilter(minecraft, filter);
+			ScopePostEffectController.storeFilterPostEffect(minecraft, filter);
 
 			gameRenderer.update(DeltaTracker.ONE);
 			if (updateAttributeProbe) {
@@ -145,11 +147,15 @@ public final class FFScreenshotUtil {
 				environmentAttributeProbe.tick(minecraft.level, camera.position());
 			}
 			gameRenderer.extract(DeltaTracker.ONE, true);
-			gameRenderer.render(DeltaTracker.ONE, true);
+			gameRenderer.render();
+			// Found in ClientGameTestContextImpl. Huge massive shoutout to Fabric. #Fabric
+			RenderSystem.getDevice().createCommandEncoder().submit();
 
 			Screenshot.takeScreenshot(renderTarget, callback);
-		} catch (Exception ignored) {} finally {
-			ScopePostEffectController.clearIfApplied(minecraft);
+		} catch (Exception e) {
+			if (ModLoader.isDevelopmentEnvironment()) throw e;
+		} finally {
+			ScopePostEffectController.clearAppliedFilterPostEffect(minecraft);
 			gameRenderer.setRenderBlockOutline(true);
 			camera.disablePanoramicMode();
 		}

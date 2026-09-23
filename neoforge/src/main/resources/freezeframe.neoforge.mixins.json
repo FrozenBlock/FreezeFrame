@@ -6,8 +6,7 @@
   "mixins": [
   ],
   "client": [
-    "client.camera.HudMixin",
-    "client.screenshot.ScreenEffectRendererMixin"
+    "client.camera.HudMixin"
   ],
   "injectors": {
     "defaultRequire": 1

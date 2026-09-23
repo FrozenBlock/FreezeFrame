@@ -42,7 +42,6 @@ public final class FreezeFrame {
 		FFBlocks.init();
 		FFItems.init();
 		FFAttachmentTypes.init();
-		FFContainerComponentManipulators.init();
 		FFDataComponentPredicates.init();
 		PhotographTracker.init();
 		FFSounds.init();
@@ -57,6 +56,7 @@ public final class FreezeFrame {
 
 	public static void setup() {
 		FFCreativeInventorySorting.setup();
+		FFContainerComponentManipulators.setup();
 	}
 
 	private FreezeFrame() {}

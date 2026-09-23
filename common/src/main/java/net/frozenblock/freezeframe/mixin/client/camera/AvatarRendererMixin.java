@@ -46,7 +46,7 @@ public class AvatarRendererMixin {
 		cancellable = true
 	)
 	private static void freezeFrame$setArmPoseToCamera(Avatar avatar, ItemStack itemInHand, InteractionHand hand, CallbackInfoReturnable<HumanoidModel.ArmPose> info) {
-		if (avatar.swinging || hand != InteractionHand.MAIN_HAND || !itemInHand.is(FFItemTags.CAMERAS)) return;
+		if (avatar.isSwinging() || hand != InteractionHand.MAIN_HAND || !itemInHand.is(FFItemTags.CAMERAS)) return;
 		if (CameraItem.isCapableOfTakingPhotos(itemInHand)) {
 			info.setReturnValue(FreezeFrameArmPoses.CAMERA);
 		} else if (avatar.isUsingItem() && avatar.getUsedItemHand() == hand) {

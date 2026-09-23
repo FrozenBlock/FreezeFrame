@@ -19,7 +19,7 @@ package net.frozenblock.freezeframe.config.gui;
 
 import com.terraformersmc.modmenu.api.ConfigScreenFactory;
 import com.terraformersmc.modmenu.api.ModMenuApi;
-import net.frozenblock.lib.FrozenBools;
+import net.frozenblock.lib.FrozenLibEarlyConstants;
 import net.mehvahdjukaar.candlelight.api.ClientOnly;
 import net.minecraft.client.gui.screens.Screen;
 
@@ -28,7 +28,7 @@ public final class FFModMenuIntegration implements ModMenuApi {
 
 	@Override
     public ConfigScreenFactory<Screen> getModConfigScreenFactory() {
-        if (FrozenBools.HAS_CLOTH_CONFIG) return FFConfigGui::buildScreen;
+        if (FrozenLibEarlyConstants.HAS_CLOTH_CONFIG) return FFConfigGui::buildScreen;
         return screen -> null;
     }
 }

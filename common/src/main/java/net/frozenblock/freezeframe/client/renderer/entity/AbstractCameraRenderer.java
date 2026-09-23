@@ -58,6 +58,6 @@ public abstract class AbstractCameraRenderer<T extends TripodCamera, M extends A
 	@Override
 	protected void setupRotations(TripodCameraRenderState renderState, PoseStack poseStack, float bodyRot, float entityScale) {
 		super.setupRotations(renderState, poseStack, bodyRot, entityScale);
-		if (renderState.wiggle < 5F) poseStack.mulPose(Axis.YP.rotationDegrees(Mth.sin(renderState.wiggle / 1.5F * Mth.PI) * 3F));
+		if (renderState.wiggle < 5F) poseStack.rotate(Axis.YP.rotationDegrees(Mth.sin(renderState.wiggle / 1.5F * Mth.PI) * 3F));
 	}
 }

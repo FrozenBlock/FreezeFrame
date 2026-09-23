@@ -16,7 +16,7 @@
     },
     "has_the_recipe": {
       "conditions": {
-        "recipe": "freezeframe:film_filter_monochrome"
+        "recipes": "freezeframe:film_filter_monochrome"
       },
       "trigger": "minecraft:recipe_unlocked"
     }

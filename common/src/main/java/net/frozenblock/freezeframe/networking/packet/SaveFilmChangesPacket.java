@@ -63,7 +63,7 @@ public record SaveFilmChangesPacket(InteractionHand hand, FilmContents contents,
 		final int reducedMaxPhotographs = Math.max(packet.contents.size(), maxPhotographs - removedPhotographs);
 		if (reducedMaxPhotographs <= 0) {
 			player.setItemInHand(packet.hand, ItemStack.EMPTY);
-			player.onEquippedItemBroken(stack.getItem(), hand.asEquipmentSlot());
+			player.onEquippedItemBroken(stack, hand.asEquipmentSlot());
 			existingContents.photographs().forEach(photograph -> {
 				PhotographTracker.incrementPhotographCountAndDeleteIfEmpty(player.level(), photograph.identifier().getPath(), -1);
 			});

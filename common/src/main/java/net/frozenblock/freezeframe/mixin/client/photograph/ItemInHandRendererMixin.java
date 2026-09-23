@@ -25,16 +25,16 @@ import net.frozenblock.freezeframe.component.Photograph;
 import net.frozenblock.freezeframe.registry.FFDataComponents;
 import net.frozenblock.freezeframe.registry.FFItems;
 import net.mehvahdjukaar.candlelight.api.ClientOnly;
-import net.minecraft.client.Minecraft;
-import net.minecraft.client.player.AbstractClientPlayer;
-import net.minecraft.client.renderer.ItemInHandRenderer;
+import net.minecraft.client.renderer.FirstPersonHandsAndItemsRenderer;
 import net.minecraft.client.renderer.SubmitNodeCollector;
+import net.minecraft.client.renderer.entity.state.AvatarRenderState;
+import net.minecraft.client.renderer.state.level.FirstPersonHandsAndItemsRenderState;
+import net.minecraft.client.renderer.state.level.PlayerRenderState;
 import net.minecraft.resources.Identifier;
 import net.minecraft.util.Mth;
 import net.minecraft.world.InteractionHand;
 import net.minecraft.world.entity.HumanoidArm;
 import net.minecraft.world.item.ItemStack;
-import org.spongepowered.asm.mixin.Final;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Shadow;
 import org.spongepowered.asm.mixin.Unique;
@@ -43,29 +43,25 @@ import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 
 @ClientOnly
-@Mixin(ItemInHandRenderer.class)
+@Mixin(FirstPersonHandsAndItemsRenderer.class)
 public abstract class ItemInHandRendererMixin {
 
 	@Shadow
-	@Final
-	private Minecraft minecraft;
-
-	@Shadow
-	protected abstract void renderPlayerArm(PoseStack poseStack, SubmitNodeCollector submitNodeCollector, int lightCoords, float inverseArmHeight, float attackValue, HumanoidArm arm);
+	protected abstract void renderPlayerArm(PoseStack poseStack, SubmitNodeCollector submitNodeCollector, int lightCoords, float inverseArmHeight, float attackValue, HumanoidArm arm, PlayerRenderState playerState);
 
 	@Inject(
 		method = "submitArmWithItem",
 		at = @At(
 			value = "INVOKE",
 			target = "Lnet/minecraft/world/item/ItemStack;isEmpty()Z",
-			ordinal = 0,
-			shift = At.Shift.BEFORE
+			ordinal = 0
 		),
 		cancellable = true
 	)
 	private void freezeFrame$renderArmWithItem(
-		AbstractClientPlayer player,
-		float frameInterp,
+		PlayerRenderState playerState,
+		FirstPersonHandsAndItemsRenderState state,
+		float partialTicks,
 		float xRot,
 		InteractionHand hand,
 		float attack,
@@ -82,7 +78,7 @@ public abstract class ItemInHandRendererMixin {
 		final Photograph photograph = itemStack.get(FFDataComponents.PHOTOGRAPH.get());
 		if (photograph == null) return;
 
-		this.freezeFrame$submitPhotographInHand(poseStack, submitNodeCollector, lightCoords, inverseArmHeight, attack, arm, photograph.identifier());
+		this.freezeFrame$submitPhotographInHand(poseStack, submitNodeCollector, lightCoords, inverseArmHeight, attack, arm, photograph.identifier(), playerState);
 		info.cancel();
 	}
 
@@ -94,16 +90,20 @@ public abstract class ItemInHandRendererMixin {
 		float inverseArmHeight,
 		float attackValue,
 		HumanoidArm arm,
-		Identifier photographId
+		Identifier photographId,
+		PlayerRenderState playerState
 	) {
+		AvatarRenderState avatarRenderState = playerState.avatarRenderState;
+		if (avatarRenderState == null) return;
+
 		poseStack.pushPose();
 
 		final float invert = arm == HumanoidArm.RIGHT ? 1F : -1F;
 		poseStack.translate(invert * 0.125F, -0.125F, 0F);
-		if (!this.minecraft.player.isInvisible()) {
+		if (!avatarRenderState.isInvisible) {
 			poseStack.pushPose();
-			poseStack.mulPose(Axis.ZP.rotationDegrees(invert * 10F));
-			this.renderPlayerArm(poseStack, collector, lightCoords, inverseArmHeight, attackValue, arm);
+			poseStack.rotate(Axis.ZP.rotationDegrees(invert * 10F));
+			this.renderPlayerArm(poseStack, collector, lightCoords, inverseArmHeight, attackValue, arm, playerState);
 			poseStack.popPose();
 		}
 
@@ -115,8 +115,8 @@ public abstract class ItemInHandRendererMixin {
 		final float ySwingPosition = 0.4F * Mth.sin(sqrtAttackValue * (Mth.PI * 2F));
 		final float zSwingPosition = -0.3F * Mth.sin(attackValue * Mth.PI);
 		poseStack.translate(invert * xSwingPosition, ySwingPosition - 0.3F * xSwing, zSwingPosition);
-		poseStack.mulPose(Axis.XP.rotationDegrees(xSwing * -45F));
-		poseStack.mulPose(Axis.YP.rotationDegrees(invert * xSwing * -30F));
+		poseStack.rotate(Axis.XP.rotationDegrees(xSwing * -45F));
+		poseStack.rotate(Axis.YP.rotationDegrees(invert * xSwing * -30F));
 		this.freezeFrame$renderPhotograph(poseStack, collector, lightCoords, photographId);
 		poseStack.popPose();
 
@@ -125,7 +125,7 @@ public abstract class ItemInHandRendererMixin {
 
 	@Unique
 	private void freezeFrame$renderPhotograph(PoseStack poseStack, SubmitNodeCollector collector, int lightCoords, Identifier photographId) {
-		poseStack.mulPose(Axis.YP.rotationDegrees(180F));
+		poseStack.rotate(Axis.YP.rotationDegrees(180F));
 		poseStack.scale(0.38F, 0.38F, 0.38F);
 		PhotographRenderer.submit(poseStack, collector, photographId, lightCoords, PhotographRenderer.FrameType.FRAME_FULL, PhotographRenderer.FrameType.NONE);
 	}

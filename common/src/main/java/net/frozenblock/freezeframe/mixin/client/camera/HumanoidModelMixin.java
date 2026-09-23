@@ -18,7 +18,6 @@
 package net.frozenblock.freezeframe.mixin.client.camera;
 
 import com.llamalad7.mixinextras.injector.v2.WrapWithCondition;
-import com.llamalad7.mixinextras.sugar.Local;
 import net.frozenblock.freezeframe.client.model.FreezeFrameArmPoses;
 import net.mehvahdjukaar.candlelight.api.ClientOnly;
 import net.minecraft.client.model.HumanoidModel;
@@ -59,10 +58,9 @@ public class HumanoidModelMixin<T extends HumanoidRenderState> {
 	)
 	public boolean freezeFrame$modifyRightArmBobbing(
 		ModelPart modelPart, float ageInTicks, float scale,
-		@Local(name = "rightArmPose") HumanoidModel.ArmPose rightArmPose,
-		@Local(name = "leftArmPose") HumanoidModel.ArmPose leftArmPose
+		T state
 	) {
-		return rightArmPose != FreezeFrameArmPoses.CAMERA && rightArmPose != FreezeFrameArmPoses.CAMERA_ONE_ARM && leftArmPose != FreezeFrameArmPoses.CAMERA;
+		return state.rightArmPose != FreezeFrameArmPoses.CAMERA && state.rightArmPose != FreezeFrameArmPoses.CAMERA_ONE_ARM && state.leftArmPose != FreezeFrameArmPoses.CAMERA;
 	}
 
 	@WrapWithCondition(
@@ -75,16 +73,16 @@ public class HumanoidModelMixin<T extends HumanoidRenderState> {
 	)
 	public boolean freezeFrame$modifyLeftArmBobbing(
 		ModelPart modelPart, float ageInTicks, float scale,
-		@Local(name = "rightArmPose") HumanoidModel.ArmPose rightArmPose,
-		@Local(name = "leftArmPose") HumanoidModel.ArmPose leftArmPose
+		T state
 	) {
-		return leftArmPose != FreezeFrameArmPoses.CAMERA && leftArmPose != FreezeFrameArmPoses.CAMERA_ONE_ARM && rightArmPose != FreezeFrameArmPoses.CAMERA;
+		return state.leftArmPose != FreezeFrameArmPoses.CAMERA && state.leftArmPose != FreezeFrameArmPoses.CAMERA_ONE_ARM && state.rightArmPose != FreezeFrameArmPoses.CAMERA;
 	}
 
 	@Inject(method = "poseRightArm", at = @At("HEAD"), cancellable = true)
 	private void freezeFrame$poseRightArm(T state, CallbackInfo info) {
 		final boolean oneArm = state.rightArmPose == FreezeFrameArmPoses.CAMERA_ONE_ARM;
 		if (state.rightArmPose != FreezeFrameArmPoses.CAMERA && !oneArm) return;
+
 		this.freezeFrame$poseArmForCamera(false, state.isUsingItem, state.isCrouching);
 		if (!oneArm) this.freezeFrame$poseArmForCamera(true, state.isUsingItem, state.isCrouching);
 		info.cancel();
@@ -94,6 +92,7 @@ public class HumanoidModelMixin<T extends HumanoidRenderState> {
 	private void freezeFrame$poseLeftArm(T state, CallbackInfo info) {
 		final boolean oneArm = state.leftArmPose == FreezeFrameArmPoses.CAMERA_ONE_ARM;
 		if (state.leftArmPose != FreezeFrameArmPoses.CAMERA && !oneArm) return;
+
 		this.freezeFrame$poseArmForCamera(true, state.isUsingItem, state.isCrouching);
 		if (!oneArm) this.freezeFrame$poseArmForCamera(false, state.isUsingItem, state.isCrouching);
 		info.cancel();

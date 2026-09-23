@@ -19,7 +19,7 @@
     },
     "has_the_recipe": {
       "conditions": {
-        "recipe": "freezeframe:film_filter_dye_with_exclusion"
+        "recipes": "freezeframe:film_filter_dye_with_exclusion"
       },
       "trigger": "minecraft:recipe_unlocked"
     }

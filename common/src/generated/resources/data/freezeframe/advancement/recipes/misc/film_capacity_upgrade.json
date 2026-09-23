@@ -13,7 +13,7 @@
     },
     "has_the_recipe": {
       "conditions": {
-        "recipe": "freezeframe:film_capacity_upgrade"
+        "recipes": "freezeframe:film_capacity_upgrade"
       },
       "trigger": "minecraft:recipe_unlocked"
     }

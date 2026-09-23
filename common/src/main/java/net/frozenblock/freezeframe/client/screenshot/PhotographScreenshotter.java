@@ -84,7 +84,7 @@ public final class PhotographScreenshotter {
 		Optional<Path> finalIconPath = iconPath;
 
 		Util.ioPool().execute(() -> {
-			try {
+			try (screenshot) {
 				screenshot.writeToFile(photographFile);
 				finalIconPath.ifPresent(path -> copyPhotographToFileWithSize(screenshot, path, 64, 64));
 
@@ -109,8 +109,6 @@ public final class PhotographScreenshotter {
 			} catch (Exception e) {
 				FFConstants.warn("Couldn't save screenshot " + e, true);
 				callback.accept(Component.translatable("photograph.failure", e.getMessage()));
-			} finally {
-				screenshot.close();
 			}
 		});
 	}

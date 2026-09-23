@@ -42,7 +42,7 @@ public final class PhotographRenderer {
 	private static final Identifier BOOK_PHOTOGRAPH_HOLDER_FRONT = FFConstants.id("container/book/photograph_holder_front");
 
 	public static void submit(PoseStack poseStack, SubmitNodeCollector collector, Identifier id, int lightCoords, FrameType frameType, FrameType frameBackType) {
-		poseStack.mulPose(Axis.ZP.rotationDegrees(180F));
+		poseStack.rotate(Axis.ZP.rotationDegrees(180F));
 		poseStack.translate(-0.5F, -0.5F, 0F);
 
 		final RenderType frameRenderType = frameType.renderType;
@@ -63,7 +63,7 @@ public final class PhotographRenderer {
 		if (frameBackRenderType != null) {
 			poseStack.pushPose();
 			poseStack.translate(0F, 1F, 0F);
-			poseStack.mulPose(Axis.YP.rotationDegrees(180F));
+			poseStack.rotate(Axis.YP.rotationDegrees(180F));
 			collector.submitCustomGeometry(
 				poseStack,
 				frameBackRenderType,

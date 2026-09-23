@@ -30,7 +30,7 @@
     "client.camera.ArmPoseMixin",
     "client.camera.AvatarRendererMixin",
     "client.camera.HumanoidModelMixin",
-    "client.camera.ItemInHandRendererMixin",
+    "client.camera.FirstPersonHandsAndItemsMixin",
     "client.camera.MinecraftMixin",
     "client.camera.PlayerItemInHandLayerMixin",
     "client.film.AbstractContainerScreenMixin",

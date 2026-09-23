@@ -179,7 +179,7 @@ public class CameraItem extends SpawnEggItem {
 		if (initialContents == null) return false;
 
 		final ItemStack other = slot.getItem();
-		final CameraContents.Mutable contents = new CameraContents.Mutable(initialContents);
+		final CameraContents.Mutable contents = initialContents.asMutable();
 		if (clickAction == ClickAction.PRIMARY && !other.isEmpty()) {
 			if (contents.tryTransfer(slot, player) > 0) {
 				playInsertSound(player);
@@ -219,7 +219,7 @@ public class CameraItem extends SpawnEggItem {
 		final CameraContents initialContents = self.get(FFDataComponents.CAMERA_CONTENTS.get());
 		if (initialContents == null) return false;
 
-		final CameraContents.Mutable contents = new CameraContents.Mutable(initialContents);
+		final CameraContents.Mutable contents = initialContents.asMutable();
 		if (clickAction == ClickAction.PRIMARY && !other.isEmpty()) {
 			if (slot.allowModification(player) && contents.tryInsert(other) > 0) {
 				playInsertSound(player);
@@ -272,7 +272,7 @@ public class CameraItem extends SpawnEggItem {
 		final CameraContents initialContents = stack.get(FFDataComponents.CAMERA_CONTENTS.get());
 		if (initialContents == null) return;
 
-		final CameraContents.Mutable contents = new CameraContents.Mutable(initialContents);
+		final CameraContents.Mutable contents = initialContents.asMutable();
 		contents.toggleSelectedItem(selectedItem);
 		stack.set(FFDataComponents.CAMERA_CONTENTS.get(), contents.toImmutable());
 	}
@@ -323,15 +323,15 @@ public class CameraItem extends SpawnEggItem {
 		final CameraContents contents = entity.getItem().get(FFDataComponents.CAMERA_CONTENTS.get());
 		if (contents == null) return;
 		entity.getItem().set(FFDataComponents.CAMERA_CONTENTS.get(), CameraContents.EMPTY);
-		ItemUtils.onContainerDestroyed(entity, contents.itemCopyStream());
+		ItemUtils.onContainerDestroyed(entity, contents.itemCopies());
 	}
 
 	public static void addPhotograph(ItemStack stack, Player player, String fileName) {
-		final CameraContents initialCameraContents = stack.get(FFDataComponents.CAMERA_CONTENTS.get());
-		if (initialCameraContents == null) return;
+		final CameraContents initialContents = stack.get(FFDataComponents.CAMERA_CONTENTS.get());
+		if (initialContents == null) return;
 
-		final CameraContents cameraContents = addPhotograph(initialCameraContents, player, fileName);
-		if (initialCameraContents == cameraContents) return;
+		final CameraContents cameraContents = addPhotograph(initialContents, player, fileName);
+		if (initialContents == cameraContents) return;
 
 		stack.set(FFDataComponents.CAMERA_CONTENTS.get(), cameraContents);
 		PhotographTracker.incrementPhotographCountAndDeleteIfEmpty(player.level(), fileName, 1);
@@ -339,18 +339,18 @@ public class CameraItem extends SpawnEggItem {
 	}
 
 	@Nullable
-	public static CameraContents addPhotograph(CameraContents initialCameraContents, Player player, String fileName) {
-		if (initialCameraContents == null) return initialCameraContents;
+	public static CameraContents addPhotograph(CameraContents initialContents, Player player, String fileName) {
+		if (initialContents == null) return initialContents;
 
-		final CameraContents.Mutable cameraContents = new CameraContents.Mutable(initialCameraContents);
+		final CameraContents.Mutable cameraContents = initialContents.asMutable();
 		final Optional<ItemStack> potentialFilm = cameraContents.findFirstWithSpaceForPhotograph();
-		if (potentialFilm.isEmpty()) return initialCameraContents;
+		if (potentialFilm.isEmpty()) return initialContents;
 
 		final ItemStack film = potentialFilm.get();
 		final int maxPhotographs = FilmItem.getMaxPhotographs(film);
 		final FilmContents.Mutable filmContents = new FilmContents.Mutable(film.getOrDefault(FFDataComponents.FILM_CONTENTS.get(), FilmContents.EMPTY), maxPhotographs);
 		final Photograph photograph = new Photograph(FFConstants.id(fileName), player.getPlainTextName());
-		if (!filmContents.tryInsert(photograph)) return initialCameraContents;
+		if (!filmContents.tryInsert(photograph)) return initialContents;
 
 		film.set(FFDataComponents.FILM_CONTENTS.get(), filmContents.toImmutable());
 		FilmItem.refreshStackingState(film);

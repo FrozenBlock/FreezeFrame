@@ -49,31 +49,30 @@ public final class ScopePostEffectController {
 	private static final UniformValue.Vec4Uniform DYE_TINT_EXCLUSION = new UniformValue.Vec4Uniform(new Vector4f(1F, 1F, 0F, 0F));
 	private static final UniformValue.Vec4Uniform DYE_TINT_NO_EXCLUSION = new UniformValue.Vec4Uniform(new Vector4f(0F, 0.4F, 0F, 0F));
 
-	@Nullable
-	private static Identifier appliedEffect;
+	private static @Nullable Identifier appliedEffect;
 
-	public static void applyFromFilter(Minecraft minecraft, FilmFilter filter) {
+	public static void storeFilterPostEffect(Minecraft minecraft, FilmFilter filter) {
 		if (minecraft.gameRenderer == null) return;
 
 		final Identifier desired = getOrCreateEffect(minecraft, filter);
 		if (desired == null) {
-			clearIfApplied(minecraft);
+			clearAppliedFilterPostEffect(minecraft);
 			return;
 		}
-		if (desired.equals(appliedEffect) && desired.equals(minecraft.gameRenderer.currentPostEffect())) return;
-		minecraft.gameRenderer.setPostEffect(desired);
+
 		appliedEffect = desired;
 	}
 
-	public static void clearIfApplied(Minecraft minecraft) {
+	public static void clearAppliedFilterPostEffect(Minecraft minecraft) {
 		if (appliedEffect == null || minecraft.gameRenderer == null) return;
-
-		if (appliedEffect.equals(minecraft.gameRenderer.currentPostEffect())) minecraft.gameRenderer.clearPostEffect();
 		appliedEffect = null;
 	}
 
-	@Nullable
-	private static Identifier getOrCreateEffect(Minecraft minecraft, FilmFilter filter) {
+	public static @Nullable Identifier getFilterPostEffect() {
+		return appliedEffect;
+	}
+
+	private static @Nullable Identifier getOrCreateEffect(Minecraft minecraft, FilmFilter filter) {
 		if (filter.isEmpty()) return null;
 
 		final List<PassSpec> passSpecs = buildPassSpecs(filter);
@@ -88,7 +87,7 @@ public final class ScopePostEffectController {
 	private static boolean ensurePostChainRegistered(Minecraft minecraft, Identifier effectId, List<PassSpec> passSpecs) {
 		try {
 			final ShaderManager shaderManager = minecraft.getShaderManager();
-			final ShaderManager.CompilationCache cache = shaderManager.compilationCache;
+			final ShaderManager.PostChainCache cache = shaderManager.postChains;
 			if (cache == null) return false;
 
 			final Map<Identifier, Optional<PostChain>> postChains = cache.postChains;

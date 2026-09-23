@@ -13,7 +13,7 @@
     },
     "has_the_recipe": {
       "conditions": {
-        "recipe": "freezeframe:camera"
+        "recipes": "freezeframe:camera"
       },
       "trigger": "minecraft:recipe_unlocked"
     }

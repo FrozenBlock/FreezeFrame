@@ -17,6 +17,7 @@
 
 package net.frozenblock.freezeframe.client.gui.screens.inventory;
 
+import com.mojang.blaze3d.platform.InputConstants;
 import com.mojang.blaze3d.platform.cursor.CursorTypes;
 import java.util.ArrayList;
 import java.util.List;
@@ -51,7 +52,6 @@ import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.Items;
 import org.jetbrains.annotations.Nullable;
 import org.joml.Vector2i;
-import org.lwjgl.glfw.GLFW;
 
 @ClientOnly
 public class DevelopingTableScreen extends AbstractContainerScreen<DevelopingTableMenu> {
@@ -319,7 +319,7 @@ public class DevelopingTableScreen extends AbstractContainerScreen<DevelopingTab
 
 	@Override
 	public boolean mouseReleased(MouseButtonEvent event) {
-		if (this.draggingScroller && event.button() == GLFW.GLFW_RELEASE) {
+		if (this.draggingScroller && event.button() == InputConstants.RELEASE) {
 			this.draggingScroller = false;
 			return true;
 		}

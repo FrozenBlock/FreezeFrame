@@ -264,7 +264,7 @@ public class TripodCamera extends Mob {
 		final CameraContents initialContents = this.get(FFDataComponents.CAMERA_CONTENTS.get());
 		if (initialContents == null) return false;
 
-		final CameraContents.Mutable contents = new CameraContents.Mutable(initialContents);
+		final CameraContents.Mutable contents = initialContents.asMutable();
 		if (contents.tryInsert(other) <= 0) return false;
 
 		this.setComponent(FFDataComponents.CAMERA_CONTENTS.get(), contents.toImmutable());
@@ -278,7 +278,7 @@ public class TripodCamera extends Mob {
 		final CameraContents initialContents = this.get(FFDataComponents.CAMERA_CONTENTS.get());
 		if (initialContents == null) return false;
 
-		final CameraContents.Mutable contents = new CameraContents.Mutable(initialContents);
+		final CameraContents.Mutable contents = initialContents.asMutable();
 		final ItemStack removed = contents.removeOne();
 		if (removed == null) return false;
 

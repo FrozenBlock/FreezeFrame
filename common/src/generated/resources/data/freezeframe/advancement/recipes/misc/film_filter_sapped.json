@@ -16,7 +16,7 @@
     },
     "has_the_recipe": {
       "conditions": {
-        "recipe": "freezeframe:film_filter_sapped"
+        "recipes": "freezeframe:film_filter_sapped"
       },
       "trigger": "minecraft:recipe_unlocked"
     }

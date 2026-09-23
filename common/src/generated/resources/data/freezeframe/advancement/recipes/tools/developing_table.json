@@ -13,7 +13,7 @@
     },
     "has_the_recipe": {
       "conditions": {
-        "recipe": "freezeframe:developing_table"
+        "recipes": "freezeframe:developing_table"
       },
       "trigger": "minecraft:recipe_unlocked"
     }

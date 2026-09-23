@@ -22,8 +22,6 @@ import net.fabricmc.fabric.api.datagen.v1.FabricPackOutput;
 import net.fabricmc.fabric.api.datagen.v1.provider.FabricBlockLootSubProvider;
 import net.frozenblock.freezeframe.registry.FFBlocks;
 import net.minecraft.core.HolderLookup;
-import net.minecraft.core.registries.Registries;
-import net.minecraft.world.item.enchantment.Enchantment;
 
 public final class FFBlockLootProvider extends FabricBlockLootSubProvider {
 
@@ -33,8 +31,6 @@ public final class FFBlockLootProvider extends FabricBlockLootSubProvider {
 
 	@Override
 	public void generate() {
-		final HolderLookup.RegistryLookup<Enchantment> enchantments = this.registries.lookupOrThrow(Registries.ENCHANTMENT);
-
 		this.dropSelf(FFBlocks.DEVELOPING_TABLE.get());
 	}
 }

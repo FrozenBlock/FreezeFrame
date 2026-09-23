@@ -20,8 +20,9 @@ package net.frozenblock.freezeframe.mixin.client.camera;
 import com.llamalad7.mixinextras.sugar.Local;
 import net.frozenblock.freezeframe.item.CameraItem;
 import net.mehvahdjukaar.candlelight.api.ClientOnly;
+import net.minecraft.client.player.FirstPersonHandsAndItems;
 import net.minecraft.client.player.LocalPlayer;
-import net.minecraft.client.renderer.ItemInHandRenderer;
+import net.minecraft.client.renderer.state.level.FirstPersonHandsAndItemsRenderState;
 import net.minecraft.world.item.ItemStack;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.injection.At;
@@ -29,8 +30,8 @@ import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
 
 @ClientOnly
-@Mixin(ItemInHandRenderer.class)
-public class ItemInHandRendererMixin {
+@Mixin(FirstPersonHandsAndItems.class)
+public class FirstPersonHandsAndItemsMixin {
 
 	@Inject(
 		method = "evaluateWhichHandsToRender",
@@ -42,9 +43,9 @@ public class ItemInHandRendererMixin {
 		cancellable = true
 	)
 	private static void freezeFrame$renderOnlyMainHandWhenUsingCamera(
-		LocalPlayer player, CallbackInfoReturnable<ItemInHandRenderer.HandRenderSelection> info,
+		LocalPlayer player, CallbackInfoReturnable<FirstPersonHandsAndItemsRenderState.HandRenderSelection> info,
 		@Local(name = "mainHandItem") ItemStack mainHandItem
 	) {
-		if (CameraItem.isCapableOfTakingPhotos(mainHandItem)) info.setReturnValue(ItemInHandRenderer.HandRenderSelection.RENDER_MAIN_HAND_ONLY);
+		if (CameraItem.isCapableOfTakingPhotos(mainHandItem)) info.setReturnValue(FirstPersonHandsAndItemsRenderState.HandRenderSelection.RENDER_MAIN_HAND_ONLY);
 	}
 }

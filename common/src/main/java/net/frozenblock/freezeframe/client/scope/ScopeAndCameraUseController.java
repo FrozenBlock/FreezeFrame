@@ -70,10 +70,10 @@ public final class ScopeAndCameraUseController {
 		final ItemStack scopeItem = usingScopeItem ? player.getUseItem() : ItemStack.EMPTY;
 		if (usingCamera) {
 			lastAppliedFilter = CameraItem.getFilterForNextPhotograph(scopeItem);
-			ScopePostEffectController.applyFromFilter(minecraft, lastAppliedFilter);
+			ScopePostEffectController.storeFilterPostEffect(minecraft, lastAppliedFilter);
 		} else {
 			lastAppliedFilter = FilmFilter.EMPTY;
-			ScopePostEffectController.clearIfApplied(minecraft);
+			ScopePostEffectController.clearAppliedFilterPostEffect(minecraft);
 		}
 
 		final boolean isScopeConfigDifferent = !previousScopeItem.getOrDefault(FFDataComponents.SCOPE_ZOOM_CONFIG.get(), ScopeZoomConfig.EMPTY)
@@ -121,7 +121,7 @@ public final class ScopeAndCameraUseController {
 	private static void resetState(Minecraft minecraft) {
 		restoreCameraType(minecraft);
 		ScopeZoomManager.resetActiveZoomProfile();
-		ScopePostEffectController.clearIfApplied(minecraft);
+		ScopePostEffectController.clearAppliedFilterPostEffect(minecraft);
 		lastAppliedFilter = FilmFilter.EMPTY;
 		wasAttackDown = false;
 		previousScopeItem = ItemStack.EMPTY;

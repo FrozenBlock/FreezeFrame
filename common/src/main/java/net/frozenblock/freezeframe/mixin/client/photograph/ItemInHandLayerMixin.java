@@ -57,7 +57,7 @@ public abstract class ItemInHandLayerMixin {
 			if (photograph == null) break renderPhotograph;
 
 			poseStack.pushPose();
-			poseStack.mulPose(Axis.YP.rotationDegrees(180F));
+			poseStack.rotate(Axis.YP.rotationDegrees(180F));
 			poseStack.translate(0F, 0.188975F, -0.0625F);
 			poseStack.scale(0.38F, 0.38F, 0.38F);
 			PhotographRenderer.submit(poseStack, submitNodeCollector, photograph.identifier(), lightCoords, PhotographRenderer.FrameType.FRAME, PhotographRenderer.FrameType.FRAME_BACK);

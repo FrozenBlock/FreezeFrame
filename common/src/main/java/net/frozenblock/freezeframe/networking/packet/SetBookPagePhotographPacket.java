@@ -28,6 +28,7 @@ import net.minecraft.network.codec.StreamCodec;
 import net.minecraft.network.protocol.common.custom.CustomPacketPayload;
 import net.minecraft.server.MinecraftServer;
 import net.minecraft.server.level.ServerPlayer;
+import net.minecraft.util.Prediction;
 import net.minecraft.world.InteractionHand;
 import net.minecraft.world.entity.player.Inventory;
 import net.minecraft.world.item.ItemStack;
@@ -65,7 +66,7 @@ public record SetBookPagePhotographPacket(InteractionHand hand, int pageIndex, i
 		if (packet.removePhoto) {
 			if (currentPhoto.isEmpty()) return;
 			BookPagePhotographHelper.clearPhoto(heldBook, packet.pageIndex);
-			player.getInventory().placeItemBackInInventory(currentPhoto);
+			player.getInventory().placeItemBackInInventory(currentPhoto, Prediction.SERVER_ONLY);
 			return;
 		}
 
@@ -80,6 +81,6 @@ public record SetBookPagePhotographPacket(InteractionHand hand, int pageIndex, i
 		if (inventoryStack.isEmpty()) player.getInventory().setItem(inventorySlot, ItemStack.EMPTY);
 
 		BookPagePhotographHelper.setPhoto(heldBook, packet.pageIndex, usedPhoto);
-		if (!currentPhoto.isEmpty()) player.getInventory().placeItemBackInInventory(currentPhoto);
+		if (!currentPhoto.isEmpty()) player.getInventory().placeItemBackInInventory(currentPhoto, Prediction.SERVER_ONLY);
 	}
 }
