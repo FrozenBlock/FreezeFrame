@@ -7,7 +7,8 @@
     "camera.ContainerComponentManipulatorsMixin"
   ],
   "client": [
-    "client.scope.HudMixin"
+    "client.scope.HudMixin",
+    "client.screenshot.LevelExtractorViewBlockingStateMixin"
   ],
   "injectors": {
     "defaultRequire": 1
