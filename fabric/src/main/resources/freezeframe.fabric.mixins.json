@@ -7,7 +7,7 @@
     "camera.ContainerComponentManipulatorsMixin"
   ],
   "client": [
-    "client.camera.HudMixin"
+    "client.scope.HudMixin"
   ],
   "injectors": {
     "defaultRequire": 1
