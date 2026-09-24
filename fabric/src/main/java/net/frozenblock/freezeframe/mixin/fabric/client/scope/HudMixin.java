@@ -15,10 +15,12 @@
  * along with this program; if not, see <https://github.com/FrozenBlock/Licenses>.
  */
 
-package net.frozenblock.freezeframe.mixin.neoforge.client.camera;
+package net.frozenblock.freezeframe.mixin.fabric.client.scope;
 
 import com.llamalad7.mixinextras.injector.ModifyExpressionValue;
-import com.llamalad7.mixinextras.sugar.Local;
+import com.llamalad7.mixinextras.injector.v2.WrapWithCondition;
+import com.llamalad7.mixinextras.sugar.Share;
+import com.llamalad7.mixinextras.sugar.ref.LocalBooleanRef;
 import net.frozenblock.freezeframe.FFConstants;
 import net.frozenblock.freezeframe.config.FFConfig;
 import net.frozenblock.freezeframe.util.ScopeItemHelper;
@@ -28,14 +30,12 @@ import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.GuiGraphicsExtractor;
 import net.minecraft.client.gui.Hud;
 import net.minecraft.resources.Identifier;
-import net.minecraft.world.entity.player.Player;
+import org.objectweb.asm.Opcodes;
 import org.spongepowered.asm.mixin.Final;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Shadow;
 import org.spongepowered.asm.mixin.Unique;
 import org.spongepowered.asm.mixin.injection.At;
-import org.spongepowered.asm.mixin.injection.Inject;
-import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 
 @ClientOnly
 @Mixin(Hud.class)
@@ -48,40 +48,46 @@ public class HudMixin {
 	@Unique
 	private static final Identifier FREEZE_FRAME$CAMERA_SCOPE = FFConstants.id("textures/misc/camera_scope.png");
 
-	@Unique
-	private boolean freezeFrame$isPlayerScopingInFirstPerson(Player player) {
-		return player != null
-			&& player.isScoping()
-			&& ScopeItemHelper.isPlayerUsingScopeItem(player)
-			&& this.minecraft.options.getCameraType().isFirstPerson();
-	}
-
-	@Inject(method = "extractCrosshair", at = @At("HEAD"), cancellable = true)
-	public void freezeFrame$removeCrosshair(GuiGraphicsExtractor graphics, DeltaTracker deltaTracker, CallbackInfo info) {
-		if (FFConfig.SCOPE_HIDES_HOTBAR.get() && this.freezeFrame$isPlayerScopingInFirstPerson(this.minecraft.player)) info.cancel();
-	}
-
-	@Inject(
-		method = "extractItemHotbar",
+	@WrapWithCondition(
+		method = "extractRenderState",
 		at = @At(
 			value = "INVOKE",
-			target = "Lnet/minecraft/world/entity/player/Player;getOffhandItem()Lnet/minecraft/world/item/ItemStack;",
-			ordinal = 0
-		),
-		cancellable = true
+			target = "Lnet/minecraft/client/gui/Hud;extractCrosshair(Lnet/minecraft/client/gui/GuiGraphicsExtractor;Lnet/minecraft/client/DeltaTracker;)V"
+		)
 	)
-	public void freezeFrame$removeHotbar(
-		GuiGraphicsExtractor graphics, DeltaTracker deltaTracker, CallbackInfo info,
-		@Local(name = "player") Player player
+	public boolean freezeFrame$removeCrosshair(
+		Hud instance, GuiGraphicsExtractor graphics, DeltaTracker deltaTracker,
+		@Share("freezeFrame$isPlayerScopingInFirstPerson") LocalBooleanRef isPlayerScopingInFirstPerson
 	) {
-		if (FFConfig.SCOPE_HIDES_HOTBAR.get() && this.freezeFrame$isPlayerScopingInFirstPerson(player)) info.cancel();
+		isPlayerScopingInFirstPerson.set(
+			this.minecraft.player != null
+			&& this.minecraft.player.isScoping()
+			&& ScopeItemHelper.isPlayerUsingScopeItem(this.minecraft.player)
+			&& this.minecraft.options.getCameraType().isFirstPerson()
+		);
+		return !FFConfig.SCOPE_HIDES_CROSSHAIR.get() || !isPlayerScopingInFirstPerson.get();
+	}
+
+	@WrapWithCondition(
+		method = "extractRenderState",
+		at = @At(
+			value = "INVOKE",
+			target = "Lnet/minecraft/client/gui/Hud;extractHotbarAndDecorations(Lnet/minecraft/client/gui/GuiGraphicsExtractor;Lnet/minecraft/client/DeltaTracker;)V"
+		)
+	)
+	public boolean freezeFrame$removeHotbar(
+		Hud instance, GuiGraphicsExtractor graphics, DeltaTracker deltaTracker,
+		@Share("freezeFrame$isPlayerScopingInFirstPerson") LocalBooleanRef isPlayerScopingInFirstPerson
+	) {
+		return !FFConfig.SCOPE_HIDES_HOTBAR.get() || !isPlayerScopingInFirstPerson.get();
 	}
 
 	@ModifyExpressionValue(
 		method = "extractSpyglassOverlay",
 		at = @At(
-			value = "INVOKE",
-			target = "Lnet/neoforged/neoforge/client/extensions/common/IClientItemExtensions;getScopeOverlayTexture(Lnet/minecraft/world/item/ItemStack;)Lnet/minecraft/resources/Identifier;"
+			value = "FIELD",
+			target = "Lnet/minecraft/client/gui/Hud;SPYGLASS_SCOPE_LOCATION:Lnet/minecraft/resources/Identifier;",
+			opcode = Opcodes.GETSTATIC
 		)
 	)
 	private Identifier freezeFrame$useCameraOverlay(Identifier original) {

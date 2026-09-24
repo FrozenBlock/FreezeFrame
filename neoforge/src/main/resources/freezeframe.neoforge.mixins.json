@@ -6,7 +6,7 @@
   "mixins": [
   ],
   "client": [
-    "client.camera.HudMixin",
+    "client.scope.HudMixin",
     "client.screenshot.ScreenEffectRendererMixin"
   ],
   "injectors": {
