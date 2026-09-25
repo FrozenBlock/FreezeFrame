@@ -53,6 +53,7 @@ public record PhotographTracker(Map<String, Integer> photographCounts, Map<Strin
 	private static final boolean LOG_DELETIONS = true;
 	private static final boolean LOG_FAILED_DELETION_ATTEMPTS = false;
 	private static final boolean LOG_INCREMENTS = true;
+	private static final int INFINITE_MARKER = -1;
 	private static final PhotographTracker EMPTY = new PhotographTracker(Map.of(), Map.of());
 	public static final Codec<PhotographTracker> CODEC = RecordCodecBuilder.create(instance -> instance.group(
 		Codec.unboundedMap(Codec.STRING, Codec.INT).fieldOf("photograph_counts").forGetter(PhotographTracker::photographCounts),
@@ -98,6 +99,7 @@ public record PhotographTracker(Map<String, Integer> photographCounts, Map<Strin
 
 	public static void removeCreativeModeCarriedItem(Entity entity) {
 		if (!(entity instanceof ServerPlayer player)) return;
+
 		final ItemStack carriedAttachment = FFAttachmentTypes.CREATIVE_MODE_CARRIED_ITEM.getAttachedOrElse(player, ItemStack.EMPTY);
 		if (!carriedAttachment.isEmpty()) incrementOnItemStackDeletion(player.level(), carriedAttachment);
 		FFAttachmentTypes.CREATIVE_MODE_CARRIED_ITEM.remove(player);
@@ -119,14 +121,26 @@ public record PhotographTracker(Map<String, Integer> photographCounts, Map<Strin
 		if (!(level instanceof ServerLevel serverLevel)) return;
 
 		final MinecraftServer server = serverLevel.getServer();
-
 		final PhotographTracker initialTracker = get(server);
 		final int oldCount = initialTracker.photographCounts.getOrDefault(photographName, 0);
+		if (oldCount == INFINITE_MARKER) return;
 
 		final Mutable tracker = initialTracker.mutable();
+		if (step < 0 && oldCount == 0) {
+			tracker.markAsInfinite(photographName);
+			FFConstants.log(
+				"Attempting to decrement untracked photograph " + photographName + ", marking as infinite.",
+				LOG_INCREMENTS && FFConstants.UNSTABLE_LOGGING
+			);
+
+			setAttached(level, tracker.toImmutable(server));
+			return;
+		}
+
 		tracker.incrementPhotographCount(photographName, step);
+
 		final PhotographTracker finalTracker = tracker.toImmutable(server);
-		setAttached(level, tracker.toImmutable(server));
+		setAttached(level, finalTracker);
 
 		final List<String> newlyDeletedPhotographs = initialTracker.photographCounts.keySet().stream()
 			.filter(key -> !finalTracker.photographCounts.containsKey(key))
@@ -185,14 +199,6 @@ public record PhotographTracker(Map<String, Integer> photographCounts, Map<Strin
 		incrementOnItemStackDeletion(level, stack, true);
 	}
 
-	public static void incrementOnItemStackClone(Level level, ItemStack stack, boolean allowRecursion) {
-		incrementOnItemStackSizeChange(level, stack, stack.getCount(), allowRecursion);
-	}
-
-	public static void incrementOnItemStackClone(Level level, ItemStack stack) {
-		incrementOnItemStackClone(level, stack, true);
-	}
-
 	public static void incrementOnItemStackSizeChange(Level level, ItemStack stack, int delta, boolean allowRecursion) {
 		final Photograph photograph = stack.get(FFDataComponents.PHOTOGRAPH.get());
 		if (photograph != null) incrementPhotographCountAndDeleteIfEmpty(level, photograph.identifier().getPath(), delta);
@@ -243,6 +249,10 @@ public record PhotographTracker(Map<String, Integer> photographCounts, Map<Strin
 		public void incrementPhotographCount(String photographName, int step) {
 			if (step == 0 || (step < 0 && !this.photographCounts.containsKey(photographName))) return;
 			this.photographCounts.merge(photographName, step, Integer::sum);
+		}
+
+		public void markAsInfinite(String photographName) {
+			this.photographCounts.put(photographName, INFINITE_MARKER);
 		}
 
 		public PhotographTracker toImmutable(MinecraftServer server) {
