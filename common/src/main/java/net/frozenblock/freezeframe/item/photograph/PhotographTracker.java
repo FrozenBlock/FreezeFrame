@@ -24,6 +24,7 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import it.unimi.dsi.fastutil.objects.Object2IntOpenHashMap;
@@ -242,8 +243,8 @@ public record PhotographTracker(Map<String, Integer> photographCounts, Map<Strin
 		private final Map<String, Long> deletedPhotographs;
 
 		public Mutable(PhotographTracker tracker) {
-			this.photographCounts = new Object2IntOpenHashMap<>(tracker.photographCounts);
-			this.deletedPhotographs = new Object2LongOpenHashMap<>(tracker.deletedPhotographs);
+			this.photographCounts = new HashMap<>(tracker.photographCounts);
+			this.deletedPhotographs = new HashMap<>(tracker.deletedPhotographs);
 		}
 
 		public void incrementPhotographCount(String photographName, int step) {
@@ -261,7 +262,8 @@ public record PhotographTracker(Map<String, Integer> photographCounts, Map<Strin
 
 			final long gameTime = server.overworld().getGameTime();
 			cleanPhotographCounts.entrySet().removeIf(entry -> {
-				if (entry.getValue() <= 0) {
+				final int count = entry.getValue();
+				if (count <= 0 && count != INFINITE_MARKER) {
 					deletedPhotographs.put(entry.getKey(), gameTime);
 					return true;
 				}

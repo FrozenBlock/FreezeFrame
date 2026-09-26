@@ -17,8 +17,11 @@
     "camera.WolfMixin",
     "film.AbstractContainerMenuMixin",
     "tracker.AbstractContainerMenuMixin",
+    "tracker.AllayMixin",
+    "tracker.ArmorStandMixin",
     "tracker.InventoryMixin",
-    "tracker.ItemEntityMixin"
+    "tracker.ItemEntityMixin",
+    "tracker.ItemFrameMixin"
   ],
   "client": [
     "client.book.BookEditScreenMixin",

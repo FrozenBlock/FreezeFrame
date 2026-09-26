@@ -23,25 +23,22 @@ import net.frozenblock.freezeframe.client.model.object.camera.TripodCameraModel;
 import net.frozenblock.freezeframe.client.renderer.entity.DiscCameraRenderer;
 import net.frozenblock.freezeframe.client.renderer.entity.TripodCameraRenderer;
 import net.frozenblock.freezeframe.registry.FFEntityTypes;
+import net.frozenblock.lib.renderer.entity.EntityRendererRegistry;
 import net.frozenblock.lib.renderer.model.ModelLayerRegistry;
+import net.mehvahdjukaar.candlelight.api.ClientOnly;
 import net.minecraft.client.model.geom.ModelLayerLocation;
-import net.minecraft.client.renderer.entity.EntityRenderers;
 
+@ClientOnly
 public final class FFModelLayers {
 	public static final ModelLayerLocation CAMERA = new ModelLayerLocation(FFConstants.id("camera"), "main");
 	public static final ModelLayerLocation DISC_CAMERA = new ModelLayerLocation(FFConstants.id("disc_camera"), "main");
 
 	public static void init() {
 		ModelLayerRegistry.register(CAMERA, TripodCameraModel::createBodyLayer);
-		ModelLayerRegistry.register(DISC_CAMERA, DiscCameraModel::createBodyLayer);
-	}
+		EntityRendererRegistry.register(FFEntityTypes.CAMERA, TripodCameraRenderer::new);
 
-	/**
-	 * Registries MUST be populated before this. Runs during NeoForge's setup event.
-	 */
-	public static void setup() {
-		EntityRenderers.register(FFEntityTypes.CAMERA.get(), TripodCameraRenderer::new);
-		EntityRenderers.register(FFEntityTypes.DISC_CAMERA.get(), DiscCameraRenderer::new);
+		ModelLayerRegistry.register(DISC_CAMERA, DiscCameraModel::createBodyLayer);
+		EntityRendererRegistry.register(FFEntityTypes.DISC_CAMERA, DiscCameraRenderer::new);
 	}
 
 	private FFModelLayers() {}

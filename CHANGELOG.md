@@ -1,11 +1,8 @@
 Please clear changelog after each release.
 Put the changelog BELOW the dashes. ANYTHING ABOVE IS IGNORED.
 -----------------
-- Ported to multiloader.
-- The photograph tracker now keeps track of the time at which a photograph was deleted.
-  - Thanks to this change, only the names of photographs that have been deleted since a player's last login will be sent to their client for client-sided deletion.
-  - Players who haven't previously logged in will no longer be sent a photograph deletion packet.
-- Attempting to decrement the tracked count of a photograph that hasn't been tracked will now mark it as infinite.
-
-### 26.3+
-- Updated the Photograph item's texture to be more consistent with the new Map textures.
+- Improved the Photograph Tracker to now support more edge-cases, resolving issues that would incorrectly delete Photographs when enabled:
+  - Placing and removing Photographs from Item Frames in Creative Mode.
+  - Giving an Armor Stand a Photograph in Creative Mode.
+  - Giving an Allay a Photograph in Creative Mode.
+  - Using pick-block to obtain a new Photograph Item Stack in Creative Mode.
