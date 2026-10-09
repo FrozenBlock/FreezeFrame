@@ -65,7 +65,7 @@ public record SaveFilmChangesPacket(InteractionHand hand, FilmContents contents,
 			player.setItemInHand(packet.hand, ItemStack.EMPTY);
 			player.onEquippedItemBroken(stack, hand.asEquipmentSlot());
 			existingContents.photographs().forEach(photograph -> {
-				PhotographTracker.incrementPhotographCountAndDeleteIfEmpty(player.level(), photograph.identifier().getPath(), -1);
+				PhotographTracker.incrementPhotographCountAndDeleteIfEmpty(player.level(), photograph.id().getPath(), -1);
 			});
 			return;
 		} else {
@@ -101,7 +101,7 @@ public record SaveFilmChangesPacket(InteractionHand hand, FilmContents contents,
 		FilmItem.refreshStackingState(stack);
 		existingContents.photographs().stream()
 			.filter(photograph -> !packet.contents.photographs().contains(photograph))
-			.map(photograph -> photograph.identifier().getPath())
+			.map(photograph -> photograph.id().getPath())
 			.toList()
 			.forEach(photographName -> PhotographTracker.incrementPhotographCountAndDeleteIfEmpty(player.level(), photographName, -1));
 	}

@@ -283,7 +283,7 @@ public class BookPagePhotographScreen extends AbstractContainerScreen<BookPagePh
 
 			hasPhotograph = true;
 			graphics.blitSprite(RenderPipelines.GUI_TEXTURED, PHOTOGRAPH_HOLDER_BACK_SPRITE, photoX, photoY, PHOTOGRAPH_HOLDER_SIZE, PHOTOGRAPH_HOLDER_SIZE);
-			PhotographRenderer.blit(0, 0, x, y, graphics, photograph.identifier(), PHOTOGRAPH_PREVIEW_SIZE, PhotographRenderer.FrameType.FRAME);
+			PhotographRenderer.blit(0, 0, x, y, graphics, photograph.id(), PHOTOGRAPH_PREVIEW_SIZE, PhotographRenderer.FrameType.FRAME);
 		}
 
 		if (!hasPhotograph) graphics.blitSprite(RenderPipelines.GUI_TEXTURED, PHOTOGRAPH_HOLDER_BACK_EMPTY_SPRITE, photoX, photoY, PHOTOGRAPH_HOLDER_SIZE, PHOTOGRAPH_HOLDER_SIZE);

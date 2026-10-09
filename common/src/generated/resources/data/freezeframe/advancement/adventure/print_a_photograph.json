@@ -1,0 +1,29 @@
+{
+  "parent": "freezeframe:adventure/photograph_of_mob",
+  "criteria": {
+    "print_a_photograph": {
+      "conditions": {
+        "allow_copy": false,
+        "player_must_be_photographer": true
+      },
+      "trigger": "freezeframe:print_photograph"
+    }
+  },
+  "display": {
+    "description": {
+      "translate": "freezeframe.advancements.adventure.print_a_photograph.description"
+    },
+    "icon": {
+      "id": "freezeframe:photograph"
+    },
+    "title": {
+      "translate": "freezeframe.advancements.adventure.print_a_photograph.title"
+    }
+  },
+  "requirements": [
+    [
+      "print_a_photograph"
+    ]
+  ],
+  "sends_telemetry_event": true
+}

@@ -375,7 +375,7 @@ public class DevelopingTableScreen extends AbstractContainerScreen<DevelopingTab
 	@Nullable
 	private Identifier getFilmPhotograph(int index) {
 		final Photograph photograph = this.getSourcePhotograph(index);
-		return photograph == null ? null : photograph.identifier();
+		return photograph == null ? null : photograph.id();
 	}
 
 	@Nullable
@@ -572,7 +572,7 @@ public class DevelopingTableScreen extends AbstractContainerScreen<DevelopingTab
 			this.middlePhotograph = this.getFilmPhotograph(this.photographIndex);
 			this.rightPhotograph = this.getFilmPhotograph(this.photographIndex + 1);
 			this.leftPhotograph = this.getFilmPhotograph(this.photographIndex - 1);
-			this.sourcePhotographs.forEach(photograph -> PhotographLoader.getAndLoadPhotograph(photograph.identifier()));
+			this.sourcePhotographs.forEach(photograph -> PhotographLoader.getAndLoadPhotograph(photograph.id()));
 		}
 	}
 

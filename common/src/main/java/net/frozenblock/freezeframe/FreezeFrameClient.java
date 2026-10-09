@@ -50,7 +50,6 @@ public final class FreezeFrameClient {
 	}
 
 	public static void setup() {
-		FFModelLayers.setup();
 		FFMenuScreens.setup();
 	}
 

@@ -19,8 +19,10 @@ package net.frozenblock.freezeframe.menu;
 
 import net.frozenblock.freezeframe.component.Photograph;
 import net.frozenblock.freezeframe.item.photograph.PhotographTracker;
+import net.frozenblock.freezeframe.registry.FFCriteriaTriggers;
 import net.frozenblock.freezeframe.registry.FFDataComponents;
 import net.frozenblock.freezeframe.registry.FFSounds;
+import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.sounds.SoundSource;
 import net.minecraft.world.Container;
 import net.minecraft.world.entity.player.Player;
@@ -60,7 +62,10 @@ public class DevelopingTableResultSlot extends Slot {
 		carried.onCraftedBy(this.player, this.removeCount);
 
 		final Photograph photograph = carried.get(FFDataComponents.PHOTOGRAPH.get());
-		if (photograph != null) PhotographTracker.incrementPhotographCountAndDeleteIfEmpty(player.level(), photograph.identifier().getPath(), carried.getCount());
+		if (photograph != null) {
+			PhotographTracker.incrementPhotographCountAndDeleteIfEmpty(player.level(), photograph.id().getPath(), carried.getCount());
+			if (this.player instanceof ServerPlayer serverPlayer) FFCriteriaTriggers.PRINT_PHOTOGRAPH.get().trigger(serverPlayer, carried);
+		}
 
 		this.removeCount = 0;
 	}

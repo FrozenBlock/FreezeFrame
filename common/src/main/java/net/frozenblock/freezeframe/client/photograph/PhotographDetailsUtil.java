@@ -65,7 +65,7 @@ public final class PhotographDetailsUtil {
 
 	@Nullable
 	public static Component getDateLine(Photograph photograph) {
-		final Optional<Date> optionalDate = PhotographLoader.parseDate(photograph.identifier().getPath());
+		final Optional<Date> optionalDate = PhotographLoader.parseDate(photograph.id().getPath());
 		return optionalDate
 			.map(date -> Component.translatable("photograph.date", formatDate(date)).withStyle(ChatFormatting.GRAY))
 			.orElse(null);

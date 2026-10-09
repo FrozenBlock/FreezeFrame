@@ -79,7 +79,14 @@
 
   "key.resetScopeZoom": "Reset Item Zoom",
 
-  "option.freezeframe.component.title": "Camera Port Options",
+  "freezeframe.advancements.adventure.photograph_of_mob.title": "Minecraft Snap",
+  "freezeframe.advancements.adventure.photograph_of_mob.description": "Take a photo of a mob",
+  "freezeframe.advancements.adventure.print_a_photograph.title": "A Permanent Memory",
+  "freezeframe.advancements.adventure.print_a_photograph.description": "Take a photo and print it out at a Developing Table",
+  "freezeframe.advancements.adventure.photograph_of_inverted_enderman.title": "Ender-Vision",
+  "freezeframe.advancements.adventure.photograph_of_inverted_enderman.description": "Take a photo of an Enderman using an inverted film filter",
+
+  "option.freezeframe.component.title": "Freeze Frame Options",
   "option.freezeframe.config": "Config",
   "option.freezeframe.camera_ignores_effect_fog": "Camera Ignores Effect Fog",
   "tooltip.freezeframe.camera_ignores_effect_fog": "Whether Photos will not include fog from effects (e.g., Blindness and Darkness.)",

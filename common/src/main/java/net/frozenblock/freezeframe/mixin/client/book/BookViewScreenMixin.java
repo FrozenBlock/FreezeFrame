@@ -83,7 +83,7 @@ public abstract class BookViewScreenMixin extends Screen {
 		if (optionalPhotograph.isEmpty()) return;
 
 		final Photograph photograph = optionalPhotograph.get();
-		final Identifier photoId = photograph.identifier();
+		final Identifier photoId = photograph.id();
 		final int backgroundLeft = this.backgroundLeft();
 		final int x = backgroundLeft + FREEZE_FRAME$PHOTO_X_OFFSET;
 		final int y = 2 + FREEZE_FRAME$PHOTO_Y_OFFSET;

@@ -53,7 +53,7 @@ public class ItemFrameRendererMixin<T extends ItemFrame> {
 		final Photograph photograph = entity.getItem().get(FFDataComponents.PHOTOGRAPH.get());
 		state.frozenLib$setData(
 			FFRenderStateDataKeys.PHOTOGRAPH_ID,
-			photograph == null ? null : photograph.identifier()
+			photograph == null ? null : photograph.id()
 		);
 	}
 

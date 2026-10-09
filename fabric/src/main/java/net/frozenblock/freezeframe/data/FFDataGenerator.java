@@ -20,6 +20,7 @@ package net.frozenblock.freezeframe.data;
 import net.fabricmc.fabric.api.datagen.v1.DataGeneratorEntrypoint;
 import net.fabricmc.fabric.api.datagen.v1.FabricDataGenerator;
 import net.frozenblock.freezeframe.FFConstants;
+import net.frozenblock.freezeframe.data.advancement.FFAdvancementProvider;
 import net.frozenblock.freezeframe.data.loot.FFBlockLootProvider;
 import net.frozenblock.freezeframe.data.model.FFModelProvider;
 import net.frozenblock.freezeframe.data.recipe.FFRecipeProvider;
@@ -43,6 +44,8 @@ public final class FFDataGenerator implements DataGeneratorEntrypoint {
 		pack.addProvider(FFModelProvider::new);
 
 		// DATA
+		pack.addProvider(FFAdvancementProvider::new);
+
 		pack.addProvider(FFBlockLootProvider::new);
 		pack.addProvider(FFBlockTagsProvider::new);
 		pack.addProvider(FFItemTagsProvider::new);

@@ -416,8 +416,8 @@ public class FilmScreen extends Screen {
 
 		final Photograph removed = this.photographs.get(this.selectedPhotographIndex);
 		this.photographs.remove(this.selectedPhotographIndex);
-		this.modifiedPhotographIds.remove(removed.identifier());
-		this.originalPhotographNamesById.remove(removed.identifier());
+		this.modifiedPhotographIds.remove(removed.id());
+		this.originalPhotographNamesById.remove(removed.id());
 		this.filmMaxPhotographs = Math.max(this.photographs.size(), this.filmMaxPhotographs - 1);
 		if (this.photographs.isEmpty()) {
 			this.selectedPhotographIndex = 0;
@@ -440,11 +440,11 @@ public class FilmScreen extends Screen {
 		final Photograph current = this.photographs.get(this.selectedPhotographIndex);
 		if (clampedName.equals(current.name())) return;
 		this.photographs.set(this.selectedPhotographIndex, current.withName(clampedName));
-		final String originalName = this.originalPhotographNamesById.getOrDefault(current.identifier(), "");
+		final String originalName = this.originalPhotographNamesById.getOrDefault(current.id(), "");
 		if (clampedName.equals(originalName)) {
-			this.modifiedPhotographIds.remove(current.identifier());
+			this.modifiedPhotographIds.remove(current.id());
 		} else {
-			this.modifiedPhotographIds.add(current.identifier());
+			this.modifiedPhotographIds.add(current.id());
 		}
 	}
 
@@ -498,7 +498,7 @@ public class FilmScreen extends Screen {
 			this.photographs.clear();
 			this.photographs.addAll(contents.photographs());
 			for (Photograph photograph : this.photographs) {
-				this.originalPhotographNamesById.put(photograph.identifier(), photograph.name());
+				this.originalPhotographNamesById.put(photograph.id(), photograph.name());
 			}
 			this.selectedPhotographIndex = Mth.clamp(contents.getSelectedPhotographIndex(), 0, Math.max(0, this.photographs.size() - 1));
 			this.filmMaxPhotographs = FilmItem.getMaxPhotographs(filmStack);
@@ -507,7 +507,7 @@ public class FilmScreen extends Screen {
 			this.selectedPhotographIndex = 0;
 			this.filmMaxPhotographs = FilmContents.BASE_MAX_PHOTOGRAPHS;
 		}
-		this.photographs.forEach(photograph -> PhotographLoader.getAndLoadPhotograph(photograph.identifier()));
+		this.photographs.forEach(photograph -> PhotographLoader.getAndLoadPhotograph(photograph.id()));
 	}
 
 	private void setupOrClearFilmPhotographDisplays() {
@@ -529,7 +529,7 @@ public class FilmScreen extends Screen {
 	@Nullable
 	private Identifier getFilmPhotograph(int index) {
 		if (index < 0 || index >= this.photographs.size()) return null;
-		return this.photographs.get(index).identifier();
+		return this.photographs.get(index).id();
 	}
 
 	@Nullable
@@ -605,7 +605,7 @@ public class FilmScreen extends Screen {
 
 	private boolean isPhotographModified(int photographIndex) {
 		final Photograph photograph = this.getFilmPhotographComponent(photographIndex);
-		return photograph != null && this.modifiedPhotographIds.contains(photograph.identifier());
+		return photograph != null && this.modifiedPhotographIds.contains(photograph.id());
 	}
 
 	private int getHoveredFilmPhotographOffset(double mouseX, double mouseY) {

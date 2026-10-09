@@ -29,7 +29,9 @@ import org.spongepowered.asm.mixin.Final;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Shadow;
 import org.spongepowered.asm.mixin.injection.At;
+import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.Slice;
+import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 
 @Mixin(Inventory.class)
 public class InventoryMixin {
@@ -90,5 +92,20 @@ public class InventoryMixin {
 			PhotographTracker.incrementOnItemStackSizeChange(this.player.level(), instance.copy(), -(instance.getCount() - count));
 		}
 		original.call(instance, count);
+	}
+
+	@Inject(
+		method = "addAndPickItem",
+		at = @At(
+			value = "INVOKE",
+			target = "Lnet/minecraft/core/NonNullList;set(ILjava/lang/Object;)Ljava/lang/Object;",
+			ordinal = 1
+		)
+	)
+	public void freezeFrame$incrementOnCreativePick(ItemStack itemStack, CallbackInfo info) {
+		if (this.player.level().isClientSide() || !FFConfig.PHOTOGRAPH_TRACKER.get()) return;
+
+		PhotographTracker.incrementOnItemStackSizeChange(this.player.level(), itemStack.copy(), itemStack.getCount());
+		if (FFConstants.UNSTABLE_LOGGING) FFConstants.log("incrementOnCreativePick - Inventory", true);
 	}
 }

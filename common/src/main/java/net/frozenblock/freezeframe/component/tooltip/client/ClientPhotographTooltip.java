@@ -29,6 +29,7 @@ import net.minecraft.client.gui.screens.inventory.tooltip.ClientTooltipComponent
 import net.minecraft.network.chat.Component;
 import net.minecraft.resources.Identifier;
 import org.jetbrains.annotations.Nullable;
+import java.util.Optional;
 
 @ClientOnly
 public final class ClientPhotographTooltip implements ClientTooltipComponent {
@@ -50,7 +51,7 @@ public final class ClientPhotographTooltip implements ClientTooltipComponent {
 
 	public ClientPhotographTooltip(PhotographTooltip component) {
 		this.photographId = component.identifier();
-		final Photograph photograph = new Photograph(component.identifier(), component.photographer(), component.name(), component.generation());
+		final Photograph photograph = new Photograph(component.identifier(), component.photographer(), Optional.empty(), component.name(), component.generation());
 		this.name = null;
 		this.photographer = PhotographDetailsUtil.getPhotographerLine(photograph);
 		this.dateAndTime = PhotographDetailsUtil.getDateLine(photograph);

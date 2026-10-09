@@ -27,6 +27,7 @@ import net.frozenblock.freezeframe.component.Photograph;
 import net.frozenblock.freezeframe.component.tooltip.CameraTooltip;
 import net.frozenblock.freezeframe.item.photograph.PhotographTracker;
 import net.frozenblock.freezeframe.networking.packet.CameraTakeScreenshotPacket;
+import net.frozenblock.freezeframe.registry.FFCriteriaTriggers;
 import net.frozenblock.freezeframe.registry.FFDataComponents;
 import net.frozenblock.freezeframe.registry.FFSounds;
 import net.frozenblock.freezeframe.tag.FFItemTags;
@@ -147,6 +148,7 @@ public class CameraItem extends SpawnEggItem {
 			final String fileName = makeFileName(serverPlayer);
 			CameraTakeScreenshotPacket.sendToAsHandheld(serverPlayer, serverPlayer.getUseItem().equals(stack), fileName, captureZoom, getFilterForNextPhotograph(initialContents));
 			addPhotograph(stack, player, fileName);
+			FFCriteriaTriggers.TAKE_PHOTOGRAPH.get().trigger(serverPlayer, stack);
 		}
 
 		playSnapSound(player, playsSeparateClientSound);
@@ -349,7 +351,7 @@ public class CameraItem extends SpawnEggItem {
 		final ItemStack film = potentialFilm.get();
 		final int maxPhotographs = FilmItem.getMaxPhotographs(film);
 		final FilmContents.Mutable filmContents = new FilmContents.Mutable(film.getOrDefault(FFDataComponents.FILM_CONTENTS.get(), FilmContents.EMPTY), maxPhotographs);
-		final Photograph photograph = new Photograph(FFConstants.id(fileName), player.getPlainTextName());
+		final Photograph photograph = new Photograph(FFConstants.id(fileName), player.getPlainTextName(), player.getUUID());
 		if (!filmContents.tryInsert(photograph)) return initialContents;
 
 		film.set(FFDataComponents.FILM_CONTENTS.get(), filmContents.toImmutable());
