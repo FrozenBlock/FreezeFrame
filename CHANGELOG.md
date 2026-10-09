@@ -14,4 +14,9 @@ Put the changelog BELOW the dashes. ANYTHING ABOVE IS IGNORED.
 - Added the `freezeframe:film_filter` Data Component Predicate Type with the following format:
   - `layers` (Optional): A list of Film Filter Layer Predicates to test against a Film Filter Component.
     - The format for each Film Filter Layer Predicate is simply the format of a Film Filter Layer itself.
+- Improved the Photograph Tracker to now support more edge-cases, resolving issues that would incorrectly delete Photographs when enabled:
+  - Placing and removing Photographs from Item Frames in Creative Mode.
+  - Giving an Armor Stand a Photograph in Creative Mode.
+  - Giving an Allay a Photograph in Creative Mode.
+  - Using pick-block to obtain a new Photograph Item Stack in Creative Mode.
 - Very slightly improved the performance cost of rendering photographs.
