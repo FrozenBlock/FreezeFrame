@@ -14,3 +14,4 @@ Put the changelog BELOW the dashes. ANYTHING ABOVE IS IGNORED.
 - Added the `freezeframe:film_filter` Data Component Predicate Type with the following format:
   - `layers` (Optional): A list of Film Filter Layer Predicates to test against a Film Filter Component.
     - The format for each Film Filter Layer Predicate is simply the format of a Film Filter Layer itself.
+- Very slightly improved the performance cost of rendering photographs.
