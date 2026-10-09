@@ -11,6 +11,6 @@ Put the changelog BELOW the dashes. ANYTHING ABOVE IS IGNORED.
   - `player` (Optional): An Entity Predicate to test against the Player.
   - `player_must_be_photographer`: Whether the Player printing the photograph must also be its photographer.
   - `allow_copy`: Whether the photograph being printed can be a copy of another photograph.
-- Added the `freezeframe:film_filter` Data component Predicate Type with the following format:
+- Added the `freezeframe:film_filter` Data Component Predicate Type with the following format:
   - `layers` (Optional): A list of Film Filter Layer Predicates to test against a Film Filter Component.
     - The format for each Film Filter Layer Predicate is simply the format of a Film Filter Layer itself.

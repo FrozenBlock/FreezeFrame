@@ -29,6 +29,7 @@ public final class PhotographLoader {
 	private static final Identifier FALLBACK_TEXTURE = FFConstants.id("textures/photographs/empty.png");
 
 	public static Identifier getAndLoadPhotograph(Identifier id) {
+		if (id.getPath().contains("photographs")) throw new IllegalStateException("Photographs");
 		final String filename = id.getPath().replace("photographs/", "");
 		return ServerTextureDownloader.getOrLoadServerTexture(
 			id,

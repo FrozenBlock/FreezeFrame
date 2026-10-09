@@ -42,7 +42,11 @@ public final class PrintPhotographTrigger extends SimpleCriterionTrigger<PrintPh
 		this.trigger(player, trigger -> trigger.matches(player, item.get(FFDataComponents.PHOTOGRAPH.get())));
 	}
 
-	public record TriggerInstance(Optional<ContextAwarePredicate> player, boolean playerMustBePhotographer, boolean allowCopy) implements SimpleInstance {
+	public record TriggerInstance(
+		Optional<ContextAwarePredicate> player,
+		boolean playerMustBePhotographer,
+		boolean allowCopy
+	) implements SimpleInstance {
 		public static final Codec<TriggerInstance> CODEC = RecordCodecBuilder.create(instance -> instance.group(
 			EntityPredicate.ADVANCEMENT_CODEC.optionalFieldOf("player").forGetter(TriggerInstance::player),
 			Codec.BOOL.fieldOf("player_must_be_photographer").forGetter(TriggerInstance::playerMustBePhotographer),
