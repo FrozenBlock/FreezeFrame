@@ -202,10 +202,10 @@ public record PhotographTracker(Map<String, Integer> photographCounts, Map<Strin
 
 	public static void incrementOnItemStackSizeChange(Level level, ItemStack stack, int delta, boolean allowRecursion) {
 		final Photograph photograph = stack.get(FFDataComponents.PHOTOGRAPH.get());
-		if (photograph != null) incrementPhotographCountAndDeleteIfEmpty(level, photograph.identifier().getPath(), delta);
+		if (photograph != null) incrementPhotographCountAndDeleteIfEmpty(level, photograph.id().getPath(), delta);
 
 		final FilmContents filmContents = stack.getOrDefault(FFDataComponents.FILM_CONTENTS.get(), FilmContents.EMPTY);
-		filmContents.photographs().forEach(filmPhotograph -> incrementPhotographCountAndDeleteIfEmpty(level, filmPhotograph.identifier().getPath(), delta));
+		filmContents.photographs().forEach(filmPhotograph -> incrementPhotographCountAndDeleteIfEmpty(level, filmPhotograph.id().getPath(), delta));
 
 		if (!allowRecursion) return;
 		ContainerComponentManipulators.ALL_MANIPULATORS.forEach((type, manipulator) -> {

@@ -190,7 +190,7 @@ public abstract class BookEditScreenMixin extends Screen {
 
 		final int x = this.backgroundLeft() + FREEZE_FRAME$PHOTOGRAPH_X_OFFSET;
 		final int y = this.backgroundTop() + FREEZE_FRAME$PHOTOGRAPH_Y_OFFSET;
-		PhotographRenderer.blitForBook(x, y, graphics, photograph.identifier());
+		PhotographRenderer.blitForBook(x, y, graphics, photograph.id());
 
 		if (this.freezeFrame$isWithin(mouseX, mouseY, x, y, FREEZE_FRAME$PHOTOGRAPH_SIZE, FREEZE_FRAME$PHOTOGRAPH_SIZE)) {
 			final Window window = this.minecraft.getWindow();

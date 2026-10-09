@@ -48,7 +48,7 @@ public class PhotographItem extends Item {
 		if (!tooltipDisplay.shows(FFDataComponents.PHOTOGRAPH.get())) return Optional.empty();
 
 		final Photograph component = stack.get(FFDataComponents.PHOTOGRAPH.get());
-		if (component != null) return Optional.of(new PhotographTooltip(component.identifier(), component.name(), component.photographer(), component.generation()));
+		if (component != null) return Optional.of(new PhotographTooltip(component.id(), component.name(), component.photographer(), component.generation()));
 		return Optional.empty();
 	}
 }

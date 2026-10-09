@@ -19,6 +19,7 @@ package net.frozenblock.freezeframe.registry;
 
 import net.frozenblock.freezeframe.FFConstants;
 import net.frozenblock.freezeframe.component.predicates.CameraPredicate;
+import net.frozenblock.freezeframe.component.predicates.FilmFilterPredicate;
 import net.frozenblock.lib.platform.api.registry.DeferredHolder;
 import net.frozenblock.lib.platform.api.registry.DeferredRegister;
 import net.minecraft.core.component.predicates.DataComponentPredicate;
@@ -34,6 +35,11 @@ public final class FFDataComponentPredicates {
 		"camera_contents",
 		() -> new DataComponentPredicate.ConcreteType<>(CameraPredicate.CODEC)
 	);
+	public static final DeferredHolder<DataComponentPredicate.Type<?>, DataComponentPredicate.Type<FilmFilterPredicate>> FILM_FILTER = REGISTER.register(
+		"film_filter",
+		() -> new DataComponentPredicate.ConcreteType<>(FilmFilterPredicate.CODEC)
+	);
+
 
 	static {
 		REGISTER.register();

@@ -82,7 +82,7 @@ public abstract class ItemInHandRendererMixin {
 		final Photograph photograph = itemStack.get(FFDataComponents.PHOTOGRAPH.get());
 		if (photograph == null) return;
 
-		this.freezeFrame$submitPhotographInHand(poseStack, submitNodeCollector, lightCoords, inverseArmHeight, attack, arm, photograph.identifier());
+		this.freezeFrame$submitPhotographInHand(poseStack, submitNodeCollector, lightCoords, inverseArmHeight, attack, arm, photograph.id());
 		info.cancel();
 	}
 

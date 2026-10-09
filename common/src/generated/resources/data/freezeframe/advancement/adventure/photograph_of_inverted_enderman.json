@@ -1,0 +1,64 @@
+{
+  "parent": "freezeframe:adventure/print_a_photograph",
+  "criteria": {
+    "photograph_of_inverted_enderman": {
+      "conditions": {
+        "item": {
+          "predicates": {
+            "freezeframe:camera_contents": {
+              "items": {
+                "contains": [
+                  {
+                    "predicates": {
+                      "freezeframe:film_filter": {
+                        "layers": {
+                          "contains": [
+                            {
+                              "type": "special",
+                              "special_film_filter": "freezeframe:invert"
+                            }
+                          ]
+                        }
+                      }
+                    }
+                  }
+                ]
+              }
+            }
+          }
+        },
+        "player": [
+          {
+            "condition": "minecraft:entity_properties",
+            "entity": "this",
+            "predicate": {
+              "minecraft:type_specific/player": {
+                "looking_at": {
+                  "minecraft:entity_type": "minecraft:enderman"
+                }
+              }
+            }
+          }
+        ]
+      },
+      "trigger": "freezeframe:take_photograph"
+    }
+  },
+  "display": {
+    "description": {
+      "translate": "freezeframe.advancements.adventure.photograph_of_inverted_enderman.description"
+    },
+    "icon": {
+      "id": "minecraft:ender_pearl"
+    },
+    "title": {
+      "translate": "freezeframe.advancements.adventure.photograph_of_inverted_enderman.title"
+    }
+  },
+  "requirements": [
+    [
+      "photograph_of_inverted_enderman"
+    ]
+  ],
+  "sends_telemetry_event": true
+}

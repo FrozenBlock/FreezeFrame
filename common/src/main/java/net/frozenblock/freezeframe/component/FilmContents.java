@@ -45,17 +45,17 @@ public final class FilmContents {
 	private final int selectedPhotograph;
 	private final Supplier<DataResult<Fraction>> weight;
 
-	private FilmContents(final List<Photograph> photographs, int selectedPhotograph) {
+	private FilmContents(List<Photograph> photographs, int selectedPhotograph) {
 		this.photographs = photographs;
 		this.selectedPhotograph = selectedPhotograph;
 		this.weight = Suppliers.memoize(() -> computeContentWeight(this.photographs));
 	}
 
-	public FilmContents(final List<Photograph> photographs) {
+	public FilmContents(List<Photograph> photographs) {
 		this(photographs, 0);
 	}
 
-	private static DataResult<Fraction> computeContentWeight(final List<Photograph> items) {
+	private static DataResult<Fraction> computeContentWeight(List<Photograph> items) {
 		final Fraction weight = Fraction.getFraction(items.size(), BASE_MAX_PHOTOGRAPHS);
 		if (weight.compareTo(Fraction.ONE) <= 0) return DataResult.success(weight);
 		return DataResult.error(() -> "Excessive total film weight");

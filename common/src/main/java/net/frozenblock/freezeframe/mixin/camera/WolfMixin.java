@@ -17,7 +17,7 @@
 
 package net.frozenblock.freezeframe.mixin.camera;
 
-import net.frozenblock.freezeframe.entity.TripodCamera;
+import net.frozenblock.freezeframe.tag.FFEntityTypeTags;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.animal.wolf.Wolf;
 import org.spongepowered.asm.mixin.Mixin;
@@ -30,6 +30,6 @@ public class WolfMixin {
 
 	@Inject(method = "wantsToAttack", at = @At("HEAD"), cancellable = true)
 	private void freezeFrame$cancelAttacksOnCameras(LivingEntity target, LivingEntity owner, CallbackInfoReturnable<Boolean> info) {
-		if (target instanceof TripodCamera) info.setReturnValue(false);
+		if (target.is(FFEntityTypeTags.CAMERAS)) info.setReturnValue(false);
 	}
 }

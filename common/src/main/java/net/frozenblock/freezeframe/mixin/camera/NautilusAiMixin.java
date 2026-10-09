@@ -17,20 +17,26 @@
 
 package net.frozenblock.freezeframe.mixin.camera;
 
-import net.frozenblock.freezeframe.entity.TripodCamera;
-import net.minecraft.server.level.ServerLevel;
+import com.llamalad7.mixinextras.injector.wrapoperation.Operation;
+import com.llamalad7.mixinextras.injector.wrapoperation.WrapOperation;
+import net.frozenblock.freezeframe.tag.FFEntityTypeTags;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.animal.nautilus.NautilusAi;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.injection.At;
-import org.spongepowered.asm.mixin.injection.Inject;
-import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
 
 @Mixin(NautilusAi.class)
 public class NautilusAiMixin {
 
-	@Inject(method = "lambda$static$0", at = @At("HEAD"), cancellable = true)
-	private static void freezeFrame$cancelAttacksOnCameras(LivingEntity target, ServerLevel level, CallbackInfoReturnable<Boolean> info) {
-		if (target instanceof TripodCamera) info.setReturnValue(false);
+	@WrapOperation(
+		method = "lambda$static$0",
+		at = @At(
+			value = "INVOKE",
+			target = "Lnet/minecraft/world/entity/LivingEntity;is(Ljava/lang/Object;)Z",
+			ordinal = 0
+		)
+	)
+	private static boolean freezeFrame$cancelAttacksOnCamerasIfNotMobGriefing(LivingEntity instance, Object o, Operation<Boolean> original) {
+		return original.call(instance, o) || instance.is(FFEntityTypeTags.CAMERAS);
 	}
 }

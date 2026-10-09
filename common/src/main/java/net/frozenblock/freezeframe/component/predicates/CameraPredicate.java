@@ -19,9 +19,11 @@ package net.frozenblock.freezeframe.component.predicates;
 
 import com.mojang.serialization.Codec;
 import com.mojang.serialization.codecs.RecordCodecBuilder;
+import java.util.List;
 import java.util.Optional;
 import net.frozenblock.freezeframe.component.CameraContents;
 import net.frozenblock.freezeframe.registry.FFDataComponents;
+import net.minecraft.advancements.predicates.CollectionContentsPredicate;
 import net.minecraft.advancements.predicates.CollectionPredicate;
 import net.minecraft.advancements.predicates.ItemPredicate;
 import net.minecraft.advancements.predicates.SingleComponentItemPredicate;
@@ -38,6 +40,21 @@ public record CameraPredicate(Optional<CollectionPredicate<ItemInstance, ItemPre
 		return FFDataComponents.CAMERA_CONTENTS.get();
 	}
 
+	public static CameraPredicate containsOnly(ItemPredicate itemPredicate) {
+		return new CameraPredicate(
+			Optional.of(
+				new CollectionPredicate<>(
+					Optional.of(
+						new CollectionContentsPredicate.Multiple<>(List.of(itemPredicate))
+					),
+					Optional.empty(),
+					Optional.empty()
+				)
+			)
+		);
+	}
+
+	@Override
 	public boolean matches(CameraContents value) {
 		return !this.items.isPresent() || this.items.get().test(value.items());
 	}

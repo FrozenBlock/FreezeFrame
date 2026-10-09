@@ -79,7 +79,7 @@ public final class ClientFilmTooltip implements ClientTooltipComponent {
 
 		this.photographId = photograph == null
 			? null
-			: photograph.identifier();
+			: photograph.id();
 
 		this.name = photograph == null
 			? null
@@ -97,7 +97,7 @@ public final class ClientFilmTooltip implements ClientTooltipComponent {
 		this.emptyDescription = Component.translatable(FILM_EMPTY_DESCRIPTION_KEY, this.maxPhotographs);
 
 		this.hidePhotographPreviewAndInfo = FFConfig.HIDE_FILM_PHOTO_PREVIEW_AND_INFO.get();
-		contents.photographs().forEach(component -> PhotographLoader.getAndLoadPhotograph(component.identifier()));
+		contents.photographs().forEach(component -> PhotographLoader.getAndLoadPhotograph(component.id()));
 	}
 
 	@Override

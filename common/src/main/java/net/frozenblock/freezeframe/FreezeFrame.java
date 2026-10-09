@@ -18,11 +18,13 @@
 package net.frozenblock.freezeframe;
 
 import net.frozenblock.freezeframe.config.FFConfig;
+import net.frozenblock.freezeframe.datafix.freezeframe.FFDataFixer;
 import net.frozenblock.freezeframe.item.photograph.PhotographTracker;
 import net.frozenblock.freezeframe.registry.FFAttachmentTypes;
 import net.frozenblock.freezeframe.registry.FFBlocks;
 import net.frozenblock.freezeframe.registry.FFContainerComponentManipulators;
 import net.frozenblock.freezeframe.registry.FFCreativeInventorySorting;
+import net.frozenblock.freezeframe.registry.FFCriteriaTriggers;
 import net.frozenblock.freezeframe.registry.FFDataComponentPredicates;
 import net.frozenblock.freezeframe.registry.FFDataComponents;
 import net.frozenblock.freezeframe.registry.FFEntityTypes;
@@ -37,6 +39,8 @@ import net.frozenblock.freezeframe.registry.FFStats;
 public final class FreezeFrame {
 
 	public static void init() {
+		FFDataFixer.applyDataFixes();
+
 		FFRegistries.init();
 		FFEntityTypes.init();
 		FFBlocks.init();
@@ -51,6 +55,7 @@ public final class FreezeFrame {
 		FFSlotDisplays.init();
 		FFMenuTypes.init();
 		FFStats.init();
+		FFCriteriaTriggers.init();
 
 		FFConfig.CONFIG.load(true);
 	}
