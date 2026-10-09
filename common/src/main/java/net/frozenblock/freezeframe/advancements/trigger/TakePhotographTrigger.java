@@ -21,13 +21,14 @@ import com.mojang.serialization.Codec;
 import com.mojang.serialization.codecs.RecordCodecBuilder;
 import java.util.Optional;
 import net.frozenblock.freezeframe.registry.FFCriteriaTriggers;
-import net.minecraft.advancements.predicates.ContextAwarePredicate;
 import net.minecraft.advancements.predicates.ItemPredicate;
 import net.minecraft.advancements.predicates.entity.EntityPredicate;
 import net.minecraft.advancements.triggers.Criterion;
 import net.minecraft.advancements.triggers.SimpleCriterionTrigger;
+import net.minecraft.core.Holder;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.level.storage.loot.predicates.LootItemCondition;
 
 public final class TakePhotographTrigger extends SimpleCriterionTrigger<TakePhotographTrigger.TriggerInstance> {
 
@@ -41,11 +42,11 @@ public final class TakePhotographTrigger extends SimpleCriterionTrigger<TakePhot
 	}
 
 	public record TriggerInstance(
-		Optional<ContextAwarePredicate> player,
+		Optional<Holder<LootItemCondition>> player,
 		Optional<ItemPredicate> item
 	) implements SimpleInstance {
 		public static final Codec<TriggerInstance> CODEC = RecordCodecBuilder.create(instance -> instance.group(
-			EntityPredicate.ADVANCEMENT_CODEC.optionalFieldOf("player").forGetter(TriggerInstance::player),
+			LootItemCondition.CODEC.optionalFieldOf("player").forGetter(TriggerInstance::player),
 			ItemPredicate.CODEC.optionalFieldOf("item").forGetter(TriggerInstance::item)
 		).apply(instance, TriggerInstance::new));
 

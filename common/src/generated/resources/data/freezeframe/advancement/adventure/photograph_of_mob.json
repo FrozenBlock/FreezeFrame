@@ -3,19 +3,17 @@
   "criteria": {
     "photograph_of_mob": {
       "conditions": {
-        "player": [
-          {
-            "condition": "minecraft:entity_properties",
-            "entity": "this",
-            "predicate": {
-              "minecraft:type_specific/player": {
-                "looking_at": {
-                  "frozenlib:mob": {}
-                }
+        "player": {
+          "type": "minecraft:entity_properties",
+          "entity": "this",
+          "predicate": {
+            "minecraft:type_specific/player": {
+              "looking_at": {
+                "frozenlib:mob": {}
               }
             }
           }
-        ]
+        }
       },
       "trigger": "freezeframe:take_photograph"
     }

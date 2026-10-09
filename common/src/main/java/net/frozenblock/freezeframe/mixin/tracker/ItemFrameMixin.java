@@ -84,11 +84,11 @@ public abstract class ItemFrameMixin {
 		}
 	}
 
-	@Inject(method = "kill", at = @At("HEAD"))
-	public void freezeFrame$incrementOnKill(ServerLevel level, CallbackInfo info) {
+	@Inject(method = "onKilled", at = @At("HEAD"))
+	public void freezeFrame$incrementOnKilled(CallbackInfo info) {
 		final ItemStack itemStack = this.getItem();
-		if (!itemStack.isEmpty() && FFConfig.PHOTOGRAPH_TRACKER.get()) {
-			PhotographTracker.incrementOnItemStackDeletion(level, itemStack.copy());
+		if (ItemFrame.class.cast(this).level() instanceof ServerLevel serverLevel && !itemStack.isEmpty() && FFConfig.PHOTOGRAPH_TRACKER.get()) {
+			PhotographTracker.incrementOnItemStackDeletion(serverLevel, itemStack.copy());
 			if (FFConstants.UNSTABLE_LOGGING) FFConstants.log("incrementOnKill - ItemFrame", true);
 		}
 	}

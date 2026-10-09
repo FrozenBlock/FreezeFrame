@@ -23,12 +23,13 @@ import java.util.Optional;
 import net.frozenblock.freezeframe.component.Photograph;
 import net.frozenblock.freezeframe.registry.FFCriteriaTriggers;
 import net.frozenblock.freezeframe.registry.FFDataComponents;
-import net.minecraft.advancements.predicates.ContextAwarePredicate;
 import net.minecraft.advancements.predicates.entity.EntityPredicate;
 import net.minecraft.advancements.triggers.Criterion;
 import net.minecraft.advancements.triggers.SimpleCriterionTrigger;
+import net.minecraft.core.Holder;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.level.storage.loot.predicates.LootItemCondition;
 import org.jetbrains.annotations.Nullable;
 
 public final class PrintPhotographTrigger extends SimpleCriterionTrigger<PrintPhotographTrigger.TriggerInstance> {
@@ -43,12 +44,12 @@ public final class PrintPhotographTrigger extends SimpleCriterionTrigger<PrintPh
 	}
 
 	public record TriggerInstance(
-		Optional<ContextAwarePredicate> player,
+		Optional<Holder<LootItemCondition>> player,
 		boolean playerMustBePhotographer,
 		boolean allowCopy
 	) implements SimpleInstance {
 		public static final Codec<TriggerInstance> CODEC = RecordCodecBuilder.create(instance -> instance.group(
-			EntityPredicate.ADVANCEMENT_CODEC.optionalFieldOf("player").forGetter(TriggerInstance::player),
+			LootItemCondition.CODEC.optionalFieldOf("player").forGetter(TriggerInstance::player),
 			Codec.BOOL.fieldOf("player_must_be_photographer").forGetter(TriggerInstance::playerMustBePhotographer),
 			Codec.BOOL.fieldOf("allow_copy").forGetter(TriggerInstance::allowCopy)
 		).apply(instance, TriggerInstance::new));

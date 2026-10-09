@@ -71,10 +71,9 @@ public final class FFAdvancementProvider extends FabricAdvancementProvider {
 		final AdvancementHolder photographOfMob = Advancement.Builder.advancement()
 			.parent(adventure)
 			.display(
-				FFItems.CAMERA,
+				FFItems.CAMERA.get(),
 				Component.translatable("freezeframe.advancements.adventure.photograph_of_mob.title"),
 				Component.translatable("freezeframe.advancements.adventure.photograph_of_mob.description"),
-				null,
 				AdvancementType.TASK,
 				true,
 				true,
@@ -91,10 +90,9 @@ public final class FFAdvancementProvider extends FabricAdvancementProvider {
 		final AdvancementHolder printAPhotograph = Advancement.Builder.advancement()
 			.parent(photographOfMob)
 			.display(
-				FFItems.PHOTOGRAPH,
+				FFItems.PHOTOGRAPH.get(),
 				Component.translatable("freezeframe.advancements.adventure.print_a_photograph.title"),
 				Component.translatable("freezeframe.advancements.adventure.print_a_photograph.description"),
-				null,
 				AdvancementType.TASK,
 				true,
 				true,
@@ -112,7 +110,6 @@ public final class FFAdvancementProvider extends FabricAdvancementProvider {
 				Items.ENDER_PEARL,
 				Component.translatable("freezeframe.advancements.adventure.photograph_of_inverted_enderman.title"),
 				Component.translatable("freezeframe.advancements.adventure.photograph_of_inverted_enderman.description"),
-				null,
 				AdvancementType.TASK,
 				true,
 				true,

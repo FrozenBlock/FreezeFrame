@@ -79,7 +79,7 @@ public abstract class ItemInHandRendererMixin {
 		if (photograph == null) return;
 
 		this.freezeFrame$submitPhotographInHand(poseStack, submitNodeCollector, lightCoords, inverseArmHeight, attack, arm, photograph.id(), playerState);
-		
+
 		info.cancel();
 	}
 
