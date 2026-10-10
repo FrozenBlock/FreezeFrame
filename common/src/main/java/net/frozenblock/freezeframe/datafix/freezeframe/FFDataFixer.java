@@ -32,6 +32,9 @@ public final class FFDataFixer {
 		final FabricDataFixerBuilder builder = new FabricDataFixerBuilder(DATA_VERSION);
 		builder.addSchema(0, FabricDataFixes.BASE_SCHEMA);
 
+		// Unfortunately this does literally nothing because....
+		// I completely forgot we needed to register a datafixer first so it won't assume it has nothing to fix later.
+		// But I'm keeping this for the sake of good practice anyway.
 		final Schema schemaV1 = builder.addSchema(1, NamespacedSchema::new);
 		builder.addFixer(
 			new PhotographFieldRenameFix(
