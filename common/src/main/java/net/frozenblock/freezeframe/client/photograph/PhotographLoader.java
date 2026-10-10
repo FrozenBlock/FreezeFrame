@@ -20,8 +20,8 @@ package net.frozenblock.freezeframe.client.photograph;
 import java.util.Date;
 import java.util.Optional;
 import net.frozenblock.freezeframe.FFConstants;
-import net.frozenblock.lib.resource.client.api.texture.ServerTextureDownloader;
 import net.mehvahdjukaar.candlelight.api.ClientOnly;
+import net.minecraft.client.Minecraft;
 import net.minecraft.resources.Identifier;
 
 @ClientOnly
@@ -29,7 +29,7 @@ public final class PhotographLoader {
 	private static final Identifier FALLBACK_TEXTURE = FFConstants.id("textures/photographs/empty.png");
 
 	public static Identifier getAndLoadPhotograph(Identifier id) {
-		return ServerTextureDownloader.getOrLoadServerTexture(
+		return Minecraft.getInstance().frozenLib$serverTextureManager().getOrRequestTexture(
 			id,
 			"photographs",
 			id.getPath(),

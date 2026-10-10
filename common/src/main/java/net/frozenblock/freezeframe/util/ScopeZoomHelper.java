@@ -23,7 +23,6 @@ import net.frozenblock.freezeframe.registry.FFDataComponents;
 import net.frozenblock.freezeframe.registry.FFSounds;
 import net.minecraft.core.Holder;
 import net.minecraft.sounds.SoundEvent;
-import net.minecraft.util.Mth;
 import net.minecraft.world.item.ItemStack;
 import org.jspecify.annotations.Nullable;
 
@@ -83,7 +82,7 @@ public final class ScopeZoomHelper {
 	}
 
 	public static float toFovModifier(float zoomFactor) {
-		return 1F / Mth.clamp(zoomFactor, MIN_SUPPORTED_ZOOM, MAX_SUPPORTED_ZOOM);
+		return 1F / Math.clamp(zoomFactor, MIN_SUPPORTED_ZOOM, MAX_SUPPORTED_ZOOM);
 	}
 
 	private static ScopeZoomConfig resolveZoomConfig(ItemStack stack) {
@@ -101,25 +100,25 @@ public final class ScopeZoomHelper {
 	private static ScopeZoomConfig sanitize(ScopeZoomConfig config) {
 		if (config.maxZoom() <= 1F && config.minZoom() > 0F) return sanitizeLegacyMultiplierConfig(config);
 
-		final float min = Mth.clamp(config.minZoom(), MIN_SUPPORTED_ZOOM, MAX_SUPPORTED_ZOOM);
-		final float max = Mth.clamp(config.maxZoom(), min, MAX_SUPPORTED_ZOOM);
+		final float min = Math.clamp(config.minZoom(), MIN_SUPPORTED_ZOOM, MAX_SUPPORTED_ZOOM);
+		final float max = Math.clamp(config.maxZoom(), min, MAX_SUPPORTED_ZOOM);
 		final float span = Math.max(max - min, 0.001F);
-		final float increment = Mth.clamp(config.zoomIncrement(), 0.001F, span);
-		final float def = Mth.clamp(config.defaultZoom(), min, max);
+		final float increment = Math.clamp(config.zoomIncrement(), 0.001F, span);
+		final float def = Math.clamp(config.defaultZoom(), min, max);
 		return new ScopeZoomConfig(min, max, increment, def, config.offhandEnabled(), config.zoomInSound(), config.zoomOutSound());
 	}
 
 	private static ScopeZoomConfig sanitizeLegacyMultiplierConfig(ScopeZoomConfig config) {
-		final float legacyMinMultiplier = Mth.clamp(Math.min(config.minZoom(), config.maxZoom()), 0.01F, 1F);
-		final float legacyMaxMultiplier = Mth.clamp(Math.max(config.minZoom(), config.maxZoom()), legacyMinMultiplier, 1F);
+		final float legacyMinMultiplier = Math.clamp(Math.min(config.minZoom(), config.maxZoom()), 0.01F, 1F);
+		final float legacyMaxMultiplier = Math.clamp(Math.max(config.minZoom(), config.maxZoom()), legacyMinMultiplier, 1F);
 
-		final float min = Mth.clamp(1F / legacyMaxMultiplier, MIN_SUPPORTED_ZOOM, MAX_SUPPORTED_ZOOM);
-		final float max = Mth.clamp(1F / legacyMinMultiplier, min, MAX_SUPPORTED_ZOOM);
+		final float min = Math.clamp(1F / legacyMaxMultiplier, MIN_SUPPORTED_ZOOM, MAX_SUPPORTED_ZOOM);
+		final float max = Math.clamp(1F / legacyMinMultiplier, min, MAX_SUPPORTED_ZOOM);
 		final float span = Math.max(max - min, 0.001F);
 
-		final float defaultMultiplier = Mth.clamp(config.defaultZoom(), legacyMinMultiplier, legacyMaxMultiplier);
-		final float def = Mth.clamp(1F / defaultMultiplier, min, max);
-		final float increment = Mth.clamp(span / 20F, 0.05F, span);
+		final float defaultMultiplier = Math.clamp(config.defaultZoom(), legacyMinMultiplier, legacyMaxMultiplier);
+		final float def = Math.clamp(1F / defaultMultiplier, min, max);
+		final float increment = Math.clamp(span / 20F, 0.05F, span);
 
 		return new ScopeZoomConfig(min, max, increment, def, config.offhandEnabled(), config.zoomInSound(), config.zoomOutSound());
 	}

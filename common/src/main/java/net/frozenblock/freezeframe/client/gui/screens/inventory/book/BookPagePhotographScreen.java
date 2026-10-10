@@ -180,7 +180,7 @@ public class BookPagePhotographScreen extends AbstractContainerScreen<BookPagePh
 	}
 
 	@Override
-	protected boolean hasClickedOutside(double mouseX, double mouseY, int left, int top) {
+	protected boolean hasClickedOutside(double mx, double my) {
 		return false;
 	}
 
@@ -208,7 +208,7 @@ public class BookPagePhotographScreen extends AbstractContainerScreen<BookPagePh
 		for (GuiEventListener child : screen.children()) {
 			if (!(child instanceof AbstractWidget widget)) continue;
 			widget.active = false;
-			widget.visible = false;
+			widget.setVisible(false);
 		}
 
 		final FormattedText pageText = ComponentUtils.mergeStyles(Component.literal(screen.page.getValue()), BookViewScreen.PAGE_TEXT_STYLE);

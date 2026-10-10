@@ -176,7 +176,7 @@ public abstract class BookEditScreenMixin extends Screen {
 	@Unique
 	private void freezeFrame$updateButtonState() {
 		if (this.freezeFrame$addPhotoButton == null) return;
-		this.freezeFrame$addPhotoButton.visible = true;
+		this.freezeFrame$addPhotoButton.setVisible(true);
 		this.freezeFrame$addPhotoButton.active = this.freezeFrame$canOpenPhotoInventory();
 	}
 

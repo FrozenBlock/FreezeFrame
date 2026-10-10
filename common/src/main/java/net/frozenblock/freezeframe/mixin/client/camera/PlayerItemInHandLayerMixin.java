@@ -78,7 +78,7 @@ public abstract class PlayerItemInHandLayerMixin {
 		final ModelPart head = ((HeadedModel) model).getHead();
 		if (!state.isUsingItem) {
 			final float previousXRot = head.xRot;
-			head.xRot = Mth.clamp(previousXRot, -Mth.TWO_PI, FreezeFrameArmPoses.HIGHEST_LOOK_ROT);
+			head.xRot = Math.clamp(previousXRot, -Mth.TWO_PI, FreezeFrameArmPoses.HIGHEST_LOOK_ROT);
 			head.translateAndRotate(poseStack);
 			head.xRot = previousXRot;
 		} else {

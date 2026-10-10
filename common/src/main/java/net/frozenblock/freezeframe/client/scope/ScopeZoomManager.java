@@ -27,7 +27,6 @@ import net.minecraft.client.resources.sounds.SimpleSoundInstance;
 import net.minecraft.client.resources.sounds.SoundInstance;
 import net.minecraft.core.Holder;
 import net.minecraft.sounds.SoundEvent;
-import net.minecraft.util.Mth;
 import net.minecraft.world.entity.player.Player;
 
 @ClientOnly
@@ -57,15 +56,15 @@ public final class ScopeZoomManager {
 	}
 
 	public static void setActiveZoomProfile(float minZoom, float maxZoom, float defaultZoom, Optional<Holder<SoundEvent>> zoomInSound, Optional<Holder<SoundEvent>> zoomOutSound) {
-		activeMinZoom = Mth.clamp(minZoom, MIN_ZOOM, MAX_ZOOM);
-		activeMaxZoom = Mth.clamp(maxZoom, MIN_ZOOM, MAX_ZOOM);
-		activeDefaultZoom =  Mth.clamp(defaultZoom, MIN_ZOOM, MAX_ZOOM);
+		activeMinZoom = Math.clamp(minZoom, MIN_ZOOM, MAX_ZOOM);
+		activeMaxZoom = Math.clamp(maxZoom, MIN_ZOOM, MAX_ZOOM);
+		activeDefaultZoom =  Math.clamp(defaultZoom, MIN_ZOOM, MAX_ZOOM);
 		if (activeMinZoom > activeMaxZoom) {
 			final float previousMin = activeMinZoom;
 			activeMinZoom = activeMaxZoom;
 			activeMaxZoom = previousMin;
 		}
-		zoom = Mth.clamp(zoom, activeMinZoom, activeMaxZoom);
+		zoom = Math.clamp(zoom, activeMinZoom, activeMaxZoom);
 		activeZoomInSound = zoomInSound;
 		activeZoomOutSound = zoomOutSound;
 	}
@@ -80,15 +79,15 @@ public final class ScopeZoomManager {
 	}
 
 	public static void setActiveZoomStep(float value) {
-		activeZoomStep = Mth.clamp(value, 0.001F, activeMaxZoom - activeMinZoom);
+		activeZoomStep = Math.clamp(value, 0.001F, activeMaxZoom - activeMinZoom);
 	}
 
 	public static void setZoom(float value) {
-		zoom = Mth.clamp(value, activeMinZoom, activeMaxZoom);
+		zoom = Math.clamp(value, activeMinZoom, activeMaxZoom);
 	}
 
 	public static void pushForcedZoom(float value) {
-		forcedZoom = Mth.clamp(value, MIN_ZOOM, MAX_ZOOM);
+		forcedZoom = Math.clamp(value, MIN_ZOOM, MAX_ZOOM);
 		hasForcedZoom = true;
 	}
 
@@ -102,9 +101,9 @@ public final class ScopeZoomManager {
 		final float initialZoom = zoom;
 		final boolean increase = wheelDirection < 0;
 		if (!increase) {
-			zoom = Mth.clamp(zoom - activeZoomStep, activeMinZoom, activeMaxZoom);
+			zoom = Math.clamp(zoom - activeZoomStep, activeMinZoom, activeMaxZoom);
 		} else {
-			zoom = Mth.clamp(zoom + activeZoomStep, activeMinZoom, activeMaxZoom);
+			zoom = Math.clamp(zoom + activeZoomStep, activeMinZoom, activeMaxZoom);
 		}
 
 		return onZoomChanged(minecraft, player, initialZoom);

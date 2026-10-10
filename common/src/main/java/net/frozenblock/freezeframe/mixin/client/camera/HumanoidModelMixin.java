@@ -103,7 +103,7 @@ public class HumanoidModelMixin<T extends HumanoidRenderState> {
 		final ModelPart arm = isLeftArm ? this.leftArm : this.rightArm;
 		arm.yRot = (isLeftArm ? 0.3F : -0.3F) + (this.head.yRot);
 
-		final float clampedHeadXRot = using ? this.head.xRot : Mth.clamp(this.head.xRot, -Mth.TWO_PI, FreezeFrameArmPoses.HIGHEST_LOOK_ROT);
+		final float clampedHeadXRot = using ? this.head.xRot : Math.clamp(this.head.xRot, -Mth.TWO_PI, FreezeFrameArmPoses.HIGHEST_LOOK_ROT);
 		final float zRotScale = clampedHeadXRot < 0 && using ? 0.3F : 0.15F;
 		arm.zRot = clampedHeadXRot * (isLeftArm ? zRotScale : -zRotScale);
 		arm.xRot = -Mth.HALF_PI + clampedHeadXRot + (using ? (crouching ? -0.75F : -0.45F) : (crouching ? -0.2F : 0.1F));

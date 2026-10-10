@@ -48,6 +48,14 @@ loom {
     interfaceInjection {
         enableDependencyInterfaceInjection = true
     }
+
+    runs {
+        named("client") {
+            vmArg("-DMC_DEBUG_ENABLED=true")
+            vmArg("-DMC_DEBUG_FROZENLIB_FILE_TRANSFER=true")
+            vmArg("-DMC_DEBUG_FROZENLIB_SERVER_TEXTURE=true")
+        }
+    }
 }
 
 repositories {

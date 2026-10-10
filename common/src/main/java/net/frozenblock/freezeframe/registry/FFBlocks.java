@@ -22,7 +22,7 @@ import net.frozenblock.freezeframe.block.DevelopingTableBlock;
 import net.frozenblock.freezeframe.references.FFBlockItemIds;
 import net.frozenblock.lib.platform.api.registry.DeferredBlock;
 import net.frozenblock.lib.platform.api.registry.DeferredRegister;
-import net.minecraft.world.level.block.SoundType;
+import net.minecraft.world.level.block.sounds.BlockSoundSets;
 import net.minecraft.world.level.block.state.BlockBehaviour;
 import net.minecraft.world.level.block.state.properties.NoteBlockInstrument;
 import net.minecraft.world.level.material.MapColor;
@@ -36,7 +36,7 @@ public final class FFBlocks {
 			.mapColor(MapColor.WOOD)
 			.instrument(NoteBlockInstrument.BASS)
 			.strength(2.5F)
-			.sound(SoundType.WOOD)
+			.sound(BlockSoundSets.WOOD)
 			.ignitedByLava()
 	);
 

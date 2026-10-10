@@ -21,6 +21,7 @@ import com.llamalad7.mixinextras.injector.ModifyExpressionValue;
 import net.frozenblock.freezeframe.FFConstants;
 import net.frozenblock.freezeframe.config.FFConfig;
 import net.frozenblock.freezeframe.item.photograph.PhotographTracker;
+import net.frozenblock.freezeframe.registry.FFDataComponents;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.world.InteractionHand;
 import net.minecraft.world.entity.EntityType;
@@ -60,14 +61,16 @@ public abstract class ArmorStandMixin extends LivingEntity {
 		return original;
 	}
 
-	@Inject(method = "kill", at = @At("HEAD"))
+	@Inject(method = "kill(Lnet/minecraft/server/level/ServerLevel;)V", at = @At("HEAD"))
 	public void freezeFrame$incrementOnKill(ServerLevel level, CallbackInfo info) {
 		if (!FFConfig.PHOTOGRAPH_TRACKER.get()) return;
 
 		for (EquipmentSlot slot : EquipmentSlot.VALUES) {
-			final ItemStack itemStack = this.equipment.set(slot, ItemStack.EMPTY);
-			PhotographTracker.incrementOnItemStackDeletion(level, itemStack.copy());
-			if (FFConstants.UNSTABLE_LOGGING) FFConstants.log("incrementOnKill - ArmorStand", true);
+			final ItemStack itemStack = this.equipment.get(slot);
+			if (!itemStack.isEmpty() && itemStack.get(FFDataComponents.PHOTOGRAPH.get()) != null) {
+				PhotographTracker.incrementOnItemStackDeletion(level, itemStack.copy());
+				if (FFConstants.UNSTABLE_LOGGING) FFConstants.log("incrementOnKill - ArmorStand", true);
+			}
 		}
 	}
 }

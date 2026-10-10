@@ -23,7 +23,6 @@ import net.frozenblock.freezeframe.util.ScopeZoomHelper;
 import net.mehvahdjukaar.candlelight.api.ClientOnly;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.player.AbstractClientPlayer;
-import net.minecraft.util.Mth;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Constant;
@@ -49,7 +48,7 @@ public class AbstractClientPlayerMixin {
 		if (!ScopeItemHelper.isPlayerUsingScopeItem(player)) return original;
 
 		final float defaultFov = ScopeItemHelper.isPlayerUsingCamera(player) ? 90F : ScopeZoomManager.DEFAULT_FOV;
-		final float playerSettingFov = Mth.clamp(Minecraft.getInstance().options.fov().get().floatValue(), 1F, 180F);
+		final float playerSettingFov = Math.clamp(Minecraft.getInstance().options.fov().get().floatValue(), 1F, 180F);
 		final float fovNormalization = defaultFov / playerSettingFov;
 		final float cameraFovModifier = ScopeZoomHelper.toFovModifier(ScopeZoomManager.getZoom());
 		return cameraFovModifier * fovNormalization;

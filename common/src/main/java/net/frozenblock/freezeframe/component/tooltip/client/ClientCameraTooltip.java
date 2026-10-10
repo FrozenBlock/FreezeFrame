@@ -163,7 +163,7 @@ public final class ClientCameraTooltip implements ClientTooltipComponent {
 	}
 
 	private static int getProgressBarFill(Fraction weight) {
-		return Mth.clamp(Mth.mulAndTruncate(weight, PROGRESSBAR_FILL_MAX), 0, PROGRESSBAR_FILL_MAX);
+		return Math.clamp(Mth.mulAndTruncate(weight, PROGRESSBAR_FILL_MAX), 0, PROGRESSBAR_FILL_MAX);
 	}
 
 	@Nullable

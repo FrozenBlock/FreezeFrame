@@ -60,7 +60,7 @@ public class FilmItem extends Item {
 	}
 
 	public static int normalizeMaxPhotographs(int maxPhotographs) {
-		return Mth.clamp(maxPhotographs, 1, FilmContents.ABSOLUTE_MAX_PHOTOGRAPHS);
+		return Math.clamp(maxPhotographs, 1, FilmContents.ABSOLUTE_MAX_PHOTOGRAPHS);
 	}
 
 	public static int getMaxPhotographs(ItemInstance filmItem) {

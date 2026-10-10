@@ -236,7 +236,7 @@ public final class ClientFilmTooltip implements ClientTooltipComponent {
 	}
 
 	private static int getProgressBarFill(Fraction weight) {
-		return Mth.clamp(Mth.mulAndTruncate(weight, 94), 0, 94);
+		return Math.clamp(Mth.mulAndTruncate(weight, 94), 0, 94);
 	}
 
 	private static String formatDate(Date date) {

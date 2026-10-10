@@ -37,6 +37,7 @@ import net.minecraft.network.RegistryFriendlyByteBuf;
 import net.minecraft.network.codec.ByteBufCodecs;
 import net.minecraft.network.codec.StreamCodec;
 import net.minecraft.util.ARGB;
+import net.minecraft.util.CommonColors;
 import net.minecraft.world.item.DyeColor;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.ItemStackTemplate;
@@ -210,7 +211,7 @@ public class FilmFilterRecipe extends CustomRecipe {
 		int blueTotal = 0;
 		int colorCount = 0;
 		for (DyeColor dyeColor : this.findDyes(input)) {
-			final int color = dyeColor.getTextureDiffuseColor();
+			final int color = CommonColors.TEXTURE_TINT_COLORS.pick(dyeColor);
 			redTotal += ARGB.red(color);
 			greenTotal += ARGB.green(color);
 			blueTotal += ARGB.blue(color);

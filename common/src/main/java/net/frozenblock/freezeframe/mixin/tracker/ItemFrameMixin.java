@@ -69,7 +69,7 @@ public abstract class ItemFrameMixin {
 		slice = @Slice(
 			to = @At(
 				value = "INVOKE",
-				target = "Lnet/minecraft/world/entity/decoration/ItemFrame;spawnAtLocation(Lnet/minecraft/server/level/ServerLevel;Lnet/minecraft/world/item/ItemStack;)Lnet/minecraft/world/entity/item/ItemEntity;",
+				target = "Lnet/minecraft/world/entity/decoration/ItemFrame;spawnAtLocation(Lnet/minecraft/server/level/ServerLevel;Lnet/minecraft/world/item/ItemStack;F)Lnet/minecraft/world/entity/item/ItemEntity;",
 				ordinal = 0
 			)
 		)
@@ -84,8 +84,8 @@ public abstract class ItemFrameMixin {
 		}
 	}
 
-	@Inject(method = "onKilled", at = @At("HEAD"))
-	public void freezeFrame$incrementOnKilled(CallbackInfo info) {
+	@Inject(method = "kill", at = @At("HEAD"))
+	public void freezeFrame$incrementOnKill(CallbackInfo info) {
 		final ItemStack itemStack = this.getItem();
 		if (ItemFrame.class.cast(this).level() instanceof ServerLevel serverLevel && !itemStack.isEmpty() && FFConfig.PHOTOGRAPH_TRACKER.get()) {
 			PhotographTracker.incrementOnItemStackDeletion(serverLevel, itemStack.copy());

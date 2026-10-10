@@ -48,7 +48,6 @@ import net.minecraft.client.resources.sounds.SimpleSoundInstance;
 import net.minecraft.network.chat.Component;
 import net.minecraft.resources.Identifier;
 import net.minecraft.sounds.SoundEvents;
-import net.minecraft.util.Mth;
 import net.minecraft.world.InteractionHand;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.ItemStack;
@@ -178,7 +177,7 @@ public class FilmScreen extends Screen {
 	}
 
 	private void ensureNameEditBoxFocus() {
-		if (this.nameEditBox == null || !this.nameEditBox.active || !this.nameEditBox.visible) return;
+		if (this.nameEditBox == null || !this.nameEditBox.active || !this.nameEditBox.isVisible()) return;
 		if (this.getFocused() != this.nameEditBox) this.setFocused(this.nameEditBox);
 		if (!this.nameEditBox.isFocused()) this.nameEditBox.setFocused(true);
 	}
@@ -383,7 +382,7 @@ public class FilmScreen extends Screen {
 		final int wheel = wheelXY.y == 0 ? -wheelXY.x : wheelXY.y;
 		if (wheel != 0) {
 			final int currentIndex = this.selectedPhotographIndex;
-			final int updatedIndex = Mth.clamp(currentIndex - wheel, 0, this.getMaxPhotographIndex());
+			final int updatedIndex = Math.clamp(currentIndex - wheel, 0, this.getMaxPhotographIndex());
 			if (currentIndex != updatedIndex) {
 				this.selectedPhotographIndex = updatedIndex;
 				this.onSelectedPhotographChanged();
@@ -450,7 +449,7 @@ public class FilmScreen extends Screen {
 
 	private void incrementPhotographIndex(int amount) {
 		if (!this.hasPhotographs()) return;
-		final int updatedIndex = amount == 0 ? this.selectedPhotographIndex : Mth.clamp(this.selectedPhotographIndex + amount, 0, this.getMaxPhotographIndex());
+		final int updatedIndex = amount == 0 ? this.selectedPhotographIndex : Math.clamp(this.selectedPhotographIndex + amount, 0, this.getMaxPhotographIndex());
 		if (updatedIndex == this.selectedPhotographIndex) return;
 		this.selectedPhotographIndex = updatedIndex;
 		Minecraft.getInstance().getSoundManager().play(SimpleSoundInstance.forUI(SoundEvents.UI_BUTTON_CLICK, 1F));
@@ -500,7 +499,7 @@ public class FilmScreen extends Screen {
 			for (Photograph photograph : this.photographs) {
 				this.originalPhotographNamesById.put(photograph.id(), photograph.name());
 			}
-			this.selectedPhotographIndex = Mth.clamp(contents.getSelectedPhotographIndex(), 0, Math.max(0, this.photographs.size() - 1));
+			this.selectedPhotographIndex = Math.clamp(contents.getSelectedPhotographIndex(), 0, Math.max(0, this.photographs.size() - 1));
 			this.filmMaxPhotographs = FilmItem.getMaxPhotographs(filmStack);
 		} else {
 			this.photographs.clear();
@@ -520,7 +519,7 @@ public class FilmScreen extends Screen {
 			return;
 		}
 
-		this.selectedPhotographIndex = Mth.clamp(this.selectedPhotographIndex, 0, this.getMaxPhotographIndex());
+		this.selectedPhotographIndex = Math.clamp(this.selectedPhotographIndex, 0, this.getMaxPhotographIndex());
 		this.middlePhotograph = this.getFilmPhotograph(this.selectedPhotographIndex);
 		this.rightPhotograph = this.getFilmPhotograph(this.selectedPhotographIndex + 1);
 		this.leftPhotograph = this.getFilmPhotograph(this.selectedPhotographIndex - 1);
@@ -560,7 +559,7 @@ public class FilmScreen extends Screen {
 		if (!this.hasMultipleFilmPhotographs()) return;
 
 		final int travel = SCROLLER_TRACK_WIDTH - SCROLLER_WIDTH;
-		final int relative = Mth.clamp(mouseX - this.leftPos - SCROLLER_TRACK_X - (SCROLLER_WIDTH / 2), 0, travel);
+		final int relative = Math.clamp(mouseX - this.leftPos - SCROLLER_TRACK_X - (SCROLLER_WIDTH / 2), 0, travel);
 		final int updatedIndex = Math.round((relative / (float) travel) * this.getMaxPhotographIndex());
 		this.scrollerX = SCROLLER_TRACK_X + relative;
 		if (updatedIndex != this.selectedPhotographIndex) {

@@ -27,6 +27,7 @@ import net.minecraft.core.Holder;
 import net.minecraft.network.RegistryFriendlyByteBuf;
 import net.minecraft.network.codec.ByteBufCodecs;
 import net.minecraft.network.codec.StreamCodec;
+import net.minecraft.util.CommonColors;
 import net.minecraft.util.StringRepresentable;
 import net.minecraft.world.item.DyeColor;
 
@@ -70,7 +71,7 @@ public record FilmFilter(List<Layer> layers) {
 	}
 
 	public static FilmFilter dyeDemo(DyeColor dyeColor, boolean exclusionTint) {
-		return new FilmFilter(List.of(Layer.dye(dyeColor.getTextureDiffuseColor(), exclusionTint)));
+		return new FilmFilter(List.of(Layer.dye(CommonColors.TEXTURE_TINT_COLORS.pick(dyeColor), exclusionTint)));
 	}
 
 	public static FilmFilter specialDemo(Holder<SpecialFilmFilter> specialFilmFilter) {

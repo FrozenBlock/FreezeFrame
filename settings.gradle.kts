@@ -49,7 +49,7 @@ rootProject.name = "Freeze Frame"
 
 object Constants {
     const val FABRIC: Boolean = true
-    const val NEOFORGE: Boolean = true
+    const val NEOFORGE: Boolean = false
 }
 
 include("ff-common")
@@ -70,8 +70,9 @@ localRepository("cloth-config", "me.shedaniel.cloth:cloth-config-fabric", enable
 localRepository("FrozenLib",
     "net.frozenblock:frozenlib",
     prefix = "flib",
+    suffixes = listOf("common", "fabric"),
     multi = true,
-    enabled = false
+    enabled = true
 )
 
 localPluginRepository(
