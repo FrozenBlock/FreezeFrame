@@ -34,13 +34,21 @@ public record Photograph(Identifier id, String photographer, Optional<UUID> phot
 	public static final int COPY_OF_COPY = 2;
 	public static final int DEGRADED = 3;
 	public static final int MAX_COPY_GENERATION = COPY_OF_COPY;
-	public static final Codec<Photograph> CODEC = RecordCodecBuilder.create(instance -> instance.group(
+	private static final Codec<Photograph> OLD_CODEC = RecordCodecBuilder.create(instance -> instance.group(
+		Identifier.CODEC.fieldOf("identifier").forGetter(component -> component.id),
+		Codec.STRING.fieldOf("author").forGetter(Photograph::photographer),
+		UUIDUtil.CODEC.optionalFieldOf("photographer_uuid").forGetter(Photograph::photographerUUID),
+		Codec.STRING.optionalFieldOf("name", "").forGetter(Photograph::name),
+		Codec.INT.optionalFieldOf("generation", ORIGINAL).forGetter(Photograph::generation)
+	).apply(instance, Photograph::new));
+	private static final Codec<Photograph> NEW_CODEC = RecordCodecBuilder.create(instance -> instance.group(
 		Identifier.CODEC.fieldOf("id").forGetter(component -> component.id),
 		Codec.STRING.fieldOf("photographer").forGetter(Photograph::photographer),
 		UUIDUtil.CODEC.optionalFieldOf("photographer_uuid").forGetter(Photograph::photographerUUID),
 		Codec.STRING.optionalFieldOf("name", "").forGetter(Photograph::name),
 		Codec.INT.optionalFieldOf("generation", ORIGINAL).forGetter(Photograph::generation)
 	).apply(instance, Photograph::new));
+	public static final Codec<Photograph> CODEC = Codec.withAlternative(NEW_CODEC, OLD_CODEC);
 	public static final StreamCodec<ByteBuf, Photograph> STREAM_CODEC = StreamCodec.composite(
 		Identifier.STREAM_CODEC, Photograph::id,
 		ByteBufCodecs.STRING_UTF8, Photograph::photographer,
