@@ -17,7 +17,7 @@
 
 package net.frozenblock.freezeframe.networking;
 
-import net.frozenblock.freezeframe.client.gui.screens.inventory.FilmScreen;
+import net.frozenblock.freezeframe.client.gui.screens.inventory.v2.NewFilmScreen;
 import net.frozenblock.freezeframe.client.screenshot.PhotographScreenshotter;
 import net.frozenblock.freezeframe.item.photograph.PhotographTracker;
 import net.frozenblock.freezeframe.networking.packet.CameraTakeScreenshotPacket;
@@ -34,7 +34,7 @@ public final class FFClientNetworking {
 		ClientNetworkingHelper.registerGlobalClientReceiver(OpenFilmScreenPacket.TYPE, (packet, minecraft, player) -> {
 			minecraft.execute(() -> {
 				if (player == null) return;
-				minecraft.gui.setScreen(new FilmScreen(player, packet.hand()));
+				minecraft.gui.setScreen(new NewFilmScreen(player, packet.hand()));
 			});
 		});
 
