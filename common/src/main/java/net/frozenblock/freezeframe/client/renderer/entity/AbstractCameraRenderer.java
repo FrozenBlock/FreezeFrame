@@ -50,8 +50,8 @@ public abstract class AbstractCameraRenderer<T extends TripodCamera, M extends A
 	@Override
 	protected float getWhiteOverlayProgress(TripodCameraRenderState renderState) {
 		final float timer = renderState.timer;
-		final float timedTimer = (timer * (float) Math.PI) * 0.1F;
-		final float sin = (float) (Math.sin(timedTimer - (float) Math.PI * 0.5F) + 1F) * 0.5F;
+		final float timedTimer = (timer * Mth.PI) * 0.1F;
+		final float sin = (Mth.sin(timedTimer - Mth.PI * 0.5F) + 1F) * 0.5F;
 		return sin;
 	}
 
