@@ -167,19 +167,6 @@ public class FilmScreen extends Screen {
 		this.setupOrClearFilmPhotographDisplays();
 		this.updateButtons();
 		this.setInitialFocus(this.nameEditBox);
-		this.ensureNameEditBoxFocus();
-	}
-
-	@Override
-	public void tick() {
-		super.tick();
-		this.ensureNameEditBoxFocus();
-	}
-
-	private void ensureNameEditBoxFocus() {
-		if (this.nameEditBox == null || !this.nameEditBox.active || !this.nameEditBox.isVisible()) return;
-		if (this.getFocused() != this.nameEditBox) this.setFocused(this.nameEditBox);
-		if (!this.nameEditBox.isFocused()) this.nameEditBox.setFocused(true);
 	}
 
 	@Override

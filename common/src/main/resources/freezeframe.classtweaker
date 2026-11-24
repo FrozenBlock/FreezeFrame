@@ -50,3 +50,6 @@ transitive-accessible field net/minecraft/client/gui/components/ScrollableLayout
 # Abstract Scoll Area
 transitive-accessible field net/minecraft/client/gui/components/AbstractScrollArea SCROLLER_SPRITE Lnet/minecraft/resources/Identifier;
 transitive-accessible field net/minecraft/client/gui/components/AbstractScrollArea SCROLLER_BACKGROUND_SPRITE Lnet/minecraft/resources/Identifier;
+
+# Tooltip
+accessible method net/minecraft/client/gui/components/Tooltip <init> (Lnet/minecraft/network/chat/Component;Lnet/minecraft/network/chat/Component;Ljava/util/Optional;Lnet/minecraft/resources/Identifier;ZZ)V
